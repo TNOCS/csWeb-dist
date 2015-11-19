@@ -4202,94 +4202,6 @@ var Translations;
     Translations.Dutch = Dutch;
 })(Translations || (Translations = {}));
 //# sourceMappingURL=locale-nl.js.map
-var BaseMapList;
-(function (BaseMapList) {
-    /**
-      * Config
-      */
-    var moduleName = 'csComp';
-    try {
-        BaseMapList.myModule = angular.module(moduleName);
-    }
-    catch (err) {
-        // named module does not exist, so create one
-        BaseMapList.myModule = angular.module(moduleName, []);
-    }
-    /**
-      * Directive to display the available map layers.
-      */
-    BaseMapList.myModule.directive('baseMapList', [
-        '$window', '$compile',
-        function ($window, $compile) {
-            return {
-                terminal: false,
-                restrict: 'E',
-                scope: {},
-                //template  : html,   // I use gulp automatian to compile the FeatureProperties.tpl.html to a simple TS file, FeatureProperties.tpl.ts, which contains the html as string. The advantage is that you can use HTML intellisence in the html file.
-                templateUrl: 'directives/BaseMapList/BaseMapList.tpl.html',
-                //compile : el          => {    // I need to explicitly compile it in order to use interpolation like {{xxx}}
-                //    var fn                        = $compile(el);
-                //    return scope                  => {
-                //        fn(scope);
-                //    };
-                //},
-                link: function (scope, element, attrs) {
-                    // Deal with resizing the element list
-                    scope.onResizeFunction = function () {
-                        var filterHeight = 50;
-                        var paginationCtrlHeight = 100;
-                        var itemHeight = 60;
-                        //scope.windowHeight          = $window.innerHeight;
-                        //scope.windowWidth           = $window.innerWidth;
-                        scope.numberOfItems = Math.floor(($window.innerHeight - filterHeight - paginationCtrlHeight) / itemHeight);
-                    };
-                    // Call to the function when the page is first loaded
-                    scope.onResizeFunction();
-                    angular.element($window).bind('resize', function () {
-                        scope.onResizeFunction();
-                        scope.$apply();
-                    });
-                },
-                replace: true,
-                transclude: true,
-                controller: BaseMapList.BaseMapListCtrl
-            };
-        }
-    ]);
-})(BaseMapList || (BaseMapList = {}));
-//# sourceMappingURL=BaseMapList.js.map
-var BaseMapList;
-(function (BaseMapList) {
-    var BaseMapListCtrl = (function () {
-        // dependencies are injected via AngularJS $injector
-        // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
-        function BaseMapListCtrl($scope, $layerService, $mapService, $messageBusService) {
-            this.$scope = $scope;
-            this.$layerService = $layerService;
-            this.$mapService = $mapService;
-            this.$messageBusService = $messageBusService;
-            $scope.vm = this;
-        }
-        BaseMapListCtrl.prototype.selectBaseLayer = function (key) {
-            var layer = this.$layerService.$mapService.getBaselayer(key);
-            this.$layerService.activeMapRenderer.changeBaseLayer(layer);
-            this.$layerService.$mapService.changeBaseLayer(key);
-        };
-        // $inject annotation.
-        // It provides $injector with information about dependencies to be injected into constructor
-        // it is better to have it close to the constructor, because the parameters must match in count and type.
-        // See http://docs.angularjs.org/guide/di
-        BaseMapListCtrl.$inject = [
-            '$scope',
-            'layerService',
-            'mapService',
-            'messageBusService',
-        ];
-        return BaseMapListCtrl;
-    })();
-    BaseMapList.BaseMapListCtrl = BaseMapListCtrl;
-})(BaseMapList || (BaseMapList = {}));
-//# sourceMappingURL=BaseMapListCtrl.js.map
 var Accessibility;
 (function (Accessibility) {
     /**
@@ -4561,6 +4473,94 @@ var Accessibility;
     Accessibility.AccessibilityCtrl = AccessibilityCtrl;
 })(Accessibility || (Accessibility = {}));
 //# sourceMappingURL=AccessibilityCtrl.js.map
+var BaseMapList;
+(function (BaseMapList) {
+    /**
+      * Config
+      */
+    var moduleName = 'csComp';
+    try {
+        BaseMapList.myModule = angular.module(moduleName);
+    }
+    catch (err) {
+        // named module does not exist, so create one
+        BaseMapList.myModule = angular.module(moduleName, []);
+    }
+    /**
+      * Directive to display the available map layers.
+      */
+    BaseMapList.myModule.directive('baseMapList', [
+        '$window', '$compile',
+        function ($window, $compile) {
+            return {
+                terminal: false,
+                restrict: 'E',
+                scope: {},
+                //template  : html,   // I use gulp automatian to compile the FeatureProperties.tpl.html to a simple TS file, FeatureProperties.tpl.ts, which contains the html as string. The advantage is that you can use HTML intellisence in the html file.
+                templateUrl: 'directives/BaseMapList/BaseMapList.tpl.html',
+                //compile : el          => {    // I need to explicitly compile it in order to use interpolation like {{xxx}}
+                //    var fn                        = $compile(el);
+                //    return scope                  => {
+                //        fn(scope);
+                //    };
+                //},
+                link: function (scope, element, attrs) {
+                    // Deal with resizing the element list
+                    scope.onResizeFunction = function () {
+                        var filterHeight = 50;
+                        var paginationCtrlHeight = 100;
+                        var itemHeight = 60;
+                        //scope.windowHeight          = $window.innerHeight;
+                        //scope.windowWidth           = $window.innerWidth;
+                        scope.numberOfItems = Math.floor(($window.innerHeight - filterHeight - paginationCtrlHeight) / itemHeight);
+                    };
+                    // Call to the function when the page is first loaded
+                    scope.onResizeFunction();
+                    angular.element($window).bind('resize', function () {
+                        scope.onResizeFunction();
+                        scope.$apply();
+                    });
+                },
+                replace: true,
+                transclude: true,
+                controller: BaseMapList.BaseMapListCtrl
+            };
+        }
+    ]);
+})(BaseMapList || (BaseMapList = {}));
+//# sourceMappingURL=BaseMapList.js.map
+var BaseMapList;
+(function (BaseMapList) {
+    var BaseMapListCtrl = (function () {
+        // dependencies are injected via AngularJS $injector
+        // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
+        function BaseMapListCtrl($scope, $layerService, $mapService, $messageBusService) {
+            this.$scope = $scope;
+            this.$layerService = $layerService;
+            this.$mapService = $mapService;
+            this.$messageBusService = $messageBusService;
+            $scope.vm = this;
+        }
+        BaseMapListCtrl.prototype.selectBaseLayer = function (key) {
+            var layer = this.$layerService.$mapService.getBaselayer(key);
+            this.$layerService.activeMapRenderer.changeBaseLayer(layer);
+            this.$layerService.$mapService.changeBaseLayer(key);
+        };
+        // $inject annotation.
+        // It provides $injector with information about dependencies to be injected into constructor
+        // it is better to have it close to the constructor, because the parameters must match in count and type.
+        // See http://docs.angularjs.org/guide/di
+        BaseMapListCtrl.$inject = [
+            '$scope',
+            'layerService',
+            'mapService',
+            'messageBusService',
+        ];
+        return BaseMapListCtrl;
+    })();
+    BaseMapList.BaseMapListCtrl = BaseMapListCtrl;
+})(BaseMapList || (BaseMapList = {}));
+//# sourceMappingURL=BaseMapListCtrl.js.map
 var Charts;
 (function (Charts) {
     'use strict';
@@ -6538,6 +6538,11 @@ var FeatureProps;
                 });
             }
         };
+        FeaturePropsCtrl.prototype.saveFeatureType = function () {
+            var resource = this.$layerService.findResourceByFeature(this.$scope.feature);
+            if (resource)
+                this.$layerService.saveResource(resource);
+        };
         FeaturePropsCtrl.prototype.selectProperty = function (prop, $event) {
             this.lastSelectedProperty = prop;
             $event.stopPropagation();
@@ -6769,6 +6774,105 @@ var FeatureProps;
     FeatureProps.FeaturePropsCtrl = FeaturePropsCtrl;
 })(FeatureProps || (FeatureProps = {}));
 //# sourceMappingURL=FeaturePropsCtrl.js.map
+var FilterList;
+(function (FilterList) {
+    /**
+      * Config
+      */
+    var moduleName = 'csComp';
+    try {
+        FilterList.myModule = angular.module(moduleName);
+    }
+    catch (err) {
+        // named module does not exist, so create one
+        FilterList.myModule = angular.module(moduleName, []);
+    }
+    /**
+      * Directive to display the available map layers.
+      */
+    FilterList.myModule.directive('filterList', [
+        '$window', '$compile',
+        function ($window, $compile) {
+            return {
+                terminal: true,
+                restrict: 'E',
+                scope: {},
+                templateUrl: 'directives/FilterList/FilterList.tpl.html',
+                link: function (scope, element, attrs) {
+                    // Deal with resizing the element list
+                    scope.onResizeFunction = function () {
+                        var filterHeight = 50;
+                        var paginationCtrlHeight = 100;
+                        var itemHeight = 60;
+                        //scope.windowHeight          = $window.innerHeight;
+                        //scope.windowWidth           = $window.innerWidth;
+                        scope.numberOfItems = Math.floor(($window.innerHeight - filterHeight - paginationCtrlHeight) / itemHeight);
+                    };
+                    // Call to the function when the page is first loaded
+                    scope.onResizeFunction();
+                    angular.element($window).bind('resize', function () {
+                        scope.onResizeFunction();
+                        scope.$apply();
+                    });
+                },
+                replace: false,
+                transclude: false,
+                controller: FilterList.FilterListCtrl
+            };
+        }
+    ]).directive('bsPopover', function () {
+        return function (scope, element, attrs) {
+            element.find("a[rel=popover]").popover({ placement: 'right', html: 'true' });
+        };
+    });
+})(FilterList || (FilterList = {}));
+//# sourceMappingURL=FilterList.js.map
+var FilterList;
+(function (FilterList) {
+    var FilterListCtrl = (function () {
+        // dependencies are injected via AngularJS $injector
+        // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
+        function FilterListCtrl($scope, $layerService, $messageBus) {
+            var _this = this;
+            this.$scope = $scope;
+            this.$layerService = $layerService;
+            this.$messageBus = $messageBus;
+            $scope.vm = this;
+            this.noFilters = true;
+            this.locationFilterActive = false;
+            this.$messageBus.subscribe("filters", function (action) {
+                console.log('update filters');
+                _this.noFilters = true;
+                _this.locationFilterActive = false;
+                _this.$layerService.project.groups.forEach(function (g) {
+                    if (g.filters.length > 0 && _this.noFilters)
+                        _this.noFilters = false;
+                    g.filters.forEach(function (f) {
+                        if (f.filterType === 'location' && _this.locationFilterActive === false)
+                            _this.locationFilterActive = true;
+                    });
+                });
+            });
+        }
+        FilterListCtrl.prototype.setLocationFilter = function (group) {
+            if (!this.locationFilterActive) {
+                this.$layerService.setLocationFilter(group);
+            }
+        };
+        // $inject annotation.
+        // It provides $injector with information about dependencies to be injected into constructor
+        // it is better to have it close to the constructor, because the parameters must match in count and type.
+        // See http://docs.angularjs.org/guide/di
+        FilterListCtrl.$inject = [
+            '$scope',
+            'layerService',
+            'messageBusService'
+        ];
+        return FilterListCtrl;
+    })();
+    FilterList.FilterListCtrl = FilterListCtrl;
+})(FilterList || (FilterList = {}));
+//# sourceMappingURL=FilterListCtrl.js.map
 var FeatureRelations;
 (function (FeatureRelations) {
     /**
@@ -7033,105 +7137,6 @@ var FeatureRelations;
     FeatureRelations.FeatureRelationsCtrl = FeatureRelationsCtrl;
 })(FeatureRelations || (FeatureRelations = {}));
 //# sourceMappingURL=FeatureRelationsCtrl.js.map
-var FilterList;
-(function (FilterList) {
-    /**
-      * Config
-      */
-    var moduleName = 'csComp';
-    try {
-        FilterList.myModule = angular.module(moduleName);
-    }
-    catch (err) {
-        // named module does not exist, so create one
-        FilterList.myModule = angular.module(moduleName, []);
-    }
-    /**
-      * Directive to display the available map layers.
-      */
-    FilterList.myModule.directive('filterList', [
-        '$window', '$compile',
-        function ($window, $compile) {
-            return {
-                terminal: true,
-                restrict: 'E',
-                scope: {},
-                templateUrl: 'directives/FilterList/FilterList.tpl.html',
-                link: function (scope, element, attrs) {
-                    // Deal with resizing the element list
-                    scope.onResizeFunction = function () {
-                        var filterHeight = 50;
-                        var paginationCtrlHeight = 100;
-                        var itemHeight = 60;
-                        //scope.windowHeight          = $window.innerHeight;
-                        //scope.windowWidth           = $window.innerWidth;
-                        scope.numberOfItems = Math.floor(($window.innerHeight - filterHeight - paginationCtrlHeight) / itemHeight);
-                    };
-                    // Call to the function when the page is first loaded
-                    scope.onResizeFunction();
-                    angular.element($window).bind('resize', function () {
-                        scope.onResizeFunction();
-                        scope.$apply();
-                    });
-                },
-                replace: false,
-                transclude: false,
-                controller: FilterList.FilterListCtrl
-            };
-        }
-    ]).directive('bsPopover', function () {
-        return function (scope, element, attrs) {
-            element.find("a[rel=popover]").popover({ placement: 'right', html: 'true' });
-        };
-    });
-})(FilterList || (FilterList = {}));
-//# sourceMappingURL=FilterList.js.map
-var FilterList;
-(function (FilterList) {
-    var FilterListCtrl = (function () {
-        // dependencies are injected via AngularJS $injector
-        // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
-        function FilterListCtrl($scope, $layerService, $messageBus) {
-            var _this = this;
-            this.$scope = $scope;
-            this.$layerService = $layerService;
-            this.$messageBus = $messageBus;
-            $scope.vm = this;
-            this.noFilters = true;
-            this.locationFilterActive = false;
-            this.$messageBus.subscribe("filters", function (action) {
-                console.log('update filters');
-                _this.noFilters = true;
-                _this.locationFilterActive = false;
-                _this.$layerService.project.groups.forEach(function (g) {
-                    if (g.filters.length > 0 && _this.noFilters)
-                        _this.noFilters = false;
-                    g.filters.forEach(function (f) {
-                        if (f.filterType === 'location' && _this.locationFilterActive === false)
-                            _this.locationFilterActive = true;
-                    });
-                });
-            });
-        }
-        FilterListCtrl.prototype.setLocationFilter = function (group) {
-            if (!this.locationFilterActive) {
-                this.$layerService.setLocationFilter(group);
-            }
-        };
-        // $inject annotation.
-        // It provides $injector with information about dependencies to be injected into constructor
-        // it is better to have it close to the constructor, because the parameters must match in count and type.
-        // See http://docs.angularjs.org/guide/di
-        FilterListCtrl.$inject = [
-            '$scope',
-            'layerService',
-            'messageBusService'
-        ];
-        return FilterListCtrl;
-    })();
-    FilterList.FilterListCtrl = FilterListCtrl;
-})(FilterList || (FilterList = {}));
-//# sourceMappingURL=FilterListCtrl.js.map
 var Heatmap;
 (function (Heatmap) {
     'use strict';
@@ -8904,7 +8909,27 @@ var LayersDirective;
             this.state = 'layers';
         };
         LayersDirectiveCtrl.prototype.addProjectLayer = function () {
-            var group = this.$layerService.findGroupById(this.layerGroup);
+            if (this.layerResourceType === "<new>") {
+                this.selectedLayer.typeUrl = "/api/resources/" + this.selectedLayer.title;
+                var r = { id: this.selectedLayer.title, title: this.selectedLayer.title, featureTypes: {}, propertyTypeData: {} };
+                r.featureTypes["default"] = { name: "default", style: {
+                        drawingMode: "Point"
+                    } };
+                this.$layerService.saveResource(r);
+            }
+            else {
+                this.selectedLayer.typeUrl = this.layerResourceType;
+            }
+            var group;
+            if (this.layerGroup == "<new>") {
+                group = new csComp.Services.ProjectGroup;
+                group.title = this.newGroup;
+                this.$layerService.project.groups.push(group);
+                this.$layerService.initGroup(group);
+            }
+            else {
+                group = this.$layerService.findGroupById(this.layerGroup);
+            }
             if (group) {
                 this.$layerService.initLayer(group, this.selectedLayer);
                 group.layers.push(this.selectedLayer);
@@ -8958,6 +8983,8 @@ var LayersDirective;
         };
         LayersDirectiveCtrl.prototype.openDirectory = function () {
             this.initGroups();
+            this.loadAvailableLayers();
+            this.initResources();
             this.state = "directory";
             this.loadAvailableLayers();
             // var modalInstance = this.$modal.open({
@@ -11688,14 +11715,15 @@ var ProjectSettings;
         };
         ProjectSettingsCtrl.prototype.updateProject = function () {
             var _this = this;
-            console.log('Update project called');
+            console.log('Updating project');
             this.$timeout(function () {
                 var data = _this.$layerService.project.serialize();
-                var url = _this.$layerService.projectUrl.url.substr(0, _this.$layerService.projectUrl.url.indexOf('/project.json'));
+                var url = _this.$layerService.projectUrl.url;
+                //.substr(0, this.$layerService.projectUrl.url.indexOf('/project.json'));
                 console.log('URL: ' + url);
                 $.ajax({
                     url: url,
-                    type: "POST",
+                    type: "PUT",
                     data: data,
                     contentType: "application/json",
                     complete: _this.updateProjectReady
@@ -13219,16 +13247,16 @@ var csComp;
                             break;
                     }
                 });
-                this.widgetTypes["indicators"] = { id: "indicators", icon: "cs/images/widgets/indicators.png", description: "Showing sensor data using charts" };
-                this.widgetTypes["charts"] = { id: "charts", icon: "cs/images/widgets/markdown.png", description: "Show custom chart" };
-                this.widgetTypes["markdownwidget"] = { id: "markdownwidget", icon: "cs/images/widgets/markdown.png", description: "Show custom markdown or html content" };
-                this.widgetTypes["mcawidget"] = { id: "mcawidget", icon: "cs/images/widgets/mca.png", description: "Show available MCA's" };
-                this.widgetTypes["iframewidget"] = { id: "iframewidget", icon: "cs/images/widgets/markdown.png", description: "Show custom iframe" };
-                this.widgetTypes["kanbanboard"] = { id: "kanbanboard", icon: "cs/images/widgets/markdown.png", description: "Show kanbanboard" };
-                this.widgetTypes["navigator"] = { id: "navigatorwidget", icon: "cs/images/widgets/markdown.png", description: "Show navigator" };
-                this.widgetTypes["postman"] = { id: "postman", icon: "cs/images/widgets/Script.png", description: "POST messages" };
-                this.widgetTypes["simtimecontroller"] = { id: "simtimecontroller", icon: "cs/images/widgets/Media-Play.png", description: "Show simulation time controller" };
-                this.widgetTypes["simstate"] = { id: "simstate", icon: "cs/images/widgets/ServerStatus.png", description: "Show status of simulation services." };
+                this.widgetTypes["indicators"] = { id: "indicators", icon: "bower_components/csweb/dist-bower/images/widgets/indicators.png", description: "Showing sensor data using charts" };
+                this.widgetTypes["charts"] = { id: "charts", icon: "bower_components/csweb/dist-bower/images/widgets/markdown.png", description: "Show custom chart" };
+                this.widgetTypes["markdownwidget"] = { id: "markdownwidget", icon: "bower_components/csweb/dist-bower/images/widgets/markdown.png", description: "Show custom markdown or html content" };
+                this.widgetTypes["mcawidget"] = { id: "mcawidget", icon: "bower_components/csweb/dist-bower/images/widgets/mca.png", description: "Show available MCA's" };
+                this.widgetTypes["iframewidget"] = { id: "iframewidget", icon: "bower_components/csweb/dist-bower/images/widgets/markdown.png", description: "Show custom iframe" };
+                this.widgetTypes["kanbanboard"] = { id: "kanbanboard", icon: "bower_components/csweb/dist-bower/images/widgets/markdown.png", description: "Show kanbanboard" };
+                this.widgetTypes["navigator"] = { id: "navigatorwidget", icon: "bower_components/csweb/dist-bower/images/widgets/markdown.png", description: "Show navigator" };
+                this.widgetTypes["postman"] = { id: "postman", icon: "bower_components/csweb/dist-bower/images/widgets/Script.png", description: "POST messages" };
+                this.widgetTypes["simtimecontroller"] = { id: "simtimecontroller", icon: "bower_components/csweb/dist-bower/images/widgets/Media-Play.png", description: "Show simulation time controller" };
+                this.widgetTypes["simstate"] = { id: "simstate", icon: "bower_components/csweb/dist-bower/images/widgets/ServerStatus.png", description: "Show status of simulation services." };
             }
             DashboardService.prototype.leftMenuVisible = function (id) {
                 var d = this.$layerService.project.activeDashboard;
@@ -13902,6 +13930,9 @@ var csComp;
                     function (callback) {
                         // load required feature layers, if applicable
                         _this.loadRequiredLayers(layer);
+                        // suport for loading default geojson
+                        if (layer.type.toLowerCase() === "featurecollection")
+                            layer.type = "geojson";
                         // find layer source, and activate layer
                         var layerSource = layer.type.toLowerCase();
                         if (!_this.layerSources.hasOwnProperty(layerSource)) {
@@ -13952,6 +13983,16 @@ var csComp;
                         callback(null, null);
                     }
                 ]);
+            };
+            LayerService.prototype.saveResource = function (resource) {
+                console.log('saving feature type');
+                this.$http.post("/api/resources", resource)
+                    .success(function (data) {
+                    console.log('resource saved');
+                })
+                    .error(function (e) {
+                    console.log('error saving resource');
+                });
             };
             LayerService.prototype.expandGroup = function (layer) {
                 // expand the group in the layerlist if it is collapsed
@@ -14711,6 +14752,18 @@ var csComp;
                         pt.options = locale.options;
                 }
                 ;
+            };
+            LayerService.prototype.findResourceByFeature = function (feature) {
+                if (feature.layer && feature.layer.typeUrl) {
+                    var typeUrl = feature.layer.typeUrl;
+                    if (this.typesResources.hasOwnProperty(typeUrl)) {
+                        return this.typesResources[typeUrl];
+                    }
+                    else
+                        return null;
+                }
+                else
+                    return null;
             };
             /**
              * find a filter for a specific group/property combination
@@ -16256,6 +16309,7 @@ var csComp;
             MapService.prototype.changeBaseLayer = function (layer) {
                 var layerObj = this.getBaselayer(layer);
                 this.activeBaseLayer = layerObj;
+                this.activeBaseLayerId = layer;
             };
             MapService.prototype.invalidate = function () {
                 this.map.invalidateSize(true);
@@ -16587,7 +16641,10 @@ var Dashboard;
                 this.$layerService.activeMapRenderer.fitBounds(this.$scope.dashboard.viewBounds);
             }
             if (this.$scope.dashboard.showMap && this.$scope.dashboard.baselayer) {
-                this.$messageBusService.publish("map", "setbaselayer", this.$scope.dashboard.baselayer);
+                //this.$messageBusService.publish("map", "setbaselayer", this.$scope.dashboard.baselayer);
+                var layer = this.$layerService.$mapService.getBaselayer(this.$scope.dashboard.baselayer);
+                this.$layerService.activeMapRenderer.changeBaseLayer(layer);
+                this.$layerService.$mapService.changeBaseLayer(this.$scope.dashboard.baselayer);
             }
         };
         DashboardCtrl.prototype.checkLayers = function () {
@@ -17151,6 +17208,9 @@ var DashboardEdit;
             for (var id in this.$layerService.loadedLayers)
                 this.dashboard.visiblelayers.push(id);
         };
+        DashboardEditCtrl.prototype.setBaseLayer = function () {
+            this.dashboard.baselayer = this.$mapService.activeBaseLayerId;
+        };
         DashboardEditCtrl.prototype.toggleMap = function () {
             var _this = this;
             setTimeout(function () {
@@ -17171,7 +17231,11 @@ var DashboardEdit;
                 }
             }
             if (db.showMap && this.dashboard.baselayer) {
-                this.$messageBusService.publish("map", "setbaselayer", this.dashboard.baselayer);
+                //this.$messageBusService.publish("map", "setbaselayer", this.dashboard.baselayer);
+                var layer = this.$layerService.$mapService.getBaselayer(this.dashboard.baselayer);
+                this.$layerService.activeMapRenderer.changeBaseLayer(layer);
+                this.$layerService.$mapService.changeBaseLayer(this.dashboard.baselayer);
+                this.$layerService.$mapService.changeBaseLayer(this.dashboard.baselayer);
             }
         };
         DashboardEditCtrl.prototype.checkTimeline = function () {
@@ -17310,92 +17374,6 @@ var WidgetEdit;
     WidgetEdit.WidgetEditCtrl = WidgetEditCtrl;
 })(WidgetEdit || (WidgetEdit = {}));
 //# sourceMappingURL=WidgetEditCtrl.js.map
-var GroupEdit;
-(function (GroupEdit) {
-    /**
-      * Config
-      */
-    var moduleName = 'csComp';
-    try {
-        GroupEdit.myModule = angular.module(moduleName);
-    }
-    catch (err) {
-        // named module does not exist, so create one
-        GroupEdit.myModule = angular.module(moduleName, []);
-    }
-    /**
-      * Directive to display a feature's properties in a panel.
-      *
-      * @seealso          : http://www.youtube.com/watch?v=gjJ5vLRK8R8&list=UUGD_0i6L48hucTiiyhb5QzQ
-      * @seealso          : http://plnkr.co/edit/HyBP9d?p=preview
-      */
-    GroupEdit.myModule.directive('groupedit', ['$compile',
-        function ($compile) {
-            return {
-                terminal: true,
-                restrict: 'E',
-                scope: {},
-                templateUrl: 'directives/Editors/GroupEditor/GroupEdit.tpl.html',
-                replace: true,
-                transclude: true,
-                controller: GroupEdit.GroupEditCtrl
-            };
-        }
-    ]);
-})(GroupEdit || (GroupEdit = {}));
-//# sourceMappingURL=GroupEdit.js.map
-var GroupEdit;
-(function (GroupEdit) {
-    var GroupEditCtrl = (function () {
-        // dependencies are injected via AngularJS $injector
-        // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
-        function GroupEditCtrl($scope, $mapService, $layerService, $messageBusService, $dashboardService) {
-            var _this = this;
-            this.$scope = $scope;
-            this.$mapService = $mapService;
-            this.$layerService = $layerService;
-            this.$messageBusService = $messageBusService;
-            this.$dashboardService = $dashboardService;
-            this.noLayerSelected = true;
-            this.scope = $scope;
-            $scope.vm = this;
-            $scope.group = $scope.$parent["data"];
-            console.log($scope.group);
-            this.updateLayers();
-            this.$messageBusService.subscribe('layer', function () {
-                _this.updateLayers();
-            });
-        }
-        GroupEditCtrl.prototype.updateLayers = function () {
-            this.noLayerSelected = this.$scope.group.layers.some(function (l) { return l.enabled; });
-            //console.log("selected " + this.noLayerSelected)
-            //this.$scope.group.oneLayerActive
-        };
-        GroupEditCtrl.prototype.removeGroup = function () {
-            this.$layerService.removeGroup(this.$scope.group);
-        };
-        GroupEditCtrl.prototype.toggleClustering = function () {
-            console.log('toggle clustering');
-        };
-        GroupEditCtrl.prototype.updateOws = function () {
-            this.$scope.group.loadLayersFromOWS();
-        };
-        // $inject annotation.
-        // It provides $injector with information about dependencies to be injected into constructor
-        // it is better to have it close to the constructor, because the parameters must match in count and type.
-        // See http://docs.angularjs.org/guide/di
-        GroupEditCtrl.$inject = [
-            '$scope',
-            'mapService',
-            'layerService',
-            'messageBusService',
-            'dashboardService'
-        ];
-        return GroupEditCtrl;
-    })();
-    GroupEdit.GroupEditCtrl = GroupEditCtrl;
-})(GroupEdit || (GroupEdit = {}));
-//# sourceMappingURL=GroupEditCtrl.js.map
 var FeatureTypeEditor;
 (function (FeatureTypeEditor) {
     /**
@@ -17464,6 +17442,7 @@ var FeatureTypeEditor;
         }
         //** force features to be updated */
         FeatureTypeEditorCtrl.prototype.updateFeatureTypes = function (ft) {
+            console.log('updating ..');
             this.$layerService.updateFeatureTypes(ft);
         };
         ;
@@ -17568,6 +17547,92 @@ var FeatureTypes;
     FeatureTypes.FeatureTypesCtrl = FeatureTypesCtrl;
 })(FeatureTypes || (FeatureTypes = {}));
 //# sourceMappingURL=FeatureTypesCtrl.js.map
+var GroupEdit;
+(function (GroupEdit) {
+    /**
+      * Config
+      */
+    var moduleName = 'csComp';
+    try {
+        GroupEdit.myModule = angular.module(moduleName);
+    }
+    catch (err) {
+        // named module does not exist, so create one
+        GroupEdit.myModule = angular.module(moduleName, []);
+    }
+    /**
+      * Directive to display a feature's properties in a panel.
+      *
+      * @seealso          : http://www.youtube.com/watch?v=gjJ5vLRK8R8&list=UUGD_0i6L48hucTiiyhb5QzQ
+      * @seealso          : http://plnkr.co/edit/HyBP9d?p=preview
+      */
+    GroupEdit.myModule.directive('groupedit', ['$compile',
+        function ($compile) {
+            return {
+                terminal: true,
+                restrict: 'E',
+                scope: {},
+                templateUrl: 'directives/Editors/GroupEditor/GroupEdit.tpl.html',
+                replace: true,
+                transclude: true,
+                controller: GroupEdit.GroupEditCtrl
+            };
+        }
+    ]);
+})(GroupEdit || (GroupEdit = {}));
+//# sourceMappingURL=GroupEdit.js.map
+var GroupEdit;
+(function (GroupEdit) {
+    var GroupEditCtrl = (function () {
+        // dependencies are injected via AngularJS $injector
+        // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
+        function GroupEditCtrl($scope, $mapService, $layerService, $messageBusService, $dashboardService) {
+            var _this = this;
+            this.$scope = $scope;
+            this.$mapService = $mapService;
+            this.$layerService = $layerService;
+            this.$messageBusService = $messageBusService;
+            this.$dashboardService = $dashboardService;
+            this.noLayerSelected = true;
+            this.scope = $scope;
+            $scope.vm = this;
+            $scope.group = $scope.$parent["data"];
+            console.log($scope.group);
+            this.updateLayers();
+            this.$messageBusService.subscribe('layer', function () {
+                _this.updateLayers();
+            });
+        }
+        GroupEditCtrl.prototype.updateLayers = function () {
+            this.noLayerSelected = this.$scope.group.layers.some(function (l) { return l.enabled; });
+            //console.log("selected " + this.noLayerSelected)
+            //this.$scope.group.oneLayerActive
+        };
+        GroupEditCtrl.prototype.removeGroup = function () {
+            this.$layerService.removeGroup(this.$scope.group);
+        };
+        GroupEditCtrl.prototype.toggleClustering = function () {
+            console.log('toggle clustering');
+        };
+        GroupEditCtrl.prototype.updateOws = function () {
+            this.$scope.group.loadLayersFromOWS();
+        };
+        // $inject annotation.
+        // It provides $injector with information about dependencies to be injected into constructor
+        // it is better to have it close to the constructor, because the parameters must match in count and type.
+        // See http://docs.angularjs.org/guide/di
+        GroupEditCtrl.$inject = [
+            '$scope',
+            'mapService',
+            'layerService',
+            'messageBusService',
+            'dashboardService'
+        ];
+        return GroupEditCtrl;
+    })();
+    GroupEdit.GroupEditCtrl = GroupEditCtrl;
+})(GroupEdit || (GroupEdit = {}));
+//# sourceMappingURL=GroupEditCtrl.js.map
 var LayerEdit;
 (function (LayerEdit) {
     /**

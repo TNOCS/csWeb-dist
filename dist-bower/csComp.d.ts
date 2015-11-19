@@ -2145,6 +2145,7 @@ declare module FeatureProps {
         updateAllStatsDelay: () => void;
         updateStatsDelay: (prop: any) => void;
         private updateAllStats();
+        saveFeatureType(): void;
         selectProperty(prop: IPropertyType, $event: ng.IAngularEvent): void;
         saveFeature(): void;
         startEditFeature(): void;
@@ -4040,6 +4041,7 @@ declare module csComp.Services {
         private checkFeatureSubLayers();
         loadRequiredLayers(layer: ProjectLayer): void;
         addLayer(layer: ProjectLayer, layerloaded?: Function): void;
+        saveResource(resource: TypeResource): void;
         expandGroup(layer: ProjectLayer): void;
         collapseAll(): void;
         expandAll(): void;
@@ -4109,6 +4111,7 @@ declare module csComp.Services {
         */
         private setDefaultPropertyType(pt);
         private localizePropertyType(pt);
+        findResourceByFeature(feature: IFeature): ITypesResource;
         /**
          * find a filter for a specific group/property combination
          */
@@ -4300,6 +4303,7 @@ declare module csComp.Services {
         map: L.Map;
         baseLayers: any;
         activeBaseLayer: BaseLayer;
+        activeBaseLayerId: string;
         mapVisible: boolean;
         timelineVisible: boolean;
         rightMenuVisible: boolean;
@@ -4511,6 +4515,7 @@ declare module DashboardEdit {
         toggleLegend(): void;
         setExtent(): void;
         setVisibleLayers(): void;
+        setBaseLayer(): void;
         toggleMap(): void;
         checkMap(): void;
         checkTimeline(): void;

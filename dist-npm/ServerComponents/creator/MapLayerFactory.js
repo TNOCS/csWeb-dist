@@ -102,6 +102,9 @@ var MapLayerFactory = (function () {
                 }
             }
         }
+        console.log('TODO REMOVE writing output');
+        fs.writeFileSync('c:/Users/Erik/Downloads/tkb/' + data.reference + '_layer.json', JSON.stringify(geojson));
+        fs.writeFileSync('c:/Users/Erik/Downloads/tkb/' + data.reference + '.json', JSON.stringify(resourcejson));
         return { geojson: geojson, resourcejson: resourcejson };
     };
     MapLayerFactory.prototype.sendIconThroughApiManager = function (b64, path) {

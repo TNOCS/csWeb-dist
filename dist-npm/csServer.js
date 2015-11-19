@@ -35,9 +35,6 @@ var csServer = (function () {
         this.server.use(express.static(path.join(this.dir, 'public')));
         this.httpServer.listen(this.server.get('port'), function () {
             Winston.info('Express server listening on port ' + _this.server.get('port'));
-            var mapLayerFactory = new csweb.MapLayerFactory(bagDatabase, _this.messageBus, api);
-            _this.server.post('/projecttemplate', function (req, res) { return mapLayerFactory.process(req, res); });
-            _this.server.post('/bagcontours', function (req, res) { return mapLayerFactory.processBagContours(req, res); });
             var api = new csweb.ApiManager('cs', 'cs');
             api.init(path.join(path.resolve(_this.dir), "public/data/api"), function () {
                 api.addConnectors([
@@ -50,6 +47,9 @@ var csServer = (function () {
                     started();
                 });
             });
+            var mapLayerFactory = new csweb.MapLayerFactory(bagDatabase, _this.messageBus, api);
+            _this.server.post('/projecttemplate', function (req, res) { return mapLayerFactory.process(req, res); });
+            _this.server.post('/bagcontours', function (req, res) { return mapLayerFactory.processBagContours(req, res); });
         });
     };
     return csServer;
