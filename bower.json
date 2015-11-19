@@ -1,6 +1,6 @@
 {
     "name": "csweb",
-    "version": "0.2.4",
+    "version": "0.2.5",
     "main": "dist-bower/csComp.js",
     "ignore": [
         "dist-npm",
