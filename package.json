@@ -13,7 +13,7 @@
     "url": "https://github.com/TNOCS/csWeb"
   },
   "files": [
-    "dist-csServerComp/"
+    "dist-npm/"
   ],
   "license": "MIT",
   "dependencies": {
