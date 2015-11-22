@@ -1372,7 +1372,8 @@ declare module csComp.Helpers {
      */
     function getPropertyTypes(type: csComp.Services.IFeatureType, propertyTypeData: csComp.Services.IPropertyTypeData, feature?: csComp.Services.IFeature): Services.IPropertyType[];
     function getMissingPropertyTypes(feature: csComp.Services.IFeature): csComp.Services.IPropertyType[];
-    function addPropertyTypes(feature: csComp.Services.IFeature, featureType: csComp.Services.IFeatureType): csComp.Services.IFeatureType;
+    function findUniqueKey(o: Object, key: string): string;
+    function addPropertyTypes(feature: csComp.Services.IFeature, featureType: csComp.Services.IFeatureType, resource: csComp.Services.TypeResource): csComp.Services.IFeatureType;
     /**
      * In case we are dealing with a regular JSON file without type information, create a default type.
      */
@@ -2146,6 +2147,7 @@ declare module FeatureProps {
         updateStatsDelay: (prop: any) => void;
         private updateAllStats();
         saveFeatureType(): void;
+        savePropertyType(propType: csComp.Services.IPropertyType): void;
         selectProperty(prop: IPropertyType, $event: ng.IAngularEvent): void;
         saveFeature(): void;
         startEditFeature(): void;

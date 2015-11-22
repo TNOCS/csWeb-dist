@@ -2431,30 +2431,55 @@ var csComp;
             return res;
         }
         Helpers.getMissingPropertyTypes = getMissingPropertyTypes;
-        function addPropertyTypes(feature, featureType) {
+        /// find a unique key name in object
+        function findUniqueKey(o, key) {
+            var i = 2;
+            var pk = key;
+            while (o.hasOwnProperty(pk)) {
+                key = key + pk;
+                pk += 1;
+            }
+            return pk;
+        }
+        Helpers.findUniqueKey = findUniqueKey;
+        function addPropertyTypes(feature, featureType, resource) {
             var type = featureType;
             if (!type.propertyTypeData)
                 type.propertyTypeData = [];
             for (var key in feature.properties) {
-                if (!type.propertyTypeData.some(function (pt) { return pt.label === key; })) {
+                //if (!type.propertyTypeData.some((pt: csComp.Services.IPropertyType) => { return pt.label === key; })) {
+                var pt;
+                if (resource && resource.propertyTypeData)
+                    for (var k in resource.propertyTypeData) {
+                        if (resource.propertyTypeData[k].label === key) {
+                            pt = k;
+                        }
+                    }
+                if (!pt) {
                     if (!feature.properties.hasOwnProperty(key))
                         continue;
-                    var propertyType = [];
+                    var propertyType = {};
                     propertyType.label = key;
                     propertyType.title = key.replace('_', ' ');
-                    propertyType.isSearchable = true;
-                    propertyType.visibleInCallOut = true;
-                    propertyType.canEdit = false;
                     var value = feature.properties[key]; // TODO Why does TS think we are returning an IStringToString object?
+                    // text is default, so we can ignore that
                     if (csComp.StringExt.isNumber(value))
                         propertyType.type = 'number';
                     else if (csComp.StringExt.isBoolean(value))
                         propertyType.type = 'boolean';
                     else if (csComp.StringExt.isBbcode(value))
                         propertyType.type = 'bbcode';
-                    else
-                        propertyType.type = 'text';
-                    type.propertyTypeData.push(propertyType);
+                    // else
+                    //     propertyType.type = 'text';
+                    if (resource) {
+                        var k = this.findUniqueKey(resource.propertyTypeData, key);
+                        if (k === key)
+                            delete propertyType.label;
+                        resource.propertyTypeData[k] = propertyType;
+                    }
+                    else {
+                        featureType.propertyTypeData[key] = propertyType;
+                    }
                 }
             }
             return type;
@@ -3259,10 +3284,9 @@ var csComp;
          * Returns true if we are dealing with a bbcode, false otherwise.
          */
         function isBbcode(s) {
-            //return false;
-            if (s == null)
-                return false;
-            return s.indexOf("[b]") > 0 || s.indexOf("[i]") > 0 || s.indexOf("[url") > 0;
+            return false;
+            // if (s == null) return false;
+            // return s.indexOf("[b]") > 0 || s.indexOf("[i]") > 0 || s.indexOf("[url") > 0;
         }
         StringExt.isBbcode = isBbcode;
     })(StringExt = csComp.StringExt || (csComp.StringExt = {}));
@@ -5296,7 +5320,7 @@ var Directives;
         /**
          * Config
          */
-        var moduleName = 'csComp';
+        var moduleName = "csComp";
         try {
             Clock.myModule = angular.module(moduleName);
         }
@@ -6265,7 +6289,6 @@ var FeatureProps;
     FeatureProps.CallOutSection = CallOutSection;
     var CallOut = (function () {
         function CallOut(type, feature, propertyTypeData, layerservice, mapservice) {
-            var _this = this;
             this.type = type;
             this.feature = feature;
             this.propertyTypeData = propertyTypeData;
@@ -6290,22 +6313,17 @@ var FeatureProps;
                 ;
                 //
                 if (type.showAllProperties || this.mapservice.isAdminExpert) {
-                    var missing = csComp.Helpers.getMissingPropertyTypes(feature);
-                    missing.forEach(function (pt) {
-                        if (!propertyTypes.some((function (p) { return p.label === pt.label; }))) {
-                            propertyTypes.push(pt);
-                        }
-                    });
                 }
-                propertyTypes.forEach(function (mi) {
-                    if (feature.properties.hasOwnProperty(mi.label) && mi.visibleInCallOut) {
-                        var callOutSection = _this.getOrCreateCallOutSection(mi.section) || infoCallOutSection;
+                for (var key in feature.properties) {
+                    var mi = layerservice.getPropertyType(feature, key);
+                    if (mi) {
+                        var callOutSection = this.getOrCreateCallOutSection(mi.section) || infoCallOutSection;
                         if (callOutSection.propertyTypes.hasOwnProperty(mi.label))
                             return; // Prevent duplicate properties in the same  section
                         callOutSection.propertyTypes[mi.label] = mi;
                         var text = feature.properties[mi.label];
                         if (mi.type === "hierarchy") {
-                            var count = _this.calculateHierarchyValue(mi, feature, propertyTypeData, layerservice);
+                            var count = this.calculateHierarchyValue(mi, feature, propertyTypeData, layerservice);
                             text = count + ";" + feature.properties[mi.calculation];
                         }
                         displayValue = csComp.Helpers.convertPropertyInfo(mi, text);
@@ -6324,7 +6342,7 @@ var FeatureProps;
                         }
                         searchCallOutSection.addProperty(mi.title, displayValue, mi.label, canFilter, canStyle, feature, false, mi.description);
                     }
-                });
+                }
             }
             if (infoCallOutSection.properties.length > 0) {
                 this.hasInfoSection = true;
@@ -6542,6 +6560,13 @@ var FeatureProps;
             var resource = this.$layerService.findResourceByFeature(this.$scope.feature);
             if (resource)
                 this.$layerService.saveResource(resource);
+        };
+        FeaturePropsCtrl.prototype.savePropertyType = function (propType) {
+            console.log('saving property');
+            console.log(propType);
+            var resource = this.$layerService.findResourceByFeature(this.$scope.feature);
+            this.$layerService.saveResource(resource);
+            this.displayFeature(this.$scope.feature);
         };
         FeaturePropsCtrl.prototype.selectProperty = function (prop, $event) {
             this.lastSelectedProperty = prop;
@@ -6774,105 +6799,6 @@ var FeatureProps;
     FeatureProps.FeaturePropsCtrl = FeaturePropsCtrl;
 })(FeatureProps || (FeatureProps = {}));
 //# sourceMappingURL=FeaturePropsCtrl.js.map
-var FilterList;
-(function (FilterList) {
-    /**
-      * Config
-      */
-    var moduleName = 'csComp';
-    try {
-        FilterList.myModule = angular.module(moduleName);
-    }
-    catch (err) {
-        // named module does not exist, so create one
-        FilterList.myModule = angular.module(moduleName, []);
-    }
-    /**
-      * Directive to display the available map layers.
-      */
-    FilterList.myModule.directive('filterList', [
-        '$window', '$compile',
-        function ($window, $compile) {
-            return {
-                terminal: true,
-                restrict: 'E',
-                scope: {},
-                templateUrl: 'directives/FilterList/FilterList.tpl.html',
-                link: function (scope, element, attrs) {
-                    // Deal with resizing the element list
-                    scope.onResizeFunction = function () {
-                        var filterHeight = 50;
-                        var paginationCtrlHeight = 100;
-                        var itemHeight = 60;
-                        //scope.windowHeight          = $window.innerHeight;
-                        //scope.windowWidth           = $window.innerWidth;
-                        scope.numberOfItems = Math.floor(($window.innerHeight - filterHeight - paginationCtrlHeight) / itemHeight);
-                    };
-                    // Call to the function when the page is first loaded
-                    scope.onResizeFunction();
-                    angular.element($window).bind('resize', function () {
-                        scope.onResizeFunction();
-                        scope.$apply();
-                    });
-                },
-                replace: false,
-                transclude: false,
-                controller: FilterList.FilterListCtrl
-            };
-        }
-    ]).directive('bsPopover', function () {
-        return function (scope, element, attrs) {
-            element.find("a[rel=popover]").popover({ placement: 'right', html: 'true' });
-        };
-    });
-})(FilterList || (FilterList = {}));
-//# sourceMappingURL=FilterList.js.map
-var FilterList;
-(function (FilterList) {
-    var FilterListCtrl = (function () {
-        // dependencies are injected via AngularJS $injector
-        // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
-        function FilterListCtrl($scope, $layerService, $messageBus) {
-            var _this = this;
-            this.$scope = $scope;
-            this.$layerService = $layerService;
-            this.$messageBus = $messageBus;
-            $scope.vm = this;
-            this.noFilters = true;
-            this.locationFilterActive = false;
-            this.$messageBus.subscribe("filters", function (action) {
-                console.log('update filters');
-                _this.noFilters = true;
-                _this.locationFilterActive = false;
-                _this.$layerService.project.groups.forEach(function (g) {
-                    if (g.filters.length > 0 && _this.noFilters)
-                        _this.noFilters = false;
-                    g.filters.forEach(function (f) {
-                        if (f.filterType === 'location' && _this.locationFilterActive === false)
-                            _this.locationFilterActive = true;
-                    });
-                });
-            });
-        }
-        FilterListCtrl.prototype.setLocationFilter = function (group) {
-            if (!this.locationFilterActive) {
-                this.$layerService.setLocationFilter(group);
-            }
-        };
-        // $inject annotation.
-        // It provides $injector with information about dependencies to be injected into constructor
-        // it is better to have it close to the constructor, because the parameters must match in count and type.
-        // See http://docs.angularjs.org/guide/di
-        FilterListCtrl.$inject = [
-            '$scope',
-            'layerService',
-            'messageBusService'
-        ];
-        return FilterListCtrl;
-    })();
-    FilterList.FilterListCtrl = FilterListCtrl;
-})(FilterList || (FilterList = {}));
-//# sourceMappingURL=FilterListCtrl.js.map
 var FeatureRelations;
 (function (FeatureRelations) {
     /**
@@ -7137,6 +7063,105 @@ var FeatureRelations;
     FeatureRelations.FeatureRelationsCtrl = FeatureRelationsCtrl;
 })(FeatureRelations || (FeatureRelations = {}));
 //# sourceMappingURL=FeatureRelationsCtrl.js.map
+var FilterList;
+(function (FilterList) {
+    /**
+      * Config
+      */
+    var moduleName = 'csComp';
+    try {
+        FilterList.myModule = angular.module(moduleName);
+    }
+    catch (err) {
+        // named module does not exist, so create one
+        FilterList.myModule = angular.module(moduleName, []);
+    }
+    /**
+      * Directive to display the available map layers.
+      */
+    FilterList.myModule.directive('filterList', [
+        '$window', '$compile',
+        function ($window, $compile) {
+            return {
+                terminal: true,
+                restrict: 'E',
+                scope: {},
+                templateUrl: 'directives/FilterList/FilterList.tpl.html',
+                link: function (scope, element, attrs) {
+                    // Deal with resizing the element list
+                    scope.onResizeFunction = function () {
+                        var filterHeight = 50;
+                        var paginationCtrlHeight = 100;
+                        var itemHeight = 60;
+                        //scope.windowHeight          = $window.innerHeight;
+                        //scope.windowWidth           = $window.innerWidth;
+                        scope.numberOfItems = Math.floor(($window.innerHeight - filterHeight - paginationCtrlHeight) / itemHeight);
+                    };
+                    // Call to the function when the page is first loaded
+                    scope.onResizeFunction();
+                    angular.element($window).bind('resize', function () {
+                        scope.onResizeFunction();
+                        scope.$apply();
+                    });
+                },
+                replace: false,
+                transclude: false,
+                controller: FilterList.FilterListCtrl
+            };
+        }
+    ]).directive('bsPopover', function () {
+        return function (scope, element, attrs) {
+            element.find("a[rel=popover]").popover({ placement: 'right', html: 'true' });
+        };
+    });
+})(FilterList || (FilterList = {}));
+//# sourceMappingURL=FilterList.js.map
+var FilterList;
+(function (FilterList) {
+    var FilterListCtrl = (function () {
+        // dependencies are injected via AngularJS $injector
+        // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
+        function FilterListCtrl($scope, $layerService, $messageBus) {
+            var _this = this;
+            this.$scope = $scope;
+            this.$layerService = $layerService;
+            this.$messageBus = $messageBus;
+            $scope.vm = this;
+            this.noFilters = true;
+            this.locationFilterActive = false;
+            this.$messageBus.subscribe("filters", function (action) {
+                console.log('update filters');
+                _this.noFilters = true;
+                _this.locationFilterActive = false;
+                _this.$layerService.project.groups.forEach(function (g) {
+                    if (g.filters.length > 0 && _this.noFilters)
+                        _this.noFilters = false;
+                    g.filters.forEach(function (f) {
+                        if (f.filterType === 'location' && _this.locationFilterActive === false)
+                            _this.locationFilterActive = true;
+                    });
+                });
+            });
+        }
+        FilterListCtrl.prototype.setLocationFilter = function (group) {
+            if (!this.locationFilterActive) {
+                this.$layerService.setLocationFilter(group);
+            }
+        };
+        // $inject annotation.
+        // It provides $injector with information about dependencies to be injected into constructor
+        // it is better to have it close to the constructor, because the parameters must match in count and type.
+        // See http://docs.angularjs.org/guide/di
+        FilterListCtrl.$inject = [
+            '$scope',
+            'layerService',
+            'messageBusService'
+        ];
+        return FilterListCtrl;
+    })();
+    FilterList.FilterListCtrl = FilterListCtrl;
+})(FilterList || (FilterList = {}));
+//# sourceMappingURL=FilterListCtrl.js.map
 var Heatmap;
 (function (Heatmap) {
     'use strict';
@@ -8986,7 +9011,6 @@ var LayersDirective;
             this.loadAvailableLayers();
             this.initResources();
             this.state = "directory";
-            this.loadAvailableLayers();
             // var modalInstance = this.$modal.open({
             //     templateUrl: 'directives/LayersList/AddLayerView.tpl.html',
             //     controller: AddLayerCtrl,
@@ -9059,7 +9083,7 @@ var LayersDirective;
                     if (this.layerResourceType === "<new>") {
                         this.newLayer.typeUrl = "/api/resources/" + this.newLayer.title;
                         var r = { id: this.newLayer.title, title: this.newLayer.title, featureTypes: {}, propertyTypeData: {} };
-                        this.$http.post("/api/resources/" + this.newLayer.title, r)
+                        this.$http.post("/api/resources", r)
                             .success(function (data) {
                         })
                             .error(function (e) {
@@ -11729,20 +11753,20 @@ var ProjectSettings;
                     complete: _this.updateProjectReady
                 });
             }, 0);
-            for (var id in this.$layerService.typesResources) {
-                if (id.indexOf('data/resourceTypes/') >= 0) {
-                    var file = this.$layerService.typesResources[id];
-                    var data = csComp.Services.TypeResource.serialize(file);
-                    var url = "api/resourceTypes/" + id.replace('data/resourceTypes/', ''); //this.$layerService.projectUrl.url.substr(0, this.$layerService.projectUrl.url.indexOf('/project.json'));
-                    $.ajax({
-                        url: url,
-                        type: "POST",
-                        data: data,
-                        contentType: "application/json",
-                        complete: this.updateProjectReady
-                    });
-                }
-            }
+            // for (var id in this.$layerService.typesResources) {
+            //     if (id.indexOf('data/resourceTypes/') >= 0) {
+            //         var file = this.$layerService.typesResources[id];
+            //         var data = csComp.Services.TypeResource.serialize(file);
+            //         var url = "api/resourceTypes/" + id.replace('data/resourceTypes/', ''); //this.$layerService.projectUrl.url.substr(0, this.$layerService.projectUrl.url.indexOf('/project.json'));
+            //         $.ajax({
+            //             url: url,
+            //             type: "POST",
+            //             data: data,
+            //             contentType: "application/json",
+            //             complete: this.updateProjectReady
+            //         });
+            //     }
+            // }
         };
         ProjectSettingsCtrl.prototype.updateProjectReady = function (data) {
             if (data.success().statusText != 'OK')
@@ -13288,7 +13312,7 @@ var csComp;
                 if (tab.popover !== '' && (this.$mapService.expertMode === Services.Expertise.Beginner || this.$mapService.expertMode === Services.Expertise.Intermediate)) {
                     popoverString = "popover='" + tab.popover + "' popover-placement='left' popover-trigger='mouseenter' popover-append-to-body='true'";
                 }
-                $("#rightpanelTabs").append(this.$compile("<li id='" + tab.container + "-tab' class='rightPanelTab rightPanelTabAnimated' " + popoverString + "><a id='" + tab.container + "-tab-a' href='#" + content + "' data-toggle='tab'><span class='fa fa-" + tab.icon + " fa-lg'></span></a></li>")(this.$rootScope));
+                $("#rightpanelTabs").append(this.$compile("<li id='" + tab.container + "-tab' class='rightPanelTab rightPanelTabAnimated' " + popoverString + "><a id='" + tab.container + "-tab-a' data-target='#" + content + "' data-toggle='tab'><span class='fa fa-" + tab.icon + " fa-lg'></span></a></li>")(this.$rootScope));
                 $("#rightpanelTabPanes").append("<div class='tab-pane' style='width:355px' id='" + content + "'></div>");
                 $("#" + tab.container + "-tab-a").click(function () {
                     _this.$layerService.visual.rightPanelVisible = true;
@@ -13299,7 +13323,7 @@ var csComp;
                 newScope.data = tab.data;
                 var widgetElement = this.$compile("<" + tab.directive + "></" + tab.directive + ">")(newScope);
                 $("#" + content).append(widgetElement);
-                $("#rightpanelTabs a[href='#" + content + "']").tab('show');
+                $("#rightpanelTabs a[data-target='#" + content + "']").tab('show');
             };
             DashboardService.prototype.deactivateTabContainer = function (container) {
                 this.$layerService.visual.rightPanelVisible = false;
@@ -13332,7 +13356,7 @@ var csComp;
                     var rptc = csComp.Helpers.createRightPanelTab('widget-content', widget.directive + "-edit", widget, 'Edit widget', 'Edit widget', 'cog');
                     this.$messageBusService.publish('rightpanel', 'activate', rptc);
                 }
-                //(<any>$('#leftPanelTab a[href="#widgetedit"]')).tab('show'); // Select tab by name
+                //(<any>$('#leftPanelTab a[data-target="#widgetedit"]')).tab('show'); // Select tab by name
             };
             DashboardService.prototype.stopEditWidget = function () {
                 this.activeWidget = null;
@@ -13345,7 +13369,7 @@ var csComp;
                 if (this.activeWidget && this.mainDashboard) {
                     this.mainDashboard.widgets = this.mainDashboard.widgets.filter(function (w) { return w.id != _this.activeWidget.id; });
                     this.activeWidget = null;
-                    $('#leftPanelTab a[href="#basewidgets"]').tab('show'); // Select tab by name
+                    $('#leftPanelTab a[data-target="#basewidgets"]').tab('show'); // Select tab by name
                 }
             };
             DashboardService.$inject = [
@@ -14537,12 +14561,13 @@ var csComp;
                     this.project.features.push(feature);
                     // add to crossfilter
                     layer.group.ndx.add([feature]);
-                    // resolve feature type
+                    // resolve feature type                
                     feature.fType = this.getFeatureType(feature);
+                    var resource = this.findResourceByFeature(feature);
                     this.initFeatureType(feature.fType);
                     // add missing properties
-                    if (feature.fType.showAllProperties)
-                        csComp.Helpers.addPropertyTypes(feature, feature.fType);
+                    //if (feature.fType.showAllProperties) 
+                    csComp.Helpers.addPropertyTypes(feature, feature.fType, resource);
                     // Do we have a name?
                     if (!feature.properties.hasOwnProperty('Name'))
                         csComp.Helpers.setFeatureName(feature, this.propertyTypeData);
@@ -14933,7 +14958,7 @@ var csComp;
                         }
                     });
                     if (openStyleTab)
-                        $('#leftPanelTab a[href="#styles"]').tab('show'); // Select tab by name
+                        $('#leftPanelTab a[data-target="#styles"]').tab('show'); // Select tab by name
                     return gs;
                 }
                 return null;
@@ -14977,7 +15002,7 @@ var csComp;
                     if (pos !== -1)
                         group.filters.slice(pos, 1);
                 }
-                $('#leftPanelTab a[href="#filters"]').tab('show'); // Select tab by name
+                $('#leftPanelTab a[data-target="#filters"]').tab('show'); // Select tab by name
             };
             /**
              * enable a filter for a specific property
@@ -14985,7 +15010,7 @@ var csComp;
             LayerService.prototype.setFilter = function (filter, group) {
                 filter.group = group;
                 group.filters.push(filter);
-                $('#leftPanelTab a[href="#filters"]').tab('show'); // Select tab by name
+                $('#leftPanelTab a[data-target="#filters"]').tab('show'); // Select tab by name
                 this.triggerUpdateFilter(group.id);
             };
             LayerService.prototype.setLocationFilter = function (group) {
@@ -14998,7 +15023,7 @@ var csComp;
                 gf.title = 'Location';
                 gf.rangex = [0, 1];
                 group.filters.push(gf);
-                $('#leftPanelTab a[href="#filters"]').tab('show'); // Select tab by name
+                $('#leftPanelTab a[data-target="#filters"]').tab('show'); // Select tab by name
                 this.triggerUpdateFilter(group.id);
             };
             LayerService.prototype.setFeatureAreaFilter = function (f) {
@@ -15094,7 +15119,7 @@ var csComp;
                             this.removeFilter(filter);
                         }
                     }
-                    $('#leftPanelTab a[href="#filters"]').tab('show'); // Select tab by name
+                    $('#leftPanelTab a[data-target="#filters"]').tab('show'); // Select tab by name
                 }
                 this.triggerUpdateFilter(layer.group.id);
             };
@@ -15135,7 +15160,7 @@ var csComp;
                 gf.rangex = [0, 1];
                 // add filter
                 group.filters.push(gf);
-                $('#leftPanelTab a[href="#filters"]').tab('show'); // Select tab by name
+                $('#leftPanelTab a[data-target="#filters"]').tab('show'); // Select tab by name
                 this.triggerUpdateFilter(group.id);
             };
             LayerService.prototype.triggerUpdateFilter = function (groupId) {
@@ -15166,6 +15191,12 @@ var csComp;
                         if (rt.propertyTypeData.hasOwnProperty(key) && rt.propertyTypeData[key].label === property)
                             res = rt.propertyTypeData[key];
                     });
+                }
+                if (!res && feature.layer.typeUrl) {
+                    if (this.typesResources.hasOwnProperty(feature.layer.typeUrl)) {
+                        var rs = this.typesResources[feature.layer.typeUrl];
+                        res = _.find(rs.propertyTypeData, function (pt) { return pt.label === property; });
+                    }
                 }
                 return res;
             };
@@ -15575,6 +15606,8 @@ var csComp;
                     });
                 }
                 if (this.project.connected) {
+                    if (!this.project.layerDirectory)
+                        this.project.layerDirectory = "/api/layers";
                     // check connection
                     this.$messageBusService.initConnection("", "", function () {
                         var handle = _this.$messageBusService.subscribe("keyupdate", function (key, msg) {
@@ -21402,6 +21435,9 @@ var csComp;
                         layer.isLoading = true;
                         // get data
                         var u = layer.url.replace('[BBOX]', layer.BBOX);
+                        // check proxy
+                        if (layer.useProxy)
+                            u = "/api/proxy?url=" + u;
                         _this.$http.get(u)
                             .success(function (data) {
                             layer.count = 0;

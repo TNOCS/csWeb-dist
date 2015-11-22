@@ -11,6 +11,7 @@ export declare class csServer {
     messageBus: csweb.MessageBusService;
     httpServer: any;
     config: csweb.ConfigurationService;
+    api: csweb.ApiManager;
     constructor(dir: string, options?: csServerOptions);
     start(started: Function): void;
 }
