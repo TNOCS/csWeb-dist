@@ -4090,10 +4090,17 @@ var Translations;
                 MIN_TOOLTIP: 'Minimum of selected items',
                 MAX: 'max',
                 MAX_TOOLTIP: 'Maximum of selected items',
-                MEAN: '&#x3bc;',
+                MEAN: 'µ',
                 MEAN_TOOLTIP: 'Mean of selected items',
-                SUM: '&#x3a3;',
+                SUM: 'Σ',
                 SUM_TOOLTIP: 'Sum of selected items'
+            },
+            UTILS: {
+                FILTER: 'Use this property as filter',
+                STYLE: 'Use this property as style',
+                STATS: 'Show property statistics',
+                CHART: 'Show property in time',
+                CONFIG: 'Configure property'
             },
             EXPERTMODE: {
                 BEGINNER: 'Novice',
@@ -4277,10 +4284,17 @@ var Translations;
                 MIN_TOOLTIP: 'Minimum van geselecteerde items',
                 MAX: 'max',
                 MAX_TOOLTIP: 'Maximum van geselecteerde items',
-                MEAN: '&#x3bc;',
+                MEAN: 'µ',
                 MEAN_TOOLTIP: 'Gemiddelde van geselecteerde items',
-                SUM: '&#x3a3;',
+                SUM: 'Σ',
                 SUM_TOOLTIP: 'Som van geselecteerde items'
+            },
+            UTILS: {
+                FILTER: 'Gebruik dit kenmerk als filter',
+                STYLE: 'Gebruik dit kenmerk als stijl',
+                STATS: 'Toon de statistieken van dit kenmerk',
+                CHART: 'Toon het verloop van dit kenmerk in de tijd',
+                CONFIG: 'Configureer dit kenmerk'
             },
             EXPERTMODE: {
                 BEGINNER: 'Beginner',
@@ -6810,7 +6824,7 @@ var FeatureProps;
         };
         FeaturePropsCtrl.prototype.getPropStats = function (item) {
             if (item.showMore) {
-                console.log('stats: calc stats for ' + item.property);
+                //console.log('stats: calc stats for ' + item.property);
                 if (this.stats.indexOf(item.property) < 0)
                     this.stats.push(item.property);
                 var values = this.$layerService.getPropertyValues(item.feature.layer, item.property);
@@ -6902,9 +6916,9 @@ var FeatureProps;
             var time = this.timestamps = new Array();
             (layer.timestamps || feature.timestamps).forEach(function (ts) {
                 var date = new Date(ts);
-                var dateString = String.format("{0}-{1:00}-{2:00}", date.getFullYear(), date.getUTCMonth() + 1, date.getUTCDate());
+                var dateString = String.format('{0}-{1:00}-{2:00}', date.getFullYear(), date.getUTCMonth() + 1, date.getUTCDate());
                 if (date.getUTCHours() > 0 || date.getUTCMinutes() > 0)
-                    dateString += String.format(" {0:00}:{1:00}", date.getUTCHours(), date.getUTCMinutes());
+                    dateString += String.format(' {0:00}:{1:00}', date.getUTCHours(), date.getUTCMinutes());
                 time.push({ title: dateString, timestamp: ts });
             });
             // Set focus time
@@ -6932,12 +6946,12 @@ var FeatureProps;
             var d = new Date(date.toString());
             this.$layerService.project.timeLine.isLive = false;
             this.$layerService.project.timeLine.setFocus(d);
-            this.$messageBusService.publish("timeline", "setFocus", d);
+            this.$messageBusService.publish('timeline', 'setFocus', d);
         };
         FeaturePropsCtrl.prototype.setTime = function (time) {
             this.focusTime = time.title;
             this.$layerService.project.timeLine.setFocus(new Date(time.timestamp));
-            this.$messageBusService.publish("timeline", "focusChange", time.timestamp);
+            this.$messageBusService.publish('timeline', 'focusChange', time.timestamp);
         };
         FeaturePropsCtrl.prototype.getFormattedDate = function (fp, pt) {
             if (!fp)
@@ -6956,10 +6970,10 @@ var FeatureProps;
                 return moment(fp).format(format);
             }
         };
-        //When a feature has multiple sections, a dropdown list is created with the title defined in the language entry "CHOOSE_DROPDOWN" (e.g. "Choose..." or "Data...")
+        //When a feature has multiple sections, a dropdown list is created with the title defined in the language entry 'CHOOSE_DROPDOWN' (e.g. 'Choose...' or 'Data...')
         FeaturePropsCtrl.prototype.setDropdownTitle = function () {
             var _this = this;
-            this.$translate("CHOOSE_DROPDOWN").then(function (translation) {
+            this.$translate('CHOOSE_DROPDOWN').then(function (translation) {
                 if (typeof translation === 'string' && translation.length > 0) {
                     _this.defaultDropdownTitle = translation;
                 }
@@ -10332,7 +10346,7 @@ var Mca;
             this.showSparkline = false;
             this.featureMessageReceived = function (title, feature) {
                 //console.log("MC: featureMessageReceived");
-                if (!_this.mca || _this.mca.featureIds.indexOf(feature.featureTypeName) < 0)
+                if (!_this.mca || !feature || _this.mca.featureIds.indexOf(feature.featureTypeName) < 0)
                     return;
                 switch (title) {
                     case 'onFeatureSelect':
@@ -17563,18 +17577,18 @@ var Dashboard;
             this.$timeout = $timeout;
             $scope.vm = this;
             $messageBusService.subscribe('project', function (e, f) {
-                if (e === "loaded") {
+                if (e === 'loaded') {
                     $scope.dashboard = null;
                 }
             });
             $scope.initDashboard = function () {
-                //if (!$scope.container) $scope.container = "main";
-                $messageBusService.subscribe("dashboard-" + $scope.container, function (s, d) {
+                //if (!$scope.container) $scope.container = 'main';
+                $messageBusService.subscribe('dashboard-' + $scope.container, function (s, d) {
                     _this.project = $layerService.project;
                     _this.project.activeDashboard = d;
                     //alert(this.project.activeDashboard.id);
                     switch (s) {
-                        case "activated":
+                        case 'activated':
                             $scope.dashboard = d;
                             _this.updateDashboard();
                             break;
@@ -17607,7 +17621,7 @@ var Dashboard;
             }
         };
         DashboardCtrl.prototype.updateWidget = function (w) {
-            console.log('updating widget ' + w.directive);
+            //console.log('updating widget ' + w.directive);
             if (w._initialized && this.$scope.dashboard._initialized)
                 return;
             w._initialized = true;
@@ -17618,14 +17632,14 @@ var Dashboard;
                 widgetElement = this.$compile(this.$templateCache.get(w.template))(newScope);
             }
             else if (w.url) {
-                widgetElement = this.$compile("<div>url</div>")(this.$scope);
+                widgetElement = this.$compile('<div>url</div>')(this.$scope);
             }
             else if (w.directive) {
                 //var newScope : ng.IScope;
-                widgetElement = this.$compile("<" + w.directive + "></" + w.directive + ">")(newScope);
+                widgetElement = this.$compile('<' + w.directive + '></' + w.directive + '>')(newScope);
             }
             else {
-                widgetElement = this.$compile("<h1>hoi</h1>")(this.$scope);
+                widgetElement = this.$compile('<h1>hoi</h1>')(this.$scope);
             }
             var resized = function () {
                 //alert('resize');
@@ -17634,11 +17648,11 @@ var Dashboard;
             if (widgetElement) {
                 widgetElement.resize(resized);
                 //alert(w.elementId);
-                var el = $("#" + w.elementId);
+                var el = $('#' + w.elementId);
                 el.empty();
                 el.append(widgetElement);
             }
-            if (this.$scope.$root.$$phase != '$apply' && this.$scope.$root.$$phase != '$digest') {
+            if (this.$scope.$root.$$phase !== '$apply' && this.$scope.$root.$$phase !== '$digest') {
                 this.$scope.$apply();
             }
         };
@@ -17659,7 +17673,7 @@ var Dashboard;
                 else {
                     this.$layerService.visual.mapVisible = false;
                 }
-                if (this.$scope.$root.$$phase != '$apply' && this.$scope.$root.$$phase != '$digest') {
+                if (this.$scope.$root.$$phase !== '$apply' && this.$scope.$root.$$phase !== '$digest') {
                     this.$scope.$apply();
                 }
             }
@@ -17716,7 +17730,7 @@ var Dashboard;
                 return value;
             var left = parseInt(value.replace('px', ''));
             left += diff;
-            return left + "px";
+            return left + 'px';
         };
         DashboardCtrl.prototype.removeWidget = function (widget) {
             this.$scope.dashboard.widgets = this.$scope.dashboard.widgets.filter(function (w) { return w != widget; });
@@ -17753,24 +17767,24 @@ var Dashboard;
                         .on('dragmove', function (event) {
                         if (widget.left || (!widget.left && widget.left !== "")) {
                             widget.left = _this.setValue(event.dx, widget.left);
-                            if (widget.width && widget.width !== "") {
-                                widget.right = "";
+                            if (widget.width && widget.width !== '') {
+                                widget.right = '';
                             }
                             else {
                                 widget.right = _this.setValue(-event.dx, widget.right);
                             }
                         }
                         else {
-                            if (!widget.right || widget.right === "") {
-                                widget.right = 1000 + "px";
+                            if (!widget.right || widget.right === '') {
+                                widget.right = 1000 + 'px';
                             }
                             widget.right = _this.setValue(-event.dx, widget.right);
                         }
-                        if (widget.top && widget.top !== "") {
+                        if (widget.top && widget.top !== '') {
                             widget.top = _this.setValue(event.dy, widget.top);
                             if (widget.bottom) {
                                 if (widget.height) {
-                                    widget.bottom = "";
+                                    widget.bottom = '';
                                 }
                                 else {
                                     widget.bottom = _this.setValue(-event.dy, widget.bottom);
@@ -17780,7 +17794,7 @@ var Dashboard;
                         else {
                             widget.bottom = _this.setValue(-event.dy, widget.bottom);
                         }
-                        if (_this.$scope.$root.$$phase != '$apply' && _this.$scope.$root.$$phase != '$digest') {
+                        if (_this.$scope.$root.$$phase !== '$apply' && _this.$scope.$root.$$phase !== '$digest') {
                             _this.$scope.$apply();
                         }
                     })
@@ -17791,10 +17805,10 @@ var Dashboard;
                         }
                         else {
                             if (!widget.width)
-                                widget.width = "300px";
+                                widget.width = '300px';
                             widget.width = _this.setValue(event.dx, widget.width);
                         }
-                        if (_this.$scope.$root.$$phase != '$apply' && _this.$scope.$root.$$phase != '$digest') {
+                        if (_this.$scope.$root.$$phase !== '$apply' && _this.$scope.$root.$$phase !== '$digest') {
                             _this.$scope.$apply();
                         }
                     });
@@ -17848,7 +17862,7 @@ var Dashboard;
             }, 100);
             //this.$layerService.rightMenuVisible = d.showLeftmenu;
             //this.$mapService.rightMenuVisible = d.showRightmenu;
-            if (this.$scope.$root.$$phase != '$apply' && this.$scope.$root.$$phase != '$digest') {
+            if (this.$scope.$root.$$phase !== '$apply' && this.$scope.$root.$$phase !== '$digest') {
                 this.$scope.$apply();
             }
         };

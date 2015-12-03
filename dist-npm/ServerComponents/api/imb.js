@@ -1,7 +1,3 @@
-//http://stackoverflow.com/questions/20606456/whats-the-recommended-way-of-creating-objects-in-nodejs
-//https://gist.github.com/creationix/707146
-//http://www.nodebeginner.org/
-//http://nodejs.org/docs/v0.10.29/api/addons.html
 var MAGIC_LO = 0x7161472F;
 var MAGIC_HI = 0xFBC5AD95;
 var MAGIC_PAYLOAD = 0x10F13467;

@@ -16,7 +16,6 @@ var CollateStreamTransformer = (function () {
         var buffer = "";
         t.setEncoding("utf8");
         t._transform = function (chunk, encoding, done) {
-            // console.log("##### CST #####");
             var strChunk = chunk.toString("utf8");
             buffer += strChunk;
             done();

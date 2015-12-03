@@ -9,7 +9,6 @@ var GeoJsonSplitTransformer = (function () {
         this.id = Utils.newGuid();
     }
     GeoJsonSplitTransformer.prototype.initialize = function (opt, callback) {
-        /*console.log(JSON.stringify(opt,null,4));*/
         var _this = this;
         var splitShapeUrlParameter = opt.parameters.filter(function (p) { return p.type.title == "splitShapeUrl"; })[0];
         if (!splitShapeUrlParameter) {

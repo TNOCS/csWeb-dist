@@ -3,7 +3,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var events = require("events");
+var events = require('events');
 var fs = require('fs');
 var utils = require('../helpers/Utils');
 var ApiManager = require('../api/ApiManager');
@@ -42,8 +42,9 @@ var DynamicLayer = (function (_super) {
         res.send(this.geojson);
     };
     DynamicLayer.prototype.initFeature = function (f) {
-        if (!f.id)
+        if (!f.id) {
             f.id = utils.newGuid();
+        }
     };
     DynamicLayer.prototype.updateSensorValue = function (ss, date, value) {
         ss.timestamps.push(date);
@@ -52,34 +53,39 @@ var DynamicLayer = (function (_super) {
     };
     DynamicLayer.prototype.addFeature = function (f, updated) {
         if (updated === void 0) { updated = true; }
-        if (updated)
+        if (updated) {
             f.properties['updated'] = new Date().getTime();
+        }
         this.initFeature(f);
-        if (this.manager)
-            this.manager.addFeature(this.layerId, f, {}, function (cb) {
-            });
+        if (this.manager) {
+            this.manager.addFeature(this.layerId, f, {}, function (cb) { });
+        }
     };
     DynamicLayer.prototype.start = function () {
         var _this = this;
         console.log('start case layer');
-        this.server.get("/cases/" + this.layerId, function (req, res) { _this.getLayer(req, res); });
+        this.server.get('/cases/' + this.layerId, function (req, res) { _this.getLayer(req, res); });
         this.startDate = new Date().getTime();
     };
     DynamicLayer.prototype.updateLog = function (featureId, msgBody, client, notify) {
         var f;
         console.log(JSON.stringify(msgBody));
         this.geojson.features.some(function (feature) {
-            if (!feature.id || feature.id !== featureId)
+            if (!feature.id || feature.id !== featureId) {
                 return false;
+            }
             f = feature;
             return true;
         });
-        if (!f)
+        if (!f) {
             return;
-        if (!f.hasOwnProperty('logs'))
+        }
+        if (!f.hasOwnProperty('logs')) {
             f.logs = {};
-        if (!f.hasOwnProperty('properties'))
+        }
+        if (!f.hasOwnProperty('properties')) {
             f.properties = {};
+        }
         var logs = msgBody.logs;
         for (var key in logs) {
             if (!f.logs.hasOwnProperty(key))
@@ -89,9 +95,10 @@ var DynamicLayer = (function (_super) {
                 f.properties[key] = l.value;
             });
         }
-        console.log("Log update" + featureId);
-        if (notify)
-            this.emit("featureUpdated", this.layerId, featureId);
+        console.log('Log update' + featureId);
+        if (notify) {
+            this.emit('featureUpdated', this.layerId, featureId);
+        }
     };
     DynamicLayer.prototype.updateFeature = function (ft, client, notify) {
         this.initFeature(ft);
@@ -103,8 +110,9 @@ var DynamicLayer = (function (_super) {
         else {
             this.geojson.features.push(ft);
         }
-        if (notify)
-            this.emit("featureUpdated", this.layerId, ft.id);
+        if (notify) {
+            this.emit('featureUpdated', this.layerId, ft.id);
+        }
     };
     return DynamicLayer;
 })(events.EventEmitter);

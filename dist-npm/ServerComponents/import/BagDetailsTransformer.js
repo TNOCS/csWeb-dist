@@ -22,7 +22,6 @@ var BagDetailsTransformer = (function () {
         var prevTs = new Date();
         t.setEncoding("utf8");
         t._transform = function (chunk, encoding, done) {
-            /*console.log(".");*/
             if (index % 100 == 0) {
                 var currTs = new Date();
                 console.log(new Date() + ": " + index + " entries processed; " + ((currTs.getTime() - prevTs.getTime()) / 1000 / 100) + "s per feature");

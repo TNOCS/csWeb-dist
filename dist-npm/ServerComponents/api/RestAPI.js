@@ -13,6 +13,7 @@ var ResourceFile = ApiManager.ResourceFile;
 var BaseConnector = require('./BaseConnector');
 var ApiResult = ApiManager.ApiResult;
 var Winston = require('winston');
+var request = require('request');
 var RestAPI = (function (_super) {
     __extends(RestAPI, _super);
     function RestAPI(server, baseUrl) {
@@ -27,6 +28,7 @@ var RestAPI = (function (_super) {
         this.filesUrl = baseUrl + "/files/";
         this.keysUrl = baseUrl + "/keys/";
         this.projectsUrl = baseUrl + "/projects/";
+        this.proxyUrl = baseUrl + "/proxy";
     }
     RestAPI.prototype.init = function (layerManager, options, callback) {
         var _this = this;
@@ -233,7 +235,30 @@ var RestAPI = (function (_super) {
                 res.send(result);
             });
         });
+        this.server.get(this.proxyUrl, function (req, res) {
+            var id = req.query.url;
+            console.log(id);
+            _this.getUrl(id, res);
+        });
         callback();
+    };
+    RestAPI.prototype.getUrl = function (feedUrl, res) {
+        Winston.info('proxy request: ' + feedUrl);
+        var parseNumbers = function (str) {
+            if (!isNaN(str)) {
+                str = str % 1 === 0 ? parseInt(str, 10) : parseFloat(str);
+            }
+            return str;
+        };
+        request(feedUrl, function (error, response, xml) {
+            if (!error && response.statusCode == 200) {
+                res.json(xml);
+            }
+            else {
+                res.statusCode = 404;
+                res.end();
+            }
+        });
     };
     return RestAPI;
 })(BaseConnector.BaseConnector);

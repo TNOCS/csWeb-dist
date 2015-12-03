@@ -9,9 +9,6 @@ var DynamicProject = (function () {
         this.messageBus = messageBus;
     }
     DynamicProject.prototype.Start = function () {
-        /*var feature = new csComp.Services.Feature();
-        feature.id = "hoi";
-        console.log(JSON.stringify(feature));*/
         var _this = this;
         this.openFile();
         this.watchFolder();

@@ -11,6 +11,8 @@ export declare class RestAPI extends BaseConnector.BaseConnector {
     filesUrl: any;
     searchUrl: any;
     projectsUrl: any;
+    proxyUrl: any;
     constructor(server: express.Express, baseUrl?: string);
     init(layerManager: ApiManager.ApiManager, options: any, callback: Function): void;
+    private getUrl(feedUrl, res);
 }

@@ -8,7 +8,6 @@ var FieldSplitTransformer = (function () {
         this.id = Utils.newGuid();
     }
     FieldSplitTransformer.prototype.initialize = function (opt, callback) {
-        /*console.log(JSON.stringify(opt,null,4));*/
         var keyPropertyParameter = opt.parameters.filter(function (p) { return p.type.title == "keyProperty"; })[0];
         if (!keyPropertyParameter) {
             callback("keyProperty missing");

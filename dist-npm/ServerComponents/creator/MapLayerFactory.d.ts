@@ -2,7 +2,7 @@ import express = require('express');
 import MessageBus = require('../bus/MessageBus');
 import BagDatabase = require('../database/BagDatabase');
 import IGeoJsonFeature = require('./IGeoJsonFeature');
-import ApiManager = require('../api/ApiManager');
+import Api = require('../api/ApiManager');
 export interface ILayerDefinition {
     projectTitle: string;
     reference: string;
@@ -74,8 +74,8 @@ export declare class MapLayerFactory {
     private messageBus;
     templateFiles: IProperty[];
     featuresNotFound: any;
-    apiManager: ApiManager.ApiManager;
-    constructor(bag: BagDatabase.BagDatabase, messageBus: MessageBus.MessageBusService, apiManager: ApiManager.ApiManager);
+    apiManager: Api.ApiManager;
+    constructor(bag: BagDatabase.BagDatabase, messageBus: MessageBus.MessageBusService, apiManager: Api.ApiManager);
     process(req: express.Request, res: express.Response): void;
     private splitJson(data);
     sendIconThroughApiManager(b64: string, path: string): void;

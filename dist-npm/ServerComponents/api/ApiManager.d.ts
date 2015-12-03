@@ -1,5 +1,5 @@
 import AuthApi = require('./AuthAPI');
-import events = require("events");
+import events = require('events');
 export declare enum ApiResult {
     OK = 200,
     Error = 400,

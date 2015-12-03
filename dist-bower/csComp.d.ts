@@ -4596,69 +4596,6 @@ declare module Dashboard {
     }
 }
 
-declare module DashboardEdit {
-    /**
-      * Module
-      */
-    var myModule: any;
-}
-
-declare module DashboardEdit {
-    interface IDashboardEditScope extends ng.IScope {
-        vm: DashboardEditCtrl;
-    }
-    class DashboardEditCtrl {
-        $scope: IDashboardEditScope;
-        private $mapService;
-        private $layerService;
-        private $messageBusService;
-        private $dashboardService;
-        private scope;
-        dashboard: csComp.Services.Dashboard;
-        hasParent: boolean;
-        parent: string;
-        static $inject: string[];
-        constructor($scope: IDashboardEditScope, $mapService: csComp.Services.MapService, $layerService: csComp.Services.LayerService, $messageBusService: csComp.Services.MessageBusService, $dashboardService: csComp.Services.DashboardService);
-        updateHasParent(): void;
-        toggleTimeline(): void;
-        toggleLegend(): void;
-        setExtent(): void;
-        setVisibleLayers(): void;
-        setBaseLayer(): void;
-        toggleMap(): void;
-        checkMap(): void;
-        checkTimeline(): void;
-        checkLegend(): void;
-    }
-}
-
-declare module WidgetEdit {
-    /**
-      * Module
-      */
-    var myModule: any;
-}
-
-declare module WidgetEdit {
-    import IWidget = csComp.Services.IWidget;
-    interface IWidgetEditScope extends ng.IScope {
-        widget: IWidget;
-        vm: WidgetEditCtrl;
-    }
-    class WidgetEditCtrl {
-        private $scope;
-        private mapService;
-        private layerService;
-        private messageBusService;
-        private dashboardService;
-        private scope;
-        static $inject: string[];
-        constructor($scope: IWidgetEditScope, mapService: csComp.Services.MapService, layerService: csComp.Services.LayerService, messageBusService: csComp.Services.MessageBusService, dashboardService: csComp.Services.DashboardService);
-        selectStyle(): void;
-        removeWidget(widget: IWidget): void;
-    }
-}
-
 declare module DashboarHeaderdSelection {
     /**
       * Module
@@ -4735,6 +4672,69 @@ declare module DashboardSelection {
         private publishDashboardUpdate();
         /** Select an active dashboard */
         selectDashboard(dashboard: csComp.Services.Dashboard): void;
+    }
+}
+
+declare module DashboardEdit {
+    /**
+      * Module
+      */
+    var myModule: any;
+}
+
+declare module DashboardEdit {
+    interface IDashboardEditScope extends ng.IScope {
+        vm: DashboardEditCtrl;
+    }
+    class DashboardEditCtrl {
+        $scope: IDashboardEditScope;
+        private $mapService;
+        private $layerService;
+        private $messageBusService;
+        private $dashboardService;
+        private scope;
+        dashboard: csComp.Services.Dashboard;
+        hasParent: boolean;
+        parent: string;
+        static $inject: string[];
+        constructor($scope: IDashboardEditScope, $mapService: csComp.Services.MapService, $layerService: csComp.Services.LayerService, $messageBusService: csComp.Services.MessageBusService, $dashboardService: csComp.Services.DashboardService);
+        updateHasParent(): void;
+        toggleTimeline(): void;
+        toggleLegend(): void;
+        setExtent(): void;
+        setVisibleLayers(): void;
+        setBaseLayer(): void;
+        toggleMap(): void;
+        checkMap(): void;
+        checkTimeline(): void;
+        checkLegend(): void;
+    }
+}
+
+declare module WidgetEdit {
+    /**
+      * Module
+      */
+    var myModule: any;
+}
+
+declare module WidgetEdit {
+    import IWidget = csComp.Services.IWidget;
+    interface IWidgetEditScope extends ng.IScope {
+        widget: IWidget;
+        vm: WidgetEditCtrl;
+    }
+    class WidgetEditCtrl {
+        private $scope;
+        private mapService;
+        private layerService;
+        private messageBusService;
+        private dashboardService;
+        private scope;
+        static $inject: string[];
+        constructor($scope: IWidgetEditScope, mapService: csComp.Services.MapService, layerService: csComp.Services.LayerService, messageBusService: csComp.Services.MessageBusService, dashboardService: csComp.Services.DashboardService);
+        selectStyle(): void;
+        removeWidget(widget: IWidget): void;
     }
 }
 

@@ -1,5 +1,5 @@
 import express = require('express');
-import events = require("events");
+import events = require('events');
 import ClientConnection = require('./ClientConnection');
 import MessageBus = require('../bus/MessageBus');
 import ApiManager = require('../api/ApiManager');

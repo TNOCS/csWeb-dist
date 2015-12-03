@@ -278,8 +278,8 @@ var FileStorage = (function (_super) {
         var id = this.getResourceId(fileName);
         Winston.info('filestore: openfile ' + id);
         if (!this.resources.hasOwnProperty(id)) {
-            fs.readFile(fileName, "utf8", function (err, data) {
-                if (!err) {
+            fs.readFile(fileName, 'utf8', function (err, data) {
+                if (!err && data && data.length > 0) {
                     var res = JSON.parse(data.removeBOM());
                     res.id = id;
                     _this.resources[id] = res;
@@ -293,8 +293,8 @@ var FileStorage = (function (_super) {
         var id = this.getProjectId(fileName);
         Winston.info('filestore: openfile ' + id);
         if (!this.projects.hasOwnProperty(id)) {
-            fs.readFile(fileName, "utf8", function (err, data) {
-                if (!err) {
+            fs.readFile(fileName, 'utf8', function (err, data) {
+                if (!err && data && data.length > 0) {
                     var project = JSON.parse(data);
                     _this.manager.getProjectDefinition(project);
                     _this.projects[id] = project;
@@ -305,8 +305,9 @@ var FileStorage = (function (_super) {
                 }
             });
         }
-        if (path.basename(fileName) === 'project.json')
+        if (path.basename(fileName) === 'project.json') {
             return;
+        }
     };
     FileStorage.prototype.findLayer = function (layerId) {
         if (this.layers.hasOwnProperty(layerId)) {

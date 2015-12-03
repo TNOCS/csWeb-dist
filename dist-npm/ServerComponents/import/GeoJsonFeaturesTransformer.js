@@ -16,7 +16,6 @@ var GeoJsonFeaturesTransformer = (function () {
         var headers = this.headers;
         t.setEncoding("utf8");
         t._transform = function (chunk, encoding, done) {
-            /*console.log(chunk.toString("utf8"));*/
             var line = chunk.toString("utf8");
             if (!line || line.trim() == "") {
                 console.log("Empty line, ignore");

@@ -7,7 +7,7 @@ var Winston = require('winston');
 var helpers = require('../helpers/Utils');
 var fs = require('fs');
 var path = require('path');
-var events = require("events");
+var events = require('events');
 var _ = require('underscore');
 var async = require('async');
 var StringExt = require('../helpers/StringExt');
@@ -142,13 +142,13 @@ var ApiManager = (function (_super) {
         this.projects = {};
         this.keys = {};
         this.keySubscriptions = {};
-        this.defaultStorage = "file";
+        this.defaultStorage = 'file';
         this.defaultLogging = false;
-        this.rootPath = "";
-        this.projectsFile = "";
-        this.layersFile = "";
-        this.namespace = "cs";
-        this.name = "cs";
+        this.rootPath = '';
+        this.projectsFile = '';
+        this.layersFile = '';
+        this.namespace = 'cs';
+        this.name = 'cs';
         this.saveProjectDelay = _.debounce(function (project) {
             _this.saveProjectConfig();
         }, 1000);
@@ -158,18 +158,21 @@ var ApiManager = (function (_super) {
         this.namespace = namespace;
         this.name = name;
         if (this.options.server) {
-            if (this.options.server.indexOf('http') < 0)
+            if (this.options.server.indexOf('http') < 0) {
                 this.options.server = 'http://' + this.options.server;
-            if (this.options.server.slice(-1) === '/')
+            }
+            if (this.options.server.slice(-1) === '/') {
                 this.options.server = this.options.server.slice(0, -1);
+            }
         }
     }
     ApiManager.prototype.init = function (rootPath, callback) {
         var _this = this;
-        Winston.info("Init layer manager (isClient=${this.isClient})", { cat: "api" });
+        Winston.info('Init layer manager (isClient=${this.isClient})', { cat: 'api' });
         this.rootPath = rootPath;
-        if (!fs.existsSync(rootPath))
+        if (!fs.existsSync(rootPath)) {
             fs.mkdirSync(rootPath);
+        }
         this.initResources(path.join(this.rootPath, '/resourceTypes/'));
         this.loadLayerConfig(function () {
             _this.loadProjectConfig(function () {
@@ -180,29 +183,43 @@ var ApiManager = (function (_super) {
     ApiManager.prototype.loadLayerConfig = function (cb) {
         var _this = this;
         Winston.info('manager: loading layer config');
-        this.layersFile = path.join(this.rootPath, 'layers.json');
-        fs.readFile(this.layersFile, "utf8", function (err, data) {
-            if (!err && data) {
-                Winston.info('manager: layer config loaded');
-                _this.layers = JSON.parse(data);
-            }
-            else {
-                _this.layers = {};
-            }
-            cb();
-        });
+        try {
+            this.layersFile = path.join(this.rootPath, 'layers.json');
+            fs.readFile(this.layersFile, 'utf8', function (err, data) {
+                if (!err && data) {
+                    Winston.info('manager: layer config loaded');
+                    try {
+                        _this.layers = JSON.parse(data);
+                    }
+                    catch (e) {
+                        Winston.error('manager: error loading project config');
+                    }
+                }
+                else {
+                    _this.layers = {};
+                }
+                cb();
+            });
+        }
+        catch (e) {
+        }
     };
     ApiManager.prototype.loadProjectConfig = function (cb) {
         var _this = this;
         Winston.info('manager: loading project config');
         this.projectsFile = path.join(this.rootPath, 'projects.json');
-        fs.readFile(this.projectsFile, "utf8", function (err, data) {
+        fs.readFile(this.projectsFile, 'utf8', function (err, data) {
             if (err) {
                 Winston.error('manager: project config loading failed: ' + err.message);
             }
             else {
-                Winston.info('manager: project config loaded');
-                _this.projects = JSON.parse(data);
+                try {
+                    _this.projects = JSON.parse(data);
+                    Winston.info('manager: project config loaded');
+                }
+                catch (e) {
+                    Winston.error('manager: error loading project config');
+                }
             }
             cb();
         });
@@ -220,11 +237,13 @@ var ApiManager = (function (_super) {
     ApiManager.prototype.saveLayerConfig = function () {
         var temp = {};
         for (var s in this.layers) {
-            if (!this.layers[s].storage)
+            if (!this.layers[s].storage) {
                 temp[s] = this.layers[s];
+            }
         }
-        if (!temp)
+        if (!temp) {
             return;
+        }
         fs.writeFile(this.layersFile, JSON.stringify(temp), function (error) {
             if (error) {
                 Winston.info('manager: error saving layer config');
@@ -242,10 +261,12 @@ var ApiManager = (function (_super) {
         fs.readdir(resourcesPath, function (e, f) {
             f.forEach(function (file) {
                 var loc = path.join(resourcesPath, file);
-                fs.readFile(loc, "utf8", function (err, data) {
+                fs.readFile(loc, 'utf8', function (err, data) {
                     if (!err) {
                         console.log('Opening ' + loc);
-                        _this.resources[file.replace('.json', '').toLowerCase()] = JSON.parse(data.removeBOM());
+                        if (data.length > 0) {
+                            _this.resources[file.replace('.json', '').toLowerCase()] = JSON.parse(data.removeBOM());
+                        }
                     }
                     else {
                         console.log('Error opening ' + loc + ': ' + err);
@@ -259,10 +280,10 @@ var ApiManager = (function (_super) {
         var s = this.connectors.hasOwnProperty('file') ? this.connectors['file'] : null;
         if (s) {
             s.addFile(base64, folder, file, meta, function () { });
-            callback({ result: ApiResult.OK, error: "Resource added" });
+            callback({ result: ApiResult.OK, error: 'Resource added' });
         }
         else {
-            callback({ result: ApiResult.Error, error: "Failed to add resource." });
+            callback({ result: ApiResult.Error, error: 'Failed to add resource.' });
         }
     };
     ApiManager.prototype.addResource = function (resource, meta, callback) {
@@ -273,7 +294,7 @@ var ApiManager = (function (_super) {
         });
         if (s) {
             s.addResource(resource, meta, function (r) {
-                callback({ result: ApiResult.OK, error: "Resource added" });
+                callback({ result: ApiResult.OK, error: 'Resource added' });
             });
         }
         else {
@@ -290,15 +311,16 @@ var ApiManager = (function (_super) {
         var p = this.findProject(projectId);
         var l = this.findLayer(layerId);
         if (!p) {
-            callback({ result: ApiResult.ProjectNotFound, error: "Project not found" });
+            callback({ result: ApiResult.ProjectNotFound, error: 'Project not found' });
             return;
         }
         if (!l) {
-            callback({ result: ApiResult.LayerNotFound, error: "Layer not found" });
+            callback({ result: ApiResult.LayerNotFound, error: 'Layer not found' });
             return;
         }
-        if (!p.groups)
+        if (!p.groups) {
             p.groups = [];
+        }
         var g;
         p.groups.forEach(function (pg) {
             if (pg.id === groupId) {
@@ -306,11 +328,11 @@ var ApiManager = (function (_super) {
             }
         });
         if (!g) {
-            callback({ result: ApiResult.GroupNotFound, error: "Group not found" });
+            callback({ result: ApiResult.GroupNotFound, error: 'Group not found' });
             return;
         }
         if (g.layers.some(function (pl) { return (pl.id === l.id); })) {
-            Winston.info("Layer already exists. Removing existing layer before adding new one...");
+            Winston.info('Layer already exists. Removing existing layer before adding new one...');
             g.layers = g.layers.filter(function (gl) { return (gl.id !== l.id); });
         }
         g.layers.push(l);
@@ -322,11 +344,11 @@ var ApiManager = (function (_super) {
     ApiManager.prototype.removeLayerFromProject = function (projectId, groupId, layerId, meta, callback) {
         var p = this.findProject(projectId);
         if (!p) {
-            callback({ result: ApiResult.ProjectNotFound, error: "Project not found" });
+            callback({ result: ApiResult.ProjectNotFound, error: 'Project not found' });
             return;
         }
         if (!p.groups || !p.groups.some(function (pg) { return (pg.id === groupId); })) {
-            callback({ result: ApiResult.GroupNotFound, error: "Group not found" });
+            callback({ result: ApiResult.GroupNotFound, error: 'Group not found' });
             return;
         }
         else {
@@ -338,7 +360,7 @@ var ApiManager = (function (_super) {
                 callback({ result: ApiResult.OK });
             }
             else {
-                callback({ result: ApiResult.LayerNotFound, error: "Layer not found" });
+                callback({ result: ApiResult.LayerNotFound, error: 'Layer not found' });
                 return;
             }
         }
@@ -346,28 +368,32 @@ var ApiManager = (function (_super) {
     ApiManager.prototype.allGroups = function (projectId, meta, callback) {
         var p = this.findProject(projectId);
         if (!p) {
-            callback({ result: ApiResult.ProjectNotFound, error: "Project not found" });
+            callback({ result: ApiResult.ProjectNotFound, error: 'Project not found' });
             return;
         }
-        if (!p.groups)
+        if (!p.groups) {
             p.groups = [];
+        }
         var groupList = [];
         p.groups.forEach(function (pg) {
-            if (pg.id)
+            if (pg.id) {
                 groupList.push(pg.id);
+            }
         });
         callback({ result: ApiResult.OK, groups: groupList });
     };
     ApiManager.prototype.addGroup = function (group, projectId, meta, callback) {
         var p = this.findProject(projectId);
         if (!p) {
-            callback({ result: ApiResult.ProjectNotFound, error: "Project not found" });
+            callback({ result: ApiResult.ProjectNotFound, error: 'Project not found' });
             return;
         }
-        if (!p.groups)
+        if (!p.groups) {
             p.groups = [];
-        if (!group.id)
+        }
+        if (!group.id) {
             group.id = helpers.newGuid();
+        }
         if (p.groups.some(function (pg) { return (group.id === pg.id); })) {
             p.groups.some(function (pg) {
                 if (group.id === pg.id && group.clusterLevel) {
@@ -375,7 +401,7 @@ var ApiManager = (function (_super) {
                 }
                 return (group.id === pg.id);
             });
-            callback({ result: ApiResult.GroupAlreadyExists, error: "Group exists" });
+            callback({ result: ApiResult.GroupAlreadyExists, error: 'Group exists' });
             return;
         }
         else {
@@ -389,13 +415,14 @@ var ApiManager = (function (_super) {
         var _this = this;
         var p = this.findProject(projectId);
         if (!p) {
-            callback({ result: ApiResult.ProjectNotFound, error: "Project not found" });
+            callback({ result: ApiResult.ProjectNotFound, error: 'Project not found' });
             return;
         }
-        if (!p.groups)
+        if (!p.groups) {
             p.groups = [];
+        }
         if (!p.groups.some(function (pg) { return (groupId === pg.id); })) {
-            callback({ result: ApiResult.GroupNotFound, error: "Group not found" });
+            callback({ result: ApiResult.GroupNotFound, error: 'Group not found' });
             return;
         }
         else {
@@ -428,12 +455,11 @@ var ApiManager = (function (_super) {
             });
         }
         else {
-            callback({ result: ApiResult.ProjectAlreadyExists, error: "Project already exists" });
+            callback({ result: ApiResult.ProjectAlreadyExists, error: 'Project already exists' });
         }
         this.saveProjectDelay(this.projects[project.id]);
     };
     ApiManager.prototype.addConnector = function (key, s, options, callback) {
-        // TODO If client, check that only one interface is added (isInterface = true)
         if (callback === void 0) { callback = function () { }; }
         s.id = key;
         this.connectors[key] = s;
@@ -448,8 +474,7 @@ var ApiManager = (function (_super) {
             _this.connectors[c.key] = c.s;
         });
         async.eachSeries(connectors, function (c, callb) {
-            c.s.init(_this, c.options, function () {
-            });
+            c.s.init(_this, c.options, function () { });
             callb();
         }, function () {
             callback();
@@ -479,8 +504,9 @@ var ApiManager = (function (_super) {
     };
     ApiManager.prototype.findStorage = function (object) {
         var storage = (object && object.storage) || this.defaultStorage;
-        if (this.connectors.hasOwnProperty(storage))
+        if (this.connectors.hasOwnProperty(storage)) {
             return this.connectors[storage];
+        }
         return null;
     };
     ApiManager.prototype.findStorageForLayerId = function (layerId) {
@@ -498,10 +524,10 @@ var ApiManager = (function (_super) {
     ApiManager.prototype.getProjectDefinition = function (project) {
         var p = {
             id: project.id ? project.id : helpers.newGuid(),
-            storage: project.storage ? project.storage : "",
+            storage: project.storage ? project.storage : '',
             title: project.title ? project.title : project.id,
             connected: project.connected ? project.connected : true,
-            logo: project.logo ? project.logo : "images/CommonSenseRound.png",
+            logo: project.logo ? project.logo : 'images/CommonSenseRound.png',
             groups: project.groups ? project.groups : [],
             url: project.url ? project.url : '/api/projects/' + project.id
         };
@@ -510,7 +536,7 @@ var ApiManager = (function (_super) {
     ApiManager.prototype.getGroupDefinition = function (group) {
         var g = {
             id: group.id ? group.id : helpers.newGuid(),
-            description: group.description ? group.description : "",
+            description: group.description ? group.description : '',
             title: group.title ? group.title : group.id,
             clusterLevel: group.clusterLevel ? group.clusterLevel : 19,
             clustering: true,
@@ -519,8 +545,9 @@ var ApiManager = (function (_super) {
         return g;
     };
     ApiManager.prototype.getLayerDefinition = function (layer) {
-        if (!layer.hasOwnProperty('type'))
-            layer.type = "geojson";
+        if (!layer.hasOwnProperty('type')) {
+            layer.type = 'geojson';
+        }
         var server = this.options.server || '';
         var r = {
             server: server,
@@ -538,12 +565,13 @@ var ApiManager = (function (_super) {
             features: [],
             data: '',
             storage: layer.storage ? layer.storage : '',
-            url: layer.url ? layer.url : (server + "/api/layers/" + layer.id),
+            url: layer.url ? layer.url : (server + '/api/layers/' + layer.id),
             isDynamic: layer.isDynamic ? layer.isDynamic : false
         };
         for (var key in layer) {
-            if (layer.hasOwnProperty(key) && !r.hasOwnProperty(key))
+            if (layer.hasOwnProperty(key) && !r.hasOwnProperty(key)) {
                 r[key] = layer[key];
+            }
         }
         return r;
     };
@@ -561,8 +589,9 @@ var ApiManager = (function (_super) {
     };
     ApiManager.prototype.searchLayers = function (keyword, layerIds, meta, callback) {
         var _this = this;
-        if (!layerIds || layerIds.length == 0)
+        if (!layerIds || layerIds.length === 0) {
             layerIds = _.keys(this.layers);
+        }
         var result = [];
         async.each(layerIds, function (lId, callback) {
             var storage = _this.findStorageForLayerId(lId);
@@ -585,29 +614,32 @@ var ApiManager = (function (_super) {
     };
     ApiManager.prototype.getLayer = function (layerId, meta, callback) {
         var s = this.findStorageForLayerId(layerId);
-        if (s)
-            s.getLayer(layerId, meta, function (r) {
-                callback(r);
-            });
+        if (s) {
+            s.getLayer(layerId, meta, function (r) { callback(r); });
+        }
         else {
             Winston.warn('Layer ' + layerId + ' not found.');
             callback({ result: ApiResult.LayerNotFound });
         }
     };
     ApiManager.prototype.createLayer = function (layer, meta, callback) {
-        if (!layer.hasOwnProperty('id'))
+        if (!layer.hasOwnProperty('id')) {
             layer.id = helpers.newGuid();
+        }
         layer.id = layer.id.toLowerCase();
-        if (!layer.hasOwnProperty('title'))
+        if (!layer.hasOwnProperty('title')) {
             layer.title = layer.id;
-        if (!layer.hasOwnProperty('features'))
+        }
+        if (!layer.hasOwnProperty('features')) {
             layer.features = [];
-        if (!layer.hasOwnProperty('tags'))
+        }
+        if (!layer.hasOwnProperty('tags')) {
             layer.tags = [];
+        }
         this.setUpdateLayer(layer, meta);
         Winston.info('api: add layer ' + layer.id);
         var s = this.findStorage(layer);
-        layer.storage = s ? s.id : "";
+        layer.storage = s ? s.id : '';
         this.layers[layer.id] = this.getLayerDefinition(layer);
         this.getInterfaces(meta).forEach(function (i) {
             i.initLayer(layer);
@@ -635,7 +667,7 @@ var ApiManager = (function (_super) {
                     i.updateLayer(layer, meta, function () { });
                 });
                 var s = _this.findStorage(layer);
-                if (s && s.id != meta.source) {
+                if (s && s.id !== meta.source) {
                     s.updateLayer(layer, meta, function (r, CallbackResult) {
                         Winston.warn('updating layer finished');
                     });
@@ -650,12 +682,12 @@ var ApiManager = (function (_super) {
     ApiManager.prototype.updateProjectTitle = function (projectTitle, projectId, meta, callback) {
         var p = this.findProject(projectId);
         if (!p) {
-            callback({ result: ApiResult.ProjectNotFound, error: "Project not found" });
+            callback({ result: ApiResult.ProjectNotFound, error: 'Project not found' });
             return;
         }
         p.title = projectTitle;
         this.projects[projectId] = p;
-        callback({ result: ApiResult.OK, error: "Changed title" });
+        callback({ result: ApiResult.OK, error: 'Changed title' });
     };
     ApiManager.prototype.updateProject = function (project, meta, callback) {
         var _this = this;
@@ -704,7 +736,7 @@ var ApiManager = (function (_super) {
         var _this = this;
         var s = this.findStorageForProjectId(projectId);
         if (!s) {
-            callback({ result: ApiResult.Error, error: "Project not found." });
+            callback({ result: ApiResult.Error, error: 'Project not found.' });
             return;
         }
         s.deleteProject(projectId, meta, function (r) {
@@ -719,8 +751,9 @@ var ApiManager = (function (_super) {
     ApiManager.prototype.getInterfaces = function (meta) {
         var res = [];
         for (var i in this.connectors) {
-            if (this.connectors[i].isInterface && (this.connectors[i].receiveCopy || meta.source !== i))
+            if (this.connectors[i].isInterface && (this.connectors[i].receiveCopy || meta.source !== i)) {
                 res.push(this.connectors[i]);
+            }
         }
         return res;
     };
@@ -827,7 +860,7 @@ var ApiManager = (function (_super) {
         var sub = new KeySubscription();
         sub.id = helpers.newGuid();
         sub.pattern = pattern;
-        sub.regexPattern = new RegExp(pattern.replace(/\//g, "\\/").replace(/\./g, "\\."));
+        sub.regexPattern = new RegExp(pattern.replace(/\//g, '\\/').replace(/\./g, '\\.'));
         sub.callback = callback;
         this.keySubscriptions[sub.id] = sub;
         return sub;
