@@ -173,6 +173,12 @@ declare module csComp.Services {
 }
 
 declare module csComp.Services {
+    interface ISensorLinkResult {
+        timeStamps: number[];
+        data: (number[])[];
+        properties: string[];
+        timeAggregation: string;
+    }
     class SensorSet {
         id: string;
         title: string;
@@ -239,6 +245,11 @@ declare module csComp.Services {
         value: any;
         user: string;
     }
+    interface IGuiObject {
+        /** When true, the feature is included on the map, as opposed to being removed by a filter. */
+        included: boolean;
+        [key: string]: any;
+    }
     interface IFeature {
         id?: string;
         index: number;
@@ -255,7 +266,7 @@ declare module csComp.Services {
         effectiveStyle: IFeatureTypeStyle;
         _isInitialized?: boolean;
         lastUpdated: number;
-        _gui: Object;
+        _gui: IGuiObject;
         sensors?: {
             [id: string]: any[];
         };
@@ -289,7 +300,7 @@ declare module csComp.Services {
         htmlStyle: string;
         featureTypeName: string;
         lastUpdated: number;
-        _gui: Object;
+        _gui: IGuiObject;
         /** resolved feature type */
         fType: IFeatureType;
         /** calculated style, used for final rendering */
@@ -418,6 +429,8 @@ declare module csComp.Services {
         name?: string;
         style?: IFeatureTypeStyle;
         legendItems?: LegendList.ILegendItem[];
+        /** Optional expressions that are shown in the legend list. */
+        legendExpr?: IPropertyType[];
         properties?: {};
         _propertyTypeData?: IPropertyType[];
         showAllProperties?: boolean;
@@ -575,6 +588,9 @@ declare module csComp.Services {
 }
 
 declare module csComp.Services {
+    interface ISensorLink {
+        url?: string;
+    }
     /** Interface of a project layer
      *  Note that this is a copy of the similarly named class, but the advantage is that I can use the
      *  interface definition also on the server side.
@@ -591,6 +607,8 @@ declare module csComp.Services {
         description?: string;
         /** link to one or more meta description files containing  */
         typeUrl?: string | string[];
+        /** link to url for dynamic sensor data */
+        sensorLink?: ISensorLink;
         /** Type of layer, e.g. GeoJSON, TopoJSON, or WMS */
         type: string;
         /** render type */
@@ -619,8 +637,10 @@ declare module csComp.Services {
         refreshBBOX?: boolean;
         /** indicates that this is a dynamic layer (dynamicgeojson) */
         isDynamic?: boolean;
+        /** this layer contains sensor data, updated when focusTime changes */
+        hasSensorData?: boolean;
         /**
-         * if layer is connected, indicate if it is online
+         * indicates if a dynamic layer is connected
          */
         isConnected?: boolean;
         /**
@@ -707,6 +727,8 @@ declare module csComp.Services {
         hierarchySettings: FeatureRelations.IHierarchySettings;
         /** In case we keep the type (feature,property) information in a separate file */
         typeUrl: string;
+        /** link to url for dynamic sensor data */
+        sensorLink: ISensorLink;
         /** WMS sublayers that must be loaded */
         wmsLayers: string;
         /** If enabled, load the layer */
@@ -783,14 +805,21 @@ declare module csComp.Services {
         serverHandle: MessageBusHandle;
         /** Whether layer can be quickly updated instead of completely rerendered */
         quickRefresh: boolean;
-        lastSelectedFeature: IFeature;
+        _lastSelectedFeature: IFeature;
         /** link to a parent feature, e.g. city layer references to a parent provence */
         parentFeature: IFeature;
         /** key name of default feature type */
         defaultFeatureType: string;
+        /**  dynamic projects have a realtime connection with the server. This connection allows you to make changes to the feature & property types and
+        feature geometry and property values. changes are distributed to all active clients in realtime */
         isDynamic: boolean;
+        /** logging mechanism allows you to specify specific property values and geometries in time,  it works the same way as sensor data but is optimized for smaller amounts of data and allows not only numbers
+        but also text, geometries, etc., where sensors are optimized for many different values, but only numbers
+        */
         useLog: boolean;
         isConnected: boolean;
+        /** this layer contains sensor data, updated when focusTime changes */
+        hasSensorData: boolean;
         /**
          * gui is used for setting temp. values for rendering
          */
@@ -1028,6 +1057,7 @@ declare module csComp.Services {
         layerDirectory: string;
         expertMode: Expertise;
         markers: {};
+        eventTab: boolean;
         /**
          * Serialize the project to a JSON string.
          */
@@ -1279,6 +1309,7 @@ declare module csComp.Helpers {
     * Source: http://www.csgnetwork.com/degreelenllavcalc.html
     */
     class GeoExtensions {
+        static getFeatureBounds(feature: IFeature): L.LatLng[] | L.LatLngBounds;
         static getBoundingBox(data: any): any;
         /**
         * Convert topojson data to geojson data.
@@ -1389,7 +1420,7 @@ declare module csComp.Helpers {
     /**
      * Collect all the property types that are referenced by a feature type.
      */
-    function getPropertyTypes(type: csComp.Services.IFeatureType, propertyTypeData: csComp.Services.IPropertyTypeData, feature?: csComp.Services.IFeature): Services.IPropertyType[];
+    function getPropertyTypes(type: csComp.Services.IFeatureType, propertyTypeData: csComp.Services.IPropertyTypeData, feature?: csComp.Services.IFeature): IPropertyType[];
     function getMissingPropertyTypes(feature: csComp.Services.IFeature): csComp.Services.IPropertyType[];
     /** find a unique key name in object */
     function findUniqueKey(o: Object, key: string): string;
@@ -1723,6 +1754,7 @@ declare module Accessibility {
 }
 
 import IFeature = csComp.Services.IFeature;
+import IPropertyType = csComp.Services.IPropertyType;
 import IActionOption = csComp.Services.IActionOption;
 declare module Accessibility {
     class AccessibilityModel implements csComp.Services.IActionService {
@@ -2300,11 +2332,11 @@ declare module FeatureRelations {
         getRelations(): RelationGroup[];
         constructor($scope: IFeatureRelationsScope, $location: ng.ILocationService, $sce: ng.ISCEService, $mapService: csComp.Services.MapService, $layerService: csComp.Services.LayerService, $messageBusService: csComp.Services.MessageBusService, $translate: ng.translate.ITranslateService);
         /**
-                 * Callback function
-                 * @see {http://stackoverflow.com/questions/12756423/is-there-an-alias-for-this-in-typescript}
-                 * @see {http://stackoverflow.com/questions/20627138/typescript-this-scoping-issue-when-called-in-jquery-callback}
-                 * @todo {notice the strange syntax using a fat arrow =>, which is to preserve the this reference in a callback!}
-                 */
+         * Callback function
+         * @see {http://stackoverflow.com/questions/12756423/is-there-an-alias-for-this-in-typescript}
+         * @see {http://stackoverflow.com/questions/20627138/typescript-this-scoping-issue-when-called-in-jquery-callback}
+         * @todo {notice the strange syntax using a fat arrow =>, which is to preserve the this reference in a callback!}
+         */
         private sidebarMessageReceived;
         private featureMessageReceived;
     }
@@ -2741,6 +2773,12 @@ declare module KanbanColumn {
         columnOrderBy: string;
         query: string;
         fields: any;
+        layer: csComp.Services.ProjectLayer;
+        /** In case the KanbanColumn should use a temporary layer instead of a project layer, this should be set
+         *  to true and the layer should be passed through the scope variables. One example where this is used,
+         *  is in the EventTab.
+         */
+        providedlayer: boolean;
     }
     class ColumnFilter {
         layerId: string;
@@ -2749,8 +2787,11 @@ declare module KanbanColumn {
         tags: string[];
     }
     class Column {
+        title: string;
         id: string;
         filters: ColumnFilter;
+        propertyTags: string[];
+        timeReference: string;
         roles: string[];
         fields: any;
         orderBy: string;
@@ -2967,6 +3008,9 @@ declare module LegendList {
         title: string;
         uri: string;
         html: string;
+        count?: number;
+        expressions?: IPropertyType[];
+        features?: IFeature[];
     }
     interface ILegendListScope extends ng.IScope {
         vm: LegendListCtrl;
@@ -2975,21 +3019,27 @@ declare module LegendList {
     }
     class LegendListCtrl {
         private $scope;
-        private $layerService;
-        private $mapService;
-        private $messageBusService;
         private $sce;
+        private $timeout;
+        private layerService;
+        private mapService;
+        private messageBusService;
+        private expressionService;
+        /** Active bounding box */
+        private bbox;
+        /** If true, the legend is visible in the DOM. */
+        private isVisible;
         static $inject: string[];
-        constructor($scope: ILegendListScope, $layerService: csComp.Services.LayerService, $mapService: csComp.Services.MapService, $messageBusService: csComp.Services.MessageBusService, $sce: ng.ISCEService);
+        constructor($scope: ILegendListScope, $sce: ng.ISCEService, $timeout: ng.ITimeoutService, layerService: csComp.Services.LayerService, mapService: csComp.Services.MapService, messageBusService: csComp.Services.MessageBusService, expressionService: csComp.Services.ExpressionService);
         /**
          * Three approaches for creating a legend can be used:
-         * 1. Using the featureTypes loaded in LayerService, which is quick, but also includes items that are not on the list.
+         * 1. Using the featureTypes loaded in LayerService, which is quick, but also includes items that are not shown.
          *    Also, when deactivating the layer, items persist in the legendlist. Finally, items with an icon based on a property
          *    are only shown once (e.g., houses with energylabels).
          * 2. Second approach is to loop over all features on the map and select unique legend items. This is slower for large
          *    amounts of features, but the items in the legendlist are always complete and correct.
          * 3. Third approach is to use a legend that is defined in a featuretype. This is useful if you want to show a custom legend.
-         * For 1. use "updateLegendItemsUsingFeatureTypes()", for 2. use "updateLegendItemsUsingFeatures(), for 3. use "updateLegendStatically()"
+         * For 1. use 'updateLegendItemsUsingFeatureTypes()', for 2. use 'updateLegendItemsUsingFeatures(), for 3. use 'updateLegendStatically()'
          */
         private updateLegendItems();
         /**
@@ -2997,10 +3047,10 @@ declare module LegendList {
          * that corresponding featureType is acquired. When the featureType has a property 'legend' in which legenditems are defined,
          * these items are added to the legend.
          * Example definition in the FeatureType:
-         * "MyFeatureType" : {
-         *   "legendItems" : [{
-         *     "title" : "My feature",
-         *     "uri" : "images/myicon.png"
+         * 'MyFeatureType' : {
+         *   'legendItems' : [{
+         *     'title' : 'My feature',
+         *     'uri' : 'images/myicon.png'
          *   }]
          * }
          */
@@ -3647,6 +3697,14 @@ declare module Timeline {
         private initTimeline();
         updateDragging(): void;
         expandToggle(): void;
+        private throttleTimeSpanUpdate;
+        /**
+         * trigger a debounced timespan updated message on the message bus
+         */
+        private triggerTimeSpanUpdated();
+        /**
+         * time span was updated by timeline control
+         */
         onRangeChanged(prop: any): void;
         start(): void;
         goLive(): void;
@@ -4057,7 +4115,9 @@ declare module csComp.Services {
          * @param  {boolean} isDefaultPropertyType: default true, indicating that the expression should be applied to all features that haven't explicitly specified their featureTypeId.
          */
         evalExpressions(propertyType: IPropertyType, features: IFeature[], isDefaultPropertyType?: boolean): void;
-        evalExpression(expression: string, features: IFeature[], feature: IFeature): any;
+        evalExpression(expression: string, features: IFeature[], feature?: IFeature): any;
+        /** Evaluate the expression in a property */
+        evalPropertyType(pt: IPropertyType, features: IFeature[], feature?: IFeature): string;
     }
     /**
       * Module
@@ -4157,7 +4217,9 @@ declare module csComp.Services {
         isMobile: boolean;
         currentLocale: string;
         /** layers that are currently active */
-        loadedLayers: Helpers.Dictionary<ProjectLayer>;
+        loadedLayers: {
+            [key: string]: ProjectLayer;
+        };
         /** list of available layer sources */
         layerSources: {
             [key: string]: ILayerSource;
@@ -4176,9 +4238,13 @@ declare module csComp.Services {
         currentContour: L.GeoJSON;
         startDashboardId: string;
         visual: VisualState;
-        throttleTimelineUpdate: Function;
+        throttleSensorDataUpdate: Function;
         static $inject: string[];
         constructor($location: ng.ILocationService, $compile: any, $translate: ng.translate.ITranslateService, $messageBusService: Services.MessageBusService, $mapService: Services.MapService, $rootScope: any, geoService: GeoService, $http: ng.IHttpService, expressionService: csComp.Services.ExpressionService);
+        /**
+         * Get external sensordata for loaded layers with sensor links enabled
+         */
+        updateSensorLinks(): void;
         enableDrop(): void;
         handleFileUpload(files: any, obj: any): void;
         checkMobile(): void;
@@ -4232,10 +4298,10 @@ declare module csComp.Services {
         editFeature(feature: IFeature): void;
         private deselectFeature(feature);
         selectFeature(feature: IFeature, multi?: boolean, force?: boolean): void;
-        updateAllLogs(): void;
         private lookupLog(logs, timestamp);
         updateLog(f: IFeature): void;
         updateFeature(feature: IFeature): void;
+        updateFeatureSensorData(f: IFeature, date: number, timepos: Object): void;
         /** update for all features the active sensor data values and update styles */
         updateSensorData(): void;
         /***
@@ -4346,7 +4412,7 @@ declare module csComp.Services {
         /** remove filter from group */
         removeFilter(filter: GroupFilter): void;
         /**
-         * Returs propertytype for a specific property in a feature
+         * Returns propertytype for a specific property in a feature
          */
         getPropertyType(feature: IFeature, property: string): IPropertyType;
         /**
@@ -4432,6 +4498,11 @@ declare module csComp.Services {
          * Save feature back to the server
          */
         saveFeature(f: IFeature, logs?: boolean): void;
+        /**
+         * Update the filter status of a feature, i.e. the _gui.included property.
+         * When a filter is applied, and the feature is not shown anymore, the feature._gui.included = false.
+         * In all other cases, it is true. */
+        private updateFilterStatusFeature(group);
         /***
          * Update map markers in cluster after changing filter
          */
@@ -4499,19 +4570,18 @@ declare module csComp.Services {
         expertMode: Expertise;
         constructor($localStorageService: ng.localStorage.ILocalStorageService, $timeout: ng.ITimeoutService, $messageBusService: csComp.Services.MessageBusService);
         /**
-      * The expert mode can either be set manually, e.g. using this directive, or by setting the expertMode property in the
-      * project.json file. In neither are set, we assume that we are dealing with an expert, so all features should be enabled.
-      *
-      * Precedence:
-      * - when a declaration is absent, assume Expert.
-      * - when the mode is set in local storage, take that value.
-      * - when the mode is set in the project.json file, take that value.
-      */
+         * The expert mode can either be set manually, e.g. using this directive, or by setting the expertMode property in the
+         * project.json file. In neither are set, we assume that we are dealing with an expert, so all features should be enabled.
+         *
+         * Precedence:
+         * - when a declaration is absent, assume Expert.
+         * - when the mode is set in local storage, take that value.
+         * - when the mode is set in the project.json file, take that value.
+         */
         private initExpertMode();
         isExpert: boolean;
         isIntermediate: boolean;
         isAdminExpert: boolean;
-        initMap(): void;
         getBaselayer(layer: string): BaseLayer;
         changeBaseLayer(layer: string): void;
         invalidate(): void;
@@ -6322,6 +6392,7 @@ declare module csComp.Services {
         private cntrlIsPressed;
         init(service: LayerService): void;
         enable(): void;
+        private updateBoundingBox();
         getLatLon(x: number, y: number): {
             lat: number;
             lon: number;
