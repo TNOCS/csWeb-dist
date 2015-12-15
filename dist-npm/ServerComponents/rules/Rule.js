@@ -1,7 +1,13 @@
 var Utils = require('../helpers/Utils');
+/**
+ * Simple rule, consisting of a condition and an action.
+ */
 var Rule = (function () {
+    /** Create a new rule. */
     function Rule(rule, activationTime) {
+        /** How many times can the rule be fired: -1 is indefinetely, default is once */
         this.recurrence = 1;
+        // Don't bother with rules that take no actions.
         if (typeof rule.actions === 'undefined')
             return;
         if (typeof activationTime === 'undefined')
@@ -9,6 +15,7 @@ var Rule = (function () {
         this.id = (typeof rule.id === 'undefined')
             ? Utils.newGuid()
             : rule.id;
+        // By default, actions are active unless explicitly set.
         this.isActive = (typeof rule.isActive === 'undefined')
             ? true
             : rule.isActive;
@@ -21,11 +28,15 @@ var Rule = (function () {
         this.conditions = rule.conditions;
         this.actions = rule.actions;
     }
+    /** Evaluate the rule and execute all actions, is applicable. */
     Rule.prototype.process = function (worldState, service) {
+        // Check if we need to do anything.
         if (!this.isActive || this.recurrence === 0)
             return;
+        // Check if we are dealing with a rule that belongs to a feature, and that feature is being processed.
         if (!this.isGenericRule && typeof worldState.activeFeature !== 'undefined' && typeof this.feature !== 'undefined' && worldState.activeFeature.id !== this.feature.id)
             return;
+        // Finally, check the conditions, if any (if none, just go ahead and execute the actions)
         if (typeof this.conditions === 'undefined' || this.evaluateConditions(worldState)) {
             this.executeActions(worldState, service);
             if (this.recurrence > 0)
@@ -34,6 +45,7 @@ var Rule = (function () {
                 service.deactivateRule(this.id);
         }
     };
+    /** Evaluate the conditions and check whether all of them are true (AND). */
     Rule.prototype.evaluateConditions = function (worldState) {
         for (var i = 0; i < this.conditions.length; i++) {
             var c = this.conditions[i];
@@ -181,6 +193,7 @@ var Rule = (function () {
                 }
             }
             else {
+                // First item is not a key/string
                 return false;
             }
         }
@@ -199,6 +212,7 @@ var Rule = (function () {
                 var length = a.length;
                 switch (action.toLowerCase()) {
                     case "add":
+                        // add feature
                         var id = service.timer.setTimeout(function (f, fid, service) {
                             return function () {
                                 var feature = f;
@@ -223,6 +237,8 @@ var Rule = (function () {
                         break;
                     case "answer":
                     case "set":
+                        // Anwer, property, value [, delay], as set, but also sets answered to true and removes the action tag.
+                        // Set, property, value [, delay] sets value and updated.
                         if (length < 3) {
                             console.warn("Rule " + this.id + " contains an invalid action (ignored): " + a + "!");
                             return;
@@ -233,6 +249,7 @@ var Rule = (function () {
                         }
                         break;
                     case "push":
+                        // push property value [, delay]
                         if (length < 3) {
                             console.warn("Rule " + this.id + " contains an invalid action (ignored): " + a + "!");
                             return;
@@ -307,6 +324,7 @@ var Rule = (function () {
         service.updateLog(f.id, logs);
         service.updateFeature(f);
     };
+    /** Get the delay, if present, otherwise return 0 */
     Rule.prototype.getDelay = function (actions, index) {
         if (index >= actions.length)
             return 0;

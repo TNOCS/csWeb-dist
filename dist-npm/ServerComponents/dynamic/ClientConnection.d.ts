@@ -20,26 +20,41 @@ export declare class KeySubscription {
     keyId: string;
     callback: MessageBus.IMessageBusCallback;
 }
+/**
+ * object for sending project messages over socket.io channel
+ */
 export declare class ProjectUpdate {
     projectId: string;
     action: ProjectUpdateAction;
     item: any;
 }
+/**
+ * object for sending layer messages over socket.io channel
+ */
 export declare class LayerUpdate {
     layerId: string;
     action: LayerUpdateAction;
     item: any;
     featureId: string;
 }
+/**
+ * object for sending layer messages over socket.io channel
+ */
 export declare class KeyUpdate {
     keyId: string;
     action: KeyUpdateAction;
     item: any;
 }
+/**
+ * List of available action for sending/receiving project actions over socket.io channel
+ */
 export declare enum ProjectUpdateAction {
     updateProject = 0,
     deleteProject = 1,
 }
+/**
+ * List of available action for sending/receiving layer actions over socket.io channel
+ */
 export declare enum LayerUpdateAction {
     updateFeature = 0,
     updateLog = 1,
@@ -47,6 +62,9 @@ export declare enum LayerUpdateAction {
     updateLayer = 3,
     deleteLayer = 4,
 }
+/**
+ * List of available action for sending/receiving key actions over socket.io channel
+ */
 export declare enum KeyUpdateAction {
     updateKey = 0,
     deleteKey = 1,
@@ -78,8 +96,28 @@ export declare class ConnectionManager {
     updateSensorValue(sensor: string, date: number, value: number): void;
     publish(key: string, type: string, command: string, object: any): void;
     updateDirectory(layer: string): void;
+    /**
+     * Send update to all clients.
+     * @action: project-update
+     * @meta: used to determine source/user, will skip
+     */
     updateProject(projectId: string, update: ProjectUpdate, meta: ApiMeta): void;
+    /**
+     * Send update to all clients.
+     * @action: logs-update, feature-update
+     * @meta: used to determine source/user, will skip
+     */
     updateFeature(layerId: string, update: LayerUpdate, meta: ApiMeta): void;
+    /**
+     * Send update to all clients.
+     * @action: logs-update, feature-update
+     * @meta: used to determine source/user, will skip
+     */
     updateLayer(layerId: string, update: LayerUpdate, meta: ApiMeta): void;
+    /**
+     * Send update to all clients.
+     * @action: logs-update, feature-update
+     * @meta: used to determine source/user, will skip
+     */
     updateKey(keyId: string, update: KeyUpdate, meta: ApiMeta): void;
 }

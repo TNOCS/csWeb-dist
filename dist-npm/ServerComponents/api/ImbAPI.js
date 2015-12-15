@@ -86,18 +86,64 @@ var ImbAPI = (function (_super) {
                     };
                     break;
                 case ClientConnection.LayerUpdateAction.deleteLayer:
+                    //this.manager.keydeelete(keyID, JSON.parse(value), <ApiMeta>{ source:this.id, user: "US"}, ()  => {});
                     eventDefinition.unsubscribe();
                     eventDefinition.unPublish();
                     break;
             }
         };
+        //this.messageSub.onNormalEvent = (eventDefinition, aEventPayload) => {
+        /*var l = new Layer();
+        l.storage = "file";
+        l.id = "";
+        l.features = [];
+        var f = new Feature();
+        f.geometry.type = "Point";
+        f.geometry.coordinates = [5.4,54];
+        f.properties = {};
+        f.properties["afgesloten"] = 0;
+        l.features.push(f);
+        this.manager.addLayer(l,<ApiMeta>{ source : "imb"},()=>{});
+
+        console.log('onChangeObject');
+        console.log(shortEventName + ' ' + attributeName + ' ' +
+            action.toString() + ' ' + objectID.toString());
+        //io.emit('testchannel', shortEventName + ' ' + attributeName);
+        */
     };
+    //this.client = (<any>mqtt).connect("mqtt://" + this.server + ":" + this.port);
+    //
+    // this.client.on('error', (e) => {
+    //     Winston.warn('mqtt: error');
+    // });
+    //
+    // this.client.on('connect', () => {
+    //     Winston.info("mqtt: connected");
+    //     // server listens to all key updates
+    //     if (!this.manager.isClient) {
+    //         Winston.info("mqtt: listen to everything");
+    //         this.client.subscribe("#");
+    //     }
+    // });
+    //
+    // this.client.on('reconnect', () => {
+    //     Winston.debug("mqtt: reconnecting");
+    //
+    // });
+    //
+    // this.client.on('message', (topic, message) => {
+    //     Winston.info("mqtt: " + topic + "-" + message.toString());
+    //     //this.manager.updateKey(topic, message, <ApiMeta>{}, () => { });
+    //
+    //     //_.startsWith(topic,this.keyPrefix)
+    // });
+    // feature methods, in crud order
     ImbAPI.prototype.buildCmdValue = function (cmd, value) {
-        var valueByteLength = Buffer.byteLength(value);
+        var valueByteLength = Buffer.byteLength(value); // default is utf8
         var payload = new Buffer(8 + valueByteLength);
         payload.writeInt32LE(cmd, 0);
         payload.writeInt32LE(valueByteLength, 4);
-        payload.write(value, 8);
+        payload.write(value, 8); // default is utf8
         return payload;
     };
     ImbAPI.prototype.addFeature = function (layerId, feature, meta, callback) {
@@ -118,12 +164,14 @@ var ImbAPI = (function (_super) {
         }
         callback({ result: ApiResult.OK });
     };
+    /** Update the value for a given keyId */
     ImbAPI.prototype.updateKey = function (keyId, value, meta, callback) {
         if (meta.source != this.id) {
             this.imbConnection.publish("keys." + keyId).normalEvent(ekNormalEvent, this.buildCmdValue(ClientConnection.KeyUpdateAction.updateKey, keyId));
         }
         callback({ result: ApiResult.OK });
     };
+    /** Delete key */
     ImbAPI.prototype.deleteKey = function (keyId, meta, callback) {
         if (meta.source != this.id) {
             this.imbConnection.publish("keys").normalEvent(ekNormalEvent, this.buildCmdValue(ClientConnection.KeyUpdateAction.deleteKey, keyId));

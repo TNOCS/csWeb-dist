@@ -42,10 +42,22 @@ export declare class BaseConnector implements ApiManager.IConnector {
     deleteProject(projectId: any, meta: ApiMeta, callback: Function): void;
     addFile(base64: string, folder: string, file: string, meta: ApiMeta, callback: Function): void;
     addResource(resource: ApiManager.ResourceFile, meta: ApiMeta, callback: Function): void;
+    /** Get a specific key */
     getKey(keyId: string, meta: ApiMeta, callback: Function): void;
+    /** Get a list of available keys */
     getKeys(meta: ApiMeta, callback: Function): void;
+    /** Update the value for a given keyId */
     updateKey(keyId: string, value: Object, meta: ApiMeta, callback: Function): void;
+    /** Delete key */
     deleteKey(keyId: string, meta: ApiMeta, callback: Function): void;
     init(layerManager: ApiManager.ApiManager, options: any, callback: Function): void;
+    /**
+     * Subscribe to certain keys.
+     * @method subscribeKey
+     * @param  {string}     keyPattern Pattern to listen for, e.g. hello/me/+:person listens for all hello/me/xxx topics.
+     * @param  {ApiMeta}    meta       [description]
+     * @param  {Function}   callback   Called when topic is called.
+     * @return {[type]}                [description]
+     */
     subscribeKey(keyPattern: string, meta: ApiMeta, callback: (topic: string, message: string, params?: Object) => void): void;
 }

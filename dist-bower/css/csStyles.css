@@ -110,7 +110,7 @@ body,
 
 /* vega charts */
 .vega-title {
-  font-size: 22px; }
+  font-size: 16px; }
 
 /* leaflet context menu */
 .leaflet-contextmenu {
@@ -453,8 +453,8 @@ body,
   padding-top: 10px; }
 
 .legendImage {
-  width: 25px;
-  height: 25px; }
+  width: 24px;
+  height: 24px; }
 
 .makeNarrow {
   margin-left: -2px;
@@ -473,14 +473,48 @@ body,
 .table > td {
   border: none; }
 
-.legendText {
+.legendTable {
+  display: table;
+  width: 100%;
+  table-layout: fixed; }
+
+.legendCellLeft {
+  display: table-cell;
+  vertical-align: top;
+  height: 100%;
+  width: 35px; }
+
+.legendCellRight {
+  display: table-cell;
+  vertical-align: top;
+  height: 100%;
+  width: 100%; }
+
+.legendPanelItem {
+  padding-bottom: 5px;
+  margin-left: -10px;
+  margin-top: -10px; }
+
+.legendTitle {
   display: inline-block;
-  overflow-wrap: break-word;
-  margin-top: 3px;
-  margin-left: 5px;
-  float: inherit;
+  margin: 0 0 4px 0;
   position: relative;
-  width: 180px; }
+  font-weight: bold;
+  overflow: hidden; }
+
+.legend-prop-title {
+  display: inline-block;
+  margin-top: -4px;
+  position: relative;
+  overflow: hidden;
+  font-size: 12px; }
+
+.legend-prop-value {
+  margin-top: -4px;
+  position: relative;
+  overflow: hidden;
+  font-weight: 800;
+  float: right !important; }
 
 .widget-parent {
   display: block; }
@@ -817,6 +851,7 @@ body,
   top: -10px; }
 
 .property-action {
+  cursor: pointer;
   position: relative;
   display: inline-block; }
 
@@ -926,11 +961,15 @@ body,
   left: 10px; }
 
 .dashboard-name {
-  font-size: 18px; }
+  font-size: 18px;
+  cursor: pointer; }
 
 .dashboard-item {
   margin-right: 5px;
   padding: 3px;
+  cursor: pointer; }
+
+.dashboard-header-link {
   cursor: pointer; }
 
 .dashboard-selected {
@@ -1449,6 +1488,9 @@ input[type="checkbox"] {
 
 .table {
   margin-bottom: 0; }
+
+.nav > li {
+  cursor: pointer; }
 
 .nav-pills > li > a {
   border-radius: 0; }
@@ -2439,4 +2481,28 @@ input[type="checkbox"] {
 .available-featuretype {
   font-size: 14px; }
 
+.search-result-title {
+  font-size: 15px;
+  font-weight: 700; }
+
+.search-result-description {
+  font-size: 13px; }
+
+.search-result-details {
+  left: 25px;
+  position: relative;
+  top: 0;
+  width: 230px;
+  margin-bottom: 4px; }
+
+.search-result-image {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 20px;
+  height: 20px; }
+
 /* End Kanban board style */
+/* dc-charts */
+.dc-chart g.row text {
+  fill: black; }

@@ -4,7 +4,9 @@ var BaseTransformer = (function () {
         this.title = title;
         this.type = null;
         this.id = Utils.newGuid();
+        //this.description = description;
     }
+    //create?(opt?: ITransformFactoryOptions[]): stream.Readable | stream.Writable | stream.Transform;
     BaseTransformer.prototype.initialize = function () {
     };
     return BaseTransformer;

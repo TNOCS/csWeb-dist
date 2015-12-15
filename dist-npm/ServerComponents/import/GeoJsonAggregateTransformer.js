@@ -7,6 +7,7 @@ var GeoJsonAggregateTransformer = (function () {
         this.title = title;
         this.type = "GeoJsonAggregateTransformer";
         this.id = Utils.newGuid();
+        //this.description = description;
     }
     GeoJsonAggregateTransformer.prototype.initialize = function (opt, callback) {
         var _this = this;
@@ -23,18 +24,31 @@ var GeoJsonAggregateTransformer = (function () {
     GeoJsonAggregateTransformer.prototype.create = function (config, opt) {
         var _this = this;
         var t = new stream.Transform();
+        /*stream.Transform.call(t);*/
         var baseGeo;
         var accumulator = {};
         t.setEncoding("utf8");
         t._transform = function (chunk, encoding, done) {
+            // var startTs = new Date();
+            // console.log((new Date().getTime() - startTs.getTime()) + ": start");
             var feature = JSON.parse(chunk);
             if (!feature.geometry) {
                 done();
                 return;
             }
+            // console.log("##### GJAT #####");
+            // console.log("=== Before:")
+            // console.log(feature);
             _this.geometry.features.forEach(function (f) {
+                // console.log("=== Gemeente feature:")
+                // console.log(f);
+                // console.log("=== Piped feature:");
+                // console.log(feature);
                 if (turf.inside(feature, f)) {
+                    // console.log(f);
+                    // console.log(feature.properties.gemeentenaam + "<-- matched -->" + f.properties.wk_naam);
                     var accEntry = accumulator[f.properties.wk_code];
+                    // console.log(accEntry);
                     if (accEntry) {
                         accEntry.sum++;
                     }
@@ -47,7 +61,11 @@ var GeoJsonAggregateTransformer = (function () {
                     }
                 }
             });
+            // console.log("=== After:");
+            // console.log(feature);
+            //t.push(JSON.stringify(feature));
             done();
+            // console.log((new Date().getTime() - startTs.getTime()) + ": finish");
         };
         t._flush = function (done) {
             try {

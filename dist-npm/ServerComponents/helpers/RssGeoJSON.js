@@ -1,3 +1,6 @@
+/**
+ * Template for describing an RSS item, that contains coordinates, as GeoJSON.
+ */
 var RssGeoJSON = (function () {
     function RssGeoJSON() {
         this.type = "FeatureCollection";

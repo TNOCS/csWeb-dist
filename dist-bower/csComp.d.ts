@@ -173,6 +173,12 @@ declare module csComp.Services {
 }
 
 declare module csComp.Services {
+    interface ISensorLinkResult {
+        timeStamps: number[];
+        data: (number[])[];
+        properties: string[];
+        timeAggregation: string;
+    }
     class SensorSet {
         id: string;
         title: string;
@@ -239,6 +245,11 @@ declare module csComp.Services {
         value: any;
         user: string;
     }
+    interface IGuiObject {
+        /** When true, the feature is included on the map, as opposed to being removed by a filter. */
+        included: boolean;
+        [key: string]: any;
+    }
     interface IFeature {
         id?: string;
         index: number;
@@ -255,7 +266,7 @@ declare module csComp.Services {
         effectiveStyle: IFeatureTypeStyle;
         _isInitialized?: boolean;
         lastUpdated: number;
-        _gui: Object;
+        _gui: IGuiObject;
         sensors?: {
             [id: string]: any[];
         };
@@ -289,7 +300,7 @@ declare module csComp.Services {
         htmlStyle: string;
         featureTypeName: string;
         lastUpdated: number;
-        _gui: Object;
+        _gui: IGuiObject;
         /** resolved feature type */
         fType: IFeatureType;
         /** calculated style, used for final rendering */
@@ -351,6 +362,7 @@ declare module csComp.Services {
         activation?: string;
         groupId?: string;
         defaultFeatureType?: string;
+        typeUrl?: string;
     }
     interface IPropertyType {
         id?: string;
@@ -373,11 +385,13 @@ declare module csComp.Services {
         target?: string;
         targetrelation?: string;
         targetproperty?: string;
-        options?: string[];
+        options?: Object;
         categories?: string[];
         languages?: ILanguageData;
         legend?: Legend;
         layerProps?: ILayerPropertyDetails;
+        min?: number;
+        max?: number;
         targetid?: string;
         /** Angular expression */
         expression?: string;
@@ -418,6 +432,8 @@ declare module csComp.Services {
         name?: string;
         style?: IFeatureTypeStyle;
         legendItems?: LegendList.ILegendItem[];
+        /** Optional expressions that are shown in the legend list. */
+        legendExpr?: IPropertyType[];
         properties?: {};
         _propertyTypeData?: IPropertyType[];
         showAllProperties?: boolean;
@@ -438,13 +454,15 @@ declare module csComp.Services {
         type: string;
         features: Array<IFeature>;
     }
-    class PropertyInfo {
+    interface PropertyInfo {
         max: number;
         min: number;
         count: number;
         mean: number;
         varience: number;
         sd: number;
+        userMin?: number;
+        userMax?: number;
     }
 }
 
@@ -575,6 +593,9 @@ declare module csComp.Services {
 }
 
 declare module csComp.Services {
+    interface ISensorLink {
+        url?: string;
+    }
     /** Interface of a project layer
      *  Note that this is a copy of the similarly named class, but the advantage is that I can use the
      *  interface definition also on the server side.
@@ -591,6 +612,8 @@ declare module csComp.Services {
         description?: string;
         /** link to one or more meta description files containing  */
         typeUrl?: string | string[];
+        /** link to url for dynamic sensor data */
+        sensorLink?: ISensorLink;
         /** Type of layer, e.g. GeoJSON, TopoJSON, or WMS */
         type: string;
         /** render type */
@@ -619,8 +642,10 @@ declare module csComp.Services {
         refreshBBOX?: boolean;
         /** indicates that this is a dynamic layer (dynamicgeojson) */
         isDynamic?: boolean;
+        /** this layer contains sensor data, updated when focusTime changes */
+        hasSensorData?: boolean;
         /**
-         * if layer is connected, indicate if it is online
+         * indicates if a dynamic layer is connected
          */
         isConnected?: boolean;
         /**
@@ -707,6 +732,8 @@ declare module csComp.Services {
         hierarchySettings: FeatureRelations.IHierarchySettings;
         /** In case we keep the type (feature,property) information in a separate file */
         typeUrl: string;
+        /** link to url for dynamic sensor data */
+        sensorLink: ISensorLink;
         /** WMS sublayers that must be loaded */
         wmsLayers: string;
         /** If enabled, load the layer */
@@ -750,7 +777,7 @@ declare module csComp.Services {
          * When enabling the refresh timer, store the returned timer token so we can stop the timer later.
          * @type {number}
          */
-        timerToken: number;
+        timerToken: any;
         /**
         * A list of UNIX timestamp, or the UTC time in milliseconds since 1/1/1970, which define the time a sensor value
         * was taken. So in case we have 10 timestamps, each feature's sensor (key) in the feature's sensors dictionary should
@@ -783,14 +810,21 @@ declare module csComp.Services {
         serverHandle: MessageBusHandle;
         /** Whether layer can be quickly updated instead of completely rerendered */
         quickRefresh: boolean;
-        lastSelectedFeature: IFeature;
+        _lastSelectedFeature: IFeature;
         /** link to a parent feature, e.g. city layer references to a parent provence */
         parentFeature: IFeature;
         /** key name of default feature type */
         defaultFeatureType: string;
+        /**  dynamic projects have a realtime connection with the server. This connection allows you to make changes to the feature & property types and
+        feature geometry and property values. changes are distributed to all active clients in realtime */
         isDynamic: boolean;
+        /** logging mechanism allows you to specify specific property values and geometries in time,  it works the same way as sensor data but is optimized for smaller amounts of data and allows not only numbers
+        but also text, geometries, etc., where sensors are optimized for many different values, but only numbers
+        */
         useLog: boolean;
         isConnected: boolean;
+        /** this layer contains sensor data, updated when focusTime changes */
+        hasSensorData: boolean;
         /**
          * gui is used for setting temp. values for rendering
          */
@@ -1028,6 +1062,7 @@ declare module csComp.Services {
         layerDirectory: string;
         expertMode: Expertise;
         markers: {};
+        eventTab: boolean;
         /**
          * Serialize the project to a JSON string.
          */
@@ -1069,6 +1104,18 @@ declare module csComp.Services {
          * Serialize the project to a JSON string.
          */
         static serialize(resource: TypeResource): string;
+    }
+}
+
+declare module Translations {
+    class English {
+        static locale: ng.translate.ITranslationTable;
+    }
+}
+
+declare module Translations {
+    class Dutch {
+        static locale: ng.translate.ITranslationTable;
     }
 }
 
@@ -1279,6 +1326,7 @@ declare module csComp.Helpers {
     * Source: http://www.csgnetwork.com/degreelenllavcalc.html
     */
     class GeoExtensions {
+        static getFeatureBounds(feature: IFeature): L.LatLng[] | L.LatLngBounds;
         static getBoundingBox(data: any): any;
         /**
         * Convert topojson data to geojson data.
@@ -1389,7 +1437,7 @@ declare module csComp.Helpers {
     /**
      * Collect all the property types that are referenced by a feature type.
      */
-    function getPropertyTypes(type: csComp.Services.IFeatureType, propertyTypeData: csComp.Services.IPropertyTypeData, feature?: csComp.Services.IFeature): Services.IPropertyType[];
+    function getPropertyTypes(type: csComp.Services.IFeatureType, propertyTypeData: csComp.Services.IPropertyTypeData, feature?: csComp.Services.IFeature): IPropertyType[];
     function getMissingPropertyTypes(feature: csComp.Services.IFeature): csComp.Services.IPropertyType[];
     /** find a unique key name in object */
     function findUniqueKey(o: Object, key: string): string;
@@ -1452,37 +1500,6 @@ declare module csComp.Helpers {
     function createIconHtml(feature: IFeature, featureType: csComp.Services.IFeatureType): {
         [key: string]: any;
     };
-}
-
-declare module MathUtils {
-    /**
-     * For calculating derived values based on other properties.
-     *
-     * How it works:
-     * An IMathFunction object is added to a propertyType. By itself, this propertyType is never shown (except in a specific editor).
-     * Instead, upon loading of the layer, the result of the function is computed, and a new property and corresponding type are generated.
-     *
-     * Different types of functions:
-     * A. The output is based on the current feature, e.g.
-     *    amount_men + amount_women => amount_people, or
-     *    percentage_children * amount_men = amount_children.
-     * B. The output is based on all features in the layer, e.g.
-     *    avg_count_children = sum(amount_children) / count(features)
-     */
-    interface IMathFunction {
-        /** The label of the generated property and property type. */
-        propLabel: string;
-        /** The actual function that needs to be computed. */
-        function: string;
-        /** List of property names on which are required for the calculation. */
-        depends?: string[];
-        /** When true, it means that the outcome of the function needs to be calculated only once. */
-        isStatic?: boolean;
-        /** Specifies what the output type is, e.g. number, text etc. Should be a valid property type. */
-        type?: string;
-    }
-    class MathUtils {
-    }
 }
 
 declare module csComp.Helpers {
@@ -1563,8 +1580,8 @@ interface String {
 declare module csComp.Helpers {
     function getColorFromStringValue(v: string, gs: csComp.Services.GroupStyle): string;
     function getImageUri(ft: csComp.Services.IFeatureType): string;
-    function getColorFromStringLegend(v: string, l: csComp.Services.Legend): string;
-    function getColorFromLegend(v: number, l: csComp.Services.Legend, defaultcolor?: string): any;
+    function getColorFromStringLegend(v: string, l: csComp.Services.Legend, defaultcolor?: string): string;
+    function getColorFromLegend(v: any, l: csComp.Services.Legend, defaultcolor?: string): any;
     function getColor(v: number, gs: csComp.Services.GroupStyle): any;
     /**
      * Extract a valid color string, without transparency.
@@ -1703,16 +1720,856 @@ declare module csComp {
     }
 }
 
-declare module Translations {
-    class English {
-        static locale: ng.translate.ITranslationTable;
+declare module Authentication {
+}
+
+declare module csComp.Services {
+    interface IMessageBusCallback {
+        (title: string, data?: any): any;
+    }
+    class ClientMessage {
+        action: string;
+        data: any;
+        constructor(action: string, data: any);
+    }
+    class MessageBusHandle {
+        constructor(topic: string, callback: IMessageBusCallback);
+        topic: string;
+        callback: IMessageBusCallback;
+    }
+    interface IBaseEvent {
+        add(listener: () => void): void;
+        remove(listener: () => void): void;
+        trigger(...a: any[]): void;
+    }
+    class TypedEvent implements IBaseEvent {
+        private _listeners;
+        add(listener: () => void): void;
+        remove(listener?: () => void): void;
+        trigger(...a: any[]): void;
+    }
+    interface IMessageEvent extends IBaseEvent {
+        add(listener: (message: string) => void): void;
+        remove(listener: (message: string) => void): void;
+        trigger(message: string): void;
+    }
+    class Connection {
+        id: string;
+        url: string;
+        bus: MessageBusService;
+        isConnected: boolean;
+        isConnecting: boolean;
+        cache: {
+            [topic: string]: Array<IMessageBusCallback>;
+        };
+        subscriptions: {
+            [id: string]: ServerSubscription;
+        };
+        socket: any;
+        events: IMessageEvent;
+        constructor(id: string, url: string, bus: MessageBusService);
+        unsubscribe(id: string, callback: IMessageBusCallback): void;
+        reSubscribeAll(): void;
+        disconnectAll(): void;
+        subscribe(target: string, type: string, callback: IMessageBusCallback): ServerSubscription;
+        connect(callback: Function): void;
+        disconnect(): void;
+    }
+    enum NotifyLocation {
+        BottomRight = 0,
+        BottomLeft = 1,
+        TopRight = 2,
+        TopLeft = 3,
+    }
+    enum NotifyType {
+        Normal = 0,
+        Info = 1,
+        Error = 2,
+        Success = 3,
+    }
+    class ServerSubscription {
+        target: string;
+        type: string;
+        callbacks: Array<IMessageBusCallback>;
+        id: string;
+        serverCallback: any;
+        constructor(target: string, type: string);
+    }
+    /**
+     * Simple message bus service, used for subscribing and unsubsubscribing to topics.
+     * @see {@link https://gist.github.com/floatingmonkey/3384419}
+     */
+    class MessageBusService {
+        private $translate;
+        private static cache;
+        static $inject: string[];
+        private connections;
+        private notifications;
+        constructor($translate: ng.translate.ITranslateService);
+        getConnection(id: string): Connection;
+        initConnection(id: string, url: string, callback: Function): void;
+        serverPublish(topic: string, message: any, serverId?: string): any;
+        serverSendMessage(msg: ClientMessage, serverId?: string): any;
+        serverSendMessageAction(action: string, data: any, serverId?: string): void;
+        serverSubscribe(target: string, type: string, callback: IMessageBusCallback, serverId?: string): MessageBusHandle;
+        serverUnsubscribe(handle: MessageBusHandle, serverId?: string): any;
+        /**
+         * Publish a notification that needs to be translated
+         * @title:       the translation key of the notification's title
+         * @text:        the translation key of the notification's content
+         * @location:    the location on the screen where the notification is shown (default bottom right)
+         */
+        notifyWithTranslation(title: string, text: string, location?: NotifyLocation): void;
+        /**
+         * Publish a notification
+         * @title:       the title of the notification
+         * @text:        the contents of the notification
+         * @location:    the location on the screen where the notification is shown (default bottom right)
+         * @notifyType:  the type of notification
+         */
+        notify(title: string, text: string, location?: NotifyLocation, notifyType?: NotifyType): void;
+        /**
+         * Show a confirm dialog
+         * @title           : the title of the notification
+         * @text            : the contents of the notification
+         * @callback        : the callback that will be called after the confirmation has been answered.
+         */
+        confirm(title: string, text: string, callback: (result: boolean) => any): void;
+        notifyBottom(title: string, text: string): void;
+        /**
+         * Publish a notification
+         * @title: the title of the notification
+         * @text:  the contents of the notification
+         */
+        notifyData(data: any): void;
+        /**
+         * Publish to a topic
+         */
+        publish(topic: string, title: string, data?: any): void;
+        /**
+         * Subscribe to a topic
+         * @param {string} topic The desired topic of the message.
+         * @param {IMessageBusCallback} callback The callback to call.
+         */
+        subscribe(topic: string, callback: IMessageBusCallback): MessageBusHandle;
+        /**
+         * Unsubscribe to a topic by providing its handle
+         */
+        unsubscribe(handle: MessageBusHandle): void;
+    }
+    class EventObj {
+        myEvents: any;
+        bind(event: any, fct: any): void;
+        unbind(event: any, fct: any): void;
+        unbindEvent(event: any): void;
+        unbindAll(): void;
+        trigger(event: any, ...args: any[]): void;
+        registerEvent(evtname: string): void;
+        registerEvents(evtnames: Array<string>): void;
+    }
+    /**
+      * Module
+      */
+    var myModule: any;
+}
+
+declare module csComp.Services {
+    class Coordinates {
+        accuracy: number;
+        latitude: number;
+        longitude: number;
+    }
+    class Geoposition {
+        coords: Coordinates;
+        timestamp: number;
+    }
+    class GeoService {
+        bus: Services.MessageBusService;
+        $rootScope: ng.IRootScopeService;
+        $window: ng.IWindowService;
+        $q: ng.IQService;
+        position: Geoposition;
+        geolocation_msgs: {
+            'errors.location.unsupportedBrowser': string;
+            'errors.location.permissionDenied': string;
+            'errors.location.positionUnavailable': string;
+            'errors.location.timeout': string;
+        };
+        static $inject: string[];
+        constructor(bus: Services.MessageBusService, $rootScope: ng.IRootScopeService, $window: ng.IWindowService, $q: ng.IQService);
+        getLocation(): any;
+        start(opts?: any): void;
+    }
+    /**
+      * Module
+      */
+    var myModule: any;
+}
+
+declare module csComp.Services {
+    interface IChartGenerator {
+        start(ctrl: ChartsWidget.ChartCtrl): any;
+        stop(): any;
+    }
+    class propertySensordataGenerator implements IChartGenerator {
+        private $layerService;
+        private $dashboardService;
+        private ctrl;
+        private mb;
+        private options;
+        constructor($layerService: Services.LayerService, $dashboardService: Services.DashboardService);
+        start(ctrl: ChartsWidget.ChartCtrl): void;
+        private lastSelectedFeature;
+        private selectFeature(f);
+        stop(): void;
     }
 }
 
-declare module Translations {
-    class Dutch {
-        static locale: ng.translate.ITranslationTable;
+declare module csComp.Services {
+    /** Contains properties needed to describe right panel */
+    class RightPanelTab {
+        title: string;
+        container: string;
+        directive: string;
+        data: any;
+        icon: string;
+        popover: string;
     }
+    /** service for managing dashboards */
+    class DashboardService {
+        private $rootScope;
+        private $compile;
+        private $injector;
+        private $location;
+        private $timeout;
+        private $translate;
+        private $messageBusService;
+        private $layerService;
+        private $mapService;
+        maxBounds: IBoundingBox;
+        featureDashboard: csComp.Services.Dashboard;
+        mainDashboard: csComp.Services.Dashboard;
+        editMode: boolean;
+        activeWidget: IWidget;
+        dashboards: any;
+        widgetTypes: {
+            [key: string]: IWidget;
+        };
+        chartGenerators: {
+            [key: string]: Function;
+        };
+        socket: any;
+        editWidgetMode: boolean;
+        static $inject: string[];
+        constructor($rootScope: any, $compile: any, $injector: any, $location: ng.ILocationService, $timeout: ng.ITimeoutService, $translate: ng.translate.ITranslateService, $messageBusService: Services.MessageBusService, $layerService: Services.LayerService, $mapService: Services.MapService);
+        leftMenuVisible(id: string): boolean;
+        selectDashboard(dashboard: csComp.Services.Dashboard, container: string): void;
+        activateTab(tab: RightPanelTab): void;
+        deactivateTabContainer(container: string): void;
+        deactivateTab(tab: RightPanelTab): void;
+        editWidget(widget: csComp.Services.IWidget): void;
+        stopEditWidget(): void;
+        removeWidget(): void;
+    }
+    /**
+      * Module
+      */
+    var myModule: any;
+}
+
+declare module csComp.Services {
+    class top10Generator implements IChartGenerator {
+        private $layerService;
+        private $dashboardService;
+        private ctrl;
+        private mb;
+        private options;
+        constructor($layerService: Services.LayerService, $dashboardService: Services.DashboardService);
+        private layerSub;
+        private styleSub;
+        private property;
+        private layer;
+        start(ctrl: ChartsWidget.ChartCtrl): void;
+        private updateChart(layer);
+        stop(): void;
+    }
+}
+
+declare module ContourAction {
+    import IFeature = csComp.Services.IFeature;
+    import IActionOption = csComp.Services.IActionOption;
+    class ContourActionModel implements csComp.Services.IActionService {
+        id: string;
+        private layerService;
+        stop(): void;
+        addFeature(feature: IFeature): void;
+        removeFeature(feature: IFeature): void;
+        selectFeature(feature: IFeature): void;
+        getFeatureActions(feature: IFeature): IActionOption[];
+        getFeatureHoverActions(feature: IFeature): IActionOption[];
+        deselectFeature(feature: IFeature): void;
+        updateFeature(feuture: IFeature): void;
+        private showContour(feature, layerService);
+        private hideContour(feature, layerService);
+        init(layerService: csComp.Services.LayerService): void;
+    }
+}
+
+declare module csComp.Services {
+    class ExpressionService {
+        private $parse;
+        private messageBusService;
+        /**
+         * A common set of operations for parsing Angular expressions, such as:
+         * count, sum, average and standard deviation.
+         *
+         * Since Angular's $parse does not allow you to define a function or for loop, we use a hack to supply these
+         * functions through an object.
+         * See also http://glebbahmutov.com/blog/angularjs-parse-hacks/
+         */
+        private ops;
+        static $inject: string[];
+        constructor($parse: ng.IParseService, messageBusService: Services.MessageBusService);
+        /**
+         * Evaluate the layer by evaluating any expressions.
+         * @param  {ProjectLayer} layer
+         */
+        evalLayer(layer: ProjectLayer, featureTypes: {
+            [key: string]: IFeatureType;
+        }): void;
+        /**
+         * Check whether the features contain an expressions, and if so, evaluate them.
+         * @param  {ng.IParseService} $parse
+         * @param  {csComp.Services.TypeResource} resource
+         * @param  {IFeature[]} features
+         */
+        evalResourceExpressions(resource: csComp.Services.TypeResource, features: IFeature[]): void;
+        /**
+         * Check whether the property type has an expression, and if so, evaluate it.
+         * @param  {IPropertyType} propertyType
+         * @param  {IFeature[]} features
+         * @param  {boolean} isDefaultPropertyType: default true, indicating that the expression should be applied to all features that haven't explicitly specified their featureTypeId.
+         */
+        evalExpressions(propertyType: IPropertyType, features: IFeature[], isDefaultPropertyType?: boolean): void;
+        evalExpression(expression: string, features: IFeature[], feature?: IFeature): any;
+        /** Evaluate the expression in a property */
+        evalPropertyType(pt: IPropertyType, features: IFeature[], feature?: IFeature): string;
+    }
+    /**
+      * Module
+      */
+    var myModule: any;
+}
+
+declare module csComp.Services {
+    import IFeature = csComp.Services.IFeature;
+    enum ActionType {
+        Context = 0,
+        Hover = 1,
+    }
+    interface IActionOption {
+        title: string;
+        icon: string;
+        feature: IFeature;
+        callback: Function;
+    }
+    interface ISearchResultItem {
+        type?: string;
+        feature?: IFeature;
+        description?: string;
+        title: string;
+        score?: number;
+        icon?: string;
+        service: string;
+        click: Function;
+    }
+    type SearchResultHandler = (error: Error, result: ISearchResultItem[]) => void;
+    interface ISearchQuery {
+        query: string;
+        results: ISearchResultItem[];
+    }
+    interface IActionService {
+        id: string;
+        init(ls: LayerService): any;
+        stop(): any;
+        addFeature(feature: IFeature): any;
+        removeFeature(feature: IFeature): any;
+        selectFeature(feature: IFeature): any;
+        getFeatureActions(feature: IFeature): IActionOption[];
+        getFeatureHoverActions(feature: IFeature): IActionOption[];
+        deselectFeature(feature: IFeature): any;
+        updateFeature(feuture: IFeature): any;
+        search?(query: ISearchQuery, result: SearchResultHandler): any;
+    }
+    class BasicActionService implements csComp.Services.IActionService {
+        id: any;
+        layerService: csComp.Services.LayerService;
+        stop(): void;
+        addFeature(feature: IFeature): void;
+        removeFeature(feature: IFeature): void;
+        selectFeature(feature: IFeature): void;
+        getFeatureActions(feature: IFeature): IActionOption[];
+        getFeatureHoverActions(feature: IFeature): IActionOption[];
+        deselectFeature(feature: IFeature): void;
+        updateFeature(feuture: IFeature): void;
+        search(query: ISearchQuery, result: Function): void;
+        init(layerService: csComp.Services.LayerService): void;
+    }
+    class LayerActions extends BasicActionService {
+        id: string;
+        getFeatureActions(feature: IFeature): IActionOption[];
+        getFeatureHoverActions(feature: IFeature): IActionOption[];
+        private setAsFilter(feature, layerService);
+        search(query: ISearchQuery, result: SearchResultHandler): void;
+        init(layerService: csComp.Services.LayerService): void;
+    }
+}
+
+declare module csComp.Services {
+    /** describes a layer source, every layer has a layer source that is responsible for importing the data (e.g. geojson, wms, etc */
+    interface ILayerSource {
+        title: string;
+        service: LayerService;
+        addLayer(layer: ProjectLayer, callback: Function, data: Object): any;
+        removeLayer(layer: ProjectLayer): void;
+        refreshLayer(layer: ProjectLayer): void;
+        requiresLayer: boolean;
+        getRequiredLayers?(layer: ProjectLayer): ProjectLayer[];
+        layerMenuOptions(layer: ProjectLayer): [[string, Function]];
+    }
+    /** layer service is responsible for reading and managing all project, layer and sensor related data */
+    class LayerService {
+        private $location;
+        $compile: any;
+        $translate: ng.translate.ITranslateService;
+        $messageBusService: Services.MessageBusService;
+        $mapService: Services.MapService;
+        $rootScope: any;
+        geoService: GeoService;
+        $http: ng.IHttpService;
+        private expressionService;
+        maxBounds: IBoundingBox;
+        title: string;
+        accentColor: string;
+        mb: Services.MessageBusService;
+        map: Services.MapService;
+        _featureTypes: {
+            [key: string]: IFeatureType;
+        };
+        propertyTypeData: {
+            [key: string]: IPropertyType;
+        };
+        project: Project;
+        projectUrl: SolutionProject;
+        solution: Solution;
+        openSingleProject: boolean;
+        emptySolutionUrl: string;
+        dimension: any;
+        lastSelectedFeature: IFeature;
+        selectedFeatures: IFeature[];
+        selectedLayerId: string;
+        timeline: any;
+        _activeContextMenu: IActionOption[];
+        editing: boolean;
+        directoryHandle: MessageBusHandle;
+        /** indicator true for mobile devices */
+        isMobile: boolean;
+        currentLocale: string;
+        /** layers that are currently active */
+        loadedLayers: {
+            [key: string]: ProjectLayer;
+        };
+        /** list of available layer sources */
+        layerSources: {
+            [key: string]: ILayerSource;
+        };
+        /** list of available map renderers */
+        mapRenderers: {
+            [key: string]: IMapRenderer;
+        };
+        /** map render currently in use */
+        activeMapRenderer: IMapRenderer;
+        /** list of all loaded types resources */
+        typesResources: {
+            [key: string]: ITypesResource;
+        };
+        actionServices: IActionService[];
+        currentContour: L.GeoJSON;
+        startDashboardId: string;
+        visual: VisualState;
+        throttleSensorDataUpdate: Function;
+        static $inject: string[];
+        constructor($location: ng.ILocationService, $compile: any, $translate: ng.translate.ITranslateService, $messageBusService: Services.MessageBusService, $mapService: Services.MapService, $rootScope: any, geoService: GeoService, $http: ng.IHttpService, expressionService: csComp.Services.ExpressionService);
+        /**
+         * Get external sensordata for loaded layers with sensor links enabled
+         */
+        updateSensorLinks(): void;
+        enableDrop(): void;
+        handleFileUpload(files: any, obj: any): void;
+        checkMobile(): void;
+        getActions(feature: IFeature, type: ActionType): IActionOption[];
+        addActionService(as: IActionService): void;
+        removeActionService(as: IActionService): void;
+        /** Find a dashboard by ID */
+        findDashboardById(dashboardId: string): Dashboard;
+        /** Find a widget by ID, optionally supplying its parent dashboard id. */
+        findWidgetById(widgetId: string, dashboardId?: string): IWidget;
+        /**
+         * Initialize the available layer sources
+         */
+        private initLayerSources();
+        private removeSubLayers(feature);
+        /**
+        check for every feature (de)select if layers should automatically be activated
+        */
+        private checkFeatureSubLayers();
+        loadRequiredLayers(layer: ProjectLayer): void;
+        addLayer(layer: ProjectLayer, layerloaded?: Function, data?: any): void;
+        saveResource(resource: TypeResource): void;
+        expandGroup(layer: ProjectLayer): void;
+        collapseAll(): void;
+        expandAll(): void;
+        /** load external type resource for a project or layer */
+        loadTypeResources(url: any, requestReload: boolean, callback: Function): void;
+        /**
+         * returns a list of all project layers in all groups
+         */
+        allLayers(): ProjectLayer[];
+        /** add a types resource (project, resource file or layer) */
+        initTypeResources(source: any): void;
+        getLayerPropertyTypes(layer: ProjectLayer): IPropertyType[];
+        checkLayerLegend(layer: ProjectLayer, property: string): void;
+        /**
+         * Check whether we need to enable the timer to refresh the layer.
+         */
+        private checkLayerTimer(layer);
+        removeStyle(style: GroupStyle): void;
+        updatePropertyStyle(k: string, v: any, parent: any): void;
+        updateStyle(style: GroupStyle): void;
+        private updateGroupFeatures(group);
+        /** Recompute the style of the layer features, e.g. after changing the opacity or after
+         *	zooming to a level outside the layers' range.
+         */
+        updateLayerFeatures(layer: ProjectLayer): void;
+        updateCanvasOverlay(layer: ProjectLayer): void;
+        updateFeatureTypes(featureType: IFeatureType): void;
+        selectRenderer(renderer: string): void;
+        editFeature(feature: IFeature): void;
+        private deselectFeature(feature);
+        selectFeature(feature: IFeature, multi?: boolean, force?: boolean): void;
+        private lookupLog(logs, timestamp);
+        updateLog(f: IFeature): void;
+        updateFeature(feature: IFeature): void;
+        updateFeatureSensorData(f: IFeature, date: number, timepos: Object): void;
+        /** update for all features the active sensor data values and update styles */
+        updateSensorData(): void;
+        /***
+         * get list of properties that are part of the filter collection
+         */
+        private filterProperties(group);
+        /**
+         * init feature (add to feature list, crossfilter)
+         */
+        initFeature(feature: IFeature, layer: ProjectLayer, applyDigest?: boolean, publishToTimeline?: boolean): IFeatureType;
+        /** remove feature */
+        removeFeature(feature: IFeature, dynamic?: boolean): void;
+        /**
+        * Calculate the effective feature style.
+        */
+        calculateFeatureStyle(feature: IFeature): void;
+        /**
+        * Initialize the feature type and its property types by setting default property values, and by localizing it.
+        */
+        private initFeatureType(ft, propertyTypes);
+        /** Set the iconUri for remote servers (newIconUri = server/oldIconUri) */
+        private initIconUri(ft);
+        /**
+        * Initialize the property type with default values, and, if applicable, localize it.
+        */
+        private initPropertyType(pt);
+        /**
+        * Set default PropertyType's properties:
+        * type              = text
+        * visibleInCallout  = true
+        * canEdit           = false
+        * isSearchable      = true
+        */
+        private setDefaultPropertyType(pt);
+        private localizePropertyType(pt);
+        findResourceByLayer(layer: ProjectLayer): TypeResource;
+        findResourceByFeature(feature: IFeature): ITypesResource;
+        /**
+         * find a filter for a specific group/property combination
+         */
+        private findFilter(group, property);
+        /**
+         * Find a feature by layerId and FeatureId.
+         * @layerId {string}
+         * @featureIndex {number}
+         */
+        findFeatureByIndex(layerId: string, featureIndex: number): IFeature;
+        /**
+         * Find a feature by layerId and FeatureId.
+         * @layerId {string}
+         * @featureIndex {number}
+         */
+        findFeatureById(featureId: string): IFeature;
+        /**
+         * Find a feature by layerId and FeatureId.
+         * @layer {ProjectLayer}
+         * @featureId {number}
+         */
+        findFeature(layer: ProjectLayer, featureId: string): IFeature;
+        /**
+         * Find a group by id
+         */
+        findGroupById(id: string): ProjectGroup;
+        /**
+         * Find a group by id
+         */
+        findGroupByLayerId(layer: ProjectLayer): ProjectGroup;
+        /**
+         * Find the feature by name.
+         */
+        findFeatureByName(name: string): IFeature;
+        /**
+        * Find a loaded layer with a specific id.
+        */
+        findLoadedLayer(id: string): ProjectLayer;
+        /**
+         * Find a layer with a specific id.
+         */
+        findLayer(id: string): ProjectLayer;
+        setGroupStyle(group: ProjectGroup, property: IPropertyType): void;
+        /**
+         * Creates a GroupStyle based on a property and adds it to a group.
+         * If the group already has a style which contains legends, those legends are copied into the newly created group.
+         * Already existing groups (for the same visualAspect) are replaced by the new group
+         * Restoring a previously used groupstyle is possible by sending that GroupStyle object
+         */
+        setStyle(property: any, openStyleTab?: boolean, customStyleInfo?: PropertyInfo, groupStyle?: GroupStyle): any;
+        toggleStyle(property: any, group: ProjectGroup, openStyleTab?: boolean, customStyleInfo?: PropertyInfo): void;
+        /**
+         * checks if there are other styles that affect the same visual aspect, removes them (it)
+         * and then adds the style to the group's styles
+         */
+        saveStyle(group: ProjectGroup, style: GroupStyle): void;
+        addFilter(group: ProjectGroup, prop: string): void;
+        /**
+         * enable a filter for a specific property
+         */
+        setFilter(filter: GroupFilter, group: csComp.Services.ProjectGroup): void;
+        setLocationFilter(group: ProjectGroup): void;
+        setFeatureAreaFilter(f: IFeature): void;
+        resetFeatureAreaFilter(): void;
+        /**
+        * enable a filter for a specific property
+        */
+        setPropertyFilter(property: FeatureProps.CallOutProperty): void;
+        createScatterFilter(group: ProjectGroup, prop1: string, prop2: string): void;
+        triggerUpdateFilter(groupId: string): void;
+        /** remove filter from group */
+        removeFilter(filter: GroupFilter): void;
+        /**
+         * Returns propertytype for a specific property in a feature
+         */
+        getPropertyType(feature: IFeature, property: string): IPropertyType;
+        /**
+        Returns the featureTypeId for specific feature.
+        It looks for the FeatureTypeId property, defaultFeatureType of his layer
+        and checks if it should be found in a resource file or within his own layer
+        */
+        getFeatureTypeId(feature: IFeature): string;
+        /**
+         * Find a feature type by its ID (of the format 'featuretypeurl + # + featuretypename').
+         * If it does not exist, return null.
+         */
+        getFeatureTypeById(featureTypeId: string): IFeatureType;
+        /**
+         * Return the feature style for a specific feature.
+         * First, look for a layer specific feature type, otherwise, look for a project-specific feature type.
+         * In case both fail, create a default feature type at the layer level.
+         *
+         * If the feature type contains a _{xxx} part, replace the {xxx} with the value of feature.property['xxx']
+         * if it exists, otherwise remove it.
+         */
+        getFeatureType(feature: IFeature): IFeatureType;
+        private createMissingFeatureType(feature);
+        resetFilters(): void;
+        private getGroupFeatures(g);
+        rebuildFilters(g: ProjectGroup): void;
+        /**
+         * deactivate layer
+         */
+        removeLayer(layer: ProjectLayer, removeFromGroup?: boolean): void;
+        /***
+         * Open solution file with references to available baselayers and projects
+         * @params url: URL of the solution
+         * @params layers: Optionally provide a semi-colon separated list of layer IDs that should be opened.
+         * @params initialProject: Optionally provide a project name that should be loaded, if omitted the first project in the definition will be loaded
+         */
+        openSolution(url: string, layers?: string, initialProject?: string): void;
+        /**
+        * Clear all layers.
+        */
+        clearLayers(): void;
+        /**
+         * Open project
+         * @params url: URL of the project
+         * @params layers: Optionally provide a semi-colon separated list of layer IDs that should be opened.
+         * @params project: Optionally provide the project that should be parsed. If not provided, it will be requested using the solution url.
+         */
+        openProject(solutionProject: csComp.Services.SolutionProject, layers?: string, project?: Project): void;
+        private parseProject(prj, solutionProject, layerIds);
+        private apply();
+        toggleLayer(layer: ProjectLayer): void;
+        removeGroup(group: ProjectGroup): void;
+        /** initializes project group (create crossfilter index, clustering, initializes layers) */
+        initGroup(group: ProjectGroup, layerIds?: string[]): void;
+        /** initializes a layer (check for id, language, references group, add to active map renderer) */
+        initLayer(group: ProjectGroup, layer: ProjectLayer, layerIds?: string[]): void;
+        checkDataSourceSubscriptions(ds: DataSource): void;
+        checkSubscriptions(): void;
+        closeProject(): void;
+        /** Find a sensor set for a specific source/sensor combination. Key should be something like datasource/sensorid */
+        findSensorSet(key: string, callback: Function): any;
+        getPropertyValues(layer: ProjectLayer, property: string): Object[];
+        /**
+         * Calculate min/max/count for a specific property in a group
+         */
+        calculatePropertyInfo(group: ProjectGroup, property: string): PropertyInfo;
+        updateFilterGroupCount(group: ProjectGroup): void;
+        private trackGeometry(f, result);
+        /**
+         * Check for property changes inside a feature, return a set of logs in result
+         */
+        private trackPropertyLog(f, key, result);
+        private trackFeature(feature);
+        isLocked(f: IFeature): boolean;
+        /**
+         * Set a lock property on the feature to signal others prevent feature updates
+         */
+        lockFeature(f: IFeature): boolean;
+        unlockFeature(f: IFeature): void;
+        saveProject(): void;
+        private updateProjectReady(data);
+        /**
+         * Save feature back to the server
+         */
+        saveFeature(f: IFeature, logs?: boolean): void;
+        /**
+         * Update the filter status of a feature, i.e. the _gui.included property.
+         * When a filter is applied, and the feature is not shown anymore, the feature._gui.included = false.
+         * In all other cases, it is true. */
+        private updateFilterStatusFeature(group);
+        /***
+         * Update map markers in cluster after changing filter
+         */
+        updateMapFilter(group: ProjectGroup): void;
+        resetMapFilter(group: ProjectGroup): void;
+    }
+    /**
+     * object for sending layer messages over socket.io channel
+     */
+    class LayerUpdate {
+        layerId: string;
+        action: LayerUpdateAction;
+        item: any;
+        featureId: string;
+    }
+    /**
+     * List of available action for sending/receiving layer actions over socket.io channel
+     */
+    enum LayerUpdateAction {
+        updateFeature = 0,
+        updateLog = 1,
+        deleteFeature = 2,
+    }
+    /**
+      * Module
+      */
+    var myModule: any;
+}
+
+declare module MatrixAction {
+    import IFeature = csComp.Services.IFeature;
+    import IActionOption = csComp.Services.IActionOption;
+    class MatrixActionModel extends csComp.Services.BasicActionService {
+        id: string;
+        getFeatureActions(feature: IFeature): IActionOption[];
+        getFeatureHoverActions(feature: IFeature): IActionOption[];
+        private showContour(feature, layerService);
+        private hideContour(feature, layerService);
+        init(layerService: csComp.Services.LayerService): void;
+    }
+}
+
+declare module csComp.Search {
+    interface ISearchFormScope extends ng.IScope {
+        vm: SearchFormCtrl;
+        location: L.LatLng;
+    }
+    class SearchFormCtrl {
+        private $scope;
+        private $mapService;
+        static $inject: string[];
+        constructor($scope: ISearchFormScope, $mapService: csComp.Services.MapService);
+        doSearch(): void;
+    }
+}
+
+declare module csComp.Services {
+    class MapService {
+        private $localStorageService;
+        private $timeout;
+        private $messageBusService;
+        private static expertModeKey;
+        static $inject: string[];
+        map: L.Map;
+        baseLayers: any;
+        activeBaseLayer: BaseLayer;
+        activeBaseLayerId: string;
+        mapVisible: boolean;
+        timelineVisible: boolean;
+        rightMenuVisible: boolean;
+        maxBounds: IBoundingBox;
+        expertMode: Expertise;
+        constructor($localStorageService: ng.localStorage.ILocalStorageService, $timeout: ng.ITimeoutService, $messageBusService: csComp.Services.MessageBusService);
+        /**
+         * The expert mode can either be set manually, e.g. using this directive, or by setting the expertMode property in the
+         * project.json file. In neither are set, we assume that we are dealing with an expert, so all features should be enabled.
+         *
+         * Precedence:
+         * - when a declaration is absent, assume Expert.
+         * - when the mode is set in local storage, take that value.
+         * - when the mode is set in the project.json file, take that value.
+         */
+        private initExpertMode();
+        isExpert: boolean;
+        isIntermediate: boolean;
+        isAdminExpert: boolean;
+        getBaselayer(layer: string): BaseLayer;
+        changeBaseLayer(layer: string): void;
+        invalidate(): void;
+        /**
+         * Zoom to a location on the map.
+         */
+        zoomToLocation(center: L.LatLng, zoomFactor?: number): void;
+        /**
+         * Zoom to a feature on the map.
+         */
+        zoomTo(feature: IFeature, zoomLevel?: number): void;
+        /**
+         * Compute the bounding box.
+         * Returns [min_x, max_x, min_y, max_y]
+         */
+        private getBoundingBox(arr);
+        getMap(): L.Map;
+    }
+    /**
+      * Module
+      */
+    var myModule: any;
 }
 
 declare module Accessibility {
@@ -1723,6 +2580,7 @@ declare module Accessibility {
 }
 
 import IFeature = csComp.Services.IFeature;
+import IPropertyType = csComp.Services.IPropertyType;
 import IActionOption = csComp.Services.IActionOption;
 declare module Accessibility {
     class AccessibilityModel implements csComp.Services.IActionService {
@@ -1799,6 +2657,13 @@ declare module BaseMapList {
     }
 }
 
+declare module Directives.Clock {
+    /**
+      * Module
+      */
+    var myModule: any;
+}
+
 declare module Charts {
     /**
       * Module
@@ -1845,6 +2710,7 @@ declare module Charts {
         * Convert a timestamp to string.
         */
         static timestampToString(ts: number): any;
+        static timestampToTimeString(ts: number): any;
         static windowResize(fun: any): void;
         static initializeMargin(scope: any, attrs: any): void;
         static getD3Selector(attrs: any, element: any): string;
@@ -1914,13 +2780,6 @@ declare module Charts {
         };
         showaxis?: boolean;
     }
-}
-
-declare module Directives.Clock {
-    /**
-      * Module
-      */
-    var myModule: any;
 }
 
 declare module Helpers.ContextMenu {
@@ -2013,6 +2872,58 @@ declare module DataTable {
          * Convert to trusted html string.
          */
         toTrusted(html: string): any;
+    }
+}
+
+declare module EventTab {
+    /**
+      * Module
+      */
+    var myModule: any;
+}
+
+declare module EventTab {
+    interface IEventTabScope extends ng.IScope {
+        vm: EventTabCtrl;
+        showMenu: boolean;
+        title: string;
+        icon: string;
+    }
+    class EventTabCtrl {
+        private $scope;
+        private $location;
+        private $sce;
+        private $mapService;
+        private $layerService;
+        private $messageBusService;
+        private $translate;
+        private scope;
+        kanban: KanbanColumn.KanbanConfig;
+        layer: csComp.Services.ProjectLayer;
+        private debounceSendItems;
+        private tlItems;
+        private newItems;
+        private tlGroups;
+        static $inject: string[];
+        constructor($scope: IEventTabScope, $location: ng.ILocationService, $sce: ng.ISCEService, $mapService: csComp.Services.MapService, $layerService: csComp.Services.LayerService, $messageBusService: csComp.Services.MessageBusService, $translate: ng.translate.ITranslateService);
+        /**
+         * Initialize an eventTab. Create a layer that contains all messages (features)
+         */
+        private init();
+        reset(): void;
+        private addUpdateEvent(f);
+        private addEvent(f);
+        private addTimelineItem(f);
+        private mergeItems();
+        private sendTimelineItems();
+        private sendTimelineGroups();
+        /**
+         * Callback function
+         * @see {http://stackoverflow.com/questions/12756423/is-there-an-alias-for-this-in-typescript}
+         * @see {http://stackoverflow.com/questions/20627138/typescript-this-scoping-issue-when-called-in-jquery-callback}
+         * @todo {notice the strange syntax using a fat arrow =>, which is to preserve the this reference in a callback!}
+         */
+        private sidebarMessageReceived;
     }
 }
 
@@ -2198,7 +3109,8 @@ declare module FeatureProps {
         private scope;
         lastSelectedProperty: IPropertyType;
         private defaultDropdownTitle;
-        private stats;
+        private showMore;
+        private showChart;
         static $inject: string[];
         constructor($scope: IFeaturePropsScope, $location: ng.ILocationService, $sce: ng.ISCEService, $mapService: csComp.Services.MapService, $layerService: csComp.Services.LayerService, $messageBusService: csComp.Services.MessageBusService, $translate: ng.translate.ITranslateService, $compile: ng.ICompileService);
         updateAllStatsDelay: () => void;
@@ -2222,6 +3134,7 @@ declare module FeatureProps {
         private sidebarMessageReceived;
         private featureMessageReceived;
         setCorrelation(item: ICallOutProperty, $event: ng.IAngularEvent): void;
+        addSparkline(item: ICallOutProperty): void;
         createSparkLineChart(item: ICallOutProperty): void;
         getPropStats(item: ICallOutProperty): void;
         featureType: IFeatureType;
@@ -2300,11 +3213,11 @@ declare module FeatureRelations {
         getRelations(): RelationGroup[];
         constructor($scope: IFeatureRelationsScope, $location: ng.ILocationService, $sce: ng.ISCEService, $mapService: csComp.Services.MapService, $layerService: csComp.Services.LayerService, $messageBusService: csComp.Services.MessageBusService, $translate: ng.translate.ITranslateService);
         /**
-                 * Callback function
-                 * @see {http://stackoverflow.com/questions/12756423/is-there-an-alias-for-this-in-typescript}
-                 * @see {http://stackoverflow.com/questions/20627138/typescript-this-scoping-issue-when-called-in-jquery-callback}
-                 * @todo {notice the strange syntax using a fat arrow =>, which is to preserve the this reference in a callback!}
-                 */
+         * Callback function
+         * @see {http://stackoverflow.com/questions/12756423/is-there-an-alias-for-this-in-typescript}
+         * @see {http://stackoverflow.com/questions/20627138/typescript-this-scoping-issue-when-called-in-jquery-callback}
+         * @todo {notice the strange syntax using a fat arrow =>, which is to preserve the this reference in a callback!}
+         */
         private sidebarMessageReceived;
         private featureMessageReceived;
     }
@@ -2741,6 +3654,12 @@ declare module KanbanColumn {
         columnOrderBy: string;
         query: string;
         fields: any;
+        layer: csComp.Services.ProjectLayer;
+        /** In case the KanbanColumn should use a temporary layer instead of a project layer, this should be set
+         *  to true and the layer should be passed through the scope variables. One example where this is used,
+         *  is in the EventTab.
+         */
+        providedlayer: boolean;
     }
     class ColumnFilter {
         layerId: string;
@@ -2749,8 +3668,11 @@ declare module KanbanColumn {
         tags: string[];
     }
     class Column {
+        title: string;
         id: string;
         filters: ColumnFilter;
+        propertyTags: string[];
+        timeReference: string;
         roles: string[];
         fields: any;
         orderBy: string;
@@ -2817,6 +3739,46 @@ declare module LanguageSwitch {
         static $inject: string[];
         constructor($scope: ILanguageSwitchScope, $translate: ng.translate.ITranslateService, $languages: ILanguage[], $layerService: csComp.Services.LayerService, $messageBus: csComp.Services.MessageBusService);
         switchLanguage(language: ILanguage): void;
+    }
+}
+
+declare module Legend {
+    /**
+      * Module
+      */
+    var myModule: any;
+}
+
+declare module Legend {
+    class LegendData {
+        propertyTypeKey: string;
+        mode: string;
+    }
+    interface ILegendDirectiveScope extends ng.IScope {
+        vm: LegendCtrl;
+        data: LegendData;
+        legend: csComp.Services.Legend;
+    }
+    class LegendCtrl {
+        private $scope;
+        private $layerService;
+        private $messageBus;
+        private scope;
+        private widget;
+        private passcount;
+        private subscribeHandle;
+        static $inject: string[];
+        constructor($scope: ILegendDirectiveScope, $layerService: csComp.Services.LayerService, $messageBus: csComp.Services.MessageBusService);
+        createLegend(): csComp.Services.Legend;
+        createLegendEntry(activeStyle: csComp.Services.GroupStyle, ptd: csComp.Services.IPropertyType, value: number): csComp.Services.LegendEntry;
+        getStyle(legend: csComp.Services.Legend, le: csComp.Services.LegendEntry, key: number): {
+            'float': string;
+            'position': string;
+            'top': string;
+            'background': string;
+            'border-left': string;
+            'border-right': string;
+        };
     }
 }
 
@@ -2915,46 +3877,6 @@ declare module LayersDirective {
     }
 }
 
-declare module Legend {
-    /**
-      * Module
-      */
-    var myModule: any;
-}
-
-declare module Legend {
-    class LegendData {
-        propertyTypeKey: string;
-        mode: string;
-    }
-    interface ILegendDirectiveScope extends ng.IScope {
-        vm: LegendCtrl;
-        data: LegendData;
-        legend: csComp.Services.Legend;
-    }
-    class LegendCtrl {
-        private $scope;
-        private $layerService;
-        private $messageBus;
-        private scope;
-        private widget;
-        private passcount;
-        private subscribeHandle;
-        static $inject: string[];
-        constructor($scope: ILegendDirectiveScope, $layerService: csComp.Services.LayerService, $messageBus: csComp.Services.MessageBusService);
-        createLegend(): csComp.Services.Legend;
-        createLegendEntry(activeStyle: csComp.Services.GroupStyle, ptd: csComp.Services.IPropertyType, value: number): csComp.Services.LegendEntry;
-        getStyle(legend: csComp.Services.Legend, le: csComp.Services.LegendEntry, key: number): {
-            'float': string;
-            'position': string;
-            'top': string;
-            'background': string;
-            'border-left': string;
-            'border-right': string;
-        };
-    }
-}
-
 declare module LegendList {
     /**
       * Module
@@ -2967,6 +3889,9 @@ declare module LegendList {
         title: string;
         uri: string;
         html: string;
+        count?: number;
+        expressions?: IPropertyType[];
+        features?: IFeature[];
     }
     interface ILegendListScope extends ng.IScope {
         vm: LegendListCtrl;
@@ -2975,21 +3900,27 @@ declare module LegendList {
     }
     class LegendListCtrl {
         private $scope;
-        private $layerService;
-        private $mapService;
-        private $messageBusService;
         private $sce;
+        private $timeout;
+        private layerService;
+        private mapService;
+        private messageBusService;
+        private expressionService;
+        /** Active bounding box */
+        private bbox;
+        /** If true, the legend is visible in the DOM. */
+        private isVisible;
         static $inject: string[];
-        constructor($scope: ILegendListScope, $layerService: csComp.Services.LayerService, $mapService: csComp.Services.MapService, $messageBusService: csComp.Services.MessageBusService, $sce: ng.ISCEService);
+        constructor($scope: ILegendListScope, $sce: ng.ISCEService, $timeout: ng.ITimeoutService, layerService: csComp.Services.LayerService, mapService: csComp.Services.MapService, messageBusService: csComp.Services.MessageBusService, expressionService: csComp.Services.ExpressionService);
         /**
          * Three approaches for creating a legend can be used:
-         * 1. Using the featureTypes loaded in LayerService, which is quick, but also includes items that are not on the list.
+         * 1. Using the featureTypes loaded in LayerService, which is quick, but also includes items that are not shown.
          *    Also, when deactivating the layer, items persist in the legendlist. Finally, items with an icon based on a property
          *    are only shown once (e.g., houses with energylabels).
          * 2. Second approach is to loop over all features on the map and select unique legend items. This is slower for large
          *    amounts of features, but the items in the legendlist are always complete and correct.
          * 3. Third approach is to use a legend that is defined in a featuretype. This is useful if you want to show a custom legend.
-         * For 1. use "updateLegendItemsUsingFeatureTypes()", for 2. use "updateLegendItemsUsingFeatures(), for 3. use "updateLegendStatically()"
+         * For 1. use 'updateLegendItemsUsingFeatureTypes()', for 2. use 'updateLegendItemsUsingFeatures(), for 3. use 'updateLegendStatically()'
          */
         private updateLegendItems();
         /**
@@ -2997,10 +3928,10 @@ declare module LegendList {
          * that corresponding featureType is acquired. When the featureType has a property 'legend' in which legenditems are defined,
          * these items are added to the legend.
          * Example definition in the FeatureType:
-         * "MyFeatureType" : {
-         *   "legendItems" : [{
-         *     "title" : "My feature",
-         *     "uri" : "images/myicon.png"
+         * 'MyFeatureType' : {
+         *   'legendItems' : [{
+         *     'title' : 'My feature',
+         *     'uri' : 'images/myicon.png'
          *   }]
          * }
          */
@@ -3271,30 +4202,6 @@ declare module Mca {
     }
 }
 
-declare module Mobile {
-    /**
-      * Module
-      */
-    var myModule: any;
-}
-
-declare module Mobile {
-    interface IMobileScope extends ng.IScope {
-        vm: MobileCtrl;
-    }
-    class MobileCtrl {
-        private $scope;
-        private $layerService;
-        private $messageBus;
-        private localStorageService;
-        private geoService;
-        private scope;
-        private availableLayers;
-        static $inject: string[];
-        constructor($scope: IMobileScope, $layerService: csComp.Services.LayerService, $messageBus: csComp.Services.MessageBusService, localStorageService: ng.localStorage.ILocalStorageService, geoService: csComp.Services.GeoService);
-    }
-}
-
 declare module Navigate {
     /**
       * Module
@@ -3305,6 +4212,7 @@ declare module Navigate {
 declare module Navigate {
     interface INavigateScope extends ng.IScope {
         vm: NavigateCtrl;
+        search: string;
     }
     class RecentFeature {
         id: string;
@@ -3326,8 +4234,11 @@ declare module Navigate {
         UserName: string;
         MyFeature: csComp.Services.Feature;
         private lastPost;
+        searchResults: csComp.Services.ISearchResultItem[];
         static $inject: string[];
         constructor($scope: INavigateScope, $layerService: csComp.Services.LayerService, $messageBus: csComp.Services.MessageBusService, localStorageService: ng.localStorage.ILocalStorageService, geoService: csComp.Services.GeoService);
+        selectSearchResult(item: csComp.Services.ISearchResultItem): void;
+        private doSearch(search);
         private leave(l);
         private join(l);
         private initMobileLayers(p);
@@ -3348,6 +4259,30 @@ declare module Search {
     interface INavigateProvider {
         title: string;
         url: string;
+    }
+}
+
+declare module Mobile {
+    /**
+      * Module
+      */
+    var myModule: any;
+}
+
+declare module Mobile {
+    interface IMobileScope extends ng.IScope {
+        vm: MobileCtrl;
+    }
+    class MobileCtrl {
+        private $scope;
+        private $layerService;
+        private $messageBus;
+        private localStorageService;
+        private geoService;
+        private scope;
+        private availableLayers;
+        static $inject: string[];
+        constructor($scope: IMobileScope, $layerService: csComp.Services.LayerService, $messageBus: csComp.Services.MessageBusService, localStorageService: ng.localStorage.ILocalStorageService, geoService: csComp.Services.GeoService);
     }
 }
 
@@ -3561,39 +4496,6 @@ declare module ShowModal {
     var myModule: any;
 }
 
-declare module StyleList {
-    /**
-      * Module
-      */
-    var myModule: any;
-}
-
-declare module StyleList {
-    interface IStyleListScope extends ng.IScope {
-        vm: StyleListCtrl;
-    }
-    class StyleListCtrl {
-        private $scope;
-        private $layerService;
-        private messageBus;
-        private scope;
-        static $inject: string[];
-        selectedGroup: csComp.Services.ProjectGroup;
-        selectedSection: csComp.Services.Section;
-        constructor($scope: IStyleListScope, $layerService: csComp.Services.LayerService, messageBus: csComp.Services.MessageBusService);
-        selectGroup(group: csComp.Services.ProjectGroup): void;
-        selectSection(section: csComp.Services.Section): void;
-        initWizard(): void;
-        setStyle(g: csComp.Services.ProjectGroup, property: csComp.Services.IPropertyType): void;
-        getStyle(legend: csComp.Services.Legend, le: csComp.Services.LegendEntry, key: number): {
-            'float': string;
-            'position': string;
-            'top': string;
-            'background': string;
-        };
-    }
-}
-
 declare module Timeline {
     interface ITimelineService {
         getTimelineOptions(): csComp.Services.ITimelineOptions;
@@ -3639,14 +4541,25 @@ declare module Timeline {
         expandButtonBottom: number;
         items: any;
         private debounceUpdate;
+        private debounceSetItems;
         private ids;
         constructor($scope: ITimelineScope, $layerService: csComp.Services.LayerService, $mapService: csComp.Services.MapService, $messageBusService: csComp.Services.MessageBusService, TimelineService: Timeline.ITimelineService);
         private update(s, data);
         private setFocusContainerDebounce;
+        private setItems(items);
+        private setGroups(groups);
         private updateFeatures();
         private initTimeline();
         updateDragging(): void;
         expandToggle(): void;
+        private throttleTimeSpanUpdate;
+        /**
+         * trigger a debounced timespan updated message on the message bus
+         */
+        private triggerTimeSpanUpdated();
+        /**
+         * time span was updated by timeline control
+         */
         onRangeChanged(prop: any): void;
         start(): void;
         goLive(): void;
@@ -3666,6 +4579,39 @@ declare module Timeline {
         * @seealso: http://almende.github.io/chap-links-library/downloads.html
         */
         loadLocales(): void;
+    }
+}
+
+declare module StyleList {
+    /**
+      * Module
+      */
+    var myModule: any;
+}
+
+declare module StyleList {
+    interface IStyleListScope extends ng.IScope {
+        vm: StyleListCtrl;
+    }
+    class StyleListCtrl {
+        private $scope;
+        private $layerService;
+        private messageBus;
+        private scope;
+        static $inject: string[];
+        selectedGroup: csComp.Services.ProjectGroup;
+        selectedSection: csComp.Services.Section;
+        constructor($scope: IStyleListScope, $layerService: csComp.Services.LayerService, messageBus: csComp.Services.MessageBusService);
+        selectGroup(group: csComp.Services.ProjectGroup): void;
+        selectSection(section: csComp.Services.Section): void;
+        initWizard(): void;
+        setStyle(g: csComp.Services.ProjectGroup, property: csComp.Services.IPropertyType): void;
+        getStyle(legend: csComp.Services.Legend, le: csComp.Services.LegendEntry, key: number): {
+            'float': string;
+            'position': string;
+            'top': string;
+            'background': string;
+        };
     }
 }
 
@@ -3727,826 +4673,531 @@ declare module Voting {
     var myModule: any;
 }
 
-declare module Authentication {
+declare module csComp.Services {
+    class DatabaseSource implements ILayerSource {
+        service: LayerService;
+        title: string;
+        layer: ProjectLayer;
+        requiresLayer: boolean;
+        constructor(service: LayerService);
+        refreshLayer(layer: ProjectLayer): void;
+        addLayer(layer: ProjectLayer, callback: (layer: ProjectLayer) => void): void;
+        /** zoom to boundaries of layer */
+        fitMap(layer: ProjectLayer): void;
+        layerMenuOptions(layer: ProjectLayer): [[string, Function]];
+        protected baseAddLayer(layer: ProjectLayer, callback: (layer: ProjectLayer) => void): void;
+        removeLayer(layer: ProjectLayer): void;
+    }
 }
 
 declare module csComp.Services {
-    interface IMessageBusCallback {
-        (title: string, data?: any): any;
+    class GeoJsonSource implements ILayerSource {
+        service: LayerService;
+        title: string;
+        layer: ProjectLayer;
+        requiresLayer: boolean;
+        $http: ng.IHttpService;
+        constructor(service: LayerService, $http: ng.IHttpService);
+        refreshLayer(layer: ProjectLayer): void;
+        addLayer(layer: ProjectLayer, callback: (layer: ProjectLayer) => void, data?: any): void;
+        /** zoom to boundaries of layer */
+        fitMap(layer: ProjectLayer): void;
+        /** zoom to boundaries of layer */
+        fitTimeline(layer: ProjectLayer): void;
+        layerMenuOptions(layer: ProjectLayer): [[string, Function]];
+        protected baseAddLayer(layer: ProjectLayer, callback: (layer: ProjectLayer) => void, data?: any): void;
+        protected initLayer(data: any, layer: ProjectLayer): void;
+        removeLayer(layer: ProjectLayer): void;
+        private processAccessibilityReply(data, layer, clbk);
     }
-    class ClientMessage {
-        action: string;
-        data: any;
-        constructor(action: string, data: any);
+    class DynamicGeoJsonSource extends GeoJsonSource {
+        service: LayerService;
+        title: string;
+        connection: Connection;
+        constructor(service: LayerService, $http: ng.IHttpService);
+        private updateFeatureByProperty(key, id, value, layer?);
+        private deleteFeatureByProperty(key, id, value);
+        initSubscriptions(layer: ProjectLayer): void;
+        addLayer(layer: ProjectLayer, callback: (layer: ProjectLayer) => void, data?: any): void;
+        removeLayer(layer: ProjectLayer): void;
+        layerMenuOptions(layer: ProjectLayer): [[string, Function]];
+        startAddingFeatures(layer: csComp.Services.ProjectLayer): void;
+        initAvailableFeatureTypes(layer: csComp.Services.ProjectLayer): void;
+        stopAddingFeatures(layer: csComp.Services.ProjectLayer): void;
     }
-    class MessageBusHandle {
-        constructor(topic: string, callback: IMessageBusCallback);
-        topic: string;
-        callback: IMessageBusCallback;
+    interface IOtpLeg {
+        mode: string;
+        start: string;
+        arrive: string;
+        duration: string;
+        route?: string;
+        routeName?: string;
+        agency?: string;
     }
-    interface IBaseEvent {
-        add(listener: () => void): void;
-        remove(listener: () => void): void;
-        trigger(...a: any[]): void;
+    class EsriJsonSource extends GeoJsonSource {
+        service: LayerService;
+        title: string;
+        connection: Connection;
+        $http: ng.IHttpService;
+        constructor(service: LayerService, $http: ng.IHttpService);
+        addLayer(layer: ProjectLayer, callback: (layer: ProjectLayer) => void): void;
     }
-    class TypedEvent implements IBaseEvent {
-        private _listeners;
-        add(listener: () => void): void;
-        remove(listener?: () => void): void;
-        trigger(...a: any[]): void;
-    }
-    interface IMessageEvent extends IBaseEvent {
-        add(listener: (message: string) => void): void;
-        remove(listener: (message: string) => void): void;
-        trigger(message: string): void;
-    }
-    class Connection {
-        id: string;
-        url: string;
-        bus: MessageBusService;
-        isConnected: boolean;
-        isConnecting: boolean;
-        cache: {
-            [topic: string]: Array<IMessageBusCallback>;
-        };
-        subscriptions: {
-            [id: string]: ServerSubscription;
-        };
-        socket: any;
-        events: IMessageEvent;
-        constructor(id: string, url: string, bus: MessageBusService);
-        unsubscribe(id: string, callback: IMessageBusCallback): void;
-        reSubscribeAll(): void;
-        disconnectAll(): void;
-        subscribe(target: string, type: string, callback: IMessageBusCallback): ServerSubscription;
-        connect(callback: Function): void;
-        disconnect(): void;
-    }
-    enum NotifyLocation {
-        BottomRight = 0,
-        BottomLeft = 1,
-        TopRight = 2,
-        TopLeft = 3,
-    }
-    enum NotifyType {
-        Normal = 0,
-        Info = 1,
-        Error = 2,
-        Success = 3,
-    }
-    class ServerSubscription {
-        target: string;
-        type: string;
-        callbacks: Array<IMessageBusCallback>;
-        id: string;
-        serverCallback: any;
-        constructor(target: string, type: string);
+}
+
+declare module csComp.Services {
+    interface IGridDataSourceParameters extends IProperty {
+        /**
+         * Grid type, for example 'custom' (default) or 'esri' ASCII Grid
+         */
+        gridType?: string;
+        /**
+         * Projection of the ESRI ASCII GRID
+         */
+        projection?: string;
+        /**
+         * Property name of the cell value of the generated json.
+         */
+        propertyName?: string;
+        /**
+         * Skip a comment line when it starts with this character
+         */
+        commentCharacter?: string;
+        /**
+         * Character that separates cells. Default is space.
+         */
+        separatorCharacter?: string;
+        /**
+         * Skip a number of lines from the start.
+         */
+        skipLines?: number;
+        /**
+         * Skip a number of lines after a comment block ends.
+         */
+        skipLinesAfterComment?: number;
+        /**
+         * Skip a number of spaces from the start of the line.
+         */
+        skipSpacesFromLine?: number;
+        /**
+         * Number of grid columns.
+         */
+        columns?: number;
+        /**
+         * Number of grid rows.
+         */
+        rows?: number;
+        /**
+         * Start latitude in degrees.
+         */
+        startLat?: number;
+        /**
+         * Start longitude in degrees.
+         */
+        startLon?: number;
+        /**
+         * Add deltaLat after processing a grid cell.
+         * NOTE: When the direction is negative, use a minus sign e.g. when counting from 90 to -90..
+         */
+        deltaLat?: number;
+        /**
+         * Add deltaLon degrees after processing a grid cell.
+         */
+        deltaLon?: number;
+        /**
+         * Skip a first column, e.g. containing the latitude degree.
+         */
+        skipFirstColumn?: boolean;
+        /**
+         * Skip a first row, e.g. containing the longitude degree.
+         */
+        skipFirstRow?: boolean;
+        /**
+         * When the cell value is below this threshold, it is ignored.
+         */
+        minThreshold?: number;
+        /**
+        * When the cell value is above this threshold, it is ignored.
+         */
+        maxThreshold?: number;
+        /**
+         * The input values to be NoData in the output raster. Optional. Default is -9999.
+         */
+        noDataValue: number;
+        /** If true, use the CONREC contouring algorithm to create isoline contours */
+        useContour?: boolean;
+        /** When using contours, this specifies the number of contour levels to use. */
+        contourLevels?: number | number[];
+        /** Define the color used to draw grid cells having the minimum value. */
+        minColor?: string;
+        /** Define the color used to draw grid cells having the maximum value. */
+        maxColor?: string;
+        /** When using the GridLayerRenderer, the cell colors can be chosen through a groupstyle. This will be the description the legend
+         * accompanying that style.
+         */
+        legendDescription?: string;
+        /** When using the GridLayerRenderer, the cell colors can be chosen through a groupstyle. This will be the stringformat the legend
+         * entries accompanying that style.
+         */
+        legendStringFormat?: string;
+        /** Optionally, a legend can be provided. This legend overrides the parameters that define a legend too (minColor, maxColor, legendDescription,
+         * legendStringFormat). If it's not defined, a legend will be created from those 4 parameters and the contourLevels.
+         */
+        legend?: Legend;
     }
     /**
-     * Simple message bus service, used for subscribing and unsubsubscribing to topics.
-     * @see {@link https://gist.github.com/floatingmonkey/3384419}
+     * A GRID data source is a raster or grid in which the grid cells are delimited by spaces
+     * and each newline indicates a new row of data.
      */
-    class MessageBusService {
-        private $translate;
-        private static cache;
-        static $inject: string[];
-        private connections;
-        private notifications;
-        constructor($translate: ng.translate.ITranslateService);
-        getConnection(id: string): Connection;
-        initConnection(id: string, url: string, callback: Function): void;
-        serverPublish(topic: string, message: any, serverId?: string): any;
-        serverSendMessage(msg: ClientMessage, serverId?: string): any;
-        serverSendMessageAction(action: string, data: any, serverId?: string): void;
-        serverSubscribe(target: string, type: string, callback: IMessageBusCallback, serverId?: string): MessageBusHandle;
-        serverUnsubscribe(handle: MessageBusHandle, serverId?: string): any;
-        /**
-         * Publish a notification that needs to be translated
-         * @title:       the translation key of the notification's title
-         * @text:        the translation key of the notification's content
-         * @location:    the location on the screen where the notification is shown (default bottom right)
-         */
-        notifyWithTranslation(title: string, text: string, location?: NotifyLocation): void;
-        /**
-         * Publish a notification
-         * @title:       the title of the notification
-         * @text:        the contents of the notification
-         * @location:    the location on the screen where the notification is shown (default bottom right)
-         * @notifyType:  the type of notification
-         */
-        notify(title: string, text: string, location?: NotifyLocation, notifyType?: NotifyType): void;
-        /**
-         * Show a confirm dialog
-         * @title           : the title of the notification
-         * @text            : the contents of the notification
-         * @callback        : the callback that will be called after the confirmation has been answered.
-         */
-        confirm(title: string, text: string, callback: (result: boolean) => any): void;
-        notifyBottom(title: string, text: string): void;
-        /**
-         * Publish a notification
-         * @title: the title of the notification
-         * @text:  the contents of the notification
-         */
-        notifyData(data: any): void;
-        /**
-         * Publish to a topic
-         */
-        publish(topic: string, title: string, data?: any): void;
-        /**
-         * Subscribe to a topic
-         * @param {string} topic The desired topic of the message.
-         * @param {IMessageBusCallback} callback The callback to call.
-         */
-        subscribe(topic: string, callback: IMessageBusCallback): MessageBusHandle;
-        /**
-         * Unsubscribe to a topic by providing its handle
-         */
-        unsubscribe(handle: MessageBusHandle): void;
-    }
-    class EventObj {
-        myEvents: any;
-        bind(event: any, fct: any): void;
-        unbind(event: any, fct: any): void;
-        unbindEvent(event: any): void;
-        unbindAll(): void;
-        trigger(event: any, ...args: any[]): void;
-        registerEvent(evtname: string): void;
-        registerEvents(evtnames: Array<string>): void;
-    }
-    /**
-      * Module
-      */
-    var myModule: any;
-}
-
-declare module csComp.Services {
-    interface IChartGenerator {
-        start(ctrl: ChartsWidget.ChartCtrl): any;
-        stop(): any;
-    }
-    class propertySensordataGenerator implements IChartGenerator {
-        private $layerService;
-        private $dashboardService;
-        private ctrl;
-        private mb;
-        private options;
-        constructor($layerService: Services.LayerService, $dashboardService: Services.DashboardService);
-        start(ctrl: ChartsWidget.ChartCtrl): void;
-        private selectFeature(f);
-        stop(): void;
-    }
-}
-
-declare module csComp.Services {
-    /** Contains properties needed to describe right panel */
-    class RightPanelTab {
+    class GridDataSource extends csComp.Services.GeoJsonSource {
+        service: csComp.Services.LayerService;
+        /** Convert a grid point to a Feature. Default implementation is to convert it to a square grid cell (convertPointToPolygon). */
+        private convertDataToFeatureCollection;
         title: string;
-        container: string;
-        directive: string;
-        data: any;
-        icon: string;
-        popover: string;
-    }
-    /** service for managing dashboards */
-    class DashboardService {
-        private $rootScope;
-        private $compile;
-        private $injector;
-        private $location;
-        private $timeout;
-        private $translate;
-        private $messageBusService;
-        private $layerService;
-        private $mapService;
-        maxBounds: IBoundingBox;
-        featureDashboard: csComp.Services.Dashboard;
-        mainDashboard: csComp.Services.Dashboard;
-        editMode: boolean;
-        activeWidget: IWidget;
-        dashboards: any;
-        widgetTypes: {
-            [key: string]: IWidget;
-        };
-        chartGenerators: {
-            [key: string]: Function;
-        };
-        socket: any;
-        editWidgetMode: boolean;
-        static $inject: string[];
-        constructor($rootScope: any, $compile: any, $injector: any, $location: ng.ILocationService, $timeout: ng.ITimeoutService, $translate: ng.translate.ITranslateService, $messageBusService: Services.MessageBusService, $layerService: Services.LayerService, $mapService: Services.MapService);
-        leftMenuVisible(id: string): boolean;
-        selectDashboard(dashboard: csComp.Services.Dashboard, container: string): void;
-        activateTab(tab: RightPanelTab): void;
-        deactivateTabContainer(container: string): void;
-        deactivateTab(tab: RightPanelTab): void;
-        editWidget(widget: csComp.Services.IWidget): void;
-        stopEditWidget(): void;
-        removeWidget(): void;
-    }
-    /**
-      * Module
-      */
-    var myModule: any;
-}
-
-declare module csComp.Services {
-    class top10Generator implements IChartGenerator {
-        private $layerService;
-        private $dashboardService;
-        private ctrl;
-        private mb;
-        private options;
-        constructor($layerService: Services.LayerService, $dashboardService: Services.DashboardService);
-        private layerSub;
-        private styleSub;
-        private style;
-        private layer;
-        start(ctrl: ChartsWidget.ChartCtrl): void;
-        private updateChart(layer);
-        stop(): void;
-    }
-}
-
-declare module csComp.Services {
-    class Coordinates {
-        accuracy: number;
-        latitude: number;
-        longitude: number;
-    }
-    class Geoposition {
-        coords: Coordinates;
-        timestamp: number;
-    }
-    class GeoService {
-        bus: Services.MessageBusService;
-        $rootScope: ng.IRootScopeService;
-        $window: ng.IWindowService;
-        $q: ng.IQService;
-        position: Geoposition;
-        geolocation_msgs: {
-            'errors.location.unsupportedBrowser': string;
-            'errors.location.permissionDenied': string;
-            'errors.location.positionUnavailable': string;
-            'errors.location.timeout': string;
-        };
-        static $inject: string[];
-        constructor(bus: Services.MessageBusService, $rootScope: ng.IRootScopeService, $window: ng.IWindowService, $q: ng.IQService);
-        getLocation(): any;
-        start(opts?: any): void;
-    }
-    /**
-      * Module
-      */
-    var myModule: any;
-}
-
-declare module ContourAction {
-    import IFeature = csComp.Services.IFeature;
-    import IActionOption = csComp.Services.IActionOption;
-    class ContourActionModel implements csComp.Services.IActionService {
-        id: string;
-        private layerService;
-        stop(): void;
-        addFeature(feature: IFeature): void;
-        removeFeature(feature: IFeature): void;
-        selectFeature(feature: IFeature): void;
-        getFeatureActions(feature: IFeature): IActionOption[];
-        getFeatureHoverActions(feature: IFeature): IActionOption[];
-        deselectFeature(feature: IFeature): void;
-        updateFeature(feuture: IFeature): void;
-        private showContour(feature, layerService);
-        private hideContour(feature, layerService);
-        init(layerService: csComp.Services.LayerService): void;
-    }
-}
-
-declare module csComp.Services {
-    class ExpressionService {
-        private $parse;
-        private messageBusService;
+        gridParams: IGridDataSourceParameters;
+        constructor(service: csComp.Services.LayerService, $http: ng.IHttpService);
+        addLayer(layer: csComp.Services.ProjectLayer, callback: (layer: csComp.Services.ProjectLayer) => void): void;
         /**
-         * A common set of operations for parsing Angular expressions, such as:
-         * count, sum, average and standard deviation.
+         * Convert the ESRI ASCII GRID header to grid parameters.
          *
-         * Since Angular's $parse does not allow you to define a function or for loop, we use a hack to supply these
-         * functions through an object.
-         * See also http://glebbahmutov.com/blog/angularjs-parse-hacks/
+            ESRI ASCII Raster format
+            The ESRI ASCII raster format can be used to transfer information to or from other cell-based or raster systems. When an existing raster is output to an ESRI ASCII format raster, the file will begin with header information that defines the properties of the raster such as the cell size, the number of rows and columns, and the coordinates of the origin of the raster. The header information is followed by cell value information specified in space-delimited row-major order, with each row seperated by a carraige return.
+            In order to convert an ASCII file to a raster, the data must be in this same format. The parameters in the header part of the file must match correctly with the structure of the data values.
+            The basic structure of the ESRI ASCII raster has the header information at the beginning of the file followed by the cell value data:
+                NCOLS xxx
+                NROWS xxx
+                XLLCENTER xxx | XLLCORNER xxx
+                YLLCENTER xxx | YLLCORNER xxx
+                CELLSIZE xxx
+                NODATA_VALUE xxx
+                row 1
+                row 2
+                ...
+                row n
+            *
+            Row 1 of the data is at the top of the raster, row 2 is just under row 1, and so on.
+            Header format
+            The syntax of the header information is a keyword paired with the value of that keyword. The definitions of the kewords are:
+            *
+            Parameter	Description	Requirements
+            NCOLS	Number of cell columns.	Integer greater than 0.
+            NROWS	Number of cell rows.	Integer greater than 0.
+            XLLCENTER or XLLCORNER	X coordinate of the origin (by center or lower left corner of the cell).	Match with Y coordinate type.
+            YLLCENTER or YLLCORNER	Y coordinate of the origin (by center or lower left corner of the cell).	Match with X coordinate type.
+            CELLSIZE	Cell size.	Greater than 0.
+            NODATA_VALUE	The input values to be NoData in the output raster.	Optional. Default is -9999.
+            Data format
+            The data component of the ESRI ASCII raster follows the header information.
+            Cell values should be delimited by spaces.
+            No carriage returns are necessary at the end of each row in the raster. The number of columns in the header determines when a new row begins.
+            Row 1 of the data is at the top of the raster, row 2 is just under row 1, and so on.
          */
-        private ops;
-        static $inject: string[];
-        constructor($parse: ng.IParseService, messageBusService: Services.MessageBusService);
+        private convertEsriHeaderToGridParams(input);
+        /** Extract the grid data from the input */
+        private getData(input);
         /**
-         * Evaluate the layer by evaluating any expressions.
-         * @param  {ProjectLayer} layer
+         * Convert the incoming data to a matrix grid.
+         * The incoming data can be in two formats: either it is a string, representing the ASCII grid data,
+         * or it is an (ILayer) object, in which case the data should be in the input.data property.
          */
-        evalLayer(layer: ProjectLayer, featureTypes: {
-            [key: string]: IFeatureType;
-        }): void;
+        private convertDataToGrid(input, gridParams);
         /**
-         * Check whether the features contain an expressions, and if so, evaluate them.
-         * @param  {ng.IParseService} $parse
-         * @param  {csComp.Services.TypeResource} resource
-         * @param  {IFeature[]} features
+         * Convert data to a set of isolines.
          */
-        evalResourceExpressions(resource: csComp.Services.TypeResource, features: IFeature[]): void;
+        private convertDataToIsoLines(data, gridParams);
         /**
-         * Check whether the property type has an expression, and if so, evaluate it.
-         * @param  {IPropertyType} propertyType
-         * @param  {IFeature[]} features
-         * @param  {boolean} isDefaultPropertyType: default true, indicating that the expression should be applied to all features that haven't explicitly specified their featureTypeId.
+         * Convert data to a grid of square GeoJSON polygons, so each drawable point is converted to a square polygon.
          */
-        evalExpressions(propertyType: IPropertyType, features: IFeature[], isDefaultPropertyType?: boolean): void;
-        evalExpression(expression: string, features: IFeature[], feature: IFeature): any;
-    }
-    /**
-      * Module
-      */
-    var myModule: any;
-}
-
-declare module csComp.Services {
-    import IFeature = csComp.Services.IFeature;
-    import IActionOption = csComp.Services.IActionOption;
-    class LayerActions implements csComp.Services.IActionService {
-        id: string;
-        private layerService;
-        stop(): void;
-        addFeature(feature: IFeature): void;
-        removeFeature(feature: IFeature): void;
-        selectFeature(feature: IFeature): void;
-        getFeatureActions(feature: IFeature): IActionOption[];
-        getFeatureHoverActions(feature: IFeature): IActionOption[];
-        deselectFeature(feature: IFeature): void;
-        updateFeature(feuture: IFeature): void;
-        private setAsFilter(feature, layerService);
-        init(layerService: csComp.Services.LayerService): void;
+        private convertDataToPolygonGrid(data, gridParams);
     }
 }
 
 declare module csComp.Services {
-    enum ActionType {
-        Context = 0,
-        Hover = 1,
-    }
-    interface IActionOption {
+    class HeatmapSource implements ILayerSource {
+        service: LayerService;
         title: string;
-        icon: string;
-        feature: IFeature;
-        callback: Function;
+        requiresLayer: boolean;
+        heatmapModel: Heatmap.HeatmapModel;
+        constructor(service: LayerService);
+        refreshLayer(layer: ProjectLayer): void;
+        layerMenuOptions(layer: ProjectLayer): [[string, Function]];
+        addLayer(layer: ProjectLayer, callback: Function, data?: any): void;
+        removeLayer(layer: ProjectLayer): void;
+        enableProjectLayer(layer: ProjectLayer): void;
+        getRequiredLayers(layer: ProjectLayer): ProjectLayer[];
+        getFeatureTypes(layer: ProjectLayer): string[];
+        generateHeatmap(layer: ProjectLayer): void;
     }
-    interface IActionService {
-        id: string;
-        init(ls: LayerService): any;
-        stop(): any;
-        addFeature(feature: IFeature): any;
-        removeFeature(feature: IFeature): any;
-        selectFeature(feature: IFeature): any;
-        getFeatureActions(feature: IFeature): IActionOption[];
-        getFeatureHoverActions(feature: IFeature): IActionOption[];
-        deselectFeature(feature: IFeature): any;
-        updateFeature(feuture: IFeature): any;
+}
+
+declare module csComp.Services {
+    class HierarchySource implements ILayerSource {
+        service: LayerService;
+        title: string;
+        layer: ProjectLayer;
+        requiresLayer: boolean;
+        $http: ng.IHttpService;
+        constructor(service: LayerService, $http: ng.IHttpService);
+        refreshLayer(layer: ProjectLayer): void;
+        addLayer(layer: ProjectLayer, callback: Function, data?: any): void;
+        fitMap(layer: ProjectLayer): void;
+        layerMenuOptions(layer: ProjectLayer): [[string, Function]];
+        getRequiredLayers(layer: ProjectLayer): ProjectLayer[];
+        protected baseAddLayer(layer: ProjectLayer, callback: Function): void;
+        removeLayer(layer: ProjectLayer): void;
     }
-    /** describes a layer source, every layer has a layer source that is responsible for importing the data (e.g. geojson, wms, etc */
-    interface ILayerSource {
+}
+
+declare module csComp.Services {
+    class KmlDataSource extends csComp.Services.GeoJsonSource {
+        service: csComp.Services.LayerService;
+        title: string;
+        constructor(service: csComp.Services.LayerService, $http: ng.IHttpService);
+        private get(x, y);
+        private attr(x, y);
+        addLayer(layer: ProjectLayer, callback: (layer: ProjectLayer) => void): void;
+        private convertGpxToGeoJSON(layer, gpx);
+        private convertKmlToGeoJSON(layer, kml);
+        private getIcon(layer, style);
+        private getLineColor(style);
+        private getLineWidth(style);
+        private getFillColor(style);
+    }
+}
+
+declare module L {
+    class Terminator extends L.Polygon {
+        constructor(options?: Object);
+    }
+}
+declare module csComp.Services {
+    interface INightDayDataSourceParameters extends IProperty {
+        /**
+         * Show the night (default) or day area.
+         */
+        showNight: boolean;
+        /**
+         * Set a property value for the area (default: intensity = 0)
+         */
+        value: number;
+    }
+    class NightDayDataSource extends csComp.Services.GeoJsonSource {
+        service: csComp.Services.LayerService;
+        title: string;
+        constructor(service: csComp.Services.LayerService, $http: ng.IHttpService);
+        addLayer(layer: csComp.Services.ProjectLayer, callback: (layer: csComp.Services.ProjectLayer) => void): void;
+    }
+}
+
+declare module csComp.Services {
+    class RssDataSource extends csComp.Services.GeoJsonSource {
+        service: csComp.Services.LayerService;
+        title: string;
+        constructor(service: csComp.Services.LayerService, $http: ng.IHttpService);
+        addLayer(layer: csComp.Services.ProjectLayer, callback: (layer: csComp.Services.ProjectLayer) => void): void;
+    }
+}
+
+declare module csComp.Services {
+    class TileLayerSource implements ILayerSource {
+        service: LayerService;
+        title: string;
+        requiresLayer: boolean;
+        private prevDateTimes;
+        constructor(service: LayerService);
+        refreshLayer(layer: ProjectLayer): void;
+        layerMenuOptions(layer: ProjectLayer): [[string, Function]];
+        addLayer(layer: ProjectLayer, callback: Function, data?: any): void;
+        removeLayer(layer: ProjectLayer): void;
+    }
+}
+
+declare module csComp.Services {
+    class WmsSource implements ILayerSource {
+        service: LayerService;
+        title: string;
+        requiresLayer: boolean;
+        constructor(service: LayerService);
+        refreshLayer(layer: ProjectLayer): void;
+        layerMenuOptions(layer: ProjectLayer): [[string, Function]];
+        addLayer(layer: ProjectLayer, callback: Function, data?: any): void;
+        removeLayer(layer: ProjectLayer): void;
+    }
+}
+
+declare module L {
+    interface IUserDrawSettings {
+        /** Canvas element for drawing */
+        canvas: HTMLCanvasElement;
+        /** Bounds of the map in WGS84 */
+        bounds: L.Bounds;
+        /** Size of the map in pixels in x and y direction */
+        size: {
+            x: number;
+            y: number;
+        };
+        /** Zoom scale, e.g. 0.0026 */
+        zoomScale: number;
+        /** Zoom level, e.g. 12 */
+        zoom: number;
+        options: {
+            data: number[][];
+            noDataValue: number;
+            topLeftLat: number;
+            topLeftLon: number;
+            deltaLat: number;
+            deltaLon: number;
+            /** The minimum data value: below (<) this value, the cell is not drawn */
+            min?: number;
+            /** The maximum data value: above (>) this value, the cell is not drawn */
+            max?: number;
+            /** A value between 0 (transparent) and 1 (opaque) */
+            opacity?: number;
+            /** Define the color used to draw grid cells having the minimum value. */
+            minColor: string;
+            /** Define the color used to draw grid cells having the minimum value. */
+            maxColor: string;
+            /** Defines the contour levels of the grid layer */
+            levels: number[];
+            /** When true, forces a recalculatiion */
+            areColorsUpdated: boolean;
+            legend?: {
+                val: number;
+                color: string;
+            }[];
+            [key: string]: any;
+        };
+    }
+    function canvasOverlay(userDrawFunc: (overlay: any, layer: csComp.Services.IProjectLayer, settings: IUserDrawSettings) => void, layer: csComp.Services.IProjectLayer, options: Object): any;
+}
+
+declare module csComp.Services {
+    class GeojsonRenderer {
+        static render(service: LayerService, layer: ProjectLayer, mapRenderer: IMapRenderer): void;
+        static remove(service: LayerService, layer: ProjectLayer): void;
+    }
+}
+
+declare module csComp.Services {
+    class GridLayerRenderer {
+        static render(service: LayerService, layer: ProjectLayer): void;
+        static drawFunction(overlay: any, layer: ProjectLayer, settings: L.IUserDrawSettings): void;
+    }
+}
+
+declare module csComp.Services {
+    class HeatmapRenderer {
+        static render(service: LayerService, layer: ProjectLayer, mapRenderer: LeafletRenderer): void;
+    }
+}
+
+declare module csComp.Services {
+    class TileLayerRenderer {
+        static render(service: LayerService, layer: ProjectLayer): void;
+    }
+}
+
+declare module csComp.Services {
+    class WmsRenderer {
+        static render(service: LayerService, layer: ProjectLayer): void;
+    }
+}
+
+declare module csComp.Services {
+    class CesiumRenderer implements IMapRenderer {
         title: string;
         service: LayerService;
-        addLayer(layer: ProjectLayer, callback: Function, data: Object): any;
-        removeLayer(layer: ProjectLayer): void;
-        refreshLayer(layer: ProjectLayer): void;
-        requiresLayer: boolean;
-        getRequiredLayers?(layer: ProjectLayer): ProjectLayer[];
-        layerMenuOptions(layer: ProjectLayer): [[string, Function]];
-    }
-    /** layer service is responsible for reading and managing all project, layer and sensor related data */
-    class LayerService {
-        private $location;
-        $compile: any;
-        $translate: ng.translate.ITranslateService;
-        $messageBusService: Services.MessageBusService;
-        $mapService: Services.MapService;
-        $rootScope: any;
-        geoService: GeoService;
-        $http: ng.IHttpService;
-        private expressionService;
-        maxBounds: IBoundingBox;
-        title: string;
-        accentColor: string;
-        mb: Services.MessageBusService;
-        map: Services.MapService;
-        _featureTypes: {
-            [key: string]: IFeatureType;
+        viewer: any;
+        camera: any;
+        scene: any;
+        features: {
+            [key: string]: any;
         };
-        propertyTypeData: {
-            [key: string]: IPropertyType;
+        private popup;
+        private popupShownFor;
+        init(service: LayerService): void;
+        enable(): void;
+        getLatLon(x: number, y: number): {
+            lat: number;
+            lon: number;
         };
-        project: Project;
-        projectUrl: SolutionProject;
-        solution: Solution;
-        openSingleProject: boolean;
-        emptySolutionUrl: string;
-        dimension: any;
-        lastSelectedFeature: IFeature;
-        selectedFeatures: IFeature[];
-        selectedLayerId: string;
-        timeline: any;
-        _activeContextMenu: IActionOption[];
-        editing: boolean;
-        directoryHandle: MessageBusHandle;
-        /** indicator true for mobile devices */
-        isMobile: boolean;
-        currentLocale: string;
-        /** layers that are currently active */
-        loadedLayers: Helpers.Dictionary<ProjectLayer>;
-        /** list of available layer sources */
-        layerSources: {
-            [key: string]: ILayerSource;
-        };
-        /** list of available map renderers */
-        mapRenderers: {
-            [key: string]: IMapRenderer;
-        };
-        /** map render currently in use */
-        activeMapRenderer: IMapRenderer;
-        /** list of all loaded types resources */
-        typesResources: {
-            [key: string]: ITypesResource;
-        };
-        actionServices: IActionService[];
-        currentContour: L.GeoJSON;
-        startDashboardId: string;
-        visual: VisualState;
-        throttleTimelineUpdate: Function;
-        static $inject: string[];
-        constructor($location: ng.ILocationService, $compile: any, $translate: ng.translate.ITranslateService, $messageBusService: Services.MessageBusService, $mapService: Services.MapService, $rootScope: any, geoService: GeoService, $http: ng.IHttpService, expressionService: csComp.Services.ExpressionService);
-        enableDrop(): void;
-        handleFileUpload(files: any, obj: any): void;
-        checkMobile(): void;
-        getActions(feature: IFeature, type: ActionType): IActionOption[];
-        addActionService(as: IActionService): void;
-        removeActionService(as: IActionService): void;
-        /** Find a dashboard by ID */
-        findDashboardById(dashboardId: string): Dashboard;
-        /** Find a widget by ID, optionally supplying its parent dashboard id. */
-        findWidgetById(widgetId: string, dashboardId?: string): IWidget;
-        /**
-         * Initialize the available layer sources
-         */
-        private initLayerSources();
-        private removeSubLayers(feature);
-        /**
-        check for every feature (de)select if layers should automatically be activated
-        */
-        private checkFeatureSubLayers();
-        loadRequiredLayers(layer: ProjectLayer): void;
-        addLayer(layer: ProjectLayer, layerloaded?: Function, data?: any): void;
-        saveResource(resource: TypeResource): void;
-        expandGroup(layer: ProjectLayer): void;
-        collapseAll(): void;
-        expandAll(): void;
-        /** load external type resource for a project or layer */
-        loadTypeResources(url: any, requestReload: boolean, callback: Function): void;
-        /**
-         * returns a list of all project layers in all groups
-         */
-        allLayers(): ProjectLayer[];
-        /** add a types resource (project, resource file or layer) */
-        initTypeResources(source: any): void;
-        getLayerPropertyTypes(layer: ProjectLayer): IPropertyType[];
-        checkLayerLegend(layer: ProjectLayer, property: string): void;
-        /**
-         * Check whether we need to enable the timer to refresh the layer.
-         */
-        private checkLayerTimer(layer);
-        removeStyle(style: GroupStyle): void;
-        updatePropertyStyle(k: string, v: any, parent: any): void;
-        updateStyle(style: GroupStyle): void;
-        private updateGroupFeatures(group);
-        /** Recompute the style of the layer features, e.g. after changing the opacity or after
-         *	zooming to a level outside the layers' range.
-         */
-        updateLayerFeatures(layer: ProjectLayer): void;
-        updateCanvasOverlay(layer: ProjectLayer): void;
-        updateFeatureTypes(featureType: IFeatureType): void;
-        selectRenderer(renderer: string): void;
-        editFeature(feature: IFeature): void;
-        private deselectFeature(feature);
-        selectFeature(feature: IFeature, multi?: boolean, force?: boolean): void;
-        updateAllLogs(): void;
-        private lookupLog(logs, timestamp);
-        updateLog(f: IFeature): void;
-        updateFeature(feature: IFeature): void;
-        /** update for all features the active sensor data values and update styles */
-        updateSensorData(): void;
-        /***
-         * get list of properties that are part of the filter collection
-         */
-        private filterProperties(group);
-        /**
-         * init feature (add to feature list, crossfilter)
-         */
-        initFeature(feature: IFeature, layer: ProjectLayer, applyDigest?: boolean, publishToTimeline?: boolean): IFeatureType;
-        /** remove feature */
-        removeFeature(feature: IFeature, dynamic?: boolean): void;
-        /**
-        * Calculate the effective feature style.
-        */
-        calculateFeatureStyle(feature: IFeature): void;
-        /**
-        * Initialize the feature type and its property types by setting default property values, and by localizing it.
-        */
-        private initFeatureType(ft, propertyTypes);
-        /** Set the iconUri for remote servers (newIconUri = server/oldIconUri) */
-        private initIconUri(ft);
-        /**
-        * Initialize the property type with default values, and, if applicable, localize it.
-        */
-        private initPropertyType(pt);
-        /**
-        * Set default PropertyType's properties:
-        * type              = text
-        * visibleInCallout  = true
-        * canEdit           = false
-        * isSearchable      = true
-        */
-        private setDefaultPropertyType(pt);
-        private localizePropertyType(pt);
-        findResourceByLayer(layer: ProjectLayer): TypeResource;
-        findResourceByFeature(feature: IFeature): ITypesResource;
-        /**
-         * find a filter for a specific group/property combination
-         */
-        private findFilter(group, property);
-        /**
-         * Find a feature by layerId and FeatureId.
-         * @layerId {string}
-         * @featureIndex {number}
-         */
-        findFeatureByIndex(layerId: string, featureIndex: number): IFeature;
-        /**
-         * Find a feature by layerId and FeatureId.
-         * @layerId {string}
-         * @featureIndex {number}
-         */
-        findFeatureById(featureId: string): IFeature;
-        /**
-         * Find a feature by layerId and FeatureId.
-         * @layer {ProjectLayer}
-         * @featureId {number}
-         */
-        findFeature(layer: ProjectLayer, featureId: string): IFeature;
-        /**
-         * Find a group by id
-         */
-        findGroupById(id: string): ProjectGroup;
-        /**
-         * Find a group by id
-         */
-        findGroupByLayerId(layer: ProjectLayer): ProjectGroup;
-        /**
-         * Find the feature by name.
-         */
-        findFeatureByName(name: string): IFeature;
-        /**
-        * Find a loaded layer with a specific id.
-        */
-        findLoadedLayer(id: string): ProjectLayer;
-        /**
-         * Find a layer with a specific id.
-         */
-        findLayer(id: string): ProjectLayer;
-        setGroupStyle(group: ProjectGroup, property: IPropertyType): void;
-        /**
-         * Creates a GroupStyle based on a property and adds it to a group.
-         * If the group already has a style which contains legends, those legends are copied into the newly created group.
-         * Already existing groups (for the same visualAspect) are replaced by the new group
-         * Restoring a previously used groupstyle is possible by sending that GroupStyle object
-         */
-        setStyle(property: any, openStyleTab?: boolean, customStyleInfo?: PropertyInfo, groupStyle?: GroupStyle): any;
-        toggleStyle(property: any, group: ProjectGroup, openStyleTab?: boolean, customStyleInfo?: PropertyInfo): void;
-        /**
-         * checks if there are other styles that affect the same visual aspect, removes them (it)
-         * and then adds the style to the group's styles
-         */
-        saveStyle(group: ProjectGroup, style: GroupStyle): void;
-        addFilter(group: ProjectGroup, prop: string): void;
-        /**
-         * enable a filter for a specific property
-         */
-        setFilter(filter: GroupFilter, group: csComp.Services.ProjectGroup): void;
-        setLocationFilter(group: ProjectGroup): void;
-        setFeatureAreaFilter(f: IFeature): void;
-        resetFeatureAreaFilter(): void;
-        /**
-        * enable a filter for a specific property
-        */
-        setPropertyFilter(property: FeatureProps.CallOutProperty): void;
-        createScatterFilter(group: ProjectGroup, prop1: string, prop2: string): void;
-        triggerUpdateFilter(groupId: string): void;
-        /** remove filter from group */
-        removeFilter(filter: GroupFilter): void;
-        /**
-         * Returs propertytype for a specific property in a feature
-         */
-        getPropertyType(feature: IFeature, property: string): IPropertyType;
-        /**
-        Returns the featureTypeId for specific feature.
-        It looks for the FeatureTypeId property, defaultFeatureType of his layer
-        and checks if it should be found in a resource file or within his own layer
-        */
-        getFeatureTypeId(feature: IFeature): string;
-        /**
-         * Find a feature type by its ID (of the format 'featuretypeurl + # + featuretypename').
-         * If it does not exist, return null.
-         */
-        getFeatureTypeById(featureTypeId: string): IFeatureType;
-        /**
-         * Return the feature style for a specific feature.
-         * First, look for a layer specific feature type, otherwise, look for a project-specific feature type.
-         * In case both fail, create a default feature type at the layer level.
-         *
-         * If the feature type contains a _{xxx} part, replace the {xxx} with the value of feature.property['xxx']
-         * if it exists, otherwise remove it.
-         */
-        getFeatureType(feature: IFeature): IFeatureType;
-        private createMissingFeatureType(feature);
-        resetFilters(): void;
-        private getGroupFeatures(g);
-        rebuildFilters(g: ProjectGroup): void;
-        /**
-         * deactivate layer
-         */
-        removeLayer(layer: ProjectLayer, removeFromGroup?: boolean): void;
-        /***
-         * Open solution file with references to available baselayers and projects
-         * @params url: URL of the solution
-         * @params layers: Optionally provide a semi-colon separated list of layer IDs that should be opened.
-         * @params initialProject: Optionally provide a project name that should be loaded, if omitted the first project in the definition will be loaded
-         */
-        openSolution(url: string, layers?: string, initialProject?: string): void;
-        /**
-        * Clear all layers.
-        */
-        clearLayers(): void;
-        /**
-         * Open project
-         * @params url: URL of the project
-         * @params layers: Optionally provide a semi-colon separated list of layer IDs that should be opened.
-         * @params project: Optionally provide the project that should be parsed. If not provided, it will be requested using the solution url.
-         */
-        openProject(solutionProject: csComp.Services.SolutionProject, layers?: string, project?: Project): void;
-        private parseProject(prj, solutionProject, layerIds);
-        private apply();
-        toggleLayer(layer: ProjectLayer): void;
+        refreshLayer(): void;
+        getExtent(): csComp.Services.IBoundingBox;
+        getZoom(): number;
+        fitBounds(bounds: csComp.Services.IBoundingBox): void;
+        setUpMouseHandlers(): void;
+        disable(): void;
+        changeBaseLayer(layer: BaseLayer): void;
+        showFeatureTooltip(feature: IFeature, endPosition: any): void;
+        addLayer(layer: ProjectLayer): JQueryPromise<{}>;
+        removeLayer(layer: ProjectLayer): JQueryPromise<{}>;
+        updateMapFilter(group: ProjectGroup): JQueryPromise<{}>;
+        addGroup(group: ProjectGroup): void;
         removeGroup(group: ProjectGroup): void;
-        /** initializes project group (create crossfilter index, clustering, initializes layers) */
-        initGroup(group: ProjectGroup, layerIds?: string[]): void;
-        /** initializes a layer (check for id, language, references group, add to active map renderer) */
-        initLayer(group: ProjectGroup, layer: ProjectLayer, layerIds?: string[]): void;
-        checkDataSourceSubscriptions(ds: DataSource): void;
-        checkSubscriptions(): void;
-        closeProject(): void;
-        /** Find a sensor set for a specific source/sensor combination. Key should be something like datasource/sensorid */
-        findSensorSet(key: string, callback: Function): any;
-        getPropertyValues(layer: ProjectLayer, property: string): Object[];
-        /**
-         * Calculate min/max/count for a specific property in a group
-         */
-        calculatePropertyInfo(group: ProjectGroup, property: string): PropertyInfo;
-        updateFilterGroupCount(group: ProjectGroup): void;
-        private trackGeometry(f, result);
-        /**
-         * Check for property changes inside a feature, return a set of logs in result
-         */
-        private trackPropertyLog(f, key, result);
-        private trackFeature(feature);
-        isLocked(f: IFeature): boolean;
-        /**
-         * Set a lock property on the feature to signal others prevent feature updates
-         */
-        lockFeature(f: IFeature): boolean;
-        unlockFeature(f: IFeature): void;
-        saveProject(): void;
-        private updateProjectReady(data);
-        /**
-         * Save feature back to the server
-         */
-        saveFeature(f: IFeature, logs?: boolean): void;
+        removeFeature(feature: IFeature): void;
+        removeFeatures(features: IFeature[]): JQueryPromise<{}>;
+        updateFeature(feature: IFeature): void;
+        private updateEntity(entity, feature);
+        addFeature(feature: IFeature): void;
+        selectFeature(feature: IFeature): void;
+        createFeature(feature: IFeature): any;
+        private createPolygon(coordinates);
+        private createMultiPolygon(coordinates);
+        private coordinatesArrayToCartesianArray(coordinates);
+        private defaultCrsFunction(coordinates);
+    }
+}
+
+declare module csComp.Services {
+    class LeafletRenderer implements IMapRenderer {
+        title: string;
+        service: LayerService;
+        $messageBusService: MessageBusService;
+        map: L.Map;
+        private popup;
+        private cntrlIsPressed;
+        init(service: LayerService): void;
+        enable(): void;
+        private updateBoundingBox();
+        getLatLon(x: number, y: number): {
+            lat: number;
+            lon: number;
+        };
+        getExtent(): csComp.Services.IBoundingBox;
+        fitBounds(bounds: csComp.Services.IBoundingBox): void;
+        getZoom(): number;
+        disable(): void;
+        refreshLayer(): void;
+        addGroup(group: ProjectGroup): void;
+        removeLayer(layer: ProjectLayer): void;
+        baseLayer: L.ILayer;
+        changeBaseLayer(layerObj: BaseLayer): void;
+        private createBaseLayer(layerObj);
+        private getLeafletStyle(style);
+        addLayer(layer: ProjectLayer): void;
         /***
          * Update map markers in cluster after changing filter
          */
         updateMapFilter(group: ProjectGroup): void;
-        resetMapFilter(group: ProjectGroup): void;
-    }
-    /**
-     * object for sending layer messages over socket.io channel
-     */
-    class LayerUpdate {
-        layerId: string;
-        action: LayerUpdateAction;
-        item: any;
-        featureId: string;
-    }
-    /**
-     * List of available action for sending/receiving layer actions over socket.io channel
-     */
-    enum LayerUpdateAction {
-        updateFeature = 0,
-        updateLog = 1,
-        deleteFeature = 2,
-    }
-    /**
-      * Module
-      */
-    var myModule: any;
-}
-
-declare module MatrixAction {
-    import IFeature = csComp.Services.IFeature;
-    import IActionOption = csComp.Services.IActionOption;
-    class MatrixActionModel implements csComp.Services.IActionService {
-        id: string;
-        private layerService;
-        stop(): void;
-        addFeature(feature: IFeature): void;
+        removeGroup(group: ProjectGroup): void;
         removeFeature(feature: IFeature): void;
-        selectFeature(feature: IFeature): void;
-        getFeatureActions(feature: IFeature): IActionOption[];
-        getFeatureHoverActions(feature: IFeature): IActionOption[];
-        deselectFeature(feature: IFeature): void;
-        updateFeature(feuture: IFeature): void;
-        private showContour(feature, layerService);
-        private hideContour(feature, layerService);
-        init(layerService: csComp.Services.LayerService): void;
-    }
-}
-
-declare module csComp.Services {
-    class MapService {
-        private $localStorageService;
-        private $timeout;
-        private $messageBusService;
-        private static expertModeKey;
-        static $inject: string[];
-        map: L.Map;
-        baseLayers: any;
-        activeBaseLayer: BaseLayer;
-        activeBaseLayerId: string;
-        mapVisible: boolean;
-        timelineVisible: boolean;
-        rightMenuVisible: boolean;
-        maxBounds: IBoundingBox;
-        expertMode: Expertise;
-        constructor($localStorageService: ng.localStorage.ILocalStorageService, $timeout: ng.ITimeoutService, $messageBusService: csComp.Services.MessageBusService);
+        updateFeature(feature: IFeature): void;
+        selectFeature(feature: any): void;
+        addFeature(feature: IFeature): any;
+        private canDrag(feature);
         /**
-      * The expert mode can either be set manually, e.g. using this directive, or by setting the expertMode property in the
-      * project.json file. In neither are set, we assume that we are dealing with an expert, so all features should be enabled.
-      *
-      * Precedence:
-      * - when a declaration is absent, assume Expert.
-      * - when the mode is set in local storage, take that value.
-      * - when the mode is set in the project.json file, take that value.
-      */
-        private initExpertMode();
-        isExpert: boolean;
-        isIntermediate: boolean;
-        isAdminExpert: boolean;
-        initMap(): void;
-        getBaselayer(layer: string): BaseLayer;
-        changeBaseLayer(layer: string): void;
-        invalidate(): void;
-        /**
-         * Zoom to a location on the map.
+         * add a feature
          */
-        zoomToLocation(center: L.LatLng, zoomFactor?: number): void;
+        createFeature(feature: IFeature): any;
         /**
-         * Zoom to a feature on the map.
+         * create icon based of feature style
          */
-        zoomTo(feature: IFeature, zoomLevel?: number): void;
-        /**
-         * Compute the bounding box.
-         * Returns [min_x, max_x, min_y, max_y]
+        getPointIcon(feature: IFeature): any;
+        /***
+         * Show tooltip with name, styles & filters.
          */
-        private getBoundingBox(arr);
-        getMap(): L.Map;
-    }
-    /**
-      * Module
-      */
-    var myModule: any;
-}
-
-declare module csComp.Search {
-    interface ISearchFormScope extends ng.IScope {
-        vm: SearchFormCtrl;
-        location: L.LatLng;
-    }
-    class SearchFormCtrl {
-        private $scope;
-        private $mapService;
-        static $inject: string[];
-        constructor($scope: ISearchFormScope, $mapService: csComp.Services.MapService);
-        doSearch(): void;
+        showFeatureTooltip(e: L.LeafletMouseEvent, group: ProjectGroup): void;
+        hideFeatureTooltip(e: L.LeafletMouseEvent): void;
+        updateFeatureTooltip(e: L.LeafletMouseEvent): void;
     }
 }
 
@@ -5125,17 +5776,19 @@ declare module Filters {
         vm: RowFilterCtrl;
         filter: csComp.Services.GroupFilter;
         options: Function;
-        editMode: boolean;
+        removeString: string;
+        createScatterString: string;
     }
     class RowFilterCtrl {
         $scope: IRowFilterScope;
         private $layerService;
         private $messageBus;
         private $timeout;
+        private $translate;
         private scope;
         private widget;
         static $inject: string[];
-        constructor($scope: IRowFilterScope, $layerService: csComp.Services.LayerService, $messageBus: csComp.Services.MessageBusService, $timeout: ng.ITimeoutService);
+        constructor($scope: IRowFilterScope, $layerService: csComp.Services.LayerService, $messageBus: csComp.Services.MessageBusService, $timeout: ng.ITimeoutService, $translate: ng.translate.ITranslateService);
         private createScatter(gf);
         private displayFilterRange(min, max);
         private dcChart;
@@ -5555,78 +6208,6 @@ declare module MCAWidget {
     }
 }
 
-declare module NavigatorWidget {
-    /**
-      * Module
-      */
-    var myModule: any;
-    interface IMarkdownEditCtrl extends ng.IScope {
-        vm: MarkdownEditCtrl;
-        data: any;
-    }
-    class MarkdownEditCtrl {
-        private $scope;
-        private $timeout;
-        private $compile;
-        private $layerService;
-        private $templateCache;
-        private $messageBus;
-        private $mapService;
-        private $dashboardService;
-        private scope;
-        widget: csComp.Services.IWidget;
-        static $inject: string[];
-        constructor($scope: IMarkdownEditCtrl, $timeout: ng.ITimeoutService, $compile: any, $layerService: csComp.Services.LayerService, $templateCache: any, $messageBus: csComp.Services.MessageBusService, $mapService: csComp.Services.MapService, $dashboardService: csComp.Services.DashboardService);
-        updateText(): void;
-    }
-}
-
-declare module NavigatorWidget {
-    /**
-      * Module
-      */
-    var myModule: any;
-}
-
-declare module NavigatorWidget {
-    class NavigatorWidgetData {
-        title: string;
-        /**
-         * Content to display: you can either provide it directly, or specify a URL, in which case it will replace the content.
-         */
-        content: string;
-        url: string;
-        /**
-         * The actual content is being converted, if necessary, and set to the markdown text.
-         */
-        mdText: string;
-        /**
-         * If provided, indicates the feature type that needs to be selected in order to show the widget.
-         */
-        featureTypeName: string;
-        /**
-         * If provided, a list of properties that need to be injected into the content in order to generate the mdText.
-         */
-        dynamicProperties: string[];
-    }
-    interface INavigatorWidgetScope extends ng.IScope {
-        vm: NavigatorWidgetCtrl;
-        data: NavigatorWidgetData;
-    }
-    class NavigatorWidgetCtrl {
-        private $scope;
-        private $timeout;
-        private $layerService;
-        private $messageBus;
-        private $mapService;
-        private scope;
-        private widget;
-        private parentWidget;
-        static $inject: string[];
-        constructor($scope: INavigatorWidgetScope, $timeout: ng.ITimeoutService, $layerService: csComp.Services.LayerService, $messageBus: csComp.Services.MessageBusService, $mapService: csComp.Services.MapService);
-    }
-}
-
 declare module PostMan {
     /** Module */
     var myModule: any;
@@ -5689,6 +6270,52 @@ declare module PostMan {
         constructor($scope: IPostManEditScope, $timeout: ng.ITimeoutService, $messageBus: csComp.Services.MessageBusService, $dashboardService: csComp.Services.DashboardService);
         addMessage(): void;
         deleteMessage(): void;
+    }
+}
+
+declare module NavigatorWidget {
+    /**
+      * Module
+      */
+    var myModule: any;
+}
+
+declare module NavigatorWidget {
+    class NavigatorWidgetData {
+        title: string;
+        /**
+         * Content to display: you can either provide it directly, or specify a URL, in which case it will replace the content.
+         */
+        content: string;
+        url: string;
+        /**
+         * The actual content is being converted, if necessary, and set to the markdown text.
+         */
+        mdText: string;
+        /**
+         * If provided, indicates the feature type that needs to be selected in order to show the widget.
+         */
+        featureTypeName: string;
+        /**
+         * If provided, a list of properties that need to be injected into the content in order to generate the mdText.
+         */
+        dynamicProperties: string[];
+    }
+    interface INavigatorWidgetScope extends ng.IScope {
+        vm: NavigatorWidgetCtrl;
+        data: NavigatorWidgetData;
+    }
+    class NavigatorWidgetCtrl {
+        private $scope;
+        private $timeout;
+        private $layerService;
+        private $messageBus;
+        private $mapService;
+        private scope;
+        private widget;
+        private parentWidget;
+        static $inject: string[];
+        constructor($scope: INavigatorWidgetScope, $timeout: ng.ITimeoutService, $layerService: csComp.Services.LayerService, $messageBus: csComp.Services.MessageBusService, $mapService: csComp.Services.MapService);
     }
 }
 
@@ -5837,530 +6464,5 @@ declare module SimTimeController {
         editor: any;
         static $inject: string[];
         constructor($scope: ISimTimeControllerEditCtrl, $timeout: ng.ITimeoutService, $messageBus: csComp.Services.MessageBusService, $dashboardService: csComp.Services.DashboardService);
-    }
-}
-
-declare module csComp.Services {
-    class DatabaseSource implements ILayerSource {
-        service: LayerService;
-        title: string;
-        layer: ProjectLayer;
-        requiresLayer: boolean;
-        constructor(service: LayerService);
-        refreshLayer(layer: ProjectLayer): void;
-        addLayer(layer: ProjectLayer, callback: (layer: ProjectLayer) => void): void;
-        /** zoom to boundaries of layer */
-        fitMap(layer: ProjectLayer): void;
-        layerMenuOptions(layer: ProjectLayer): [[string, Function]];
-        protected baseAddLayer(layer: ProjectLayer, callback: (layer: ProjectLayer) => void): void;
-        removeLayer(layer: ProjectLayer): void;
-    }
-}
-
-declare module csComp.Services {
-    class GeoJsonSource implements ILayerSource {
-        service: LayerService;
-        title: string;
-        layer: ProjectLayer;
-        requiresLayer: boolean;
-        $http: ng.IHttpService;
-        constructor(service: LayerService, $http: ng.IHttpService);
-        refreshLayer(layer: ProjectLayer): void;
-        addLayer(layer: ProjectLayer, callback: (layer: ProjectLayer) => void, data?: any): void;
-        /** zoom to boundaries of layer */
-        fitMap(layer: ProjectLayer): void;
-        layerMenuOptions(layer: ProjectLayer): [[string, Function]];
-        protected baseAddLayer(layer: ProjectLayer, callback: (layer: ProjectLayer) => void, data?: any): void;
-        protected initLayer(data: any, layer: ProjectLayer): void;
-        removeLayer(layer: ProjectLayer): void;
-        private processAccessibilityReply(data, layer, clbk);
-    }
-    class DynamicGeoJsonSource extends GeoJsonSource {
-        service: LayerService;
-        title: string;
-        connection: Connection;
-        constructor(service: LayerService, $http: ng.IHttpService);
-        private updateFeatureByProperty(key, id, value, layer?);
-        private deleteFeatureByProperty(key, id, value);
-        initSubscriptions(layer: ProjectLayer): void;
-        addLayer(layer: ProjectLayer, callback: (layer: ProjectLayer) => void, data?: any): void;
-        removeLayer(layer: ProjectLayer): void;
-        layerMenuOptions(layer: ProjectLayer): [[string, Function]];
-        startAddingFeatures(layer: csComp.Services.ProjectLayer): void;
-        initAvailableFeatureTypes(layer: csComp.Services.ProjectLayer): void;
-        stopAddingFeatures(layer: csComp.Services.ProjectLayer): void;
-    }
-    interface IOtpLeg {
-        mode: string;
-        start: string;
-        arrive: string;
-        duration: string;
-        route?: string;
-        routeName?: string;
-        agency?: string;
-    }
-    class EsriJsonSource extends GeoJsonSource {
-        service: LayerService;
-        title: string;
-        connection: Connection;
-        $http: ng.IHttpService;
-        constructor(service: LayerService, $http: ng.IHttpService);
-        addLayer(layer: ProjectLayer, callback: (layer: ProjectLayer) => void): void;
-    }
-}
-
-declare module csComp.Services {
-    interface IGridDataSourceParameters extends IProperty {
-        /**
-         * Grid type, for example 'custom' (default) or 'esri' ASCII Grid
-         */
-        gridType?: string;
-        /**
-         * Projection of the ESRI ASCII GRID
-         */
-        projection?: string;
-        /**
-         * Property name of the cell value of the generated json.
-         */
-        propertyName?: string;
-        /**
-         * Skip a comment line when it starts with this character
-         */
-        commentCharacter?: string;
-        /**
-         * Character that separates cells. Default is space.
-         */
-        separatorCharacter?: string;
-        /**
-         * Skip a number of lines from the start.
-         */
-        skipLines?: number;
-        /**
-         * Skip a number of lines after a comment block ends.
-         */
-        skipLinesAfterComment?: number;
-        /**
-         * Skip a number of spaces from the start of the line.
-         */
-        skipSpacesFromLine?: number;
-        /**
-         * Number of grid columns.
-         */
-        columns?: number;
-        /**
-         * Number of grid rows.
-         */
-        rows?: number;
-        /**
-         * Start latitude in degrees.
-         */
-        startLat?: number;
-        /**
-         * Start longitude in degrees.
-         */
-        startLon?: number;
-        /**
-         * Add deltaLat after processing a grid cell.
-         * NOTE: When the direction is negative, use a minus sign e.g. when counting from 90 to -90..
-         */
-        deltaLat?: number;
-        /**
-         * Add deltaLon degrees after processing a grid cell.
-         */
-        deltaLon?: number;
-        /**
-         * Skip a first column, e.g. containing the latitude degree.
-         */
-        skipFirstColumn?: boolean;
-        /**
-         * Skip a first row, e.g. containing the longitude degree.
-         */
-        skipFirstRow?: boolean;
-        /**
-         * When the cell value is below this threshold, it is ignored.
-         */
-        minThreshold?: number;
-        /**
-        * When the cell value is above this threshold, it is ignored.
-         */
-        maxThreshold?: number;
-        /**
-         * The input values to be NoData in the output raster. Optional. Default is -9999.
-         */
-        noDataValue: number;
-        /** If true, use the CONREC contouring algorithm to create isoline contours */
-        useContour?: boolean;
-        /** When using contours, this specifies the number of contour levels to use. */
-        contourLevels?: number | number[];
-        /** Define the color used to draw grid cells having the minimum value. */
-        minColor?: string;
-        /** Define the color used to draw grid cells having the maximum value. */
-        maxColor?: string;
-        /** When using the GridLayerRenderer, the cell colors can be chosen through a groupstyle. This will be the description the legend
-         * accompanying that style.
-         */
-        legendDescription?: string;
-        /** When using the GridLayerRenderer, the cell colors can be chosen through a groupstyle. This will be the stringformat the legend
-         * entries accompanying that style.
-         */
-        legendStringFormat?: string;
-        /** Optionally, a legend can be provided. This legend overrides the parameters that define a legend too (minColor, maxColor, legendDescription,
-         * legendStringFormat). If it's not defined, a legend will be created from those 4 parameters and the contourLevels.
-         */
-        legend?: Legend;
-    }
-    /**
-     * A GRID data source is a raster or grid in which the grid cells are delimited by spaces
-     * and each newline indicates a new row of data.
-     */
-    class GridDataSource extends csComp.Services.GeoJsonSource {
-        service: csComp.Services.LayerService;
-        /** Convert a grid point to a Feature. Default implementation is to convert it to a square grid cell (convertPointToPolygon). */
-        private convertDataToFeatureCollection;
-        title: string;
-        gridParams: IGridDataSourceParameters;
-        constructor(service: csComp.Services.LayerService, $http: ng.IHttpService);
-        addLayer(layer: csComp.Services.ProjectLayer, callback: (layer: csComp.Services.ProjectLayer) => void): void;
-        /**
-         * Convert the ESRI ASCII GRID header to grid parameters.
-         *
-            ESRI ASCII Raster format
-            The ESRI ASCII raster format can be used to transfer information to or from other cell-based or raster systems. When an existing raster is output to an ESRI ASCII format raster, the file will begin with header information that defines the properties of the raster such as the cell size, the number of rows and columns, and the coordinates of the origin of the raster. The header information is followed by cell value information specified in space-delimited row-major order, with each row seperated by a carraige return.
-            In order to convert an ASCII file to a raster, the data must be in this same format. The parameters in the header part of the file must match correctly with the structure of the data values.
-            The basic structure of the ESRI ASCII raster has the header information at the beginning of the file followed by the cell value data:
-                NCOLS xxx
-                NROWS xxx
-                XLLCENTER xxx | XLLCORNER xxx
-                YLLCENTER xxx | YLLCORNER xxx
-                CELLSIZE xxx
-                NODATA_VALUE xxx
-                row 1
-                row 2
-                ...
-                row n
-            *
-            Row 1 of the data is at the top of the raster, row 2 is just under row 1, and so on.
-            Header format
-            The syntax of the header information is a keyword paired with the value of that keyword. The definitions of the kewords are:
-            *
-            Parameter	Description	Requirements
-            NCOLS	Number of cell columns.	Integer greater than 0.
-            NROWS	Number of cell rows.	Integer greater than 0.
-            XLLCENTER or XLLCORNER	X coordinate of the origin (by center or lower left corner of the cell).	Match with Y coordinate type.
-            YLLCENTER or YLLCORNER	Y coordinate of the origin (by center or lower left corner of the cell).	Match with X coordinate type.
-            CELLSIZE	Cell size.	Greater than 0.
-            NODATA_VALUE	The input values to be NoData in the output raster.	Optional. Default is -9999.
-            Data format
-            The data component of the ESRI ASCII raster follows the header information.
-            Cell values should be delimited by spaces.
-            No carriage returns are necessary at the end of each row in the raster. The number of columns in the header determines when a new row begins.
-            Row 1 of the data is at the top of the raster, row 2 is just under row 1, and so on.
-         */
-        private convertEsriHeaderToGridParams(input);
-        /** Extract the grid data from the input */
-        private getData(input);
-        /**
-         * Convert the incoming data to a matrix grid.
-         * The incoming data can be in two formats: either it is a string, representing the ASCII grid data,
-         * or it is an (ILayer) object, in which case the data should be in the input.data property.
-         */
-        private convertDataToGrid(input, gridParams);
-        /**
-         * Convert data to a set of isolines.
-         */
-        private convertDataToIsoLines(data, gridParams);
-        /**
-         * Convert data to a grid of square GeoJSON polygons, so each drawable point is converted to a square polygon.
-         */
-        private convertDataToPolygonGrid(data, gridParams);
-    }
-}
-
-declare module csComp.Services {
-    class HeatmapSource implements ILayerSource {
-        service: LayerService;
-        title: string;
-        requiresLayer: boolean;
-        heatmapModel: Heatmap.HeatmapModel;
-        constructor(service: LayerService);
-        refreshLayer(layer: ProjectLayer): void;
-        layerMenuOptions(layer: ProjectLayer): [[string, Function]];
-        addLayer(layer: ProjectLayer, callback: Function, data?: any): void;
-        removeLayer(layer: ProjectLayer): void;
-        enableProjectLayer(layer: ProjectLayer): void;
-        getRequiredLayers(layer: ProjectLayer): ProjectLayer[];
-        getFeatureTypes(layer: ProjectLayer): string[];
-        generateHeatmap(layer: ProjectLayer): void;
-    }
-}
-
-declare module csComp.Services {
-    class HierarchySource implements ILayerSource {
-        service: LayerService;
-        title: string;
-        layer: ProjectLayer;
-        requiresLayer: boolean;
-        $http: ng.IHttpService;
-        constructor(service: LayerService, $http: ng.IHttpService);
-        refreshLayer(layer: ProjectLayer): void;
-        addLayer(layer: ProjectLayer, callback: Function, data?: any): void;
-        fitMap(layer: ProjectLayer): void;
-        layerMenuOptions(layer: ProjectLayer): [[string, Function]];
-        getRequiredLayers(layer: ProjectLayer): ProjectLayer[];
-        protected baseAddLayer(layer: ProjectLayer, callback: Function): void;
-        removeLayer(layer: ProjectLayer): void;
-    }
-}
-
-declare module csComp.Services {
-    class KmlDataSource extends csComp.Services.GeoJsonSource {
-        service: csComp.Services.LayerService;
-        title: string;
-        constructor(service: csComp.Services.LayerService, $http: ng.IHttpService);
-        private get(x, y);
-        private attr(x, y);
-        addLayer(layer: ProjectLayer, callback: (layer: ProjectLayer) => void): void;
-        private convertGpxToGeoJSON(layer, gpx);
-        private convertKmlToGeoJSON(layer, kml);
-        private getIcon(layer, style);
-        private getLineColor(style);
-        private getLineWidth(style);
-        private getFillColor(style);
-    }
-}
-
-declare module L {
-    class Terminator extends L.Polygon {
-        constructor(options?: Object);
-    }
-}
-declare module csComp.Services {
-    interface INightDayDataSourceParameters extends IProperty {
-        /**
-         * Show the night (default) or day area.
-         */
-        showNight: boolean;
-        /**
-         * Set a property value for the area (default: intensity = 0)
-         */
-        value: number;
-    }
-    class NightDayDataSource extends csComp.Services.GeoJsonSource {
-        service: csComp.Services.LayerService;
-        title: string;
-        constructor(service: csComp.Services.LayerService, $http: ng.IHttpService);
-        addLayer(layer: csComp.Services.ProjectLayer, callback: (layer: csComp.Services.ProjectLayer) => void): void;
-    }
-}
-
-declare module csComp.Services {
-    class RssDataSource extends csComp.Services.GeoJsonSource {
-        service: csComp.Services.LayerService;
-        title: string;
-        constructor(service: csComp.Services.LayerService, $http: ng.IHttpService);
-        addLayer(layer: csComp.Services.ProjectLayer, callback: (layer: csComp.Services.ProjectLayer) => void): void;
-    }
-}
-
-declare module csComp.Services {
-    class TileLayerSource implements ILayerSource {
-        service: LayerService;
-        title: string;
-        requiresLayer: boolean;
-        private prevDateTimes;
-        constructor(service: LayerService);
-        refreshLayer(layer: ProjectLayer): void;
-        layerMenuOptions(layer: ProjectLayer): [[string, Function]];
-        addLayer(layer: ProjectLayer, callback: Function, data?: any): void;
-        removeLayer(layer: ProjectLayer): void;
-    }
-}
-
-declare module csComp.Services {
-    class WmsSource implements ILayerSource {
-        service: LayerService;
-        title: string;
-        requiresLayer: boolean;
-        constructor(service: LayerService);
-        refreshLayer(layer: ProjectLayer): void;
-        layerMenuOptions(layer: ProjectLayer): [[string, Function]];
-        addLayer(layer: ProjectLayer, callback: Function, data?: any): void;
-        removeLayer(layer: ProjectLayer): void;
-    }
-}
-
-declare module L {
-    interface IUserDrawSettings {
-        /** Canvas element for drawing */
-        canvas: HTMLCanvasElement;
-        /** Bounds of the map in WGS84 */
-        bounds: L.Bounds;
-        /** Size of the map in pixels in x and y direction */
-        size: {
-            x: number;
-            y: number;
-        };
-        /** Zoom scale, e.g. 0.0026 */
-        zoomScale: number;
-        /** Zoom level, e.g. 12 */
-        zoom: number;
-        options: {
-            data: number[][];
-            noDataValue: number;
-            topLeftLat: number;
-            topLeftLon: number;
-            deltaLat: number;
-            deltaLon: number;
-            /** The minimum data value: below (<) this value, the cell is not drawn */
-            min?: number;
-            /** The maximum data value: above (>) this value, the cell is not drawn */
-            max?: number;
-            /** A value between 0 (transparent) and 1 (opaque) */
-            opacity?: number;
-            /** Define the color used to draw grid cells having the minimum value. */
-            minColor: string;
-            /** Define the color used to draw grid cells having the minimum value. */
-            maxColor: string;
-            /** Defines the contour levels of the grid layer */
-            levels: number[];
-            /** When true, forces a recalculatiion */
-            areColorsUpdated: boolean;
-            legend?: {
-                val: number;
-                color: string;
-            }[];
-            [key: string]: any;
-        };
-    }
-    function canvasOverlay(userDrawFunc: (overlay: any, layer: csComp.Services.IProjectLayer, settings: IUserDrawSettings) => void, layer: csComp.Services.IProjectLayer, options: Object): any;
-}
-
-declare module csComp.Services {
-    class GeojsonRenderer {
-        static render(service: LayerService, layer: ProjectLayer, mapRenderer: IMapRenderer): void;
-        static remove(service: LayerService, layer: ProjectLayer): void;
-    }
-}
-
-declare module csComp.Services {
-    class GridLayerRenderer {
-        static render(service: LayerService, layer: ProjectLayer): void;
-        static drawFunction(overlay: any, layer: ProjectLayer, settings: L.IUserDrawSettings): void;
-    }
-}
-
-declare module csComp.Services {
-    class HeatmapRenderer {
-        static render(service: LayerService, layer: ProjectLayer, mapRenderer: LeafletRenderer): void;
-    }
-}
-
-declare module csComp.Services {
-    class TileLayerRenderer {
-        static render(service: LayerService, layer: ProjectLayer): void;
-    }
-}
-
-declare module csComp.Services {
-    class WmsRenderer {
-        static render(service: LayerService, layer: ProjectLayer): void;
-    }
-}
-
-declare module csComp.Services {
-    class CesiumRenderer implements IMapRenderer {
-        title: string;
-        service: LayerService;
-        viewer: any;
-        camera: any;
-        scene: any;
-        features: {
-            [key: string]: any;
-        };
-        private popup;
-        private popupShownFor;
-        init(service: LayerService): void;
-        enable(): void;
-        getLatLon(x: number, y: number): {
-            lat: number;
-            lon: number;
-        };
-        refreshLayer(): void;
-        getExtent(): csComp.Services.IBoundingBox;
-        getZoom(): number;
-        fitBounds(bounds: csComp.Services.IBoundingBox): void;
-        setUpMouseHandlers(): void;
-        disable(): void;
-        changeBaseLayer(layer: BaseLayer): void;
-        showFeatureTooltip(feature: IFeature, endPosition: any): void;
-        addLayer(layer: ProjectLayer): JQueryPromise<{}>;
-        removeLayer(layer: ProjectLayer): JQueryPromise<{}>;
-        updateMapFilter(group: ProjectGroup): JQueryPromise<{}>;
-        addGroup(group: ProjectGroup): void;
-        removeGroup(group: ProjectGroup): void;
-        removeFeature(feature: IFeature): void;
-        removeFeatures(features: IFeature[]): JQueryPromise<{}>;
-        updateFeature(feature: IFeature): void;
-        private updateEntity(entity, feature);
-        addFeature(feature: IFeature): void;
-        selectFeature(feature: IFeature): void;
-        createFeature(feature: IFeature): any;
-        private createPolygon(coordinates);
-        private createMultiPolygon(coordinates);
-        private coordinatesArrayToCartesianArray(coordinates);
-        private defaultCrsFunction(coordinates);
-    }
-}
-
-declare module csComp.Services {
-    class LeafletRenderer implements IMapRenderer {
-        title: string;
-        service: LayerService;
-        $messageBusService: MessageBusService;
-        map: L.Map;
-        private popup;
-        private cntrlIsPressed;
-        init(service: LayerService): void;
-        enable(): void;
-        getLatLon(x: number, y: number): {
-            lat: number;
-            lon: number;
-        };
-        getExtent(): csComp.Services.IBoundingBox;
-        fitBounds(bounds: csComp.Services.IBoundingBox): void;
-        getZoom(): number;
-        disable(): void;
-        refreshLayer(): void;
-        addGroup(group: ProjectGroup): void;
-        removeLayer(layer: ProjectLayer): void;
-        baseLayer: L.ILayer;
-        changeBaseLayer(layerObj: BaseLayer): void;
-        private createBaseLayer(layerObj);
-        private getLeafletStyle(style);
-        addLayer(layer: ProjectLayer): void;
-        /***
-         * Update map markers in cluster after changing filter
-         */
-        updateMapFilter(group: ProjectGroup): void;
-        removeGroup(group: ProjectGroup): void;
-        removeFeature(feature: IFeature): void;
-        updateFeature(feature: IFeature): void;
-        selectFeature(feature: any): void;
-        addFeature(feature: IFeature): any;
-        private canDrag(feature);
-        /**
-         * add a feature
-         */
-        createFeature(feature: IFeature): any;
-        /**
-         * create icon based of feature style
-         */
-        getPointIcon(feature: IFeature): any;
-        /***
-         * Show tooltip with name, styles & filters.
-         */
-        showFeatureTooltip(e: L.LeafletMouseEvent, group: ProjectGroup): void;
-        hideFeatureTooltip(e: L.LeafletMouseEvent): void;
-        updateFeatureTooltip(e: L.LeafletMouseEvent): void;
     }
 }

@@ -2,6 +2,7 @@ var request = require("request");
 var async = require("async");
 var split = require("split");
 var es = require('event-stream');
+/* Multiple storage engine supported, e.g. file system, mongo  */
 var ImporterRepositoryService = (function () {
     function ImporterRepositoryService(store) {
         this.store = store;
@@ -30,15 +31,24 @@ var ImporterRepositoryService = (function () {
             });
             res.send(strippedTransformers);
         });
+        /**
+         * Create
+         */
         server.post(this.baseUrl, function (req, res) {
             var importer = req.body;
             console.log(importer);
             res.send(_this.create(null, importer));
         });
+        /**
+         * Read
+         */
         server.get(this.baseUrl + '/:id', function (req, res) {
             var id = req.params.id;
             res.send(_this.get(id));
         });
+        /**
+         * Run
+         */
         server.get(this.baseUrl + '/:id/run', function (req, res) {
             var id = req.params.id;
             var importer = _this.get(id);
@@ -47,11 +57,17 @@ var ImporterRepositoryService = (function () {
                 res.send("");
             });
         });
+        /**
+         * Update
+         */
         server.put(this.baseUrl + '/:id', function (req, res) {
             var id = req.params.id;
             var importer = req.body;
             res.send(_this.update(importer));
         });
+        /**
+         * Delete
+         */
         server.delete(this.baseUrl + '/:id', function (req, res) {
             var id = req.params.id;
             res.send(_this.delete(id));
@@ -65,6 +81,7 @@ var ImporterRepositoryService = (function () {
         async.each(importer.transformers, function (transformerDefinition, next) {
             var transformerInstance = _this.getTransformerInstance(transformerDefinition);
             if (!transformerInstance) {
+                /*console.error("Unknown transformer type: " + transformerDefinition.type);*/
                 next(new Error("Unknown transformer type: " + transformerDefinition.type));
                 return;
             }
@@ -83,12 +100,15 @@ var ImporterRepositoryService = (function () {
             }
             console.log("Transformers initialized");
             var sourceRequest = request({ url: importer.sourceUrl });
+            // var stream: NodeJS.ReadWriteStream = null;
             var stream = sourceRequest.pipe(split());
             instances.forEach(function (transformerInstance) {
                 if (stream) {
+                    // Pipe to existing stream chain
                     stream = stream.pipe(transformerInstance.create(_this.config));
                 }
                 else {
+                    // Initialize stream chain from source request
                     stream = sourceRequest.pipe(transformerInstance.create(_this.config));
                 }
             });
@@ -110,6 +130,7 @@ var ImporterRepositoryService = (function () {
                     console.log(new Date() + ": " + index + "(" + diff / 100 + "ms per feature)");
                     prevTs = currTs;
                 }
+                // console.log(data);
                 index++;
             }));
             console.log(new Date() + ": Started");
@@ -122,6 +143,20 @@ var ImporterRepositoryService = (function () {
         var transformer = this.transformers.filter(function (t) { return t.type == transformerDefinition.type; })[0];
         var instance = Object.create(transformer);
         return instance;
+        /*
+              var newInstance: any;
+        
+              switch(transformer.type) {
+                case "CsvToJsonTransformer":
+                  newInstance = new CsvToJsonTransformer(transformerDefinition.title);
+              }
+        
+              for (var prop in transformer) {
+                newInstance[prop] = transformer[prop];
+              }
+        
+              return newInstance;
+        */
     };
     ImporterRepositoryService.prototype.getAllTransformers = function () {
         return this.transformers;

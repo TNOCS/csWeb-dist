@@ -29,12 +29,21 @@ export interface ITransformFactoryOptions extends stream.TransformOptions {
     importer?: IImport;
     parameters?: IParameter[];
 }
+/**
+ * Factory for creating a transform stream (readable, writeable or transform).
+ */
 export interface ITransform {
     id: string;
     title: string;
     description?: string;
     type: string;
+    /**
+     * Accepted input types.
+     */
     inputDataTypes?: InputDataType[];
+    /**
+     * Generated output types.
+     */
     outputDataTypes?: OutputDataType[];
     create?(config: ConfigurationService.ConfigurationService, opt?: ITransformFactoryOptions): NodeJS.ReadWriteStream;
     initialize(opt: ITransformFactoryOptions, callback: (error) => void): any;

@@ -26,8 +26,10 @@ var SocketIOAPI = (function (_super) {
         this.connection.subscribe('layer', function (result, clientId) {
             var lu = result.data;
             if (lu) {
+                ///TODO: check if lu.layerId really exists
                 switch (lu.action) {
                     case ClientConnection.LayerUpdateAction.updateLog:
+                        // find feature
                         var featureId = lu.item.featureId;
                         var logs = lu.item["logs"];
                         _this.manager.updateLogs(lu.layerId, featureId, logs, { source: _this.id, user: clientId }, function () { });
@@ -41,10 +43,12 @@ var SocketIOAPI = (function (_super) {
                         break;
                 }
             }
+            //result.data
         });
         this.connection.subscribe('project', function (result, clientId) {
             var lu = result.data;
             if (lu) {
+                ///TODO: check if lu.layerId really exists
                 switch (lu.action) {
                     case ClientConnection.ProjectUpdateAction.updateProject:
                         var p = lu.item;
@@ -55,21 +59,26 @@ var SocketIOAPI = (function (_super) {
                         break;
                 }
             }
+            //result.data
         });
         this.connection.subscribe('key', function (result, clientId) {
             var lu = result.data;
             if (lu) {
+                ///TODO: check if lu.layerId really exists
                 switch (lu.action) {
                     case ClientConnection.KeyUpdateAction.updateKey:
+                        // find feature
                         var keyId = lu.item.keyId;
                         _this.manager.updateKey(lu.keyId, lu.item, { source: _this.id, user: clientId }, function () { });
                         break;
                 }
             }
+            //result.data
         });
         callback();
     };
     SocketIOAPI.prototype.addLayer = function (layer, meta, callback) {
+        //this.connection.publish();
         var lu = { layerId: layer.id, action: LayerUpdateAction.updateLayer, item: layer };
         this.connection.updateLayer(layer.id, lu, meta);
         callback({ result: ApiResult.OK });
@@ -91,6 +100,7 @@ var SocketIOAPI = (function (_super) {
         });
     };
     SocketIOAPI.prototype.addProject = function (project, meta, callback) {
+        //this.connection.publish();
         var lu = { projectId: project.id, action: ProjectUpdateAction.updateProject, item: project };
         this.connection.updateProject(project.id, lu, meta);
         callback({ result: ApiResult.OK });

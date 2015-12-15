@@ -1,5 +1,8 @@
 import AuthApi = require('./AuthAPI');
 import events = require('events');
+/**
+ * Api Result status
+ */
 export declare enum ApiResult {
     OK = 200,
     Error = 400,
@@ -16,7 +19,11 @@ export declare enum ApiResult {
     SearchNotImplemented = 440,
 }
 export interface IApiManagerOptions {
+    /** Host:port name */
     server?: string;
+    /** Location of the simulation data */
+    simDataFolder?: string;
+    /** Specify what MQTT should subscribe to */
     mqttSubscriptions?: string[];
     [key: string]: any;
 }
@@ -24,6 +31,9 @@ export interface ApiMeta {
     source?: string;
     user?: string;
 }
+/**
+ * Default result object for api calls
+ */
 export declare class CallbackResult {
     result: ApiResult;
     error: any;
@@ -37,6 +47,7 @@ export declare class CallbackResult {
     };
     key: Key;
 }
+/** Event emitted by the ApiManager */
 export declare enum Event {
     KeyChanged = 0,
     PropertyChanged = 1,
@@ -44,11 +55,13 @@ export declare enum Event {
     LayerChanged = 3,
     ProjectChanged = 4,
 }
+/** Type of change in an ApiEvent */
 export declare enum ChangeType {
     Create = 0,
     Update = 1,
     Delete = 2,
 }
+/** When a key|layer|project is changed, the ChangeEvent is emitted with the following data. */
 export interface IChangeEvent {
     id: string;
     type: ChangeType;
@@ -57,6 +70,7 @@ export interface IChangeEvent {
 export interface IConnector {
     id: string;
     isInterface: boolean;
+    /** If true (default), the manager will send a copy to the source (receiving) connector */
     receiveCopy: boolean;
     init(layerManager: ApiManager, options: any, callback: Function): any;
     initLayer(layer: ILayer, meta?: ApiMeta): any;
@@ -85,12 +99,26 @@ export interface IConnector {
     updateProject(project: Project, meta: ApiMeta, callback: Function): any;
     deleteProject(projectId: string, meta: ApiMeta, callback: Function): any;
     allGroups(projectId: string, meta: ApiMeta, callback: Function): any;
+    /** Add a resource type file to the store. */
     addResource(reource: ResourceFile, meta: ApiMeta, callback: Function): any;
+    /** Add a file to the store, e.g. an icon or other media. */
     addFile(base64: string, folder: string, file: string, meta: ApiMeta, callback: Function): any;
+    /** Get a specific key */
     getKey(keyId: string, meta: ApiMeta, callback: Function): any;
+    /** Get a list of available keys */
     getKeys(meta: ApiMeta, callback: Function): any;
+    /** Update the value for a given keyId */
     updateKey(keyId: string, value: Object, meta: ApiMeta, callback: Function): any;
+    /** Delete key */
     deleteKey(keyId: string, meta: ApiMeta, callback: Function): any;
+    /**
+     * Subscribe to certain keys.
+     * @method subscribeKey
+     * @param  {string}     keyPattern Pattern to listen for, e.g. hello/me/+:person listens for all hello/me/xxx topics.
+     * @param  {ApiMeta}    meta       [description]
+     * @param  {Function}   callback   Called when topic is called.
+     * @return {[type]}                [description]
+     */
     subscribeKey(keyPattern: string, meta: ApiMeta, callback: (topic: string, message: string, params?: Object) => void): any;
 }
 export interface StorageObject {
@@ -123,12 +151,21 @@ export declare class Group {
 }
 export declare class KeySubscription {
     id: string;
+    /** Pattern you subscribe too */
     pattern: string;
+    /** Regex safe variant of the pattern, i.e. the . is replaced with a \. */
     regexPattern: RegExp;
     callback: Function;
 }
+/**
+ * Geojson ILayer definition
+ */
 export interface ILayer extends StorageObject {
+    /** Server of the layer, needed for remote synchronization */
     server?: string;
+    /**
+     * id of storage connector
+     */
     useLog?: boolean;
     updated?: number;
     enabled?: boolean;
@@ -150,8 +187,15 @@ export interface ILayer extends StorageObject {
     data?: any;
     [key: string]: any;
 }
+/**
+ * Geojson Layer definition
+ */
 export declare class Layer implements StorageObject, ILayer {
+    /** Server of the layer, needed for remote synchronization */
     server: string;
+    /**
+     * id of storage connector
+     */
     storage: string;
     useLog: boolean;
     updated: number;
@@ -172,13 +216,22 @@ export declare class Layer implements StorageObject, ILayer {
     isDynamic: boolean;
     features: Feature[];
 }
+/**
+ * Geojson ProjectId definition
+ */
 export declare class ProjectId {
     id: string;
 }
+/**
+ * Geojson geometry definition
+ */
 export declare class Geometry {
     type: string;
     coordinates: any;
 }
+/**
+ * Geojson feature definition
+ */
 export declare class Feature {
     type: string;
     id: string;
@@ -190,9 +243,15 @@ export declare class Feature {
         [key: string]: Log[];
     };
 }
+/**
+ * Geojson IProperty definition
+ */
 export interface IProperty {
     [key: string]: any;
 }
+/**
+ * Geojson property definition
+ */
 export declare class Property implements IProperty {
     [key: string]: any;
 }
@@ -215,21 +274,47 @@ export declare class ResourceFile implements StorageObject {
     id: string;
     storage: string;
 }
+/**
+ * ApiManager, the main csWeb router that receives and sends layer/feature/keys updates around using
+ * connectors and keeps all endpoints in sync.
+ *
+ * EMITS ApiEvents, which all return an IChangedEvent.
+ * KeyChanged event when a key is changed (CRUD).
+ * PropertyChanged event when a layer is changed (CRUD).
+ * FeatureChanged event when a feature is changed (CRUD).
+ * LayerChanged event when a layer is changed (CRUD).
+ * ProjectChanged event when a project is changed (CRUD).
+ */
 export declare class ApiManager extends events.EventEmitter {
     isClient: boolean;
     options: IApiManagerOptions;
+    /**
+     * Dictionary of connectors (e.g. storage, interface, etc.)
+     */
     connectors: {
         [key: string]: IConnector;
     };
+    /**
+     * Dictionary of resources
+     */
     resources: {
         [key: string]: ResourceFile;
     };
+    /**
+     * Dictionary of layers (doesn't contain actual data)
+     */
     layers: {
         [key: string]: ILayer;
     };
+    /**
+     * Dictionary of projects (doesn't contain actual data)
+     */
     projects: {
         [key: string]: Project;
     };
+    /**
+     * Dictionary of sensor sets
+     */
     keys: {
         [keyId: string]: Key;
     };
@@ -241,19 +326,45 @@ export declare class ApiManager extends events.EventEmitter {
     rootPath: string;
     projectsFile: string;
     layersFile: string;
+    /** The namespace is used for creating channels/layers/keys namespaces */
     namespace: string;
+    /** The name is used to identify this instance, and should be unique in the federation */
     name: string;
     authService: AuthApi.AuthAPI;
+    /** Create a new client, optionally specifying whether it should act as client. */
     constructor(namespace: string, name: string, isClient?: boolean, options?: IApiManagerOptions);
     init(rootPath: string, callback: Function): void;
+    /** Open layer config file*/
     loadLayerConfig(cb: Function): void;
+    /**
+     * Open project config file
+     */
     loadProjectConfig(cb: Function): void;
+    /**
+     * Have a 1 sec. delay before saving project config
+     */
     saveProjectDelay: (project: Project) => void;
+    /**
+     * Have a 1 sec. delay before saving layer config
+     */
     saveLayersDelay: (layer: ILayer) => void;
+    /**
+     * Store layer config file
+     */
     saveProjectConfig(): void;
+    /**
+     * Store layer config file
+     */
     saveLayerConfig(): void;
+    /**
+     * Look for available resources (from folder)
+     */
     initResources(resourcesPath: string): void;
+    /** Add a file to the store, e.g. an icon or other media. */
     addFile(base64: string, folder: string, file: string, meta: ApiMeta, callback: Function): void;
+    /**
+     * Update/add a resource and save it to file
+     */
     addResource(resource: ResourceFile, meta: ApiMeta, callback: Function): void;
     getResource(id: string): ResourceFile;
     addLayerToProject(projectId: string, groupId: string, layerId: string, meta: ApiMeta, callback: Function): void;
@@ -262,26 +373,63 @@ export declare class ApiManager extends events.EventEmitter {
     addGroup(group: Group, projectId: string, meta: ApiMeta, callback: Function): void;
     removeGroup(groupId: string, projectId: string, meta: ApiMeta, callback: Function): void;
     addProject(project: Project, meta: ApiMeta, callback: Function): void;
+    /**
+     * Add connector to available connectors
+     */
     addConnector(key: string, s: IConnector, options: any, callback?: Function): void;
     addConnectors(connectors: {
         key: string;
         s: IConnector;
         options: any;
     }[], callback: Function): void;
+    /**
+     * Find layer for a specific layerId (can return null)
+     */
     findLayer(layerId: string): ILayer;
+    /**
+     * Find project for a specific projectId (can return null)
+     */
     findProject(projectId: string): Project;
+    /**
+     * Find layer for a specific layerId (can return null)
+     */
     findKey(keyId: string): Key;
+    /**
+     * find feature in a layer by featureid
+     */
     findFeature(layerId: string, featureId: string, callback: Function): void;
+    /**
+     * Find storage for a layer
+     */
     findStorage(object: StorageObject): IConnector;
+    /**
+     * Lookup layer and return storage engine for this layer
+     */
     findStorageForLayerId(layerId: string): IConnector;
+    /**
+     * Lookup Project and return storage engine for this project
+     */
     findStorageForProjectId(projectId: string): IConnector;
+    /**
+     * Lookup layer and return storage engine for this layer
+     */
     findStorageForKeyId(keyId: string): IConnector;
+    /**
+     * Returns project definition for a project
+     */
     getProjectDefinition(project: Project): Project;
+    /**
+     * Returns project definition for a project
+     */
     getGroupDefinition(group: Group): Group;
+    /**
+     * Returns layer definition for a layer, this is the layer without the features (mostly used for directory)
+     */
     getLayerDefinition(layer: ILayer): ILayer;
     getProject(projectId: string, meta: ApiMeta, callback: Function): void;
     searchLayers(keyword: string, layerIds: string[], meta: ApiMeta, callback: Function): void;
     getLayer(layerId: string, meta: ApiMeta, callback: Function): void;
+    /** Create a new layer, store it, and return it. */
     createLayer(layer: ILayer, meta: ApiMeta, callback: (result: CallbackResult) => void): void;
     addUpdateLayer(layer: ILayer, meta: ApiMeta, callback: Function): void;
     updateProjectTitle(projectTitle: string, projectId: string, meta: ApiMeta, callback: Function): void;
@@ -311,5 +459,11 @@ export declare class ApiManager extends events.EventEmitter {
     getKeys(meta: ApiMeta, callback: Function): void;
     getKey(id: string, meta: ApiMeta, callback: Function): void;
     updateKey(keyId: string, value: Object, meta?: ApiMeta, callback?: Function): void;
+    /**
+     * Register a callback which is being called before the process exits.
+     * @method cleanup
+     * @param  {Function} callback Callback function that performs the cleanup
+     * See also: http://stackoverflow.com/questions/14031763/doing-a-cleanup-action-just-before-node-js-exits
+     */
     cleanup(callback?: Function): void;
 }

@@ -4,7 +4,13 @@ declare class BaseTransformer implements transform.ITransform {
     id: string;
     description: string;
     type: any;
+    /**
+     * Accepted input types.
+     */
     inputDataTypes: transform.InputDataType[];
+    /**
+     * Generated output types.
+     */
     outputDataTypes: transform.OutputDataType[];
     initialize(): void;
     constructor(title: string);

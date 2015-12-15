@@ -15,19 +15,19 @@ Date.prototype.addSeconds = function (secs) {
     return dat;
 };
 Date.prototype.diffDays = function (date) {
-    var diffMs = (this.getTime() - date.getTime());
+    var diffMs = (this.getTime() - date.getTime()); // milliseconds
     return Math.round(diffMs / 86400000);
 };
 Date.prototype.diffHours = function (date) {
-    var diffMs = (this.getTime() - date.getTime());
-    return Math.round(diffMs / 3600000);
+    var diffMs = (this.getTime() - date.getTime()); // milliseconds
+    return Math.round(diffMs / 3600000); // hours
 };
 Date.prototype.diffMinutes = function (date) {
-    var diffMs = (this.getTime() - date.getTime());
-    return Math.round(diffMs / 60000);
+    var diffMs = (this.getTime() - date.getTime()); // milliseconds
+    return Math.round(diffMs / 60000); // minutes
 };
 Date.prototype.diffSeconds = function (date) {
-    var diffMs = (this.getTime() - date.getTime());
+    var diffMs = (this.getTime() - date.getTime()); // milliseconds
     return Math.round(diffMs / 1000);
 };
 //# sourceMappingURL=DateUtils.js.map

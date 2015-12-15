@@ -1,4 +1,5 @@
 var request = require('request');
+/* Multiple storage engine supported, e.g. file system, mongo  */
 var ProxyService = (function () {
     function ProxyService() {
     }
@@ -7,6 +8,7 @@ var ProxyService = (function () {
         this.server = server;
         console.log('init proxy');
         this.baseUrl = apiServiceManager.BaseUrl + '/proxy';
+        //console.log(this.baseUrl);
         server.get(this.baseUrl, function (req, res) {
             var id = req.query.url;
             console.log(id);
@@ -16,6 +18,7 @@ var ProxyService = (function () {
     ProxyService.prototype.shutdown = function () { };
     ProxyService.prototype.getUrl = function (feedUrl, res) {
         console.log('proxy request: ' + feedUrl);
+        //feedUrl = 'http://rss.politie.nl/rss/algemeen/ab/algemeen.xml';
         var parseNumbers = function (str) {
             if (!isNaN(str)) {
                 str = str % 1 === 0 ? parseInt(str, 10) : parseFloat(str);

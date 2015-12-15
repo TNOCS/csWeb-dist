@@ -9,9 +9,15 @@ var DynamicProject = (function () {
         this.messageBus = messageBus;
     }
     DynamicProject.prototype.Start = function () {
+        /*var feature = new csComp.Services.Feature();
+        feature.id = "hoi";
+        console.log(JSON.stringify(feature));*/
         var _this = this;
+        // load project file
         this.openFile();
+        // watch directory changes for new geojson files
         this.watchFolder();
+        // setup http handler
         this.service.server.get("/project/" + this.id, function (req, res) { _this.GetLayer(req, res); });
     };
     DynamicProject.prototype.AddLayer = function (data) {
@@ -65,6 +71,9 @@ var DynamicProject = (function () {
         }
         return { geojson: geojson, resourcejson: resourcejson };
     };
+    /***
+    Open project file from disk
+    */
     DynamicProject.prototype.openFile = function () {
         var _this = this;
         var f = this.folder + "\\project.json";
@@ -100,6 +109,7 @@ var DynamicProject = (function () {
                 }
             }));
         }, 1000);
+        //console.log(action + " - " + path); });
     };
     DynamicProject.prototype.removeLayer = function (file) {
         console.log("removing : " + file);
@@ -107,9 +117,11 @@ var DynamicProject = (function () {
         var pp = file.split(p.sep);
         if (p.basename(file) === 'project.json')
             return;
+        // determine group
         var groupTitle = p.dirname(file).replace(this.folder, "").replace(p.sep, "");
         if (groupTitle === "")
             return;
+        // check if group exists
         var gg = this.project.groups.filter(function (element) { return (element != null && element.title && element.title.toLowerCase() == groupTitle.toLowerCase()); });
         var g = {};
         if (gg.length > 0) {
@@ -128,20 +140,25 @@ var DynamicProject = (function () {
         var pp = file.split(p.sep);
         if (p.basename(file) === 'project.json')
             return;
+        // determine group
         var groupTitle = p.dirname(file).replace(this.folder, "").replace(p.sep, "");
         if (groupTitle === "")
             return;
+        // obtain additional parameters (useClustering, isEnabled, etc.)
         var parameters = this.service.projectParameters[groupTitle];
+        //if (!parameters) parameters = { useClustering: true };
         if (!parameters)
-            return;
+            return; //parameters are required
         if (!this.project.groups)
             this.project.groups = [];
+        // check if group exists
         var gg = this.project.groups.filter(function (element) { return (element != null && element.title && element.title.toLowerCase() == groupTitle.toLowerCase()); });
         var g = {};
         if (gg.length > 0) {
             g = gg[0];
         }
         else {
+            //  var g : any; //new csComp.Services.ProjectGroup();
             g.id = groupTitle;
             g.title = groupTitle;
             g.layers = [];
@@ -157,7 +174,7 @@ var DynamicProject = (function () {
         var layer = {};
         layer.id = file;
         layer.description = parameters.description;
-        layer.title = parameters.layerTitle;
+        layer.title = parameters.layerTitle; //pp.name.split('_').join(' ');
         layer.type = "geojson";
         layer.dynamicResource = true;
         layer.url = "data/projects/" + this.id + "/" + g.title + "/" + p.basename(file);
@@ -177,10 +194,13 @@ var DynamicProject = (function () {
         if (!layerExists)
             g.layers.push(layer);
         this.service.connection.publish(this.project.id, "project", "layer-update", { layer: [layer], group: g });
+        // save project.json (+backup)
+        //console.log("g:" + group);
     };
     DynamicProject.prototype.GetLayer = function (req, res) {
         console.log("Get Layer: " + this.folder);
         res.send(JSON.stringify(this.project));
+        //res.send("postgres layer");
     };
     return DynamicProject;
 })();
@@ -201,8 +221,10 @@ var DynamicProjectService = (function () {
                 _this.connection.publish(data.id, "layer", "layer-update", data);
             }
             else {
+                // find project
                 if (_this.projects.hasOwnProperty(data.project)) {
                     var dp = _this.projects[data.project];
+                    //console.log("adding layer");
                     dp.AddLayer(data);
                     _this.projectParameters[data.group] = data;
                 }

@@ -7,6 +7,7 @@ var MergeGeoJsonTransformer = (function () {
         this.title = title;
         this.type = "MergeGeoJsonTransformer";
         this.id = Utils.newGuid();
+        //this.description = description;
     }
     MergeGeoJsonTransformer.prototype.initialize = function (opt, callback) {
         var _this = this;
@@ -34,10 +35,14 @@ var MergeGeoJsonTransformer = (function () {
     MergeGeoJsonTransformer.prototype.create = function (config, opt) {
         var _this = this;
         var t = new stream.Transform();
+        /*stream.Transform.call(t);*/
         var baseGeo;
         t.setEncoding("utf8");
         t._transform = function (chunk, encoding, done) {
+            // var startTs = new Date();
+            // console.log((new Date().getTime() - startTs.getTime()) + ": start");
             var feature = JSON.parse(chunk);
+            // console.log(this.filterProperty + "  - " + this.filterValue);
             var featureKeyValue = feature.properties[_this.keyProperty];
             var mergeFeature = _this.geometry.features.filter(function (f) { return f.properties[_this.keyProperty] == featureKeyValue; })[0];
             if (!mergeFeature) {
@@ -50,7 +55,11 @@ var MergeGeoJsonTransformer = (function () {
             }
             feature.geometry = mergeFeature.geometry;
             t.push(JSON.stringify(feature));
+            // console.log(feature);
+            // console.log("=== After:");
+            // console.log(feature);
             done();
+            // console.log((new Date().getTime() - startTs.getTime()) + ": finish");
         };
         return t;
     };

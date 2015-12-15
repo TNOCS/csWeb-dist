@@ -36,6 +36,7 @@ var MqttAPI = (function (_super) {
         });
         this.client.on('connect', function () {
             Winston.info("mqtt: connected");
+            // server listens to all key updates
             if (!_this.manager.isClient) {
                 var subscriptions = layerManager.options.mqttSubscriptions || '#';
                 Winston.info("mqtt: listen to " + (subscriptions === '#' ? 'everything' : subscriptions));
@@ -50,7 +51,14 @@ var MqttAPI = (function (_super) {
         this.client.on('reconnect', function () {
             Winston.debug("mqtt: reconnecting");
         });
+        // TODO Use the router to handle messages
+        // this.router.subscribe('hello/me/#:person', function(topic, message, params){
+        //   console.log('received', topic, message, params);
+        // });
         this.client.on('message', function (topic, message) {
+            //Winston.info(`mqtt on message: ${topic}.`);
+            //if (topic[topic.length - 1] === "/") topic = topic.substring(0, topic.length - 2);
+            // listen to layer updates
             if (topic === _this.layerPrefix) {
                 var layer = _this.extractLayer(message);
                 if (layer && layer.id) {
@@ -60,6 +68,10 @@ var MqttAPI = (function (_super) {
                 }
             }
             else if (topic.indexOf(_this.layerPrefix) === 0) {
+                // We are either dealing with a layer update, or a feature update.
+                // In the first case, the channel will be this.layerPrefix/layerId,
+                // otherwise, it will be this.layerPrefix/layerId/feature/featureId.
+                // So try to extract both. If there is only one, we are dealing a layer update.
                 var ids = topic.substring(_this.layerPrefix.length, topic.length).split('/feature/');
                 var layerId = ids[0];
                 if (ids.length === 1) {
@@ -93,6 +105,7 @@ var MqttAPI = (function (_super) {
                 if (kid) {
                     try {
                         var obj = JSON.parse(message);
+                        //Winston.info('mqtt: update key for id ' + kid + " : " + message);
                         _this.manager.updateKey(kid, obj, { source: _this.id }, function () { });
                     }
                     catch (e) {
@@ -105,10 +118,21 @@ var MqttAPI = (function (_super) {
     };
     MqttAPI.prototype.extractLayer = function (message) {
         var layer = JSON.parse(message);
+        // if you have a server, you don't need local storage
         if (layer.server)
             delete layer.storage;
+        //if (!layer.server && layer.server === this.manager.options.server) return;
         return layer;
     };
+    /**
+     * Subscribe to certain keys using the internal MQTT router.
+     * See also https://github.com/wolfeidau/mqtt-router.
+     * @method subscribeKey
+     * @param  {string}     keyPattern Pattern to listen for, e.g. hello/me/+:person listens for all hello/me/xxx topics.
+     * @param  {ApiMeta}    meta       [description]
+     * @param  {Function}   callback   Called when topic is called.
+     * @return {[type]}                [description]
+     */
     MqttAPI.prototype.subscribeKey = function (keyPattern, meta, callback) {
         Winston.info('subscribing key : ' + keyPattern);
         this.router.subscribe(keyPattern, function (topic, message, params) {
@@ -129,7 +153,9 @@ var MqttAPI = (function (_super) {
         if (meta.source !== this.id) {
             var def = this.manager.getLayerDefinition(layer);
             delete def.storage;
+            // Send the layer definition to everyone
             this.client.publish(this.layerPrefix, JSON.stringify(def));
+            // And place all the data only on the specific layer channel
             this.client.publish(this.layerPrefix + layer.id, JSON.stringify(layer));
         }
         callback({ result: ApiResult.OK });
@@ -157,6 +183,7 @@ var MqttAPI = (function (_super) {
         callback({ result: ApiResult.OK });
     };
     MqttAPI.prototype.initLayer = function (layer) {
+        //this.client.subscribe(this.layerPrefix + layer.id + "/addFeature");
         Winston.info('mqtt: init layer ' + layer.id);
     };
     MqttAPI.prototype.getKeyChannel = function (keyId) {

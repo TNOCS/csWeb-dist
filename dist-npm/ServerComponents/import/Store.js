@@ -7,9 +7,25 @@ var FileStore = (function () {
         this.store = opt["storageFile"] || "importers.json";
         this.load();
     }
+    /**
+     * Load the file from disk.
+     */
     FileStore.prototype.load = function () {
         this.resources = JSON.parse(fs.readFileSync(this.store, 'utf8'));
+        /*
+          fs.readFile(this.store, 'utf8', (err, res) => {
+              if (err) {
+                  console.log('No file store found: ' + this.store);
+              }
+              else {
+  
+                  this.resources = JSON.parse(res);
+              }
+          });*/
     };
+    /**
+     * Save the list of importers to disk.
+     */
     FileStore.prototype.save = function () {
         fs.writeFile(this.store, JSON.stringify(this.resources, null, 2), { encoding: 'utf8' }, function (err) {
             if (err) {
@@ -18,6 +34,9 @@ var FileStore = (function () {
             }
         });
     };
+    /**
+     * Get all importers as an array.
+     */
     FileStore.prototype.getAll = function () {
         var resourceArray = [];
         for (var id in this.resources) {
@@ -27,11 +46,17 @@ var FileStore = (function () {
         }
         return resourceArray;
     };
+    /**
+     * Get a single importer.
+     */
     FileStore.prototype.get = function (id) {
         if (!this.resources.hasOwnProperty(id))
             return null;
         return this.resources[id];
     };
+    /**
+     * Create a new importer and store it.
+     */
     FileStore.prototype.create = function (id, newObject) {
         if (typeof id === 'undefined' || !newObject.hasOwnProperty("id"))
             newObject.id = id = Utils.newGuid();
@@ -40,6 +65,9 @@ var FileStore = (function () {
         this.resources[id] = newObject;
         this.save();
     };
+    /**
+     * Delete an existing importer.
+     */
     FileStore.prototype.delete = function (id) {
         if (!this.resources.hasOwnProperty(id))
             return null;
@@ -47,6 +75,9 @@ var FileStore = (function () {
         delete this.resources[id];
         this.save();
     };
+    /**
+     * Update an existing importer.
+     */
     FileStore.prototype.update = function (id, resource) {
         this.resources[id] = resource;
         this.save();
@@ -60,6 +91,9 @@ var FolderStore = (function () {
         this.folder = path.join(path.dirname(require.main.filename), opt["storageFolder"] || "public/data/resourceTypes");
         this.load();
     }
+    /**
+     * Load the file from disk.
+     */
     FolderStore.prototype.load = function (callback) {
         var _this = this;
         fs.readdir(this.folder, function (err, res) {
@@ -88,6 +122,9 @@ var FolderStore = (function () {
             }
         });
     };
+    /**
+     * Get all importers as an array.
+     */
     FolderStore.prototype.getAll = function () {
         var resourceArray = [];
         for (var id in this.resources) {
@@ -96,6 +133,9 @@ var FolderStore = (function () {
         }
         return resourceArray;
     };
+    /**
+     * Get a single resource.
+     */
     FolderStore.prototype.get = function (id) {
         if (!this.resources.hasOwnProperty(id)) {
             this.load();
@@ -105,8 +145,12 @@ var FolderStore = (function () {
         }
         return this.resources[id];
     };
+    /**
+     * Get a single resource.
+     */
     FolderStore.prototype.getAsync = function (id, res) {
         var _this = this;
+        // If resource cannot be found, refresh the resourcelist and try again
         if (!this.resources.hasOwnProperty(id)) {
             this.load(function () {
                 if (!_this.resources.hasOwnProperty(id)) {
@@ -125,9 +169,15 @@ var FolderStore = (function () {
             res.sendFile(filename);
         }
     };
+    /**
+     * Create a new importer and store it.
+     */
     FolderStore.prototype.create = function (id, resource) {
         this.save(id, resource);
     };
+    /**
+     * Delete an existing importer.
+     */
     FolderStore.prototype.delete = function (id) {
         var _this = this;
         if (!this.resources.hasOwnProperty(id))
@@ -142,6 +192,9 @@ var FolderStore = (function () {
             }
         });
     };
+    /**
+     * Update an existing resource.
+     */
     FolderStore.prototype.update = function (id, resource) {
         this.save(id, resource);
     };

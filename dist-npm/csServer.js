@@ -24,19 +24,29 @@ var csServer = (function () {
         this.cm = new csweb.ConnectionManager(this.httpServer);
         this.messageBus = new csweb.MessageBusService();
         this.config = new csweb.ConfigurationService('./configuration.json');
+        //This line is required when using JX to run the server, or else the input-messages coming from the Excel file will cause an error: https://github.com/jxcore/jxcore/issues/119
+        //require('http').setMaxHeaderLength(26214400);
+        // all environments 
         this.options.port = this.options.port;
         this.server.set('port', this.options.port);
         this.server.use(favicon(this.dir + '/public/favicon.ico'));
-        this.server.use(bodyParser.json({ limit: '25mb' }));
-        this.server.use(bodyParser.urlencoded({ limit: '25mb', extended: true }));
+        //increased limit size, see: http://stackoverflow.com/questions/19917401/node-js-express-request-entity-too-large
+        this.server.use(bodyParser.json({ limit: '25mb' })); // support json encoded bodies
+        this.server.use(bodyParser.urlencoded({ limit: '25mb', extended: true })); // support encoded bodies
         this.config.add('server', 'http://localhost:' + this.options.port);
+        // Select BAG-database source: either a (remote) Postgresql server (1st line) or a (local) sqlite3-db.
         var bagDatabase = new csweb.BagDatabase(this.config);
+        //var bagDatabase = new LocalBag(path.resolve(dir, 'public/data/bagadres.db'));
         this.server.use(express.static(path.join(this.dir, 'swagger')));
         this.server.use(express.static(path.join(this.dir, 'public')));
         this.httpServer.listen(this.server.get('port'), function () {
             Winston.info('Express server listening on port ' + _this.server.get('port'));
+            /*
+             * API platform
+             */
             _this.api = new csweb.ApiManager('cs', 'cs');
             _this.api.init(path.join(path.resolve(_this.dir), 'public/data/api'), function () {
+                //api.authService = new csweb.AuthAPI(api, server, '/api');
                 _this.api.addConnectors([
                     { key: 'rest', s: new csweb.RestAPI(_this.server), options: {} },
                     { key: 'mqtt', s: new csweb.MqttAPI('localhost', 1883), options: {} },
@@ -46,6 +56,9 @@ var csServer = (function () {
                 ], function () {
                     started();
                 });
+                /**
+                 * Excel 2 map functionality
+                 */
                 var mapLayerFactory = new csweb.MapLayerFactory(bagDatabase, _this.messageBus, _this.api);
                 _this.server.post('/projecttemplate', function (req, res) { return mapLayerFactory.process(req, res); });
                 _this.server.post('/bagcontours', function (req, res) { return mapLayerFactory.processBagContours(req, res); });

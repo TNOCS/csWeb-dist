@@ -5,7 +5,13 @@ declare class CsvToJsonTransformer implements transform.ITransform {
     description: string;
     type: string;
     headers: string[];
+    /**
+     * Accepted input types.
+     */
     inputDataTypes: transform.InputDataType[];
+    /**
+     * Generated output types.
+     */
     outputDataTypes: transform.OutputDataType[];
     fieldDelimiter: string;
     textQualifier: string;

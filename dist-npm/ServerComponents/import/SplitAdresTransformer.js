@@ -5,6 +5,7 @@ var SplitAdresTransformer = (function () {
         this.title = title;
         this.type = "SplitAdresTransformer";
         this.id = Utils.newGuid();
+        //this.description = description;
     }
     SplitAdresTransformer.prototype.initialize = function (opt, callback) {
         var zipcodeCityPropertyParameter = opt.parameters.filter(function (p) { return p.type.title == "zipcodeCityProperty"; })[0];
@@ -20,11 +21,16 @@ var SplitAdresTransformer = (function () {
     SplitAdresTransformer.prototype.create = function (config, opt) {
         var _this = this;
         var t = new stream.Transform();
+        /*stream.Transform.call(t);*/
         t.setEncoding("utf8");
         t._transform = function (chunk, encoding, done) {
             var feature = JSON.parse(chunk);
+            // console.log("##### SAT #####");
+            // console.log("=== Before:")
+            // console.log(feature);
             if (_this.streetHouseNumberProperty) {
                 var adres = feature.properties[_this.streetHouseNumberProperty];
+                // console.log(this.streetHouseNumberProperty + ": " + adres);
                 var street = adres.slice(0, adres.search(/\d/)).trim();
                 var addressNumberWithAddition = adres.slice(adres.search(/\d/)).trim();
                 var nonDigitIndex = addressNumberWithAddition.search(/\D/);
@@ -42,6 +48,8 @@ var SplitAdresTransformer = (function () {
                 feature.properties.postcode = postcode;
             }
             t.push(JSON.stringify(feature));
+            // console.log("=== After:");
+            // console.log(feature);
             done();
         };
         return t;

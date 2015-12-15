@@ -1,5 +1,6 @@
 var fs = require('fs');
 var path = require('path');
+/* Multiple storage engine supported, e.g. file system, mongo  */
 var ProjectRepositoryService = (function () {
     function ProjectRepositoryService(store) {
         this.store = store;
@@ -15,6 +16,9 @@ var ProjectRepositoryService = (function () {
             var resourceTypes = _this.getAll();
             res.send(resourceTypes);
         });
+        /**
+         * Create project file
+         */
         server.post(this.projectUrl + '/:id', function (req, res) {
             var id = req.params.id;
             var project = req.body;
@@ -34,6 +38,9 @@ var ProjectRepositoryService = (function () {
             });
             res.end();
         });
+        /**
+         * Create resourceType
+         */
         server.post(this.resourceTypeUrl + '/:id', function (req, res) {
             var id = req.params.id;
             if (!_this.endsWith(id, ".json"))
@@ -42,15 +49,24 @@ var ProjectRepositoryService = (function () {
             console.log(resourceType);
             res.send(_this.create(id, resourceType));
         });
+        /**
+         * Read
+         */
         server.get(this.dataUrl + '/:id', function (req, res) {
             var id = req.params.id;
             _this.get(id, res);
         });
+        /**
+         * Update
+         */
         server.put(this.resourceTypeUrl + '/:id', function (req, res) {
             var id = req.params.id;
             var resourceType = req.body;
             res.send(_this.update(id, resourceType));
         });
+        /**
+         * Delete
+         */
         server.delete(this.resourceTypeUrl + '/:id', function (req, res) {
             var id = req.params.id;
             res.send(_this.delete(id));
@@ -63,9 +79,9 @@ var ProjectRepositoryService = (function () {
     ProjectRepositoryService.prototype.yyyymmdd = function () {
         var date = new Date();
         var yyyy = date.getFullYear().toString();
-        var mm = (date.getMonth() + 1).toString();
+        var mm = (date.getMonth() + 1).toString(); // getMonth() is zero-based
         var dd = date.getDate().toString();
-        return yyyy + (mm[1] ? mm : "0" + mm[0]) + (dd[1] ? dd : "0" + dd[0]);
+        return yyyy + (mm[1] ? mm : "0" + mm[0]) + (dd[1] ? dd : "0" + dd[0]); // padding
     };
     ProjectRepositoryService.prototype.shutdown = function () {
     };
@@ -86,5 +102,5 @@ var ProjectRepositoryService = (function () {
     };
     return ProjectRepositoryService;
 })();
-module.exports = ProjectRepositoryService;
+exports.ProjectRepositoryService = ProjectRepositoryService;
 //# sourceMappingURL=ProjectRepositoryService.js.map

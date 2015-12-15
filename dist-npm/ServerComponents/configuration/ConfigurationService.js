@@ -1,5 +1,12 @@
 var fs = require('fs');
+/**
+ * Service that contains default configuration options.
+ * Is based on csComp.Helpers.Dictionary.
+ */
 var ConfigurationService = (function () {
+    /**
+     * Create a configuration service based on a configuration file.
+     */
     function ConfigurationService(configurationFile) {
         this.configurationFile = configurationFile;
         var data = fs.readFileSync(configurationFile, 'utf8');
@@ -10,6 +17,16 @@ var ConfigurationService = (function () {
                 this.add(key, value);
             }
         }
+        // fs.readFile(configurationFile, 'utf8', (err, data) => {
+        //   if (err) throw err;
+        //   var content: Object = JSON.parse(data);
+        //   for (var key in content) {
+        //       if (content.hasOwnProperty(key)) {
+        //           var value = content[key];
+        //           this.add(key, value);
+        //       }
+        //   }
+        // });
     }
     ConfigurationService.prototype.initialize = function (init) {
         for (var x = 0; x < init.length; x++) {

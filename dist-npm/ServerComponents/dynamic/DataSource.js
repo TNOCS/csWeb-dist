@@ -22,6 +22,7 @@ var DataSource;
                         ds.title = temp.title;
                         callback();
                     }
+                    //var projects = data;
                 });
             }
         };
@@ -64,6 +65,5 @@ var DataSource;
         return DataSourceService;
     })();
     DataSource_1.DataSourceService = DataSourceService;
-})(DataSource || (DataSource = {}));
-module.exports = DataSource;
+})(DataSource = exports.DataSource || (exports.DataSource = {}));
 //# sourceMappingURL=DataSource.js.map

@@ -1,3 +1,7 @@
+/**
+ * RSS source interface.
+ * See also: http://cyber.law.harvard.edu/rss/rss.html#requiredChannelElements
+ */
 export interface IRss {
     rss: IRssFeed;
 }
@@ -5,6 +9,9 @@ export interface IRssFeed {
     version?: string | number;
     channel: IRssChannel;
 }
+/**
+ * RSS Channel interface.
+ */
 export interface IRssChannel {
     title: string;
     link: string;
@@ -29,6 +36,9 @@ export interface IRssChannel {
     "dc:language"?: string;
     item?: IRssItem[];
 }
+/**
+ * Interface for an RSS item.
+ */
 export interface IRssItem {
     title?: string;
     link?: string;
@@ -47,6 +57,9 @@ export interface IRssItem {
     "content:items"?: IContentItem[];
     "media:content"?: IMediaContent[];
 }
+/**
+ * Inferface for a content item
+ */
 export interface IContentItem {
     "rdf:Bag": IRdfBag;
 }

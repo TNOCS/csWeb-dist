@@ -5,7 +5,13 @@ declare class CollateStreamTransformer implements transform.ITransform {
     description: string;
     type: string;
     headers: string[];
+    /**
+     * Accepted input types.
+     */
     inputDataTypes: transform.InputDataType[];
+    /**
+     * Generated output types.
+     */
     outputDataTypes: transform.OutputDataType[];
     constructor(title: string);
     initialize(opt: any, callback: any): void;

@@ -1,7 +1,7 @@
 import express = require('express');
 import ClientConnection = require("./ClientConnection");
 import DynamicLayer = require("./DynamicLayer");
-declare module DataSource {
+export declare module DataSource {
     class SensorSet {
         id: string;
         title: string;
@@ -14,6 +14,7 @@ declare module DataSource {
     class DataSource {
         id: string;
         url: string;
+        /** static, dynamic */
         type: string;
         title: string;
         sensors: {
@@ -32,4 +33,3 @@ declare module DataSource {
         start(): void;
     }
 }
-export = DataSource;

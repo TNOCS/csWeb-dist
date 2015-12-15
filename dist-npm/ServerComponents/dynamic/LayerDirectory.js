@@ -8,6 +8,7 @@ var LayerDirectory;
         }
         LayerDirectory.prototype.Start = function () {
             var _this = this;
+            // setup http handler
             this.server.get("/layerDirectory/", function (req, res) { _this.GetDirectory(req, res); });
         };
         LayerDirectory.prototype.GetDirectory = function (req, res) {
@@ -35,6 +36,5 @@ var LayerDirectory;
         return LayerDirectory;
     })();
     LayerDirectory_1.LayerDirectory = LayerDirectory;
-})(LayerDirectory || (LayerDirectory = {}));
-module.exports = LayerDirectory;
+})(LayerDirectory = exports.LayerDirectory || (exports.LayerDirectory = {}));
 //# sourceMappingURL=LayerDirectory.js.map

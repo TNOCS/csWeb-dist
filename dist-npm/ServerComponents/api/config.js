@@ -3,6 +3,7 @@ var AuthConfig = (function () {
     }
     AuthConfig.TOKEN_SECRET = process.env.TOKEN_SECRET || 'JWT Token Secret';
     AuthConfig.MONGO_URI = process.env.MONGO_URI || 'localhost=27017';
+    // OAuth 2.0
     AuthConfig.FACEBOOK_SECRET = process.env.FACEBOOK_SECRET || '';
     AuthConfig.FOURSQUARE_SECRET = process.env.FOURSQUARE_SECRET || '';
     AuthConfig.GOOGLE_SECRET = process.env.GOOGLE_SECRET || '';
@@ -11,6 +12,7 @@ var AuthConfig = (function () {
     AuthConfig.TWITCH_SECRET = process.env.TWITCH_SECRET || '';
     AuthConfig.WINDOWS_LIVE_SECRET = process.env.WINDOWS_LIVE_SECRET || '';
     AuthConfig.YAHOO_SECRET = process.env.YAHOO_SECRET || '';
+    // OAuth 1.0
     AuthConfig.TWITTER_KEY = process.env.TWITTER_KEY || '';
     AuthConfig.TWITTER_SECRET = process.env.TWITTER_SECRET || '';
     return AuthConfig;

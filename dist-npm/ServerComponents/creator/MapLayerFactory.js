@@ -1,9 +1,10 @@
 var fs = require('fs');
 var proj4 = require('proj4');
 var IBagOptions = require('../database/IBagOptions');
-var Api = require('../api/ApiManager');
 var async = require('async');
+/** A factory class to create new map layers based on input, e.g. from Excel */
 var MapLayerFactory = (function () {
+    // constructor(private bag: LocalBag, private messageBus: MessageBus.MessageBusService) {
     function MapLayerFactory(bag, messageBus, apiManager) {
         this.bag = bag;
         this.messageBus = messageBus;
@@ -14,7 +15,7 @@ var MapLayerFactory = (function () {
             }
             else {
                 files.forEach(function (f) {
-                    fileList[f.replace(/\.[^/.]+$/, '')] = ('public/data/templates/' + f);
+                    fileList[f.replace(/\.[^/.]+$/, '')] = ('public/data/templates/' + f); // Filter extension from key and store in dictionary
                 });
             }
         });
@@ -31,6 +32,9 @@ var MapLayerFactory = (function () {
         var template = req.body;
         var ld = template.layerDefinition[0];
         this.createMapLayer(template, function (geojson) {
+            //if (!fs.existsSync("public/data/projects/DynamicExample")) fs.mkdirSync("public/data/projects/DynamicExample");
+            //if (!fs.existsSync("public/data/projects/DynamicExample/" + ld.group)) fs.mkdirSync("public/data/projects/DynamicExample/" + ld.group);
+            //fs.writeFileSync("public/data/projects/DynamicExample/" + ld.group + "/" + ld.layerTitle + ".json", JSON.stringify(geojson));
             var data = {
                 project: ld.projectTitle,
                 projectId: (template.projectId) ? template.projectId : ld.projectTitle,
@@ -60,7 +64,7 @@ var MapLayerFactory = (function () {
             _this.messageBus.publish('dynamic_project_layer', 'created', data);
             var combinedjson = _this.splitJson(data);
             _this.sendIconThroughApiManager(data.iconBase64, ld.iconUri);
-            _this.sendResourceThroughApiManager(combinedjson.resourcejson, data.reference);
+            _this.sendResourceThroughApiManager(combinedjson.resourcejson, data.reference); //For now set layerID = resourceID
             _this.sendLayerThroughApiManager(data);
         });
     };
@@ -99,6 +103,9 @@ var MapLayerFactory = (function () {
                 }
             }
         }
+        // console.log('TODO REMOVE writing output');
+        // fs.writeFileSync('c:/Users/Erik/Downloads/tkb/' + data.reference + '_layer.json', JSON.stringify(geojson));
+        // fs.writeFileSync('c:/Users/Erik/Downloads/tkb/' + data.reference + '.json', JSON.stringify(resourcejson));
         return { geojson: geojson, resourcejson: resourcejson };
     };
     MapLayerFactory.prototype.sendIconThroughApiManager = function (b64, path) {
@@ -114,6 +121,7 @@ var MapLayerFactory = (function () {
     };
     MapLayerFactory.prototype.sendLayerThroughApiManager = function (data) {
         var _this = this;
+        // winston.info('Send layer: ' + JSON.stringify(data));
         var layer = this.apiManager.getLayerDefinition({
             title: data.layerTitle,
             description: data.description,
@@ -125,20 +133,13 @@ var MapLayerFactory = (function () {
             opacity: data.opacity,
             dynamicResource: true
         });
+        layer.features = data.geojson.features;
         var group = this.apiManager.getGroupDefinition({ title: data.group, id: data.group, clusterLevel: data.clusterLevel });
         async.series([
             function (cb) {
                 _this.apiManager.addUpdateLayer(layer, { source: 'maplayerfactory' }, function (result) {
                     console.log(result);
-                    if (result.result === Api.ApiResult.LayerAlreadyExists) {
-                        _this.apiManager.addUpdateLayer(layer, { source: 'maplayerfactory' }, function (result) {
-                            console.log(result);
-                            cb();
-                        });
-                    }
-                    else {
-                        cb();
-                    }
+                    cb();
                 });
             },
             function (cb) {
@@ -160,6 +161,30 @@ var MapLayerFactory = (function () {
                 });
             }
         ]);
+        // request({
+        //     url: "http://localhost:3002/api/layers",
+        //     method: "POST",
+        //     json: true,
+        //     body: { title: data.layerTitle, id: data.reference, features: data.geojson.features }
+        // }, function(error, response, body) {
+        //     console.log('Creating layer... ' + response.statusCode + ' ' + body.error);
+        //     request({
+        //         url: "http://localhost:3002/api/projects/" + data.projectId + "/group",
+        //         method: "POST",
+        //         json: true,
+        //         body: { title: data.group, id: data.group}
+        //     }, function(error, response, body) {
+        //         console.log('Creating group... ' + response.statusCode + ' ' + body.error);
+        //         request({
+        //             url: "http://localhost:3002/api/projects/" + data.projectId + "/group/" + data.group + '/layer/' + data.reference,
+        //             method: "POST",
+        //             json: true,
+        //             body: { title: data.group, id: data.group}
+        //         }, function(error, response, body) {
+        //             console.log('Adding layer to group... ' + response.statusCode + ' ' + body.error);
+        //         });
+        //     });
+        // });
     };
     MapLayerFactory.prototype.processBagContours = function (req, res) {
         var _this = this;
@@ -196,7 +221,9 @@ var MapLayerFactory = (function () {
     MapLayerFactory.prototype.createMapLayer = function (template, callback) {
         var ld = template.layerDefinition[0];
         var features = [];
+        // Convert StringFormats (from a readable key to StringFormat notation)
         this.convertStringFormats(template.propertyTypes);
+        // Check propertyTypeData for time-based data
         var timestamps = this.convertTimebasedPropertyData(template);
         var featureTypeName = ld.featureType || 'Default';
         var featureTypeContent = {
@@ -226,8 +253,11 @@ var MapLayerFactory = (function () {
         if (timestamps.length > 0) {
             geojson['timestamps'] = JSON.parse(JSON.stringify(timestamps));
         }
+        // Convert dates (from a readable key to a JavaScript Date string notation)
         this.convertDateProperties(template.propertyTypes, template.properties);
+        // Convert types (from a readable key to type notation)
         this.convertTypes(template.propertyTypes, template.properties);
+        // Add geometry
         switch (ld.geometryType) {
             case 'Postcode6_en_huisnummer':
                 if (!ld.parameter1) {
@@ -351,8 +381,18 @@ var MapLayerFactory = (function () {
                 this.createPolygonFeature(ld.geometryType, ld.parameter1, ld.includeOriginalProperties, features, template.properties, template.propertyTypes, template.sensors || [], function () { callback(geojson); });
                 break;
         }
+        //console.log("Drawing mode" + ld.drawingMode);
         return geojson;
     };
+    /**
+     * This function extracts the timestamps and sensorvalues from the
+     * template.propertyTypes. Every sensorvalue is parsed as propertyType in
+     * MS Excel, which should be converted to a sensor-array for each feature.
+     * Note: Each propertyname is appended with a 6-digit number, as JSON objects
+     * need unique keys. These are trimmed in this function.
+     * @param  {ILayerTemplate} template : The input template coming from MS Excel
+     * @return {array} timestamps        : An array with all date/times converted to milliseconds
+     */
     MapLayerFactory.prototype.convertTimebasedPropertyData = function (template) {
         var _this = this;
         var propertyTypes = template.propertyTypes;
@@ -361,12 +401,14 @@ var MapLayerFactory = (function () {
         }
         var timestamps = [];
         var targetProperties = [];
-        var realPropertyTypes = [];
+        var realPropertyTypes = []; //Filter out propertyTypes that are actually a timestamp value
         propertyTypes.forEach(function (pt) {
             if (pt.hasOwnProperty('targetProperty')) {
+                //Prevent duplicate properties
                 if (targetProperties.indexOf(pt['targetProperty']) < 0) {
                     targetProperties.push(pt['targetProperty']);
                 }
+                //Prevent duplicate timestamps
                 var timestamp = _this.convertTime(pt['date'], pt['time']);
                 if (timestamps.indexOf(timestamp) < 0) {
                     timestamps.push(timestamp);
@@ -377,8 +419,11 @@ var MapLayerFactory = (function () {
             }
         });
         template.propertyTypes = realPropertyTypes;
+        //if (timestamps.length <= 0) return timestamps;
+        // If the data contains time-based values, convert the corresponding properties
+        // to a sensor array.
         var properties = template.properties;
-        var realProperties = [];
+        var realProperties = []; //To filter out properties that are actually a sensor value
         var realSensors = [];
         properties.forEach(function (p) {
             var realProperty = {};
@@ -480,11 +525,17 @@ var MapLayerFactory = (function () {
         });
         callback();
     };
+    /**
+     * Convert the RD coordinate to WGS84.
+     */
     MapLayerFactory.prototype.createRDFeature = function (rdX, rdY, features, properties, sensors, callback) {
         var _this = this;
         if (!properties) {
             callback();
         }
+        //https://github.com/yuletide/node-proj4js-defs/blob/master/epsg.js
+        //Proj4js.defs["EPSG:28992"] = "+proj=sterea +lat_0=52.15616055555555 +lon_0=5.38763888888889 +k=0.9999079 +x_0=155000 +y_0=463000 
+        //+ellps=bessel + towgs84=565.417, 50.3319, 465.552, -0.398957, 0.343988, -1.8774, 4.0725 + units=m + no_defs";
         proj4.defs('RD', '+proj=sterea +lat_0=52.15616055555555 +lon_0=5.38763888888889 +k=0.9999079 +x_0=155000 +y_0=463000 ' +
             ' +ellps=bessel +towgs84=565.417,50.3319,465.552,-0.398957,0.343988,-1.8774,4.0725 +units=m +no_defs');
         var converter = proj4('RD');
@@ -496,6 +547,7 @@ var MapLayerFactory = (function () {
             }
             else {
                 var wgs = converter.inverse({ x: x, y: y });
+                //console.log(JSON.stringify(wgs));
                 features.push(_this.createFeature(wgs.x, wgs.y, prop, sensors[index] || {}));
             }
         });
@@ -514,7 +566,7 @@ var MapLayerFactory = (function () {
             if (prop.hasOwnProperty(addition)) {
                 merged = merged + '-' + prop[addition];
             }
-            prop['_mergedHouseNumber'] = merged.replace(/ /g, '');
+            prop['_mergedHouseNumber'] = merged.replace(/ /g, ''); // set merged houseNumber as houseNumber
         });
     };
     MapLayerFactory.prototype.createPointFeature = function (zipCode, houseNumber, bagOptions, features, properties, propertyTypes, sensors, callback) {
@@ -530,6 +582,7 @@ var MapLayerFactory = (function () {
                 var zip = prop[zipCode].replace(/ /g, '');
                 var nmb = prop[houseNumber];
                 bg.lookupBagAddress(zip, nmb, bagOptions, function (locations) {
+                    //console.log(todo);
                     if (!locations || locations.length === 0 || typeof locations[0] === 'undefined') {
                         console.log("Cannot find location with zip: " + zip + ", houseNumber: " + nmb);
                         asyncthis.featuresNotFound[("" + zip + nmb)] = { zip: "" + zip, number: "" + nmb };
@@ -546,17 +599,50 @@ var MapLayerFactory = (function () {
                         if (prop.hasOwnProperty('_mergedHouseNumber')) {
                             delete prop['_mergedHouseNumber'];
                         }
+                        //console.log('locations[0] ' + locations[0]);
                         features.push(asyncthis.createFeature(locations[0].lon, locations[0].lat, prop, sensors[index] || {}));
                     }
                     innercallback();
                 });
             }
             else {
+                //console.log('No valid zipcode found: ' + prop[zipCode]);
                 innercallback();
             }
         }, function (err) {
             callback();
         });
+        // properties.forEach((prop, index) => {
+        //     if (prop.hasOwnProperty(zipCode) && typeof prop[zipCode] === 'string') {
+        //         var zip = prop[zipCode].replace(/ /g, '');
+        //         var nmb = prop[houseNumber];
+        //         this.bag.lookupBagAddress(zip, nmb, bagOptions, (locations: Location[]) => {
+        //             //console.log(todo);
+        //             if (!locations || locations.length === 0 || typeof locations[0] == 'undefined') {
+        //                 console.log(`Cannot find location with zip: ${zip}, houseNumber: ${nmb}`);
+        //                 this.featuresNotFound[`${zip}${nmb}`] = { zip: `${zip}`, number: `${nmb}` };
+        //             } else {
+        //                 for (var key in locations[0]) {
+        //                     if (key !== "lon" && key !== "lat") {
+        //                         if (locations[0][key]) {
+        //                             prop[(key.charAt(0).toUpperCase() + key.slice(1))] = locations[0][key];
+        //                             this.createPropertyType(propertyTypes, (key.charAt(0).toUpperCase() + key.slice(1)), "BAG");
+        //                         }
+        //                     }
+        //                 }
+        //                 if (prop.hasOwnProperty('_mergedHouseNumber')) delete prop['_mergedHouseNumber'];
+        //                 //console.log('locations[0] ' + locations[0]);
+        //                 features.push(this.createFeature(locations[0].lon, locations[0].lat, prop, sensors[index] || {}));
+        //             }
+        //         });
+        //         todo--;
+        //         if (todo <= 0)
+        //           callback();
+        //     } else {
+        //         console.log('No valid zipcode found: ' + prop[zipCode]);
+        //         todo--;
+        //     }
+        // });
     };
     MapLayerFactory.prototype.createFeature = function (lon, lat, properties, sensors) {
         var gjson = {
@@ -613,6 +699,7 @@ var MapLayerFactory = (function () {
         d.setFullYear(year);
         d.setMonth(month - 1);
         d.setDate(day);
+        //TODO: Take time into account
         var timeInMs = d.getTime();
         console.log('Converted ' + date + ' ' + time + ' to ' + d.toDateString() + ' (' + d.getTime() + ' ms)');
         return timeInMs;
@@ -624,10 +711,10 @@ var MapLayerFactory = (function () {
         }
         propertyTypes.forEach(function (pt) {
             if (pt.hasOwnProperty('type') && pt['type'] === 'date') {
-                var name = pt['label'];
+                var name = pt['label']; //Store name of the property with type "date"
                 properties.forEach(function (p) {
                     if (p.hasOwnProperty(name)) {
-                        var timeInMs = _this.convertTime(p[name], '');
+                        var timeInMs = _this.convertTime(p[name], ''); //TODO: Add Time compatibility
                         var d = new Date(timeInMs);
                         p[name] = d.toString();
                     }
@@ -641,7 +728,7 @@ var MapLayerFactory = (function () {
         }
         propertyTypes.forEach(function (pt) {
             if (pt.hasOwnProperty('type') && pt['type'] === 'url') {
-                var name = pt['label'];
+                var name = pt['label']; //Store name of the property with type "url"
                 properties.forEach(function (p) {
                     if (p.hasOwnProperty(name)) {
                         if (p[name].substring(0, 3) === 'www') {
