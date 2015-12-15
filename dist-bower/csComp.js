@@ -922,398 +922,6 @@ var csComp;
     })(Services = csComp.Services || (csComp.Services = {}));
 })(csComp || (csComp = {}));
 //# sourceMappingURL=typeresource.js.map
-var Translations;
-(function (Translations) {
-    var English = (function () {
-        function English() {
-        }
-        English.locale = {
-            CANCEL_BTN: 'Cancel',
-            OK_BTN: 'OK',
-            FROM: 'from',
-            TO: 'to',
-            NAVIGATE: 'Start',
-            CREATE_SCATTER: 'Create scatter with',
-            EXPAND_ALL: 'Expand all',
-            COLLAPSE_ALL: 'Collapse all',
-            SELECT_ALL: 'Select all',
-            DESELECT_ALL: 'Deselect all',
-            CHOOSE_DROPDOWN: 'Choose...',
-            ENABLE_LOCATION_FILTER: 'Enable location filter',
-            DISABLE_LOCATION_FILTER: 'Disable location filter',
-            SELECT_A_FEATURE: 'Select a feature',
-            SELECT_FEATURE_FOR_WIDGET: 'Please select a feature to show the widget.',
-            SELECT_FEATURE_FOR_STYLE: 'Please select a feature to before setting the style.',
-            SELECT_LAYER_GROUP: 'Select Layers',
-            SELECT_CATEGORY: 'Select Category',
-            SELECT_PROPERTIES: 'Select Properties',
-            NO_RELATIONS_FOUND: 'No relations can be shown for the selected feature. Either the zoom level is too low, there are too many features in the view or there are no relations defined.',
-            BASESTYLES: 'Baselayers',
-            MAP: 'Maps',
-            MAP_LABEL: 'Map',
-            TABLE_LABEL: 'Table',
-            LAYERS: 'Layers',
-            DIRECTORY: 'Available layers',
-            CREATELAYER: 'Create new layer',
-            ADDFEATURES: 'Add items',
-            ADDTYPE: 'Add new type',
-            DONE: 'done',
-            FILTERS: 'Filters',
-            FILTER_INFO: 'At the moment, no filters have been selected. In order to add a filter, click on an icon or area on the map, and click on the filter icon (<span class="fa fa-filter"></span>) in the right menu. This will create a filter for the selected property.',
-            STYLES: 'Styles',
-            STYLE_INFO: 'At the moment, no style has been selected. In order to add a style, click on an icon or area on the map, and click on the style icon (<span class="smallStyleIcon"></span>) in the right menu. This will create a filter for the selected property.',
-            FEATURES: 'Features',
-            LEGEND: 'Legend',
-            SEARCH: 'Search',
-            HIDE_PANEL: 'Hide this panel',
-            EDIT_INDICATORS: 'Edit indicators',
-            RELATED_FEATURES: 'Show related features',
-            FEATURE_INFO: 'Show information about the selected feature',
-            MAP_FEATURES: 'Map features',
-            NEARBY_FEATURES: 'Nearby features',
-            TOGGLE_MENU: 'Toggle menu visibility',
-            DASHBOARD_SELECTION: 'Dashboard selection',
-            SETTINGS: 'Settings',
-            SPEEDS_TAOUFIK: 'speed colors Taoufik',
-            SPEEDS_GOOGLEMAPS: 'speed colors Google Maps',
-            VERWARMINGSSYSTEEM: 'Heating system',
-            PERCENTAGES_V1: 'percentages v1',
-            ORANGE_RED: 'orange - red',
-            WHITE_RED: 'white - red',
-            RED_WHITE: 'red - white',
-            RED_WHITE_BLUE: 'red - white - blue',
-            GREEN_RED: 'green - red',
-            RED_GREEN: 'red - green',
-            BLUE_RED: 'blue - red',
-            RED_BLUE: 'red - blue',
-            WHITE_BLUE: 'white - blue',
-            BLUE_WHITE: 'blue - white',
-            WHITE_GREEN: 'white - green',
-            GREEN_WHITE: 'green - white',
-            WHITE_ORANGE: 'white - orange',
-            ORANGE_WHITE: 'orange - white',
-            SAVE: 'save',
-            CONFIG: 'config',
-            EDIT: 'edit',
-            APPLY: 'apply',
-            REMOVE: 'remove',
-            STATS: {
-                COUNT: '#',
-                COUNT_TOOLTIP: 'Count of selected items',
-                MIN: 'min',
-                MIN_TOOLTIP: 'Minimum of selected items',
-                MAX: 'max',
-                MAX_TOOLTIP: 'Maximum of selected items',
-                MEAN: 'µ',
-                MEAN_TOOLTIP: 'Mean of selected items',
-                SUM: 'Σ',
-                SUM_TOOLTIP: 'Sum of selected items'
-            },
-            UTILS: {
-                FILTER: 'Use this property as filter',
-                STYLE: 'Use this property as style',
-                STATS: 'Show property statistics',
-                CHART: 'Show property in time',
-                CONFIG: 'Configure property'
-            },
-            EXPERTMODE: {
-                BEGINNER: 'Novice',
-                INTERMEDIATE: 'Intermediate',
-                EXPERT: 'Expert',
-                ADMIN: 'Admin',
-                EXPLANATION: 'Select your expertise in order to unlock more functionality.'
-            },
-            LAYER_SERVICE: {
-                RELOAD_PROJECT_TITLE: 'Data is reloaded',
-                RELOAD_PROJECT_MSG: 'After switching the language, we need to reload all the map data. Our appologies for the inconvenience.'
-            },
-            HEATMAP: {
-                NAME: 'Heatmaps',
-                DESCRIPTION: '<h4>Heatmap</h4><p  style="text-align: left; margin-left:5px;">Heatmap highlights areas on the map that fulfill multiple selected criteria.',
-                INFO: 'At the moment, no map layers are loaded that contain a heatmap. Open another map layer to use it.',
-                INFO_EXPERT: 'At the moment, no map layers are loaded that contain a heatmap. Open another map layer to use it, or create a new heatmap using the wizard.',
-                SHOW_FEATURE_MSG: 'Select a feature on the map to see the heatmap.',
-                TOTAL_RESULT: 'Combined result',
-                DELETE_MSG: 'Delete "{0}"',
-                DELETE_MSG2: 'Are you sure?',
-                EDITOR_TITLE: 'Heatmap Editor',
-                MAIN_FEATURE: 'Select the main feature',
-                PROPERTIES: 'Select the properties',
-                INTENSITY_SCALE: 'Intensity scale',
-                RESOLUTION: 'Resolution',
-                TITLE: 'Title... *',
-                TITLE_TAG: 'Title',
-                SCALE_MIN_TITLE: '[Min. scale]',
-                SCALE_MAX_TITLE: '[Max. scale]',
-                MIN_MAX_ZOOM: 'Min./Max. zoom',
-                AT_LOCATION_VALUE: '[Weight at location]',
-                DISTANCE_MAX_VALUE: '[Ideal distance]',
-                LOST_INTEREST_VALUE: '[Lost interest distance]',
-                LINEAR_ASC_DESC: 'Linearly increasing, then decreasing function.',
-                ADD_HEATMAP: 'Add a new heatmap.',
-                DELETE_HEATMAP: 'Delete the heatmap.',
-                EDIT_HEATMAP: 'Edit the heatmap.',
-                EXPORT_HEATMAP: 'Export the heatmap.'
-            },
-            MCA: {
-                NAME: 'Multi-Criteria Analysis (MCA)',
-                DESCRIPTION: '<h4>Multi-Criteria Analysis</h4><p  style="text-align: left; margin-left:5px;">MCA, is a method that combines multiple properties of a feature on the map into a new property. It achieves this by:<ol><li>Scaling each property to a range between 0 (no value) and 1 (maximum value).</li><li>Weighing each property relative to the others, where a weight less than 0 indicates you wish to avoid it, 0 is ignored, and a value greater than 0 is prefered.</li></ol> In fact, it is a kind of linear regression.',
-                INFO: 'At the moment, no map layers are loaded that contain a multi-criteria analysis. Open another map layer to see it.',
-                INFO_EXPERT: 'At the moment, no map layers are loaded that contain a multi-criteria analysis. Open another map layer to use it, or create a new MCA using the wizard.',
-                SHOW_FEATURE_MSG: 'Select a feature on the map to see the effects of the Multi-Criteria Analysis (MCA).',
-                TOTAL_RESULT: 'Combined result',
-                DELETE_MSG: 'Delete "{0}"',
-                DELETE_MSG2: 'Are you sure?',
-                HAS_CATEGORY: '  Has category? ',
-                HAS_RANK: '  Include rank? ',
-                EDITOR_TITLE: 'MCA Editor',
-                MAIN_FEATURE: 'Select the main feature',
-                PROPERTIES: 'Select the properties',
-                INCLUDE_RANK: '  Show rank? ',
-                RANK_TITLE: '[Rank title...]',
-                TITLE: 'Title... *',
-                CATEGORY_MSG: '[Category...]',
-                TOGGLE_SPARKLINE: 'Show or hide bar charts and scoring function.',
-                SCALE_MIN_TITLE: '[Min. scale]',
-                SCALE_MAX_TITLE: '[Max. scale]',
-                MIN_VALUE: '[Minimum (\u03BC-2\u03C3)]',
-                MAX_VALUE: '[Maximum (\u03BC+2\u03C3)]',
-                MIN_CUTOFF_VALUE: '[Ignore when below this value]',
-                MAX_CUTOFF_VALUE: '[Ignore when above this value]',
-                LINEAR: 'Linearly increasing function between min and max.',
-                SIGMOID: 'Tangentially increasing function between min and max',
-                GAUSSIAN: 'Normal distribution increasing function between min and max.',
-                ADD_MCA: 'Add a new MCA.',
-                DELETE_MCA: 'Delete the MCA.',
-                EDIT_MCA: 'Edit the MCA.',
-                SET_STYLE: 'Set style'
-            },
-            PROJECTSETTINGS: {
-                TITLE: 'Project Settings',
-                DESCRIPTION: 'Settings'
-            },
-            CHOOSE_CATEGORY: 'Choose category...',
-            SHOW5: 'Show 5 items',
-            SHOW10: 'Show 10 items',
-            SHOW15: 'Show 15 items',
-            SHOW20: 'Show 20 items',
-            SHOW25: 'Show 25 items',
-            SHOW30: 'Show 30 items',
-            SHOW35: 'Show 35 items',
-            SHOW40: 'Show 40 items',
-            RISK_DIAGRAM_FOR: 'Risk-diagram for a ',
-            SAVE_FEATURE_DEPENDENCIES: 'Save dependencies to the selected feature only',
-            SAVE_FEATURETYPE_DEPENDENCIES: 'Save dependencies to all features of this type',
-            SAVE_MARVEL: 'Save ',
-            SAVE_EVERY_MARVEL: 'Save every ',
-            MARVEL_WATER_LEVEL: 'Water level [m]',
-            MARVEL_UPS_DURATION: 'UPS duration [mins]',
-            MARVEL_FEATURE_DEP: 'Depends on',
-            STATE: 'State',
-            EVENT_INFO: 'Show a list of events',
-            CLEAR_EVENTS: 'Clear event log'
-        };
-        return English;
-    })();
-    Translations.English = English;
-})(Translations || (Translations = {}));
-//# sourceMappingURL=locale-en.js.map
-var Translations;
-(function (Translations) {
-    var Dutch = (function () {
-        function Dutch() {
-        }
-        Dutch.locale = {
-            CANCEL_BTN: 'Annuleren',
-            OK_BTN: 'OK',
-            FROM: 'van',
-            TO: 'tot',
-            NAVIGATE: 'Start',
-            REMOVE: 'Verwijder',
-            CREATE_SCATTER: 'Creeer spreidingsdiagram',
-            EXPAND_ALL: 'Alles uitklappen',
-            COLLAPSE_ALL: 'Alles inklappen',
-            SELECT_ALL: 'Selecteer alles',
-            DESELECT_ALL: 'Deselecteer alles',
-            ENABLE_LOCATION_FILTER: 'Activeer locatiefilter',
-            SELECT_A_FEATURE: 'Selecteer een feature',
-            DISABLE_LOCATION_FILTER: 'Deactiveer locatiefilter',
-            SELECT_FEATURE_FOR_WIDGET: 'Selecteer een gebied om de widget te tonen.',
-            SELECT_FEATURE_FOR_STYLE: 'Selecteer een gebied om de stijl te activeren.',
-            SELECT_LAYER_GROUP: 'Selecteer lagen',
-            SELECT_CATEGORY: 'Selecteer categorie',
-            SELECT_PROPERTIES: 'Selecteer eigenschappen',
-            NO_RELATIONS_FOUND: 'Geen relaties voor het geselecteerde item gevonden. Ofwel het zoomniveau is te laag, er zijn teveel items zichtbaar of er zijn geen relaties gedefiniëerd.',
-            CHOOSE_DROPDOWN: 'Kies...',
-            BASESTYLES: 'Basiskaarten',
-            MAP: 'Kaarten',
-            MAP_LABEL: 'Kaart',
-            TABLE_LABEL: 'Tabel',
-            LAYERS: 'Kaartlagen',
-            DIRECTORY: 'Beschikbare lagen',
-            CREATELAYER: 'Nieuwe laag maken',
-            ADDFEATURES: 'Objecten toevoegen',
-            ADDTYPE: 'Nieuwe type toevoegen',
-            FILTERS: 'Filters',
-            FILTER_INFO: 'Momenteel zijn er geen filters geselecteerd. Klik op een icoon of gebied op de kaart, en klik op het filter icoontje (<span class="fa fa-filter"></span>) in het rechter menu om een filter toe te voegen. Dan wordt er een filter aangemaakt voor de geselecteerde eigenschap.',
-            STYLES: 'Stijlen',
-            STYLE_INFO: 'Momenteel zijn er geen stijlen geselecteerd. Klik op een icoon of gebied op de kaart, en klik op het stijl icoontje (<span class="smallStyleIcon"></span>) in het rechter menu om een stijl toe te voegen. Dan wordt er een stijl aangemaakt voor de geselecteerde eigenschap.',
-            FEATURES: 'Features',
-            LEGEND: 'Legenda',
-            SEARCH: 'Zoeken',
-            HIDE_PANEL: 'Verberg dit paneel',
-            EDIT_INDICATORS: 'Wijzig indicatoren',
-            RELATED_FEATURES: 'Toon gerelateerde features',
-            FEATURE_INFO: 'Toon informatie over de geselecteerde feature',
-            MAP_FEATURES: 'Kaartfeatures',
-            NEARBY_FEATURES: 'Dichtbijgelegen features',
-            DASHBOARD_SELECTION: 'Dashboardselectie',
-            SETTINGS: 'Instellingen',
-            TOGGLE_MENU: 'Wissel de zichtbaarheid van het menu',
-            SPEEDS_TAOUFIK: 'snelheden legenda Taoufik',
-            SPEEDS_GOOGLEMAPS: 'snelheden legenda Google Maps',
-            VERWARMINGSSYSTEEM: 'Verwarmingssysteem',
-            PERCENTAGES_V1: 'percentages v1',
-            ORANGE_RED: 'oranje - rood',
-            WHITE_RED: 'wit - rood',
-            RED_WHITE_BLUE: 'rood - wit - blauw',
-            RED_WHITE: 'rood - wit',
-            GREEN_RED: 'groen - rood',
-            RED_GREEN: 'rood - groen',
-            BLUE_RED: 'blauw - rood',
-            RED_BLUE: 'rood - blauw',
-            WHITE_BLUE: 'wit - blauw',
-            BLUE_WHITE: 'wit - groen',
-            WHITE_GREEN: 'wit - groen',
-            GREEN_WHITE: 'groen - wit',
-            WHITE_ORANGE: 'wit - oranje',
-            ORANGE_WHITE: 'oranje - wit',
-            SAVE: 'opslaan',
-            APPLY: 'toepassen',
-            DONE: 'klaar',
-            CONFIG: 'config',
-            EDIT: 'aanpassen',
-            STATS: {
-                COUNT: '#',
-                COUNT_TOOLTIP: 'Aantal geselecteerde items',
-                MIN: 'min',
-                MIN_TOOLTIP: 'Minimum van geselecteerde items',
-                MAX: 'max',
-                MAX_TOOLTIP: 'Maximum van geselecteerde items',
-                MEAN: 'µ',
-                MEAN_TOOLTIP: 'Gemiddelde van geselecteerde items',
-                SUM: 'Σ',
-                SUM_TOOLTIP: 'Som van geselecteerde items'
-            },
-            UTILS: {
-                FILTER: 'Gebruik dit kenmerk als filter',
-                STYLE: 'Gebruik dit kenmerk als stijl',
-                STATS: 'Toon de statistieken van dit kenmerk',
-                CHART: 'Toon het verloop van dit kenmerk in de tijd',
-                CONFIG: 'Configureer dit kenmerk'
-            },
-            EXPERTMODE: {
-                BEGINNER: 'Beginner',
-                INTERMEDIATE: 'Gevorderd',
-                EXPERT: 'Expert',
-                ADMIN: 'Admin',
-                EXPLANATION: 'Selecteer uw expertise om meer functionaliteit te kunnen gebruiken.'
-            },
-            LAYER_SERVICE: {
-                RELOAD_PROJECT_TITLE: 'Data wordt opnieuw geladen',
-                RELOAD_PROJECT_MSG: 'Na het wisselen van de taal moet de kaartdata opnieuw ingelezen worden. Excuses voor het ongemak.'
-            },
-            HEATMAP: {
-                NAME: 'Heatmaps',
-                DESCRIPTION: '<h4>Toelichting heatmap</h4><div style="text-align: left; margin-left:5px;"><p>Heatmap laat gebieden op de kaart oplichten die voldoen aan bepaalde criteria.',
-                INFO: 'Momenteel zijn er geen kaartlagen geopend die heatmaps bevatten.',
-                INFO_EXPERT: 'Momenteel zijn er geen kaartlagen geopend die heatmaps bevatten. Open een kaartlaag en maak een nieuwe heatmap aan met behulp van de wizard.',
-                SHOW_FEATURE_MSG: 'Selecteer een feature op de kaart om de heatmap resultaten in detail te bekijken.',
-                TOTAL_RESULT: 'Gecombineerd resultaat',
-                DELETE_MSG: 'Verwijder "{0}"',
-                DELETE_MSG2: 'Weet u het zeker?',
-                EDITOR_TITLE: 'Heatmap Editor',
-                MAIN_FEATURE: 'Selecteer het type feature',
-                PROPERTIES: 'Selecteer de eigenschappen',
-                RESOLUTION: 'Resolutie',
-                INTENSITY_SCALE: 'Intensiteitsschaal',
-                TITLE: 'Titel... *',
-                TITLE_TAG: 'Titel',
-                TOGGLE_SPARKLINE: 'Toon of verberg de histogram en score functie.',
-                SCALE_MIN_TITLE: '[Schaal max]',
-                SCALE_MAX_TITLE: '[Schaal min]',
-                MIN_MAX_ZOOM: 'Min./Max. zoom',
-                AT_LOCATION_VALUE: '[Waarde op locatie]',
-                DISTANCE_MAX_VALUE: '[Ideale afstand]',
-                LOST_INTEREST_VALUE: '[Negeer vanaf afstand]',
-                LINEAR_ASC_DESC: 'Linear toenemende, dan afnemende functie.',
-                ADD_HEATMAP: 'Maak een nieuwe heatmap.',
-                DELETE_HEATMAP: 'Verwijder de heatmap.',
-                EDIT_HEATMAP: 'Bewerk de heatmap.',
-                EXPORT_HEATMAP: 'Exporteer de heatmap.'
-            },
-            MCA: {
-                NAME: 'Multi-Criteria Analyse (MCA)',
-                DESCRIPTION: '<h4>Toelichting MCA</h4><div style="text-align: left; margin-left:5px;"><p>Multi-Criteria Analysis (MCA) is een methode die verschillende eigenschappen van een locatie of gebied op de kaart combineerd tot een nieuwe eigenschap. Dit gaat als volgt: <ol><li>Schaal iedere eigenschap tussen 0 (geen waarde) en 1 (maximum waarde).</li><li>Weeg iedere eigenschap relatief t.o.v. de andere gekozen eigenschappen, waar een gewicht onder 0 betekent dat je de eigenschap wil vermijden, 0 wordt genegeerd, en een waarde groter dan 0 betekent dat je dit wil bereiken.</li></ol>Met andere woorden, het is een vorm van lineare regressie.</p></div>',
-                INFO: 'Momenteel zijn er geen kaartlagen geopend die multi-criteria analyses bevatten. Open hiervoor een andere kaartlaag.',
-                INFO_EXPERT: 'Momenteel zijn er geen kaartlagen geopend die multi-criteria analyses bevatten. Open een kaartlaag en maak een nieuwe MCA aan met behulp van de wizard.',
-                SHOW_FEATURE_MSG: 'Selecteer een feature op de kaart om de Multi-Criteria Analyse (MCA) resultaten in detail te bekijken.',
-                TOTAL_RESULT: 'Gecombineerd resultaat',
-                DELETE_MSG: 'Verwijder "{0}"',
-                DELETE_MSG2: 'Weet u het zeker?',
-                HAS_CATEGORY: '  Specificeer categorie? ',
-                EDITOR_TITLE: 'MCA Editor',
-                MAIN_FEATURE: 'Selecteer het type feature',
-                PROPERTIES: 'Selecteer de eigenschappen',
-                INCLUDE_RANK: '  Toon een rangorde? ',
-                RANK_TITLE: '[Titel voor de rangorde]',
-                TITLE: 'Titel... *',
-                CATEGORY_MSG: '[Categorie...]',
-                TOGGLE_SPARKLINE: 'Toon of verberg de histogram en score functie.',
-                SCALE_MIN_TITLE: '[Schaal max]',
-                SCALE_MAX_TITLE: '[Schaal min]',
-                MIN_VALUE: '[Ondergrens (\u03BC-2\u03C3)]',
-                MAX_VALUE: '[Bovengrens (\u03BC+2\u03C3)]',
-                MIN_CUTOFF_VALUE: '[Niet meewegen onder]',
-                MAX_CUTOFF_VALUE: '[Niet meewegen boven]',
-                LINEAR: 'Linear toenemende functie tussen onder- en bovengrens.',
-                SIGMOID: 'Tangentieel toenemende functie tussen onder- en bovengrens.',
-                GAUSSIAN: 'Normale verdeling tussen onder- en bovengrens.',
-                ADD_MCA: 'Maak een nieuwe MCA.',
-                DELETE_MCA: 'Verwijder de MCA.',
-                EDIT_MCA: 'Bewerk de MCA.',
-                SET_STYLE: 'Activeer stijl'
-            },
-            PROJECTSETTINGS: {
-                TITLE: 'Project instellingen',
-                DESCRIPTION: 'Instellingen'
-            },
-            CHOOSE_CATEGORY: 'Kies categorie...',
-            SHOW5: 'Toon 5 regels',
-            SHOW10: 'Toon 10 regels',
-            SHOW15: 'Toon 15 regels',
-            SHOW20: 'Toon 20 regels',
-            SHOW25: 'Toon 25 regels',
-            SHOW30: 'Toon 30 regels',
-            SHOW35: 'Toon 35 regels',
-            SHOW40: 'Toon 40 regels',
-            RISK_DIAGRAM_FOR: 'Risicodiagram voor een ',
-            SAVE_FEATURE_DEPENDENCIES: 'Sla de afhankelijkheden op alléén voor het geselecteerde object',
-            SAVE_FEATURETYPE_DEPENDENCIES: 'Sla de afhankelijkheden op voor alle object van dit type',
-            SAVE_MARVEL: 'Bewaar ',
-            SAVE_EVERY_MARVEL: 'Bewaar ieder ',
-            MARVEL_WATER_LEVEL: 'Waterniveau [m]',
-            MARVEL_UPS_DURATION: 'Noodstroom duur [min]',
-            MARVEL_FEATURE_DEP: 'Afhankelijk van',
-            STATE: 'Status',
-            EVENT_INFO: 'Toon lijst van gebeurtenissen',
-            CLEAR_EVENTS: 'Lijst leegmaken'
-        };
-        return Dutch;
-    })();
-    Translations.Dutch = Dutch;
-})(Translations || (Translations = {}));
-//# sourceMappingURL=locale-nl.js.map
 var ColorExt;
 (function (ColorExt) {
     /** Color utility class */
@@ -4411,277 +4019,398 @@ var csComp;
     csComp.Utils = Utils;
 })(csComp || (csComp = {}));
 //# sourceMappingURL=Utils.js.map
-var Accessibility;
-(function (Accessibility) {
-    /**
-      * Config
-      */
-    var moduleName = 'csComp';
-    try {
-        Accessibility.myModule = angular.module(moduleName);
-    }
-    catch (err) {
-        // named module does not exist, so create one
-        Accessibility.myModule = angular.module(moduleName, []);
-    }
-    /**
-      * Directive to display a feature's properties in a panel.
-      *
-      * @seealso          : http://www.youtube.com/watch?v=gjJ5vLRK8R8&list=UUGD_0i6L48hucTiiyhb5QzQ
-      * @seealso          : http://plnkr.co/edit/HyBP9d?p=preview
-      */
-    Accessibility.myModule.directive('accessibility', ['$compile',
-        function ($compile) {
-            return {
-                terminal: true,
-                restrict: 'E',
-                scope: {},
-                templateUrl: 'directives/Accessibility/Accessibility.tpl.html',
-                replace: true,
-                transclude: true,
-                controller: Accessibility.AccessibilityCtrl
-            };
+var Translations;
+(function (Translations) {
+    var English = (function () {
+        function English() {
         }
-    ]);
-})(Accessibility || (Accessibility = {}));
-//# sourceMappingURL=Accessibility.js.map
-var Accessibility;
-(function (Accessibility) {
-    var AccessibilityModel = (function () {
-        function AccessibilityModel() {
-            this.id = "accessibilityActions";
-        }
-        AccessibilityModel.prototype.stop = function () { };
-        AccessibilityModel.prototype.addFeature = function (feature) { };
-        AccessibilityModel.prototype.removeFeature = function (feature) { };
-        AccessibilityModel.prototype.selectFeature = function (feature) {
-            console.log('accessibility:feature selected');
+        English.locale = {
+            CANCEL_BTN: 'Cancel',
+            OK_BTN: 'OK',
+            FROM: 'from',
+            TO: 'to',
+            NAVIGATE: 'Start',
+            CREATE_SCATTER: 'Create scatter with',
+            EXPAND_ALL: 'Expand all',
+            COLLAPSE_ALL: 'Collapse all',
+            SELECT_ALL: 'Select all',
+            DESELECT_ALL: 'Deselect all',
+            CHOOSE_DROPDOWN: 'Choose...',
+            ENABLE_LOCATION_FILTER: 'Enable location filter',
+            DISABLE_LOCATION_FILTER: 'Disable location filter',
+            SELECT_A_FEATURE: 'Select a feature',
+            SELECT_FEATURE_FOR_WIDGET: 'Please select a feature to show the widget.',
+            SELECT_FEATURE_FOR_STYLE: 'Please select a feature to before setting the style.',
+            SELECT_LAYER_GROUP: 'Select Layers',
+            SELECT_CATEGORY: 'Select Category',
+            SELECT_PROPERTIES: 'Select Properties',
+            NO_RELATIONS_FOUND: 'No relations can be shown for the selected feature. Either the zoom level is too low, there are too many features in the view or there are no relations defined.',
+            BASESTYLES: 'Baselayers',
+            MAP: 'Maps',
+            MAP_LABEL: 'Map',
+            TABLE_LABEL: 'Table',
+            LAYERS: 'Layers',
+            DIRECTORY: 'Available layers',
+            CREATELAYER: 'Create new layer',
+            ADDFEATURES: 'Add items',
+            ADDTYPE: 'Add new type',
+            DONE: 'done',
+            FILTERS: 'Filters',
+            FILTER_INFO: 'At the moment, no filters have been selected. In order to add a filter, click on an icon or area on the map, and click on the filter icon (<span class="fa fa-filter"></span>) in the right menu. This will create a filter for the selected property.',
+            STYLES: 'Styles',
+            STYLE_INFO: 'At the moment, no style has been selected. In order to add a style, click on an icon or area on the map, and click on the style icon (<span class="smallStyleIcon"></span>) in the right menu. This will create a filter for the selected property.',
+            FEATURES: 'Features',
+            LEGEND: 'Legend',
+            SEARCH: 'Search',
+            HIDE_PANEL: 'Hide this panel',
+            EDIT_INDICATORS: 'Edit indicators',
+            RELATED_FEATURES: 'Show related features',
+            FEATURE_INFO: 'Show information about the selected feature',
+            MAP_FEATURES: 'Map features',
+            NEARBY_FEATURES: 'Nearby features',
+            TOGGLE_MENU: 'Toggle menu visibility',
+            DASHBOARD_SELECTION: 'Dashboard selection',
+            SETTINGS: 'Settings',
+            SPEEDS_TAOUFIK: 'speed colors Taoufik',
+            SPEEDS_GOOGLEMAPS: 'speed colors Google Maps',
+            VERWARMINGSSYSTEEM: 'Heating system',
+            PERCENTAGES_V1: 'percentages v1',
+            ORANGE_RED: 'orange - red',
+            WHITE_RED: 'white - red',
+            RED_WHITE: 'red - white',
+            RED_WHITE_BLUE: 'red - white - blue',
+            GREEN_RED: 'green - red',
+            RED_GREEN: 'red - green',
+            BLUE_RED: 'blue - red',
+            RED_BLUE: 'red - blue',
+            WHITE_BLUE: 'white - blue',
+            BLUE_WHITE: 'blue - white',
+            WHITE_GREEN: 'white - green',
+            GREEN_WHITE: 'green - white',
+            WHITE_ORANGE: 'white - orange',
+            ORANGE_WHITE: 'orange - white',
+            SAVE: 'save',
+            CONFIG: 'config',
+            EDIT: 'edit',
+            APPLY: 'apply',
+            REMOVE: 'remove',
+            STATS: {
+                COUNT: '#',
+                COUNT_TOOLTIP: 'Count of selected items',
+                MIN: 'min',
+                MIN_TOOLTIP: 'Minimum of selected items',
+                MAX: 'max',
+                MAX_TOOLTIP: 'Maximum of selected items',
+                MEAN: 'µ',
+                MEAN_TOOLTIP: 'Mean of selected items',
+                SUM: 'Σ',
+                SUM_TOOLTIP: 'Sum of selected items'
+            },
+            UTILS: {
+                FILTER: 'Use this property as filter',
+                STYLE: 'Use this property as style',
+                STATS: 'Show property statistics',
+                CHART: 'Show property in time',
+                CONFIG: 'Configure property'
+            },
+            EXPERTMODE: {
+                BEGINNER: 'Novice',
+                INTERMEDIATE: 'Intermediate',
+                EXPERT: 'Expert',
+                ADMIN: 'Admin',
+                EXPLANATION: 'Select your expertise in order to unlock more functionality.'
+            },
+            LAYER_SERVICE: {
+                RELOAD_PROJECT_TITLE: 'Data is reloaded',
+                RELOAD_PROJECT_MSG: 'After switching the language, we need to reload all the map data. Our appologies for the inconvenience.'
+            },
+            HEATMAP: {
+                NAME: 'Heatmaps',
+                DESCRIPTION: '<h4>Heatmap</h4><p  style="text-align: left; margin-left:5px;">Heatmap highlights areas on the map that fulfill multiple selected criteria.',
+                INFO: 'At the moment, no map layers are loaded that contain a heatmap. Open another map layer to use it.',
+                INFO_EXPERT: 'At the moment, no map layers are loaded that contain a heatmap. Open another map layer to use it, or create a new heatmap using the wizard.',
+                SHOW_FEATURE_MSG: 'Select a feature on the map to see the heatmap.',
+                TOTAL_RESULT: 'Combined result',
+                DELETE_MSG: 'Delete "{0}"',
+                DELETE_MSG2: 'Are you sure?',
+                EDITOR_TITLE: 'Heatmap Editor',
+                MAIN_FEATURE: 'Select the main feature',
+                PROPERTIES: 'Select the properties',
+                INTENSITY_SCALE: 'Intensity scale',
+                RESOLUTION: 'Resolution',
+                TITLE: 'Title... *',
+                TITLE_TAG: 'Title',
+                SCALE_MIN_TITLE: '[Min. scale]',
+                SCALE_MAX_TITLE: '[Max. scale]',
+                MIN_MAX_ZOOM: 'Min./Max. zoom',
+                AT_LOCATION_VALUE: '[Weight at location]',
+                DISTANCE_MAX_VALUE: '[Ideal distance]',
+                LOST_INTEREST_VALUE: '[Lost interest distance]',
+                LINEAR_ASC_DESC: 'Linearly increasing, then decreasing function.',
+                ADD_HEATMAP: 'Add a new heatmap.',
+                DELETE_HEATMAP: 'Delete the heatmap.',
+                EDIT_HEATMAP: 'Edit the heatmap.',
+                EXPORT_HEATMAP: 'Export the heatmap.'
+            },
+            MCA: {
+                NAME: 'Multi-Criteria Analysis (MCA)',
+                DESCRIPTION: '<h4>Multi-Criteria Analysis</h4><p  style="text-align: left; margin-left:5px;">MCA, is a method that combines multiple properties of a feature on the map into a new property. It achieves this by:<ol><li>Scaling each property to a range between 0 (no value) and 1 (maximum value).</li><li>Weighing each property relative to the others, where a weight less than 0 indicates you wish to avoid it, 0 is ignored, and a value greater than 0 is prefered.</li></ol> In fact, it is a kind of linear regression.',
+                INFO: 'At the moment, no map layers are loaded that contain a multi-criteria analysis. Open another map layer to see it.',
+                INFO_EXPERT: 'At the moment, no map layers are loaded that contain a multi-criteria analysis. Open another map layer to use it, or create a new MCA using the wizard.',
+                SHOW_FEATURE_MSG: 'Select a feature on the map to see the effects of the Multi-Criteria Analysis (MCA).',
+                TOTAL_RESULT: 'Combined result',
+                DELETE_MSG: 'Delete "{0}"',
+                DELETE_MSG2: 'Are you sure?',
+                HAS_CATEGORY: '  Has category? ',
+                HAS_RANK: '  Include rank? ',
+                EDITOR_TITLE: 'MCA Editor',
+                MAIN_FEATURE: 'Select the main feature',
+                PROPERTIES: 'Select the properties',
+                INCLUDE_RANK: '  Show rank? ',
+                RANK_TITLE: '[Rank title...]',
+                TITLE: 'Title... *',
+                CATEGORY_MSG: '[Category...]',
+                TOGGLE_SPARKLINE: 'Show or hide bar charts and scoring function.',
+                SCALE_MIN_TITLE: '[Min. scale]',
+                SCALE_MAX_TITLE: '[Max. scale]',
+                MIN_VALUE: '[Minimum (\u03BC-2\u03C3)]',
+                MAX_VALUE: '[Maximum (\u03BC+2\u03C3)]',
+                MIN_CUTOFF_VALUE: '[Ignore when below this value]',
+                MAX_CUTOFF_VALUE: '[Ignore when above this value]',
+                LINEAR: 'Linearly increasing function between min and max.',
+                SIGMOID: 'Tangentially increasing function between min and max',
+                GAUSSIAN: 'Normal distribution increasing function between min and max.',
+                ADD_MCA: 'Add a new MCA.',
+                DELETE_MCA: 'Delete the MCA.',
+                EDIT_MCA: 'Edit the MCA.',
+                SET_STYLE: 'Set style'
+            },
+            PROJECTSETTINGS: {
+                TITLE: 'Project Settings',
+                DESCRIPTION: 'Settings'
+            },
+            CHOOSE_CATEGORY: 'Choose category...',
+            SHOW5: 'Show 5 items',
+            SHOW10: 'Show 10 items',
+            SHOW15: 'Show 15 items',
+            SHOW20: 'Show 20 items',
+            SHOW25: 'Show 25 items',
+            SHOW30: 'Show 30 items',
+            SHOW35: 'Show 35 items',
+            SHOW40: 'Show 40 items',
+            RISK_DIAGRAM_FOR: 'Risk-diagram for a ',
+            SAVE_FEATURE_DEPENDENCIES: 'Save dependencies to the selected feature only',
+            SAVE_FEATURETYPE_DEPENDENCIES: 'Save dependencies to all features of this type',
+            SAVE_MARVEL: 'Save ',
+            SAVE_EVERY_MARVEL: 'Save every ',
+            MARVEL_WATER_LEVEL: 'Water level [m]',
+            MARVEL_UPS_DURATION: 'UPS duration [mins]',
+            MARVEL_FEATURE_DEP: 'Depends on',
+            STATE: 'State',
+            EVENT_INFO: 'Show a list of events',
+            CLEAR_EVENTS: 'Clear event log'
         };
-        AccessibilityModel.prototype.getFeatureActions = function (feature) {
-            var accessibilityOption1 = {
-                title: "Show accessibility"
-            };
-            accessibilityOption1.callback = this.showAccessibility;
-            var accessibilityOption2 = {
-                title: "Remove accessibility"
-            };
-            accessibilityOption2.callback = this.removeAccessibility;
-            var accessibilityOption3 = {
-                title: "Plan route from"
-            };
-            accessibilityOption3.callback = this.planRouteFrom;
-            var accessibilityOption4 = {
-                title: "Plan route to"
-            };
-            accessibilityOption4.callback = this.planRouteTo;
-            return [accessibilityOption1, accessibilityOption2, accessibilityOption3, accessibilityOption4];
-        };
-        AccessibilityModel.prototype.getFeatureHoverActions = function (feature) { return []; };
-        AccessibilityModel.prototype.deselectFeature = function (feature) { };
-        AccessibilityModel.prototype.updateFeature = function (feature) { };
-        AccessibilityModel.prototype.showAccessibility = function (feature, layerService) {
-            console.log('accessibility:showAccessibility');
-            var accessibilityLayer = layerService.findLayer('accessibility');
-            if (accessibilityLayer) {
-                var urlParams = accessibilityLayer.url.split('&');
-                var locationIndex = -1;
-                urlParams.some(function (param, index) {
-                    if (param.substring(0, 9) === 'fromPlace') {
-                        locationIndex = index;
-                        return true;
-                    }
-                    return false;
-                });
-                if (feature.geometry.type !== 'Point') {
-                    console.log('Can only create accessibility layer from a Point');
-                    return;
-                }
-                urlParams[locationIndex] = 'fromPlace=' + feature.geometry.coordinates[1] + '%2C' + feature.geometry.coordinates[0];
-                accessibilityLayer.url = urlParams.join('&');
-                if (!accessibilityLayer.enabled) {
-                    layerService.addLayer(accessibilityLayer);
-                    var rpt = csComp.Helpers.createRightPanelTab("rightpanel", "accessibility", accessibilityLayer, "Accessibility options");
-                    layerService.$messageBusService.publish("rightpanel", "activate", rpt);
-                }
-                else {
-                    if (accessibilityLayer.layerSource)
-                        accessibilityLayer.layerSource.refreshLayer(accessibilityLayer);
-                }
-            }
-        };
-        AccessibilityModel.prototype.removeAccessibility = function (feature, layerService) {
-            console.log('accessibility:removeAccessibility');
-            var accessibilityLayer = layerService.findLayer('accessibility');
-            if (accessibilityLayer) {
-                var wasRightPanelVisible = layerService.visual.rightPanelVisible;
-                if (accessibilityLayer.enabled) {
-                    layerService.removeLayer(accessibilityLayer);
-                }
-                delete accessibilityLayer.data;
-                layerService.visual.rightPanelVisible = wasRightPanelVisible;
-            }
-        };
-        AccessibilityModel.planRoute = function (feature, layerService, destinationKey) {
-            var routeLayer = layerService.findLayer('tripplanner');
-            if (routeLayer) {
-                var urlParams = csComp.Helpers.parseUrlParameters(routeLayer.url, '?', '&', '=');
-                urlParams[destinationKey] = feature.geometry.coordinates[1] + '%2C' + feature.geometry.coordinates[0];
-                routeLayer.url = csComp.Helpers.joinUrlParameters(urlParams, '?', '&', '=');
-                if (!routeLayer.enabled) {
-                    layerService.addLayer(routeLayer);
-                }
-                else {
-                    if (routeLayer.layerSource)
-                        routeLayer.layerSource.refreshLayer(routeLayer);
-                }
-                var rpt = csComp.Helpers.createRightPanelTab("rightpanel", "tripplanner", routeLayer, "Route planner");
-                layerService.$messageBusService.publish("rightpanel", "activate", rpt);
-            }
-            else {
-            }
-        };
-        AccessibilityModel.prototype.planRouteFrom = function (feature, layerService) {
-            console.log('accessibility:planRouteFrom');
-            AccessibilityModel.planRoute(feature, layerService, 'fromPlace');
-        };
-        AccessibilityModel.prototype.planRouteTo = function (feature, layerService) {
-            console.log('accessibility:planRouteTo');
-            AccessibilityModel.planRoute(feature, layerService, 'toPlace');
-        };
-        AccessibilityModel.prototype.init = function (layerService) {
-            var _this = this;
-            console.log('init AccessibilityActionService');
-            this.layerService = layerService;
-            this.layerService.$messageBusService.serverSubscribe("accessibility", "msg", function (title, mcb) {
-                if (mcb["data"] === "restart") {
-                    _this.layerService.$messageBusService.notify("restarting server", "restarting", csComp.Services.NotifyLocation.TopRight);
-                    location.reload();
-                }
-                //
-                // var layer = this.layerService.findLayer("demo");
-                // layer.layerSource.refreshLayer(layer);
-                //console.log(title);
-            });
-        };
-        return AccessibilityModel;
+        return English;
     })();
-    Accessibility.AccessibilityModel = AccessibilityModel;
-    var AccessibilityCtrl = (function () {
-        // dependencies are injected via AngularJS $injector
-        // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
-        function AccessibilityCtrl($scope, $http, $mapService, $layerService, $messageBusService, $dashboardService) {
-            var _this = this;
-            this.$scope = $scope;
-            this.$http = $http;
-            this.$mapService = $mapService;
-            this.$layerService = $layerService;
-            this.$messageBusService = $messageBusService;
-            this.$dashboardService = $dashboardService;
-            this.urlKeys = ['arriveBy', 'fromPlace', 'date', 'time', 'mode', 'walkSpeed', 'bikeSpeed',
-                'precisionMeters', 'cutoffSec'];
-            this.scope = $scope;
-            $scope.vm = this;
-            this.layer = $scope.$parent["data"];
-            this.cutoffTimes = [];
-            this.urlParameters = {};
-            this.bikeSpeedKm;
-            this.walkSpeedKm;
-            this.urlKeys.forEach(function (key) { _this.urlParameters[key] = 0; });
-            this.transportModes = {};
-            this.transportModes["Walking"] = "WALK";
-            this.transportModes["Biking"] = "BICYCLE";
-            //this.transportModes["Car"] = "CAR";
+    Translations.English = English;
+})(Translations || (Translations = {}));
+//# sourceMappingURL=locale-en.js.map
+var Translations;
+(function (Translations) {
+    var Dutch = (function () {
+        function Dutch() {
         }
-        AccessibilityCtrl.prototype.refreshAccessibility = function () {
-            if (this.$layerService.lastSelectedFeature) {
-                var lsf = this.$layerService.lastSelectedFeature;
-                if (lsf.geometry && lsf.geometry.type === 'Point') {
-                    this.urlParameters['fromPlace'] = lsf.geometry.coordinates[1] + '%2C' + lsf.geometry.coordinates[0];
-                }
-            }
-            this.urlParameters['mode'] = this.transportMode;
-            this.urlParameters['time'] = encodeURIComponent(this.time);
-            if (this.walkSpeedKm)
-                this.urlParameters['walkSpeed'] = csComp.Helpers.GeoExtensions.convertKmToMile(this.walkSpeedKm);
-            if (this.bikeSpeedKm)
-                this.urlParameters['bikeSpeed'] = csComp.Helpers.GeoExtensions.convertKmToMile(this.bikeSpeedKm);
-            var url = this.urlAddress + '?';
-            for (var key in this.urlParameters) {
-                if (this.urlParameters.hasOwnProperty(key) && key !== 'cutoffSec') {
-                    url = url + key + '=' + this.urlParameters[key] + '&';
-                }
-            }
-            this.cutoffTimes.forEach(function (co) {
-                url = url + '&cutoffSec=' + (co * 60);
-            });
-            //url = url.substring(0, url.length - 1);
-            console.log(url);
-            this.layer.url = url;
-            if (!this.layer.enabled) {
-                this.$layerService.addLayer(this.layer);
-            }
-            else {
-                if (this.layer.layerSource)
-                    this.layer.layerSource.refreshLayer(this.layer);
-            }
-            this.$layerService.visual.rightPanelVisible = true;
+        Dutch.locale = {
+            CANCEL_BTN: 'Annuleren',
+            OK_BTN: 'OK',
+            FROM: 'van',
+            TO: 'tot',
+            NAVIGATE: 'Start',
+            REMOVE: 'Verwijder',
+            CREATE_SCATTER: 'Creeer spreidingsdiagram',
+            EXPAND_ALL: 'Alles uitklappen',
+            COLLAPSE_ALL: 'Alles inklappen',
+            SELECT_ALL: 'Selecteer alles',
+            DESELECT_ALL: 'Deselecteer alles',
+            ENABLE_LOCATION_FILTER: 'Activeer locatiefilter',
+            SELECT_A_FEATURE: 'Selecteer een feature',
+            DISABLE_LOCATION_FILTER: 'Deactiveer locatiefilter',
+            SELECT_FEATURE_FOR_WIDGET: 'Selecteer een gebied om de widget te tonen.',
+            SELECT_FEATURE_FOR_STYLE: 'Selecteer een gebied om de stijl te activeren.',
+            SELECT_LAYER_GROUP: 'Selecteer lagen',
+            SELECT_CATEGORY: 'Selecteer categorie',
+            SELECT_PROPERTIES: 'Selecteer eigenschappen',
+            NO_RELATIONS_FOUND: 'Geen relaties voor het geselecteerde item gevonden. Ofwel het zoomniveau is te laag, er zijn teveel items zichtbaar of er zijn geen relaties gedefiniëerd.',
+            CHOOSE_DROPDOWN: 'Kies...',
+            BASESTYLES: 'Basiskaarten',
+            MAP: 'Kaarten',
+            MAP_LABEL: 'Kaart',
+            TABLE_LABEL: 'Tabel',
+            LAYERS: 'Kaartlagen',
+            DIRECTORY: 'Beschikbare lagen',
+            CREATELAYER: 'Nieuwe laag maken',
+            ADDFEATURES: 'Objecten toevoegen',
+            ADDTYPE: 'Nieuwe type toevoegen',
+            FILTERS: 'Filters',
+            FILTER_INFO: 'Momenteel zijn er geen filters geselecteerd. Klik op een icoon of gebied op de kaart, en klik op het filter icoontje (<span class="fa fa-filter"></span>) in het rechter menu om een filter toe te voegen. Dan wordt er een filter aangemaakt voor de geselecteerde eigenschap.',
+            STYLES: 'Stijlen',
+            STYLE_INFO: 'Momenteel zijn er geen stijlen geselecteerd. Klik op een icoon of gebied op de kaart, en klik op het stijl icoontje (<span class="smallStyleIcon"></span>) in het rechter menu om een stijl toe te voegen. Dan wordt er een stijl aangemaakt voor de geselecteerde eigenschap.',
+            FEATURES: 'Features',
+            LEGEND: 'Legenda',
+            SEARCH: 'Zoeken',
+            HIDE_PANEL: 'Verberg dit paneel',
+            EDIT_INDICATORS: 'Wijzig indicatoren',
+            RELATED_FEATURES: 'Toon gerelateerde features',
+            FEATURE_INFO: 'Toon informatie over de geselecteerde feature',
+            MAP_FEATURES: 'Kaartfeatures',
+            NEARBY_FEATURES: 'Dichtbijgelegen features',
+            DASHBOARD_SELECTION: 'Dashboardselectie',
+            SETTINGS: 'Instellingen',
+            TOGGLE_MENU: 'Wissel de zichtbaarheid van het menu',
+            SPEEDS_TAOUFIK: 'snelheden legenda Taoufik',
+            SPEEDS_GOOGLEMAPS: 'snelheden legenda Google Maps',
+            VERWARMINGSSYSTEEM: 'Verwarmingssysteem',
+            PERCENTAGES_V1: 'percentages v1',
+            ORANGE_RED: 'oranje - rood',
+            WHITE_RED: 'wit - rood',
+            RED_WHITE_BLUE: 'rood - wit - blauw',
+            RED_WHITE: 'rood - wit',
+            GREEN_RED: 'groen - rood',
+            RED_GREEN: 'rood - groen',
+            BLUE_RED: 'blauw - rood',
+            RED_BLUE: 'rood - blauw',
+            WHITE_BLUE: 'wit - blauw',
+            BLUE_WHITE: 'wit - groen',
+            WHITE_GREEN: 'wit - groen',
+            GREEN_WHITE: 'groen - wit',
+            WHITE_ORANGE: 'wit - oranje',
+            ORANGE_WHITE: 'oranje - wit',
+            SAVE: 'opslaan',
+            APPLY: 'toepassen',
+            DONE: 'klaar',
+            CONFIG: 'config',
+            EDIT: 'aanpassen',
+            STATS: {
+                COUNT: '#',
+                COUNT_TOOLTIP: 'Aantal geselecteerde items',
+                MIN: 'min',
+                MIN_TOOLTIP: 'Minimum van geselecteerde items',
+                MAX: 'max',
+                MAX_TOOLTIP: 'Maximum van geselecteerde items',
+                MEAN: 'µ',
+                MEAN_TOOLTIP: 'Gemiddelde van geselecteerde items',
+                SUM: 'Σ',
+                SUM_TOOLTIP: 'Som van geselecteerde items'
+            },
+            UTILS: {
+                FILTER: 'Gebruik dit kenmerk als filter',
+                STYLE: 'Gebruik dit kenmerk als stijl',
+                STATS: 'Toon de statistieken van dit kenmerk',
+                CHART: 'Toon het verloop van dit kenmerk in de tijd',
+                CONFIG: 'Configureer dit kenmerk'
+            },
+            EXPERTMODE: {
+                BEGINNER: 'Beginner',
+                INTERMEDIATE: 'Gevorderd',
+                EXPERT: 'Expert',
+                ADMIN: 'Admin',
+                EXPLANATION: 'Selecteer uw expertise om meer functionaliteit te kunnen gebruiken.'
+            },
+            LAYER_SERVICE: {
+                RELOAD_PROJECT_TITLE: 'Data wordt opnieuw geladen',
+                RELOAD_PROJECT_MSG: 'Na het wisselen van de taal moet de kaartdata opnieuw ingelezen worden. Excuses voor het ongemak.'
+            },
+            HEATMAP: {
+                NAME: 'Heatmaps',
+                DESCRIPTION: '<h4>Toelichting heatmap</h4><div style="text-align: left; margin-left:5px;"><p>Heatmap laat gebieden op de kaart oplichten die voldoen aan bepaalde criteria.',
+                INFO: 'Momenteel zijn er geen kaartlagen geopend die heatmaps bevatten.',
+                INFO_EXPERT: 'Momenteel zijn er geen kaartlagen geopend die heatmaps bevatten. Open een kaartlaag en maak een nieuwe heatmap aan met behulp van de wizard.',
+                SHOW_FEATURE_MSG: 'Selecteer een feature op de kaart om de heatmap resultaten in detail te bekijken.',
+                TOTAL_RESULT: 'Gecombineerd resultaat',
+                DELETE_MSG: 'Verwijder "{0}"',
+                DELETE_MSG2: 'Weet u het zeker?',
+                EDITOR_TITLE: 'Heatmap Editor',
+                MAIN_FEATURE: 'Selecteer het type feature',
+                PROPERTIES: 'Selecteer de eigenschappen',
+                RESOLUTION: 'Resolutie',
+                INTENSITY_SCALE: 'Intensiteitsschaal',
+                TITLE: 'Titel... *',
+                TITLE_TAG: 'Titel',
+                TOGGLE_SPARKLINE: 'Toon of verberg de histogram en score functie.',
+                SCALE_MIN_TITLE: '[Schaal max]',
+                SCALE_MAX_TITLE: '[Schaal min]',
+                MIN_MAX_ZOOM: 'Min./Max. zoom',
+                AT_LOCATION_VALUE: '[Waarde op locatie]',
+                DISTANCE_MAX_VALUE: '[Ideale afstand]',
+                LOST_INTEREST_VALUE: '[Negeer vanaf afstand]',
+                LINEAR_ASC_DESC: 'Linear toenemende, dan afnemende functie.',
+                ADD_HEATMAP: 'Maak een nieuwe heatmap.',
+                DELETE_HEATMAP: 'Verwijder de heatmap.',
+                EDIT_HEATMAP: 'Bewerk de heatmap.',
+                EXPORT_HEATMAP: 'Exporteer de heatmap.'
+            },
+            MCA: {
+                NAME: 'Multi-Criteria Analyse (MCA)',
+                DESCRIPTION: '<h4>Toelichting MCA</h4><div style="text-align: left; margin-left:5px;"><p>Multi-Criteria Analysis (MCA) is een methode die verschillende eigenschappen van een locatie of gebied op de kaart combineerd tot een nieuwe eigenschap. Dit gaat als volgt: <ol><li>Schaal iedere eigenschap tussen 0 (geen waarde) en 1 (maximum waarde).</li><li>Weeg iedere eigenschap relatief t.o.v. de andere gekozen eigenschappen, waar een gewicht onder 0 betekent dat je de eigenschap wil vermijden, 0 wordt genegeerd, en een waarde groter dan 0 betekent dat je dit wil bereiken.</li></ol>Met andere woorden, het is een vorm van lineare regressie.</p></div>',
+                INFO: 'Momenteel zijn er geen kaartlagen geopend die multi-criteria analyses bevatten. Open hiervoor een andere kaartlaag.',
+                INFO_EXPERT: 'Momenteel zijn er geen kaartlagen geopend die multi-criteria analyses bevatten. Open een kaartlaag en maak een nieuwe MCA aan met behulp van de wizard.',
+                SHOW_FEATURE_MSG: 'Selecteer een feature op de kaart om de Multi-Criteria Analyse (MCA) resultaten in detail te bekijken.',
+                TOTAL_RESULT: 'Gecombineerd resultaat',
+                DELETE_MSG: 'Verwijder "{0}"',
+                DELETE_MSG2: 'Weet u het zeker?',
+                HAS_CATEGORY: '  Specificeer categorie? ',
+                EDITOR_TITLE: 'MCA Editor',
+                MAIN_FEATURE: 'Selecteer het type feature',
+                PROPERTIES: 'Selecteer de eigenschappen',
+                INCLUDE_RANK: '  Toon een rangorde? ',
+                RANK_TITLE: '[Titel voor de rangorde]',
+                TITLE: 'Titel... *',
+                CATEGORY_MSG: '[Categorie...]',
+                TOGGLE_SPARKLINE: 'Toon of verberg de histogram en score functie.',
+                SCALE_MIN_TITLE: '[Schaal max]',
+                SCALE_MAX_TITLE: '[Schaal min]',
+                MIN_VALUE: '[Ondergrens (\u03BC-2\u03C3)]',
+                MAX_VALUE: '[Bovengrens (\u03BC+2\u03C3)]',
+                MIN_CUTOFF_VALUE: '[Niet meewegen onder]',
+                MAX_CUTOFF_VALUE: '[Niet meewegen boven]',
+                LINEAR: 'Linear toenemende functie tussen onder- en bovengrens.',
+                SIGMOID: 'Tangentieel toenemende functie tussen onder- en bovengrens.',
+                GAUSSIAN: 'Normale verdeling tussen onder- en bovengrens.',
+                ADD_MCA: 'Maak een nieuwe MCA.',
+                DELETE_MCA: 'Verwijder de MCA.',
+                EDIT_MCA: 'Bewerk de MCA.',
+                SET_STYLE: 'Activeer stijl'
+            },
+            PROJECTSETTINGS: {
+                TITLE: 'Project instellingen',
+                DESCRIPTION: 'Instellingen'
+            },
+            CHOOSE_CATEGORY: 'Kies categorie...',
+            SHOW5: 'Toon 5 regels',
+            SHOW10: 'Toon 10 regels',
+            SHOW15: 'Toon 15 regels',
+            SHOW20: 'Toon 20 regels',
+            SHOW25: 'Toon 25 regels',
+            SHOW30: 'Toon 30 regels',
+            SHOW35: 'Toon 35 regels',
+            SHOW40: 'Toon 40 regels',
+            RISK_DIAGRAM_FOR: 'Risicodiagram voor een ',
+            SAVE_FEATURE_DEPENDENCIES: 'Sla de afhankelijkheden op alléén voor het geselecteerde object',
+            SAVE_FEATURETYPE_DEPENDENCIES: 'Sla de afhankelijkheden op voor alle object van dit type',
+            SAVE_MARVEL: 'Bewaar ',
+            SAVE_EVERY_MARVEL: 'Bewaar ieder ',
+            MARVEL_WATER_LEVEL: 'Waterniveau [m]',
+            MARVEL_UPS_DURATION: 'Noodstroom duur [min]',
+            MARVEL_FEATURE_DEP: 'Afhankelijk van',
+            STATE: 'Status',
+            EVENT_INFO: 'Toon lijst van gebeurtenissen',
+            CLEAR_EVENTS: 'Lijst leegmaken'
         };
-        AccessibilityCtrl.prototype.parseUrl = function () {
-            var _this = this;
-            this.urlParameters = {};
-            this.urlAddress = this.layer.url.split('?')[0];
-            var croppedUrl = this.layer.url.split('?')[1]; // Remove the address of the url, keep the parameters
-            var splittedUrl = croppedUrl.split('&');
-            splittedUrl.forEach(function (param) {
-                var keyValue = param.split('=');
-                if (keyValue[0] === 'cutoffSec') {
-                    _this.cutoffTimes.push((+keyValue[1]) / 60);
-                }
-                _this.urlParameters[keyValue[0]] = (isNaN(+keyValue[1])) ? keyValue[1] : +keyValue[1];
-            });
-            var d = new Date(Date.now());
-            this.time = ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2);
-            this.urlParameters['date'] = (d.getMonth() + 1) + '-' + d.getDate() + '-' + d.getFullYear();
-            this.transportMode = this.urlParameters['mode'];
-            if (this.urlParameters.hasOwnProperty('walkSpeed'))
-                this.walkSpeedKm = +csComp.Helpers.GeoExtensions.convertMileToKm(this.urlParameters['walkSpeed']).toFixed(2);
-            if (this.urlParameters.hasOwnProperty('bikeSpeed'))
-                this.bikeSpeedKm = +csComp.Helpers.GeoExtensions.convertMileToKm(this.urlParameters['bikeSpeed']).toFixed(2);
-            if (this.$scope.$root.$$phase != '$apply' && this.$scope.$root.$$phase != '$digest') {
-                this.$scope.$apply();
-            }
-        };
-        AccessibilityCtrl.prototype.addCutoffTime = function () {
-            this.cutoffTimes.push(0);
-            if (this.$scope.$root.$$phase != '$apply' && this.$scope.$root.$$phase != '$digest') {
-                this.$scope.$apply();
-            }
-        };
-        AccessibilityCtrl.prototype.removeCutoffTime = function (index) {
-            if (index < this.cutoffTimes.length && index > -1) {
-                this.cutoffTimes.splice(index, 1);
-            }
-            if (this.$scope.$root.$$phase != '$apply' && this.$scope.$root.$$phase != '$digest') {
-                this.$scope.$apply();
-            }
-        };
-        // $inject annotation.
-        // It provides $injector with information about dependencies to be injected into constructor
-        // it is better to have it close to the constructor, because the parameters must match in count and type.
-        // See http://docs.angularjs.org/guide/di
-        AccessibilityCtrl.$inject = [
-            '$scope',
-            '$http',
-            'mapService',
-            'layerService',
-            'messageBusService',
-            'dashboardService'
-        ];
-        return AccessibilityCtrl;
+        return Dutch;
     })();
-    Accessibility.AccessibilityCtrl = AccessibilityCtrl;
-})(Accessibility || (Accessibility = {}));
-//# sourceMappingURL=AccessibilityCtrl.js.map
+    Translations.Dutch = Dutch;
+})(Translations || (Translations = {}));
+//# sourceMappingURL=locale-nl.js.map
 var BaseMapList;
 (function (BaseMapList) {
     /**
@@ -4770,6 +4499,44 @@ var BaseMapList;
     BaseMapList.BaseMapListCtrl = BaseMapListCtrl;
 })(BaseMapList || (BaseMapList = {}));
 //# sourceMappingURL=BaseMapListCtrl.js.map
+var Directives;
+(function (Directives) {
+    var Clock;
+    (function (Clock) {
+        /**
+         * Config
+         */
+        var moduleName = "csComp";
+        try {
+            Clock.myModule = angular.module(moduleName);
+        }
+        catch (err) {
+            // named module does not exist, so create one
+            Clock.myModule = angular.module(moduleName, []);
+        }
+        /**
+          * Directive to show the time.
+          */
+        Clock.myModule.directive('clock', ['dateFilter', function (dateFilter) {
+                return {
+                    restrict: 'E',
+                    scope: {
+                        time: '@',
+                        format: '@'
+                    },
+                    link: function (scope, element, attrs) {
+                        function updateTime() {
+                            element.html(dateFilter(scope.time, scope.format));
+                        }
+                        scope.$watch('time', function (value) {
+                            updateTime();
+                        });
+                    }
+                };
+            }]);
+    })(Clock = Directives.Clock || (Directives.Clock = {}));
+})(Directives || (Directives = {}));
+//# sourceMappingURL=Clock.js.map
 var Charts;
 (function (Charts) {
     'use strict';
@@ -5519,44 +5286,6 @@ var Charts;
         }]);
 })(Charts || (Charts = {}));
 //# sourceMappingURL=SparklineChart.js.map
-var Directives;
-(function (Directives) {
-    var Clock;
-    (function (Clock) {
-        /**
-         * Config
-         */
-        var moduleName = "csComp";
-        try {
-            Clock.myModule = angular.module(moduleName);
-        }
-        catch (err) {
-            // named module does not exist, so create one
-            Clock.myModule = angular.module(moduleName, []);
-        }
-        /**
-          * Directive to show the time.
-          */
-        Clock.myModule.directive('clock', ['dateFilter', function (dateFilter) {
-                return {
-                    restrict: 'E',
-                    scope: {
-                        time: '@',
-                        format: '@'
-                    },
-                    link: function (scope, element, attrs) {
-                        function updateTime() {
-                            element.html(dateFilter(scope.time, scope.format));
-                        }
-                        scope.$watch('time', function (value) {
-                            updateTime();
-                        });
-                    }
-                };
-            }]);
-    })(Clock = Directives.Clock || (Directives.Clock = {}));
-})(Directives || (Directives = {}));
-//# sourceMappingURL=Clock.js.map
 var Helpers;
 (function (Helpers) {
     var ContextMenu;
@@ -6202,125 +5931,6 @@ var DataTable;
     DataTable.DataTableCtrl = DataTableCtrl;
 })(DataTable || (DataTable = {}));
 //# sourceMappingURL=DataTableCtrl.js.map
-var ExpertMode;
-(function (ExpertMode) {
-    /**
-  * Config
-  */
-    var moduleName = 'csComp';
-    try {
-        ExpertMode.myModule = angular.module(moduleName);
-    }
-    catch (err) {
-        // named module does not exist, so create one
-        ExpertMode.myModule = angular.module(moduleName, []);
-    }
-    /**
-      * Directive to set the expert mode, so we can determine what the user should see (degree of difficulty).
-      * The expert mode can either be set manually, e.g. using this directive, or by setting the expertMode property in the
-      * project.json file. In neither are set, we assume that we are dealing with an expert, so all features should be enabled.
-      *
-      * Precedence:
-      * - when a declaration is absent, assume Expert.
-      * - when the mode is set in local storage, take that value.
-      * - when the mode is set in the project.json file, take that value.
-      *
-      * As we want the expertMode to be always available, we have added it to the MapService service.
-      */
-    ExpertMode.myModule
-        .directive('expertMode', [
-        '$compile',
-        function ($compile) {
-            return {
-                terminal: true,
-                restrict: 'E',
-                scope: {},
-                templateUrl: 'directives/ExpertMode/ExpertMode.tpl.html',
-                compile: function (el) {
-                    var fn = $compile(el);
-                    return function (scope) {
-                        fn(scope);
-                    };
-                },
-                //link: function (scope, element, attrs) {
-                //     // Since we are wrapping the rating directive in this directive, I couldn't use transclude,
-                //     // so I copy the existing attributes manually.
-                //     var attributeString = '';
-                //     for (var key in attrs) {
-                //         if (key.substr(0, 1) !== '$' && attrs.hasOwnProperty(key)) attributeString += key + '="' + attrs[key] + '" ';
-                //     }
-                //     var html = '<rating ng-model="expertMode" '
-                //         + attributeString
-                //         + 'tooltip-html-unsafe="{{\'EXPERTMODE.EXPLANATION\' | translate}}" tooltip-placement="bottom" tooltip-trigger="mouseenter" tooltip-append-to-body="false"'
-                //         + 'max="3"></rating>';
-                //     var e = $compile(html)(scope);
-                //     element.replaceWith(e);
-                // },
-                replace: true,
-                transclude: true,
-                controller: ExpertMode.ExpertModeCtrl
-            };
-        }
-    ]);
-})(ExpertMode || (ExpertMode = {}));
-//# sourceMappingURL=ExpertMode.js.map
-var ExpertMode;
-(function (ExpertMode) {
-    var Expertise = csComp.Services.Expertise;
-    var ExpertModeCtrl = (function () {
-        function ExpertModeCtrl($scope, $localStorageService, $layerService, $mapService, $messageBus) {
-            var _this = this;
-            this.$scope = $scope;
-            this.$localStorageService = $localStorageService;
-            this.$layerService = $layerService;
-            this.$mapService = $mapService;
-            this.$messageBus = $messageBus;
-            $scope.vm = this;
-            $scope.expertMode = $mapService.expertMode;
-            $messageBus.subscribe('expertMode', function (title, mode) {
-                if (title !== 'newExpertise')
-                    return;
-                $scope.expertMode = mode;
-            });
-            $scope.$watch('expertMode', function () {
-                _this.setExpertMode($scope.expertMode);
-            });
-        }
-        /**
-        * Get the CSS class to render the mode.
-        */
-        ExpertModeCtrl.prototype.getCssClass = function () {
-            switch (this.$mapService.expertMode) {
-                case Expertise.Beginner:
-                    return 'beginnerUserIcon';
-                case Expertise.Intermediate:
-                    return 'intermediateUserIcon';
-                case Expertise.Expert:
-                    return 'expertUserIcon';
-                case Expertise.Admin:
-                    return 'adminExpertUserIcon';
-            }
-        };
-        /**
-        * Set the expert mode: although we assume that each directive is responsible for managing it by listening
-        * to the expertMode.newExpertise message, we already set some common options here.
-        * This is to reduce the dependency on this directive.
-        */
-        ExpertModeCtrl.prototype.setExpertMode = function (expertMode) {
-            this.$messageBus.publish('expertMode', 'newExpertise', expertMode);
-        };
-        ExpertModeCtrl.$inject = [
-            '$scope',
-            'localStorageService',
-            'layerService',
-            'mapService',
-            'messageBusService'
-        ];
-        return ExpertModeCtrl;
-    })();
-    ExpertMode.ExpertModeCtrl = ExpertModeCtrl;
-})(ExpertMode || (ExpertMode = {}));
-//# sourceMappingURL=ExpertModeCtrl.js.map
 var EventTab;
 (function (EventTab) {
     /**
@@ -6590,6 +6200,125 @@ var EventTab;
     EventTab.EventTabCtrl = EventTabCtrl;
 })(EventTab || (EventTab = {}));
 //# sourceMappingURL=EventTabCtrl.js.map
+var ExpertMode;
+(function (ExpertMode) {
+    /**
+  * Config
+  */
+    var moduleName = 'csComp';
+    try {
+        ExpertMode.myModule = angular.module(moduleName);
+    }
+    catch (err) {
+        // named module does not exist, so create one
+        ExpertMode.myModule = angular.module(moduleName, []);
+    }
+    /**
+      * Directive to set the expert mode, so we can determine what the user should see (degree of difficulty).
+      * The expert mode can either be set manually, e.g. using this directive, or by setting the expertMode property in the
+      * project.json file. In neither are set, we assume that we are dealing with an expert, so all features should be enabled.
+      *
+      * Precedence:
+      * - when a declaration is absent, assume Expert.
+      * - when the mode is set in local storage, take that value.
+      * - when the mode is set in the project.json file, take that value.
+      *
+      * As we want the expertMode to be always available, we have added it to the MapService service.
+      */
+    ExpertMode.myModule
+        .directive('expertMode', [
+        '$compile',
+        function ($compile) {
+            return {
+                terminal: true,
+                restrict: 'E',
+                scope: {},
+                templateUrl: 'directives/ExpertMode/ExpertMode.tpl.html',
+                compile: function (el) {
+                    var fn = $compile(el);
+                    return function (scope) {
+                        fn(scope);
+                    };
+                },
+                //link: function (scope, element, attrs) {
+                //     // Since we are wrapping the rating directive in this directive, I couldn't use transclude,
+                //     // so I copy the existing attributes manually.
+                //     var attributeString = '';
+                //     for (var key in attrs) {
+                //         if (key.substr(0, 1) !== '$' && attrs.hasOwnProperty(key)) attributeString += key + '="' + attrs[key] + '" ';
+                //     }
+                //     var html = '<rating ng-model="expertMode" '
+                //         + attributeString
+                //         + 'tooltip-html-unsafe="{{\'EXPERTMODE.EXPLANATION\' | translate}}" tooltip-placement="bottom" tooltip-trigger="mouseenter" tooltip-append-to-body="false"'
+                //         + 'max="3"></rating>';
+                //     var e = $compile(html)(scope);
+                //     element.replaceWith(e);
+                // },
+                replace: true,
+                transclude: true,
+                controller: ExpertMode.ExpertModeCtrl
+            };
+        }
+    ]);
+})(ExpertMode || (ExpertMode = {}));
+//# sourceMappingURL=ExpertMode.js.map
+var ExpertMode;
+(function (ExpertMode) {
+    var Expertise = csComp.Services.Expertise;
+    var ExpertModeCtrl = (function () {
+        function ExpertModeCtrl($scope, $localStorageService, $layerService, $mapService, $messageBus) {
+            var _this = this;
+            this.$scope = $scope;
+            this.$localStorageService = $localStorageService;
+            this.$layerService = $layerService;
+            this.$mapService = $mapService;
+            this.$messageBus = $messageBus;
+            $scope.vm = this;
+            $scope.expertMode = $mapService.expertMode;
+            $messageBus.subscribe('expertMode', function (title, mode) {
+                if (title !== 'newExpertise')
+                    return;
+                $scope.expertMode = mode;
+            });
+            $scope.$watch('expertMode', function () {
+                _this.setExpertMode($scope.expertMode);
+            });
+        }
+        /**
+        * Get the CSS class to render the mode.
+        */
+        ExpertModeCtrl.prototype.getCssClass = function () {
+            switch (this.$mapService.expertMode) {
+                case Expertise.Beginner:
+                    return 'beginnerUserIcon';
+                case Expertise.Intermediate:
+                    return 'intermediateUserIcon';
+                case Expertise.Expert:
+                    return 'expertUserIcon';
+                case Expertise.Admin:
+                    return 'adminExpertUserIcon';
+            }
+        };
+        /**
+        * Set the expert mode: although we assume that each directive is responsible for managing it by listening
+        * to the expertMode.newExpertise message, we already set some common options here.
+        * This is to reduce the dependency on this directive.
+        */
+        ExpertModeCtrl.prototype.setExpertMode = function (expertMode) {
+            this.$messageBus.publish('expertMode', 'newExpertise', expertMode);
+        };
+        ExpertModeCtrl.$inject = [
+            '$scope',
+            'localStorageService',
+            'layerService',
+            'mapService',
+            'messageBusService'
+        ];
+        return ExpertModeCtrl;
+    })();
+    ExpertMode.ExpertModeCtrl = ExpertModeCtrl;
+})(ExpertMode || (ExpertMode = {}));
+//# sourceMappingURL=ExpertModeCtrl.js.map
 var FeatureList;
 (function (FeatureList) {
     /**
@@ -7686,6 +7415,277 @@ var FilterList;
     FilterList.FilterListCtrl = FilterListCtrl;
 })(FilterList || (FilterList = {}));
 //# sourceMappingURL=FilterListCtrl.js.map
+var Accessibility;
+(function (Accessibility) {
+    /**
+      * Config
+      */
+    var moduleName = 'csComp';
+    try {
+        Accessibility.myModule = angular.module(moduleName);
+    }
+    catch (err) {
+        // named module does not exist, so create one
+        Accessibility.myModule = angular.module(moduleName, []);
+    }
+    /**
+      * Directive to display a feature's properties in a panel.
+      *
+      * @seealso          : http://www.youtube.com/watch?v=gjJ5vLRK8R8&list=UUGD_0i6L48hucTiiyhb5QzQ
+      * @seealso          : http://plnkr.co/edit/HyBP9d?p=preview
+      */
+    Accessibility.myModule.directive('accessibility', ['$compile',
+        function ($compile) {
+            return {
+                terminal: true,
+                restrict: 'E',
+                scope: {},
+                templateUrl: 'directives/Accessibility/Accessibility.tpl.html',
+                replace: true,
+                transclude: true,
+                controller: Accessibility.AccessibilityCtrl
+            };
+        }
+    ]);
+})(Accessibility || (Accessibility = {}));
+//# sourceMappingURL=Accessibility.js.map
+var Accessibility;
+(function (Accessibility) {
+    var AccessibilityModel = (function () {
+        function AccessibilityModel() {
+            this.id = "accessibilityActions";
+        }
+        AccessibilityModel.prototype.stop = function () { };
+        AccessibilityModel.prototype.addFeature = function (feature) { };
+        AccessibilityModel.prototype.removeFeature = function (feature) { };
+        AccessibilityModel.prototype.selectFeature = function (feature) {
+            console.log('accessibility:feature selected');
+        };
+        AccessibilityModel.prototype.getFeatureActions = function (feature) {
+            var accessibilityOption1 = {
+                title: "Show accessibility"
+            };
+            accessibilityOption1.callback = this.showAccessibility;
+            var accessibilityOption2 = {
+                title: "Remove accessibility"
+            };
+            accessibilityOption2.callback = this.removeAccessibility;
+            var accessibilityOption3 = {
+                title: "Plan route from"
+            };
+            accessibilityOption3.callback = this.planRouteFrom;
+            var accessibilityOption4 = {
+                title: "Plan route to"
+            };
+            accessibilityOption4.callback = this.planRouteTo;
+            return [accessibilityOption1, accessibilityOption2, accessibilityOption3, accessibilityOption4];
+        };
+        AccessibilityModel.prototype.getFeatureHoverActions = function (feature) { return []; };
+        AccessibilityModel.prototype.deselectFeature = function (feature) { };
+        AccessibilityModel.prototype.updateFeature = function (feature) { };
+        AccessibilityModel.prototype.showAccessibility = function (feature, layerService) {
+            console.log('accessibility:showAccessibility');
+            var accessibilityLayer = layerService.findLayer('accessibility');
+            if (accessibilityLayer) {
+                var urlParams = accessibilityLayer.url.split('&');
+                var locationIndex = -1;
+                urlParams.some(function (param, index) {
+                    if (param.substring(0, 9) === 'fromPlace') {
+                        locationIndex = index;
+                        return true;
+                    }
+                    return false;
+                });
+                if (feature.geometry.type !== 'Point') {
+                    console.log('Can only create accessibility layer from a Point');
+                    return;
+                }
+                urlParams[locationIndex] = 'fromPlace=' + feature.geometry.coordinates[1] + '%2C' + feature.geometry.coordinates[0];
+                accessibilityLayer.url = urlParams.join('&');
+                if (!accessibilityLayer.enabled) {
+                    layerService.addLayer(accessibilityLayer);
+                    var rpt = csComp.Helpers.createRightPanelTab("rightpanel", "accessibility", accessibilityLayer, "Accessibility options");
+                    layerService.$messageBusService.publish("rightpanel", "activate", rpt);
+                }
+                else {
+                    if (accessibilityLayer.layerSource)
+                        accessibilityLayer.layerSource.refreshLayer(accessibilityLayer);
+                }
+            }
+        };
+        AccessibilityModel.prototype.removeAccessibility = function (feature, layerService) {
+            console.log('accessibility:removeAccessibility');
+            var accessibilityLayer = layerService.findLayer('accessibility');
+            if (accessibilityLayer) {
+                var wasRightPanelVisible = layerService.visual.rightPanelVisible;
+                if (accessibilityLayer.enabled) {
+                    layerService.removeLayer(accessibilityLayer);
+                }
+                delete accessibilityLayer.data;
+                layerService.visual.rightPanelVisible = wasRightPanelVisible;
+            }
+        };
+        AccessibilityModel.planRoute = function (feature, layerService, destinationKey) {
+            var routeLayer = layerService.findLayer('tripplanner');
+            if (routeLayer) {
+                var urlParams = csComp.Helpers.parseUrlParameters(routeLayer.url, '?', '&', '=');
+                urlParams[destinationKey] = feature.geometry.coordinates[1] + '%2C' + feature.geometry.coordinates[0];
+                routeLayer.url = csComp.Helpers.joinUrlParameters(urlParams, '?', '&', '=');
+                if (!routeLayer.enabled) {
+                    layerService.addLayer(routeLayer);
+                }
+                else {
+                    if (routeLayer.layerSource)
+                        routeLayer.layerSource.refreshLayer(routeLayer);
+                }
+                var rpt = csComp.Helpers.createRightPanelTab("rightpanel", "tripplanner", routeLayer, "Route planner");
+                layerService.$messageBusService.publish("rightpanel", "activate", rpt);
+            }
+            else {
+            }
+        };
+        AccessibilityModel.prototype.planRouteFrom = function (feature, layerService) {
+            console.log('accessibility:planRouteFrom');
+            AccessibilityModel.planRoute(feature, layerService, 'fromPlace');
+        };
+        AccessibilityModel.prototype.planRouteTo = function (feature, layerService) {
+            console.log('accessibility:planRouteTo');
+            AccessibilityModel.planRoute(feature, layerService, 'toPlace');
+        };
+        AccessibilityModel.prototype.init = function (layerService) {
+            var _this = this;
+            console.log('init AccessibilityActionService');
+            this.layerService = layerService;
+            this.layerService.$messageBusService.serverSubscribe("accessibility", "msg", function (title, mcb) {
+                if (mcb["data"] === "restart") {
+                    _this.layerService.$messageBusService.notify("restarting server", "restarting", csComp.Services.NotifyLocation.TopRight);
+                    location.reload();
+                }
+                //
+                // var layer = this.layerService.findLayer("demo");
+                // layer.layerSource.refreshLayer(layer);
+                //console.log(title);
+            });
+        };
+        return AccessibilityModel;
+    })();
+    Accessibility.AccessibilityModel = AccessibilityModel;
+    var AccessibilityCtrl = (function () {
+        // dependencies are injected via AngularJS $injector
+        // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
+        function AccessibilityCtrl($scope, $http, $mapService, $layerService, $messageBusService, $dashboardService) {
+            var _this = this;
+            this.$scope = $scope;
+            this.$http = $http;
+            this.$mapService = $mapService;
+            this.$layerService = $layerService;
+            this.$messageBusService = $messageBusService;
+            this.$dashboardService = $dashboardService;
+            this.urlKeys = ['arriveBy', 'fromPlace', 'date', 'time', 'mode', 'walkSpeed', 'bikeSpeed',
+                'precisionMeters', 'cutoffSec'];
+            this.scope = $scope;
+            $scope.vm = this;
+            this.layer = $scope.$parent["data"];
+            this.cutoffTimes = [];
+            this.urlParameters = {};
+            this.bikeSpeedKm;
+            this.walkSpeedKm;
+            this.urlKeys.forEach(function (key) { _this.urlParameters[key] = 0; });
+            this.transportModes = {};
+            this.transportModes["Walking"] = "WALK";
+            this.transportModes["Biking"] = "BICYCLE";
+            //this.transportModes["Car"] = "CAR";
+        }
+        AccessibilityCtrl.prototype.refreshAccessibility = function () {
+            if (this.$layerService.lastSelectedFeature) {
+                var lsf = this.$layerService.lastSelectedFeature;
+                if (lsf.geometry && lsf.geometry.type === 'Point') {
+                    this.urlParameters['fromPlace'] = lsf.geometry.coordinates[1] + '%2C' + lsf.geometry.coordinates[0];
+                }
+            }
+            this.urlParameters['mode'] = this.transportMode;
+            this.urlParameters['time'] = encodeURIComponent(this.time);
+            if (this.walkSpeedKm)
+                this.urlParameters['walkSpeed'] = csComp.Helpers.GeoExtensions.convertKmToMile(this.walkSpeedKm);
+            if (this.bikeSpeedKm)
+                this.urlParameters['bikeSpeed'] = csComp.Helpers.GeoExtensions.convertKmToMile(this.bikeSpeedKm);
+            var url = this.urlAddress + '?';
+            for (var key in this.urlParameters) {
+                if (this.urlParameters.hasOwnProperty(key) && key !== 'cutoffSec') {
+                    url = url + key + '=' + this.urlParameters[key] + '&';
+                }
+            }
+            this.cutoffTimes.forEach(function (co) {
+                url = url + '&cutoffSec=' + (co * 60);
+            });
+            //url = url.substring(0, url.length - 1);
+            console.log(url);
+            this.layer.url = url;
+            if (!this.layer.enabled) {
+                this.$layerService.addLayer(this.layer);
+            }
+            else {
+                if (this.layer.layerSource)
+                    this.layer.layerSource.refreshLayer(this.layer);
+            }
+            this.$layerService.visual.rightPanelVisible = true;
+        };
+        AccessibilityCtrl.prototype.parseUrl = function () {
+            var _this = this;
+            this.urlParameters = {};
+            this.urlAddress = this.layer.url.split('?')[0];
+            var croppedUrl = this.layer.url.split('?')[1]; // Remove the address of the url, keep the parameters
+            var splittedUrl = croppedUrl.split('&');
+            splittedUrl.forEach(function (param) {
+                var keyValue = param.split('=');
+                if (keyValue[0] === 'cutoffSec') {
+                    _this.cutoffTimes.push((+keyValue[1]) / 60);
+                }
+                _this.urlParameters[keyValue[0]] = (isNaN(+keyValue[1])) ? keyValue[1] : +keyValue[1];
+            });
+            var d = new Date(Date.now());
+            this.time = ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2);
+            this.urlParameters['date'] = (d.getMonth() + 1) + '-' + d.getDate() + '-' + d.getFullYear();
+            this.transportMode = this.urlParameters['mode'];
+            if (this.urlParameters.hasOwnProperty('walkSpeed'))
+                this.walkSpeedKm = +csComp.Helpers.GeoExtensions.convertMileToKm(this.urlParameters['walkSpeed']).toFixed(2);
+            if (this.urlParameters.hasOwnProperty('bikeSpeed'))
+                this.bikeSpeedKm = +csComp.Helpers.GeoExtensions.convertMileToKm(this.urlParameters['bikeSpeed']).toFixed(2);
+            if (this.$scope.$root.$$phase != '$apply' && this.$scope.$root.$$phase != '$digest') {
+                this.$scope.$apply();
+            }
+        };
+        AccessibilityCtrl.prototype.addCutoffTime = function () {
+            this.cutoffTimes.push(0);
+            if (this.$scope.$root.$$phase != '$apply' && this.$scope.$root.$$phase != '$digest') {
+                this.$scope.$apply();
+            }
+        };
+        AccessibilityCtrl.prototype.removeCutoffTime = function (index) {
+            if (index < this.cutoffTimes.length && index > -1) {
+                this.cutoffTimes.splice(index, 1);
+            }
+            if (this.$scope.$root.$$phase != '$apply' && this.$scope.$root.$$phase != '$digest') {
+                this.$scope.$apply();
+            }
+        };
+        // $inject annotation.
+        // It provides $injector with information about dependencies to be injected into constructor
+        // it is better to have it close to the constructor, because the parameters must match in count and type.
+        // See http://docs.angularjs.org/guide/di
+        AccessibilityCtrl.$inject = [
+            '$scope',
+            '$http',
+            'mapService',
+            'layerService',
+            'messageBusService',
+            'dashboardService'
+        ];
+        return AccessibilityCtrl;
+    })();
+    Accessibility.AccessibilityCtrl = AccessibilityCtrl;
+})(Accessibility || (Accessibility = {}));
+//# sourceMappingURL=AccessibilityCtrl.js.map
 var Heatmap;
 (function (Heatmap) {
     'use strict';
@@ -10290,6 +10290,726 @@ var MapElement;
     MapElement.MapElementCtrl = MapElementCtrl;
 })(MapElement || (MapElement = {}));
 //# sourceMappingURL=MapElementCtrl.js.map
+var Mobile;
+(function (Mobile) {
+    /**
+      * Config
+      */
+    var moduleName = 'csComp';
+    try {
+        Mobile.myModule = angular.module(moduleName);
+    }
+    catch (err) {
+        // named module does not exist, so create one
+        Mobile.myModule = angular.module(moduleName, []);
+    }
+    /**
+      * Directive to display the available map layers.
+      */
+    Mobile.myModule.directive('mobile', [
+        '$window', '$compile',
+        function ($window, $compile) {
+            return {
+                terminal: true,
+                restrict: 'E',
+                scope: {},
+                templateUrl: 'directives/Mobile/Mobile.tpl.html',
+                link: function (scope, element, attrs) {
+                    // Deal with resizing the element list
+                    scope.onResizeFunction = function () {
+                        var filterHeight = 50;
+                        var paginationCtrlHeight = 100;
+                        var itemHeight = 60;
+                        //scope.windowHeight          = $window.innerHeight;
+                        //scope.windowWidth           = $window.innerWidth;
+                        scope.numberOfItems = Math.floor(($window.innerHeight - filterHeight - paginationCtrlHeight) / itemHeight);
+                    };
+                    // Call to the function when the page is first loaded
+                    scope.onResizeFunction();
+                    angular.element($window).bind('resize', function () {
+                        scope.onResizeFunction();
+                        scope.$apply();
+                    });
+                },
+                replace: false,
+                transclude: false,
+                controller: Mobile.MobileCtrl
+            };
+        }
+    ]);
+})(Mobile || (Mobile = {}));
+//# sourceMappingURL=Mobile.js.map
+var Mobile;
+(function (Mobile) {
+    var MobileCtrl = (function () {
+        // dependencies are injected via AngularJS $injector
+        // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
+        function MobileCtrl($scope, $layerService, $messageBus, localStorageService, geoService) {
+            var _this = this;
+            this.$scope = $scope;
+            this.$layerService = $layerService;
+            this.$messageBus = $messageBus;
+            this.localStorageService = localStorageService;
+            this.geoService = geoService;
+            $scope.vm = this;
+            this.$messageBus.subscribe('project', function (a, p) {
+                if (a === 'loaded') {
+                    _this.availableLayers = [];
+                    p.groups.forEach((function (g) {
+                        g.layers.forEach(function (l) {
+                            if (l.tags && l.tags.indexOf('mobile') >= 0)
+                                _this.availableLayers.push(l);
+                        });
+                    }));
+                    // find mobile layer
+                    console.log('available layers');
+                    console.log(_this.availableLayers);
+                }
+            });
+            $messageBus.subscribe("geo", function (action, loc) {
+                switch (action) {
+                    case "pos":
+                        var f = new csComp.Services.Feature();
+                        //f.layerId = layer.id;
+                        f.geometry = {
+                            type: 'Point', coordinates: []
+                        };
+                        f.geometry.coordinates = [loc.coords.longitude, loc.coords.latitude];
+                        f.properties = { "Name": "test" };
+                        //layer.data.features.push(f);
+                        //this.$layerService.initFeature(f, layer);
+                        _this.$layerService.activeMapRenderer.addFeature(f);
+                        _this.$layerService.saveFeature(f);
+                        break;
+                }
+            });
+            this.geoService.start({});
+        }
+        // $inject annotation.
+        // It provides $injector with information about dependencies to be injected into constructor
+        // it is better to have it close to the constructor, because the parameters must match in count and type.
+        // See http://docs.angularjs.org/guide/di
+        MobileCtrl.$inject = [
+            '$scope',
+            'layerService',
+            'messageBusService', 'localStorageService', 'geoService'
+        ];
+        return MobileCtrl;
+    })();
+    Mobile.MobileCtrl = MobileCtrl;
+})(Mobile || (Mobile = {}));
+//# sourceMappingURL=MobileCtrl.js.map
+var Navigate;
+(function (Navigate) {
+    /**
+      * Config
+      */
+    var moduleName = 'csComp';
+    try {
+        Navigate.myModule = angular.module(moduleName);
+    }
+    catch (err) {
+        // named module does not exist, so create one
+        Navigate.myModule = angular.module(moduleName, []);
+    }
+    /**
+      * Directive to display the available map layers.
+      */
+    Navigate.myModule.directive('navigate', [
+        '$window', '$compile',
+        function ($window, $compile) {
+            return {
+                terminal: true,
+                restrict: 'E',
+                scope: {},
+                templateUrl: 'directives/Navigate/Navigate.tpl.html',
+                link: function (scope, element, attrs) {
+                    // Deal with resizing the element list
+                    scope.onResizeFunction = function () {
+                        var filterHeight = 50;
+                        var paginationCtrlHeight = 100;
+                        var itemHeight = 60;
+                        //scope.windowHeight          = $window.innerHeight;
+                        //scope.windowWidth           = $window.innerWidth;
+                        scope.numberOfItems = Math.floor(($window.innerHeight - filterHeight - paginationCtrlHeight) / itemHeight);
+                    };
+                    // Call to the function when the page is first loaded
+                    scope.onResizeFunction();
+                    angular.element($window).bind('resize', function () {
+                        scope.onResizeFunction();
+                        scope.$apply();
+                    });
+                },
+                replace: false,
+                transclude: false,
+                controller: Navigate.NavigateCtrl
+            };
+        }
+    ]).directive('bsPopover', function () {
+        return function (scope, element, attrs) {
+            element.find("a[rel=popover]").popover({ placement: 'right', html: 'true' });
+        };
+    });
+})(Navigate || (Navigate = {}));
+//# sourceMappingURL=Navigate.js.map
+var Navigate;
+(function (Navigate) {
+    var RecentFeature = (function () {
+        function RecentFeature() {
+        }
+        return RecentFeature;
+    })();
+    Navigate.RecentFeature = RecentFeature;
+    var NavigateCtrl = (function () {
+        // dependencies are injected via AngularJS $injector
+        // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
+        function NavigateCtrl($scope, $layerService, $messageBus, localStorageService, geoService) {
+            var _this = this;
+            this.$scope = $scope;
+            this.$layerService = $layerService;
+            this.$messageBus = $messageBus;
+            this.localStorageService = localStorageService;
+            this.geoService = geoService;
+            this.RecentLayers = [];
+            this.mobileLayers = [];
+            this.RecentFeatures = [];
+            this.lastPost = { longitude: 0, latitude: 0 };
+            this.searchResults = [];
+            $scope.vm = this;
+            this.$messageBus.subscribe('project', function (a, p) {
+                if (a === 'loaded') {
+                    _this.initRecentLayers();
+                    _this.initRecentFeatures();
+                    if (_this.$layerService.isMobile)
+                        _this.initMobileLayers(p);
+                }
+            });
+            $scope.$watch("search", _.throttle(function (search) {
+                // This code will be invoked after 1 second from the last time 'id' has changed.
+                if (search && search.length > 0) {
+                    _this.doSearch(search);
+                }
+                else {
+                    _this.searchResults = [];
+                }
+                // Code that does something based on $scope.id                
+            }, 500));
+        }
+        NavigateCtrl.prototype.selectSearchResult = function (item) {
+            if (item.click)
+                item.click(item);
+        };
+        NavigateCtrl.prototype.doSearch = function (search) {
+            var _this = this;
+            this.$layerService.actionServices.forEach(function (as) {
+                if (as.search)
+                    as.search({ query: search, results: _this.searchResults }, function (error, result) {
+                        _this.searchResults = _this.searchResults.filter(function (sr) { return sr.service !== as.id; });
+                        _this.searchResults = _this.searchResults.concat(result);
+                        if (_this.$scope.$root.$$phase != '$apply' && _this.$scope.$root.$$phase != '$digest') {
+                            _this.$scope.$apply();
+                        }
+                    });
+            });
+        };
+        NavigateCtrl.prototype.leave = function (l) {
+            if (this.mobileLayer && this.MyFeature) {
+                this.$layerService.removeFeature(this.MyFeature, true);
+                this.$layerService.activeMapRenderer.removeFeature(this.MyFeature);
+                //this.$layerService.saveFeature(this.MyFeature);
+                this.MyFeature = null;
+            }
+            this.mobileLayer = null;
+        };
+        NavigateCtrl.prototype.join = function (l) {
+            var _this = this;
+            this.localStorageService.set("username", this.UserName);
+            async.series([function (cb) {
+                    if (!l.enabled) {
+                        _this.$layerService.addLayer(l, function () {
+                            cb();
+                        });
+                    }
+                    else {
+                        cb();
+                    }
+                }, function (cb) {
+                    _this.mobileLayer = l;
+                    var f = new csComp.Services.Feature();
+                    f.layerId = _this.mobileLayer.id;
+                    f.geometry = {
+                        type: 'Point', coordinates: []
+                    };
+                    // todo disable
+                    f.geometry.coordinates = [_this.lastPost.longitude, _this.lastPost.latitude]; //[0, 0]; //loc.coords.longitude, loc.coords.latitude];
+                    f.id = _this.UserName;
+                    f.properties = { "Name": _this.UserName };
+                    //layer.data.features.push(f);
+                    _this.$layerService.initFeature(f, _this.mobileLayer);
+                    _this.$layerService.activeMapRenderer.addFeature(f);
+                    _this.$layerService.saveFeature(f);
+                    _this.MyFeature = f;
+                }]);
+        };
+        NavigateCtrl.prototype.initMobileLayers = function (p) {
+            var _this = this;
+            this.UserName = this.localStorageService.get("username");
+            if (!this.UserName)
+                this.UserName = "mobile user";
+            this.mobileLayers = [];
+            p.groups.forEach((function (g) {
+                g.layers.forEach(function (l) {
+                    if (l.tags && l.tags.indexOf('mobile') >= 0)
+                        _this.mobileLayers.push(l);
+                });
+            }));
+            if (this.$layerService.isMobile) {
+                this.$messageBus.subscribe("geo", function (action, loc) {
+                    switch (action) {
+                        case "pos":
+                            if (_this.mobileLayer && _this.MyFeature) {
+                                _this.lastPost = loc.coords;
+                                _this.MyFeature.geometry.coordinates = [loc.coords.longitude, loc.coords.latitude];
+                                _this.$layerService.activeMapRenderer.updateFeature(_this.MyFeature);
+                                _this.$layerService.saveFeature(_this.MyFeature);
+                            }
+                            break;
+                    }
+                });
+                this.geoService.start({});
+            }
+        };
+        NavigateCtrl.prototype.updateRecentFeaturesList = function () {
+            var _this = this;
+            setTimeout(function () {
+                var ids = _this.localStorageService.get("recentfeatures");
+                if (ids) {
+                    _this.RecentFeatures = ids;
+                    _this.RecentFeatures.forEach(function (rf) {
+                        var l = _this.$layerService.findLayer(rf.layerId);
+                        if (l && l.enabled) {
+                            rf.feature = _this.$layerService.findFeature(l, rf.id);
+                        }
+                    });
+                }
+            }, 0);
+        };
+        NavigateCtrl.prototype.selectFeature = function (feature) {
+            this.$layerService.selectFeature(feature, false, true);
+        };
+        NavigateCtrl.prototype.initRecentFeatures = function () {
+            var _this = this;
+            this.updateRecentFeaturesList();
+            this.$messageBus.subscribe('feature', function (a, feature) {
+                if (a === 'onFeatureSelect') {
+                    _this.RecentFeatures = _this.RecentFeatures.filter(function (f) { return f.id != feature.id; });
+                    var rf = { id: feature.id, name: csComp.Helpers.getFeatureTitle(feature), layerId: feature.layerId, feature: feature };
+                    _this.RecentFeatures.splice(0, 0, rf);
+                    if (_this.RecentFeatures.length > 5)
+                        _this.RecentFeatures.pop();
+                    var save = [];
+                    _this.RecentFeatures.forEach(function (f) { return save.push({ id: f.id, name: f.name, layerId: f.layerId }); });
+                    _this.localStorageService.set("recentfeatures", save);
+                    if (_this.$scope.$root.$$phase != '$apply' && _this.$scope.$root.$$phase != '$digest') {
+                        _this.$scope.$apply();
+                    }
+                }
+            });
+        };
+        NavigateCtrl.prototype.toggleLayer = function (layer) {
+            this.$layerService.toggleLayer(layer);
+        };
+        NavigateCtrl.prototype.initRecentLayers = function () {
+            var _this = this;
+            var ids = this.localStorageService.get("recentlayers");
+            if (ids)
+                ids.forEach(function (id) {
+                    var l = _this.$layerService.findLayer(id);
+                    if (l)
+                        _this.RecentLayers.push(l);
+                });
+            this.$messageBus.subscribe('layer', function (a, layer) {
+                if (a === 'activated') {
+                    _this.RecentLayers = _this.RecentLayers.filter(function (f) { return f.id != layer.id; });
+                    _this.RecentLayers.splice(0, 0, layer);
+                    if (_this.RecentLayers.length > 5)
+                        _this.RecentLayers.pop();
+                    ids = [];
+                    _this.RecentLayers.forEach(function (l) { return ids.push(l.id); });
+                    _this.localStorageService.set("recentlayers", ids);
+                    if (_this.$scope.$root.$$phase != '$apply' && _this.$scope.$root.$$phase != '$digest') {
+                        _this.$scope.$apply();
+                    }
+                }
+                _this.updateRecentFeaturesList();
+            });
+        };
+        // $inject annotation.
+        // It provides $injector with information about dependencies to be injected into constructor
+        // it is better to have it close to the constructor, because the parameters must match in count and type.
+        // See http://docs.angularjs.org/guide/di
+        NavigateCtrl.$inject = [
+            '$scope',
+            'layerService',
+            'messageBusService', 'localStorageService', 'geoService'
+        ];
+        return NavigateCtrl;
+    })();
+    Navigate.NavigateCtrl = NavigateCtrl;
+})(Navigate || (Navigate = {}));
+//# sourceMappingURL=NavigateCtrl.js.map
+var Search;
+(function (Search) {
+    var NavigateSteps = (function () {
+        function NavigateSteps() {
+        }
+        return NavigateSteps;
+    })();
+    Search.NavigateSteps = NavigateSteps;
+    var NavigateState = (function () {
+        function NavigateState() {
+        }
+        return NavigateState;
+    })();
+    Search.NavigateState = NavigateState;
+})(Search || (Search = {}));
+//# sourceMappingURL=SearchClasses.js.map
+var OfflineSearch;
+(function (OfflineSearch) {
+    /**
+      * Config
+      */
+    var moduleName = 'csComp';
+    try {
+        OfflineSearch.myModule = angular.module(moduleName);
+    }
+    catch (err) {
+        // named module does not exist, so create one
+        OfflineSearch.myModule = angular.module(moduleName, []);
+    }
+    /**
+      * Directive to display the available map layers.
+      */
+    OfflineSearch.myModule.directive('offlineSearch', [
+        '$compile',
+        function ($compile) {
+            return {
+                terminal: true,
+                restrict: 'E',
+                scope: {},
+                templateUrl: 'directives/OfflineSearch/OfflineSearch.tpl.html',
+                compile: function (el) {
+                    var fn = $compile(el);
+                    return function (scope) {
+                        fn(scope);
+                    };
+                },
+                replace: true,
+                transclude: true,
+                controller: OfflineSearch.OfflineSearchCtrl
+            };
+        }
+    ]);
+})(OfflineSearch || (OfflineSearch = {}));
+//# sourceMappingURL=OfflineSearch.js.map
+var OfflineSearch;
+(function (OfflineSearch) {
+    var Layer = (function () {
+        function Layer(groupTitle, index, id, title, path, type) {
+            this.groupTitle = groupTitle;
+            this.index = index;
+            this.id = id;
+            this.title = title;
+            this.path = path;
+            this.type = type;
+            /**
+             * Names of all the features.
+             * @type {string[]}
+             */
+            this.featureNames = [];
+        }
+        return Layer;
+    })();
+    OfflineSearch.Layer = Layer;
+    /**
+     * An index entry that contains a search result.
+     */
+    var Entry = (function () {
+        function Entry(layerIndexOrArray, featureIndex, propertyIndex) {
+            this.v = Array(2);
+            if (typeof layerIndexOrArray === 'number') {
+                this.v[0] = layerIndexOrArray;
+                this.v[1] = featureIndex;
+            }
+            else {
+                this.v = layerIndexOrArray;
+            }
+        }
+        Object.defineProperty(Entry.prototype, "layerIndex", {
+            get: function () { return this.v[0]; },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(Entry.prototype, "featureIndex", {
+            get: function () { return this.v[1]; },
+            enumerable: true,
+            configurable: true
+        });
+        /**
+         * This function is called when serializing the Entry object to JSON, which is
+         * much less verbose than the default JSON. In the constructor, I've used a
+         * Union type to deserialize it again.
+         */
+        Entry.prototype.toJSON = function () {
+            return this.v;
+        };
+        return Entry;
+    })();
+    OfflineSearch.Entry = Entry;
+    var KeywordIndex = (function () {
+        function KeywordIndex() {
+        }
+        return KeywordIndex;
+    })();
+    OfflineSearch.KeywordIndex = KeywordIndex;
+    var OfflineSearchResult = (function () {
+        function OfflineSearchResult(project, options) {
+            this.project = project;
+            this.options = options;
+            this.layers = [];
+            this.keywordIndex = {};
+        }
+        return OfflineSearchResult;
+    })();
+    OfflineSearch.OfflineSearchResult = OfflineSearchResult;
+})(OfflineSearch || (OfflineSearch = {}));
+//# sourceMappingURL=OfflineSearchClasses.js.map
+var OfflineSearch;
+(function (OfflineSearch) {
+    var OfflineSearchResultViewModel = (function () {
+        function OfflineSearchResultViewModel(title, layerTitle, groupTitle, entry) {
+            this.title = title;
+            this.layerTitle = layerTitle;
+            this.groupTitle = groupTitle;
+            this.entry = entry;
+            this.firstInGroup = false;
+        }
+        OfflineSearchResultViewModel.prototype.toString = function () {
+            return this.title;
+        };
+        Object.defineProperty(OfflineSearchResultViewModel.prototype, "fullTitle", {
+            get: function () {
+                return this.groupTitle + ' >> ' + this.layerTitle + ' >> ' + this.title;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        return OfflineSearchResultViewModel;
+    })();
+    OfflineSearch.OfflineSearchResultViewModel = OfflineSearchResultViewModel;
+    var OfflineSearchCtrl = (function () {
+        // dependencies are injected via AngularJS $injector
+        // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
+        function OfflineSearchCtrl($scope, $http, $layerService, $mapService, $messageBus) {
+            var _this = this;
+            this.$scope = $scope;
+            this.$http = $http;
+            this.$layerService = $layerService;
+            this.$mapService = $mapService;
+            this.$messageBus = $messageBus;
+            this.isReady = false;
+            $scope.vm = this;
+            $messageBus.subscribe('project', function (title) {
+                switch (title) {
+                    case 'loaded':
+                        var offlineSearchResultUrl = $layerService.projectUrl.url.replace('project.json', 'offline_search_result.json');
+                        _this.loadSearchResults(offlineSearchResultUrl);
+                        break;
+                }
+            });
+            $messageBus.subscribe('language', function (title, language) {
+                switch (title) {
+                    case 'newLanguage':
+                        // TODO switch language!
+                        break;
+                }
+            });
+        }
+        /**
+         * Load the offline search results (json file).
+         */
+        OfflineSearchCtrl.prototype.loadSearchResults = function (url) {
+            var _this = this;
+            this.$http.get(url)
+                .success(function (offlineSearchResult) {
+                _this.offlineSearchResult = offlineSearchResult;
+                var kwi = offlineSearchResult.keywordIndex;
+                var keywordIndex = {};
+                for (var key in kwi) {
+                    if (!kwi.hasOwnProperty(key))
+                        continue;
+                    kwi[key].forEach(function (entry) {
+                        if (!keywordIndex.hasOwnProperty(key))
+                            keywordIndex[key] = [];
+                        keywordIndex[key].push(new OfflineSearch.Entry(entry));
+                    });
+                }
+                _this.offlineSearchResult.keywordIndex = keywordIndex;
+                _this.isReady = true;
+            })
+                .error(function () { console.log("OfflineSearch: error with $http "); });
+        };
+        /**
+         * Get the locations based on the entered text.
+         */
+        OfflineSearchCtrl.prototype.getLocation = function (text, resultCount) {
+            if (resultCount === void 0) { resultCount = 15; }
+            if (!this.isReady || text === null || text.length < 3)
+                return [];
+            var searchWords = text.toLowerCase().split(' ');
+            // test if last word in text might be a (part of) a stopword, if so remove it
+            var lastSearchTerm = searchWords[searchWords.length - 1];
+            var possibleStopWords = this.offlineSearchResult.options.stopWords.filter(function (stopword) { return stopword.indexOf(lastSearchTerm) > -1; });
+            if (possibleStopWords.length > 0) {
+                searchWords.splice(searchWords.length - 1, 1);
+            }
+            // remove all exact stopwords
+            this.offlineSearchResult.options.stopWords.forEach(function (stopWord) {
+                while (searchWords.indexOf(stopWord) > -1) {
+                    searchWords.splice(searchWords.indexOf(stopWord), 1);
+                }
+            });
+            var totResults;
+            for (var j in searchWords) {
+                var result = this.getKeywordHits(searchWords[j]);
+                totResults = !totResults
+                    ? result
+                    : this.mergeResults(totResults, result);
+            }
+            var searchResults = [];
+            var layers = this.offlineSearchResult.layers;
+            var count = resultCount;
+            var resultIndex = 0;
+            while (count > 0 && resultIndex < totResults.length) {
+                var r = totResults[resultIndex++];
+                var subCount = Math.min(count, r.entries.length);
+                for (var i = 0; i < subCount; i++) {
+                    var entry = r.entries[i];
+                    var layer = layers[entry.layerIndex];
+                    count--;
+                    searchResults.push(new OfflineSearchResultViewModel(layer.featureNames[entry.featureIndex], layer.title, layer.groupTitle, entry));
+                }
+            }
+            // Group search results by groupTitle | layerTitle
+            var groups = {};
+            searchResults.forEach(function (sr) {
+                var group = sr.groupTitle + ' >> ' + sr.layerTitle;
+                if (!groups.hasOwnProperty(group))
+                    groups[group] = [];
+                groups[group].push(sr);
+            });
+            searchResults = [];
+            for (var key in groups) {
+                if (!groups.hasOwnProperty(key))
+                    continue;
+                var firstInGroup = true;
+                groups[key].forEach(function (sr) {
+                    sr.firstInGroup = firstInGroup;
+                    searchResults.push(sr);
+                    firstInGroup = false;
+                });
+            }
+            return searchResults;
+        };
+        /**
+         * Merge the resuls of two keyword lookups by checking whether different entries refer
+         * to the same layer and feature.
+         * @result1 {ILookupResult[]}
+         * @result2 {ILookupResult[]}
+         */
+        OfflineSearchCtrl.prototype.mergeResults = function (result1, result2) {
+            var r = [];
+            result1.forEach(function (r1) {
+                result2.forEach(function (r2) {
+                    r1.entries.forEach(function (entry1) {
+                        r2.entries.forEach(function (entry2) {
+                            if (entry1.layerIndex === entry2.layerIndex && entry1.featureIndex === entry2.featureIndex)
+                                r.push({ score: r1.score * r2.score, key: r1.key + ' ' + r2.key, entries: [entry1] });
+                        });
+                    });
+                });
+            });
+            r = r.sort(function (a, b) { return b.score - a.score; });
+            return r;
+        };
+        /**
+         * Do a fuzzy keyword comparison between the entered text and the list of keywords,
+         * and return a subset.
+         * @text: {string}
+         */
+        OfflineSearchCtrl.prototype.getKeywordHits = function (text) {
+            var results = [];
+            var keywordIndex = this.offlineSearchResult.keywordIndex;
+            var keywords = Object.getOwnPropertyNames(keywordIndex);
+            keywords.forEach(function (key) {
+                var score = key.score(text, null);
+                if (score < 0.5)
+                    return;
+                results.push({ score: score, key: key, entries: keywordIndex[key] });
+            });
+            results = results.sort(function (a, b) { return b.score - a.score; });
+            return results;
+        };
+        /**
+         * When an item is selected, optionally open the layer and jump to the selected feature.
+         */
+        OfflineSearchCtrl.prototype.onSelect = function (selectedItem) {
+            var _this = this;
+            var layerIndex = selectedItem.entry.layerIndex;
+            var layer = this.offlineSearchResult.layers[layerIndex];
+            var projectLayer = this.$layerService.findLayer(layer.id);
+            console.log(selectedItem);
+            if (!projectLayer)
+                return;
+            if (projectLayer.enabled) {
+                this.selectFeature(layer.id, selectedItem.entry.featureIndex);
+                return;
+            }
+            else {
+                var handle = this.$messageBus.subscribe('layer', function (title, layer) {
+                    if (title !== 'activated' || projectLayer.url !== layer.url)
+                        return;
+                    _this.selectFeature(layer.id, selectedItem.entry.featureIndex);
+                    _this.$messageBus.unsubscribe(handle);
+                });
+                this.$layerService.addLayer(projectLayer);
+            }
+            var group = $("#layergroup_" + projectLayer.groupId);
+            group.collapse("show");
+        };
+        OfflineSearchCtrl.prototype.selectFeature = function (layerId, featureIndex) {
+            var feature = this.$layerService.findFeatureByIndex(layerId, featureIndex);
+            if (feature == null)
+                return;
+            this.$mapService.zoomTo(feature);
+            this.$layerService.selectFeature(feature);
+        };
+        // $inject annotation.
+        // It provides $injector with information about dependencies to be injected into constructor
+        // it is better to have it close to the constructor, because the parameters must match in count and type.
+        // See http://docs.angularjs.org/guide/di
+        OfflineSearchCtrl.$inject = [
+            '$scope',
+            '$http',
+            'layerService',
+            'mapService',
+            'messageBusService'
+        ];
+        return OfflineSearchCtrl;
+    })();
+    OfflineSearch.OfflineSearchCtrl = OfflineSearchCtrl;
+})(OfflineSearch || (OfflineSearch = {}));
+//# sourceMappingURL=OfflineSearchCtrl.js.map
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -11636,726 +12356,6 @@ var Mca;
     Mca.McaEditorCtrl = McaEditorCtrl;
 })(Mca || (Mca = {}));
 //# sourceMappingURL=McaEditorCtrl.js.map
-var Mobile;
-(function (Mobile) {
-    /**
-      * Config
-      */
-    var moduleName = 'csComp';
-    try {
-        Mobile.myModule = angular.module(moduleName);
-    }
-    catch (err) {
-        // named module does not exist, so create one
-        Mobile.myModule = angular.module(moduleName, []);
-    }
-    /**
-      * Directive to display the available map layers.
-      */
-    Mobile.myModule.directive('mobile', [
-        '$window', '$compile',
-        function ($window, $compile) {
-            return {
-                terminal: true,
-                restrict: 'E',
-                scope: {},
-                templateUrl: 'directives/Mobile/Mobile.tpl.html',
-                link: function (scope, element, attrs) {
-                    // Deal with resizing the element list
-                    scope.onResizeFunction = function () {
-                        var filterHeight = 50;
-                        var paginationCtrlHeight = 100;
-                        var itemHeight = 60;
-                        //scope.windowHeight          = $window.innerHeight;
-                        //scope.windowWidth           = $window.innerWidth;
-                        scope.numberOfItems = Math.floor(($window.innerHeight - filterHeight - paginationCtrlHeight) / itemHeight);
-                    };
-                    // Call to the function when the page is first loaded
-                    scope.onResizeFunction();
-                    angular.element($window).bind('resize', function () {
-                        scope.onResizeFunction();
-                        scope.$apply();
-                    });
-                },
-                replace: false,
-                transclude: false,
-                controller: Mobile.MobileCtrl
-            };
-        }
-    ]);
-})(Mobile || (Mobile = {}));
-//# sourceMappingURL=Mobile.js.map
-var Mobile;
-(function (Mobile) {
-    var MobileCtrl = (function () {
-        // dependencies are injected via AngularJS $injector
-        // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
-        function MobileCtrl($scope, $layerService, $messageBus, localStorageService, geoService) {
-            var _this = this;
-            this.$scope = $scope;
-            this.$layerService = $layerService;
-            this.$messageBus = $messageBus;
-            this.localStorageService = localStorageService;
-            this.geoService = geoService;
-            $scope.vm = this;
-            this.$messageBus.subscribe('project', function (a, p) {
-                if (a === 'loaded') {
-                    _this.availableLayers = [];
-                    p.groups.forEach((function (g) {
-                        g.layers.forEach(function (l) {
-                            if (l.tags && l.tags.indexOf('mobile') >= 0)
-                                _this.availableLayers.push(l);
-                        });
-                    }));
-                    // find mobile layer
-                    console.log('available layers');
-                    console.log(_this.availableLayers);
-                }
-            });
-            $messageBus.subscribe("geo", function (action, loc) {
-                switch (action) {
-                    case "pos":
-                        var f = new csComp.Services.Feature();
-                        //f.layerId = layer.id;
-                        f.geometry = {
-                            type: 'Point', coordinates: []
-                        };
-                        f.geometry.coordinates = [loc.coords.longitude, loc.coords.latitude];
-                        f.properties = { "Name": "test" };
-                        //layer.data.features.push(f);
-                        //this.$layerService.initFeature(f, layer);
-                        _this.$layerService.activeMapRenderer.addFeature(f);
-                        _this.$layerService.saveFeature(f);
-                        break;
-                }
-            });
-            this.geoService.start({});
-        }
-        // $inject annotation.
-        // It provides $injector with information about dependencies to be injected into constructor
-        // it is better to have it close to the constructor, because the parameters must match in count and type.
-        // See http://docs.angularjs.org/guide/di
-        MobileCtrl.$inject = [
-            '$scope',
-            'layerService',
-            'messageBusService', 'localStorageService', 'geoService'
-        ];
-        return MobileCtrl;
-    })();
-    Mobile.MobileCtrl = MobileCtrl;
-})(Mobile || (Mobile = {}));
-//# sourceMappingURL=MobileCtrl.js.map
-var Navigate;
-(function (Navigate) {
-    /**
-      * Config
-      */
-    var moduleName = 'csComp';
-    try {
-        Navigate.myModule = angular.module(moduleName);
-    }
-    catch (err) {
-        // named module does not exist, so create one
-        Navigate.myModule = angular.module(moduleName, []);
-    }
-    /**
-      * Directive to display the available map layers.
-      */
-    Navigate.myModule.directive('navigate', [
-        '$window', '$compile',
-        function ($window, $compile) {
-            return {
-                terminal: true,
-                restrict: 'E',
-                scope: {},
-                templateUrl: 'directives/Navigate/Navigate.tpl.html',
-                link: function (scope, element, attrs) {
-                    // Deal with resizing the element list
-                    scope.onResizeFunction = function () {
-                        var filterHeight = 50;
-                        var paginationCtrlHeight = 100;
-                        var itemHeight = 60;
-                        //scope.windowHeight          = $window.innerHeight;
-                        //scope.windowWidth           = $window.innerWidth;
-                        scope.numberOfItems = Math.floor(($window.innerHeight - filterHeight - paginationCtrlHeight) / itemHeight);
-                    };
-                    // Call to the function when the page is first loaded
-                    scope.onResizeFunction();
-                    angular.element($window).bind('resize', function () {
-                        scope.onResizeFunction();
-                        scope.$apply();
-                    });
-                },
-                replace: false,
-                transclude: false,
-                controller: Navigate.NavigateCtrl
-            };
-        }
-    ]).directive('bsPopover', function () {
-        return function (scope, element, attrs) {
-            element.find("a[rel=popover]").popover({ placement: 'right', html: 'true' });
-        };
-    });
-})(Navigate || (Navigate = {}));
-//# sourceMappingURL=Navigate.js.map
-var Navigate;
-(function (Navigate) {
-    var RecentFeature = (function () {
-        function RecentFeature() {
-        }
-        return RecentFeature;
-    })();
-    Navigate.RecentFeature = RecentFeature;
-    var NavigateCtrl = (function () {
-        // dependencies are injected via AngularJS $injector
-        // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
-        function NavigateCtrl($scope, $layerService, $messageBus, localStorageService, geoService) {
-            var _this = this;
-            this.$scope = $scope;
-            this.$layerService = $layerService;
-            this.$messageBus = $messageBus;
-            this.localStorageService = localStorageService;
-            this.geoService = geoService;
-            this.RecentLayers = [];
-            this.mobileLayers = [];
-            this.RecentFeatures = [];
-            this.lastPost = { longitude: 0, latitude: 0 };
-            this.searchResults = [];
-            $scope.vm = this;
-            this.$messageBus.subscribe('project', function (a, p) {
-                if (a === 'loaded') {
-                    _this.initRecentLayers();
-                    _this.initRecentFeatures();
-                    if (_this.$layerService.isMobile)
-                        _this.initMobileLayers(p);
-                }
-            });
-            $scope.$watch("search", _.throttle(function (search) {
-                // This code will be invoked after 1 second from the last time 'id' has changed.
-                if (search && search.length > 0) {
-                    _this.doSearch(search);
-                }
-                else {
-                    _this.searchResults = [];
-                }
-                // Code that does something based on $scope.id                
-            }, 500));
-        }
-        NavigateCtrl.prototype.selectSearchResult = function (item) {
-            if (item.click)
-                item.click(item);
-        };
-        NavigateCtrl.prototype.doSearch = function (search) {
-            var _this = this;
-            this.$layerService.actionServices.forEach(function (as) {
-                if (as.search)
-                    as.search({ query: search, results: _this.searchResults }, function (error, result) {
-                        _this.searchResults = _this.searchResults.filter(function (sr) { return sr.service !== as.id; });
-                        _this.searchResults = _this.searchResults.concat(result);
-                        if (_this.$scope.$root.$$phase != '$apply' && _this.$scope.$root.$$phase != '$digest') {
-                            _this.$scope.$apply();
-                        }
-                    });
-            });
-        };
-        NavigateCtrl.prototype.leave = function (l) {
-            if (this.mobileLayer && this.MyFeature) {
-                this.$layerService.removeFeature(this.MyFeature, true);
-                this.$layerService.activeMapRenderer.removeFeature(this.MyFeature);
-                //this.$layerService.saveFeature(this.MyFeature);
-                this.MyFeature = null;
-            }
-            this.mobileLayer = null;
-        };
-        NavigateCtrl.prototype.join = function (l) {
-            var _this = this;
-            this.localStorageService.set("username", this.UserName);
-            async.series([function (cb) {
-                    if (!l.enabled) {
-                        _this.$layerService.addLayer(l, function () {
-                            cb();
-                        });
-                    }
-                    else {
-                        cb();
-                    }
-                }, function (cb) {
-                    _this.mobileLayer = l;
-                    var f = new csComp.Services.Feature();
-                    f.layerId = _this.mobileLayer.id;
-                    f.geometry = {
-                        type: 'Point', coordinates: []
-                    };
-                    // todo disable
-                    f.geometry.coordinates = [_this.lastPost.longitude, _this.lastPost.latitude]; //[0, 0]; //loc.coords.longitude, loc.coords.latitude];
-                    f.id = _this.UserName;
-                    f.properties = { "Name": _this.UserName };
-                    //layer.data.features.push(f);
-                    _this.$layerService.initFeature(f, _this.mobileLayer);
-                    _this.$layerService.activeMapRenderer.addFeature(f);
-                    _this.$layerService.saveFeature(f);
-                    _this.MyFeature = f;
-                }]);
-        };
-        NavigateCtrl.prototype.initMobileLayers = function (p) {
-            var _this = this;
-            this.UserName = this.localStorageService.get("username");
-            if (!this.UserName)
-                this.UserName = "mobile user";
-            this.mobileLayers = [];
-            p.groups.forEach((function (g) {
-                g.layers.forEach(function (l) {
-                    if (l.tags && l.tags.indexOf('mobile') >= 0)
-                        _this.mobileLayers.push(l);
-                });
-            }));
-            if (this.$layerService.isMobile) {
-                this.$messageBus.subscribe("geo", function (action, loc) {
-                    switch (action) {
-                        case "pos":
-                            if (_this.mobileLayer && _this.MyFeature) {
-                                _this.lastPost = loc.coords;
-                                _this.MyFeature.geometry.coordinates = [loc.coords.longitude, loc.coords.latitude];
-                                _this.$layerService.activeMapRenderer.updateFeature(_this.MyFeature);
-                                _this.$layerService.saveFeature(_this.MyFeature);
-                            }
-                            break;
-                    }
-                });
-                this.geoService.start({});
-            }
-        };
-        NavigateCtrl.prototype.updateRecentFeaturesList = function () {
-            var _this = this;
-            setTimeout(function () {
-                var ids = _this.localStorageService.get("recentfeatures");
-                if (ids) {
-                    _this.RecentFeatures = ids;
-                    _this.RecentFeatures.forEach(function (rf) {
-                        var l = _this.$layerService.findLayer(rf.layerId);
-                        if (l && l.enabled) {
-                            rf.feature = _this.$layerService.findFeature(l, rf.id);
-                        }
-                    });
-                }
-            }, 0);
-        };
-        NavigateCtrl.prototype.selectFeature = function (feature) {
-            this.$layerService.selectFeature(feature, false, true);
-        };
-        NavigateCtrl.prototype.initRecentFeatures = function () {
-            var _this = this;
-            this.updateRecentFeaturesList();
-            this.$messageBus.subscribe('feature', function (a, feature) {
-                if (a === 'onFeatureSelect') {
-                    _this.RecentFeatures = _this.RecentFeatures.filter(function (f) { return f.id != feature.id; });
-                    var rf = { id: feature.id, name: csComp.Helpers.getFeatureTitle(feature), layerId: feature.layerId, feature: feature };
-                    _this.RecentFeatures.splice(0, 0, rf);
-                    if (_this.RecentFeatures.length > 5)
-                        _this.RecentFeatures.pop();
-                    var save = [];
-                    _this.RecentFeatures.forEach(function (f) { return save.push({ id: f.id, name: f.name, layerId: f.layerId }); });
-                    _this.localStorageService.set("recentfeatures", save);
-                    if (_this.$scope.$root.$$phase != '$apply' && _this.$scope.$root.$$phase != '$digest') {
-                        _this.$scope.$apply();
-                    }
-                }
-            });
-        };
-        NavigateCtrl.prototype.toggleLayer = function (layer) {
-            this.$layerService.toggleLayer(layer);
-        };
-        NavigateCtrl.prototype.initRecentLayers = function () {
-            var _this = this;
-            var ids = this.localStorageService.get("recentlayers");
-            if (ids)
-                ids.forEach(function (id) {
-                    var l = _this.$layerService.findLayer(id);
-                    if (l)
-                        _this.RecentLayers.push(l);
-                });
-            this.$messageBus.subscribe('layer', function (a, layer) {
-                if (a === 'activated') {
-                    _this.RecentLayers = _this.RecentLayers.filter(function (f) { return f.id != layer.id; });
-                    _this.RecentLayers.splice(0, 0, layer);
-                    if (_this.RecentLayers.length > 5)
-                        _this.RecentLayers.pop();
-                    ids = [];
-                    _this.RecentLayers.forEach(function (l) { return ids.push(l.id); });
-                    _this.localStorageService.set("recentlayers", ids);
-                    if (_this.$scope.$root.$$phase != '$apply' && _this.$scope.$root.$$phase != '$digest') {
-                        _this.$scope.$apply();
-                    }
-                }
-                _this.updateRecentFeaturesList();
-            });
-        };
-        // $inject annotation.
-        // It provides $injector with information about dependencies to be injected into constructor
-        // it is better to have it close to the constructor, because the parameters must match in count and type.
-        // See http://docs.angularjs.org/guide/di
-        NavigateCtrl.$inject = [
-            '$scope',
-            'layerService',
-            'messageBusService', 'localStorageService', 'geoService'
-        ];
-        return NavigateCtrl;
-    })();
-    Navigate.NavigateCtrl = NavigateCtrl;
-})(Navigate || (Navigate = {}));
-//# sourceMappingURL=NavigateCtrl.js.map
-var Search;
-(function (Search) {
-    var NavigateSteps = (function () {
-        function NavigateSteps() {
-        }
-        return NavigateSteps;
-    })();
-    Search.NavigateSteps = NavigateSteps;
-    var NavigateState = (function () {
-        function NavigateState() {
-        }
-        return NavigateState;
-    })();
-    Search.NavigateState = NavigateState;
-})(Search || (Search = {}));
-//# sourceMappingURL=SearchClasses.js.map
-var OfflineSearch;
-(function (OfflineSearch) {
-    /**
-      * Config
-      */
-    var moduleName = 'csComp';
-    try {
-        OfflineSearch.myModule = angular.module(moduleName);
-    }
-    catch (err) {
-        // named module does not exist, so create one
-        OfflineSearch.myModule = angular.module(moduleName, []);
-    }
-    /**
-      * Directive to display the available map layers.
-      */
-    OfflineSearch.myModule.directive('offlineSearch', [
-        '$compile',
-        function ($compile) {
-            return {
-                terminal: true,
-                restrict: 'E',
-                scope: {},
-                templateUrl: 'directives/OfflineSearch/OfflineSearch.tpl.html',
-                compile: function (el) {
-                    var fn = $compile(el);
-                    return function (scope) {
-                        fn(scope);
-                    };
-                },
-                replace: true,
-                transclude: true,
-                controller: OfflineSearch.OfflineSearchCtrl
-            };
-        }
-    ]);
-})(OfflineSearch || (OfflineSearch = {}));
-//# sourceMappingURL=OfflineSearch.js.map
-var OfflineSearch;
-(function (OfflineSearch) {
-    var Layer = (function () {
-        function Layer(groupTitle, index, id, title, path, type) {
-            this.groupTitle = groupTitle;
-            this.index = index;
-            this.id = id;
-            this.title = title;
-            this.path = path;
-            this.type = type;
-            /**
-             * Names of all the features.
-             * @type {string[]}
-             */
-            this.featureNames = [];
-        }
-        return Layer;
-    })();
-    OfflineSearch.Layer = Layer;
-    /**
-     * An index entry that contains a search result.
-     */
-    var Entry = (function () {
-        function Entry(layerIndexOrArray, featureIndex, propertyIndex) {
-            this.v = Array(2);
-            if (typeof layerIndexOrArray === 'number') {
-                this.v[0] = layerIndexOrArray;
-                this.v[1] = featureIndex;
-            }
-            else {
-                this.v = layerIndexOrArray;
-            }
-        }
-        Object.defineProperty(Entry.prototype, "layerIndex", {
-            get: function () { return this.v[0]; },
-            enumerable: true,
-            configurable: true
-        });
-        Object.defineProperty(Entry.prototype, "featureIndex", {
-            get: function () { return this.v[1]; },
-            enumerable: true,
-            configurable: true
-        });
-        /**
-         * This function is called when serializing the Entry object to JSON, which is
-         * much less verbose than the default JSON. In the constructor, I've used a
-         * Union type to deserialize it again.
-         */
-        Entry.prototype.toJSON = function () {
-            return this.v;
-        };
-        return Entry;
-    })();
-    OfflineSearch.Entry = Entry;
-    var KeywordIndex = (function () {
-        function KeywordIndex() {
-        }
-        return KeywordIndex;
-    })();
-    OfflineSearch.KeywordIndex = KeywordIndex;
-    var OfflineSearchResult = (function () {
-        function OfflineSearchResult(project, options) {
-            this.project = project;
-            this.options = options;
-            this.layers = [];
-            this.keywordIndex = {};
-        }
-        return OfflineSearchResult;
-    })();
-    OfflineSearch.OfflineSearchResult = OfflineSearchResult;
-})(OfflineSearch || (OfflineSearch = {}));
-//# sourceMappingURL=OfflineSearchClasses.js.map
-var OfflineSearch;
-(function (OfflineSearch) {
-    var OfflineSearchResultViewModel = (function () {
-        function OfflineSearchResultViewModel(title, layerTitle, groupTitle, entry) {
-            this.title = title;
-            this.layerTitle = layerTitle;
-            this.groupTitle = groupTitle;
-            this.entry = entry;
-            this.firstInGroup = false;
-        }
-        OfflineSearchResultViewModel.prototype.toString = function () {
-            return this.title;
-        };
-        Object.defineProperty(OfflineSearchResultViewModel.prototype, "fullTitle", {
-            get: function () {
-                return this.groupTitle + ' >> ' + this.layerTitle + ' >> ' + this.title;
-            },
-            enumerable: true,
-            configurable: true
-        });
-        return OfflineSearchResultViewModel;
-    })();
-    OfflineSearch.OfflineSearchResultViewModel = OfflineSearchResultViewModel;
-    var OfflineSearchCtrl = (function () {
-        // dependencies are injected via AngularJS $injector
-        // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
-        function OfflineSearchCtrl($scope, $http, $layerService, $mapService, $messageBus) {
-            var _this = this;
-            this.$scope = $scope;
-            this.$http = $http;
-            this.$layerService = $layerService;
-            this.$mapService = $mapService;
-            this.$messageBus = $messageBus;
-            this.isReady = false;
-            $scope.vm = this;
-            $messageBus.subscribe('project', function (title) {
-                switch (title) {
-                    case 'loaded':
-                        var offlineSearchResultUrl = $layerService.projectUrl.url.replace('project.json', 'offline_search_result.json');
-                        _this.loadSearchResults(offlineSearchResultUrl);
-                        break;
-                }
-            });
-            $messageBus.subscribe('language', function (title, language) {
-                switch (title) {
-                    case 'newLanguage':
-                        // TODO switch language!
-                        break;
-                }
-            });
-        }
-        /**
-         * Load the offline search results (json file).
-         */
-        OfflineSearchCtrl.prototype.loadSearchResults = function (url) {
-            var _this = this;
-            this.$http.get(url)
-                .success(function (offlineSearchResult) {
-                _this.offlineSearchResult = offlineSearchResult;
-                var kwi = offlineSearchResult.keywordIndex;
-                var keywordIndex = {};
-                for (var key in kwi) {
-                    if (!kwi.hasOwnProperty(key))
-                        continue;
-                    kwi[key].forEach(function (entry) {
-                        if (!keywordIndex.hasOwnProperty(key))
-                            keywordIndex[key] = [];
-                        keywordIndex[key].push(new OfflineSearch.Entry(entry));
-                    });
-                }
-                _this.offlineSearchResult.keywordIndex = keywordIndex;
-                _this.isReady = true;
-            })
-                .error(function () { console.log("OfflineSearch: error with $http "); });
-        };
-        /**
-         * Get the locations based on the entered text.
-         */
-        OfflineSearchCtrl.prototype.getLocation = function (text, resultCount) {
-            if (resultCount === void 0) { resultCount = 15; }
-            if (!this.isReady || text === null || text.length < 3)
-                return [];
-            var searchWords = text.toLowerCase().split(' ');
-            // test if last word in text might be a (part of) a stopword, if so remove it
-            var lastSearchTerm = searchWords[searchWords.length - 1];
-            var possibleStopWords = this.offlineSearchResult.options.stopWords.filter(function (stopword) { return stopword.indexOf(lastSearchTerm) > -1; });
-            if (possibleStopWords.length > 0) {
-                searchWords.splice(searchWords.length - 1, 1);
-            }
-            // remove all exact stopwords
-            this.offlineSearchResult.options.stopWords.forEach(function (stopWord) {
-                while (searchWords.indexOf(stopWord) > -1) {
-                    searchWords.splice(searchWords.indexOf(stopWord), 1);
-                }
-            });
-            var totResults;
-            for (var j in searchWords) {
-                var result = this.getKeywordHits(searchWords[j]);
-                totResults = !totResults
-                    ? result
-                    : this.mergeResults(totResults, result);
-            }
-            var searchResults = [];
-            var layers = this.offlineSearchResult.layers;
-            var count = resultCount;
-            var resultIndex = 0;
-            while (count > 0 && resultIndex < totResults.length) {
-                var r = totResults[resultIndex++];
-                var subCount = Math.min(count, r.entries.length);
-                for (var i = 0; i < subCount; i++) {
-                    var entry = r.entries[i];
-                    var layer = layers[entry.layerIndex];
-                    count--;
-                    searchResults.push(new OfflineSearchResultViewModel(layer.featureNames[entry.featureIndex], layer.title, layer.groupTitle, entry));
-                }
-            }
-            // Group search results by groupTitle | layerTitle
-            var groups = {};
-            searchResults.forEach(function (sr) {
-                var group = sr.groupTitle + ' >> ' + sr.layerTitle;
-                if (!groups.hasOwnProperty(group))
-                    groups[group] = [];
-                groups[group].push(sr);
-            });
-            searchResults = [];
-            for (var key in groups) {
-                if (!groups.hasOwnProperty(key))
-                    continue;
-                var firstInGroup = true;
-                groups[key].forEach(function (sr) {
-                    sr.firstInGroup = firstInGroup;
-                    searchResults.push(sr);
-                    firstInGroup = false;
-                });
-            }
-            return searchResults;
-        };
-        /**
-         * Merge the resuls of two keyword lookups by checking whether different entries refer
-         * to the same layer and feature.
-         * @result1 {ILookupResult[]}
-         * @result2 {ILookupResult[]}
-         */
-        OfflineSearchCtrl.prototype.mergeResults = function (result1, result2) {
-            var r = [];
-            result1.forEach(function (r1) {
-                result2.forEach(function (r2) {
-                    r1.entries.forEach(function (entry1) {
-                        r2.entries.forEach(function (entry2) {
-                            if (entry1.layerIndex === entry2.layerIndex && entry1.featureIndex === entry2.featureIndex)
-                                r.push({ score: r1.score * r2.score, key: r1.key + ' ' + r2.key, entries: [entry1] });
-                        });
-                    });
-                });
-            });
-            r = r.sort(function (a, b) { return b.score - a.score; });
-            return r;
-        };
-        /**
-         * Do a fuzzy keyword comparison between the entered text and the list of keywords,
-         * and return a subset.
-         * @text: {string}
-         */
-        OfflineSearchCtrl.prototype.getKeywordHits = function (text) {
-            var results = [];
-            var keywordIndex = this.offlineSearchResult.keywordIndex;
-            var keywords = Object.getOwnPropertyNames(keywordIndex);
-            keywords.forEach(function (key) {
-                var score = key.score(text, null);
-                if (score < 0.5)
-                    return;
-                results.push({ score: score, key: key, entries: keywordIndex[key] });
-            });
-            results = results.sort(function (a, b) { return b.score - a.score; });
-            return results;
-        };
-        /**
-         * When an item is selected, optionally open the layer and jump to the selected feature.
-         */
-        OfflineSearchCtrl.prototype.onSelect = function (selectedItem) {
-            var _this = this;
-            var layerIndex = selectedItem.entry.layerIndex;
-            var layer = this.offlineSearchResult.layers[layerIndex];
-            var projectLayer = this.$layerService.findLayer(layer.id);
-            console.log(selectedItem);
-            if (!projectLayer)
-                return;
-            if (projectLayer.enabled) {
-                this.selectFeature(layer.id, selectedItem.entry.featureIndex);
-                return;
-            }
-            else {
-                var handle = this.$messageBus.subscribe('layer', function (title, layer) {
-                    if (title !== 'activated' || projectLayer.url !== layer.url)
-                        return;
-                    _this.selectFeature(layer.id, selectedItem.entry.featureIndex);
-                    _this.$messageBus.unsubscribe(handle);
-                });
-                this.$layerService.addLayer(projectLayer);
-            }
-            var group = $("#layergroup_" + projectLayer.groupId);
-            group.collapse("show");
-        };
-        OfflineSearchCtrl.prototype.selectFeature = function (layerId, featureIndex) {
-            var feature = this.$layerService.findFeatureByIndex(layerId, featureIndex);
-            if (feature == null)
-                return;
-            this.$mapService.zoomTo(feature);
-            this.$layerService.selectFeature(feature);
-        };
-        // $inject annotation.
-        // It provides $injector with information about dependencies to be injected into constructor
-        // it is better to have it close to the constructor, because the parameters must match in count and type.
-        // See http://docs.angularjs.org/guide/di
-        OfflineSearchCtrl.$inject = [
-            '$scope',
-            '$http',
-            'layerService',
-            'mapService',
-            'messageBusService'
-        ];
-        return OfflineSearchCtrl;
-    })();
-    OfflineSearch.OfflineSearchCtrl = OfflineSearchCtrl;
-})(OfflineSearch || (OfflineSearch = {}));
-//# sourceMappingURL=OfflineSearchCtrl.js.map
 var ProjectHeaderSelection;
 (function (ProjectHeaderSelection) {
     /**
@@ -12528,56 +12528,6 @@ var ProjectSettings;
     ProjectSettings.ProjectSettingsCtrl = ProjectSettingsCtrl;
 })(ProjectSettings || (ProjectSettings = {}));
 //# sourceMappingURL=ProjectSettingsCtrl.js.map
-var ShowModal;
-(function (ShowModal) {
-    /**
-    * Config
-    */
-    var moduleName = 'csComp';
-    try {
-        ShowModal.myModule = angular.module(moduleName);
-    }
-    catch (err) {
-        // named module does not exist, so create one
-        ShowModal.myModule = angular.module(moduleName, []);
-    }
-    /**
-      * Directive to show a modal dialog, whose html is specified inside the main HTML code.
-      * Typical usage: http://plnkr.co/edit/WJBp7A6M3RB1MLERDXSS?p=info
-      * angular.module('myWebApp', ['csWeb.showModal'])
-      */
-    ShowModal.myModule.directive('showModal', [
-        '$parse',
-        function ($parse) {
-            return {
-                restrict: "A",
-                link: function (scope, element, attrs) {
-                    //Hide or show the modal
-                    scope.showModalDialog = function (visible, elem) {
-                        if (!elem)
-                            elem = element;
-                        var myElem = $(elem);
-                        if (visible)
-                            myElem.appendTo('body').modal("show");
-                        else
-                            myElem.modal("hide");
-                    };
-                    //Watch for changes to the modal-visible attribute
-                    scope.$watch(attrs.showModal, function (newValue, oldValue) {
-                        scope.showModalDialog(newValue, attrs.$$element);
-                    });
-                    //Update the visible value when the dialog is closed through UI actions (Ok, cancel, etc.)
-                    $(element).bind("hide.bs.modal", function () {
-                        $parse(attrs.showModal).assign(scope, false);
-                        if (!scope.$$phase && !scope.$root.$$phase)
-                            scope.$apply();
-                    });
-                }
-            };
-        }
-    ]);
-})(ShowModal || (ShowModal = {}));
-//# sourceMappingURL=ShowModal.js.map
 var Helpers;
 (function (Helpers) {
     var Resize;
@@ -12642,6 +12592,56 @@ var Helpers;
     })(Resize = Helpers.Resize || (Helpers.Resize = {}));
 })(Helpers || (Helpers = {}));
 //# sourceMappingURL=Resize.js.map
+var ShowModal;
+(function (ShowModal) {
+    /**
+    * Config
+    */
+    var moduleName = 'csComp';
+    try {
+        ShowModal.myModule = angular.module(moduleName);
+    }
+    catch (err) {
+        // named module does not exist, so create one
+        ShowModal.myModule = angular.module(moduleName, []);
+    }
+    /**
+      * Directive to show a modal dialog, whose html is specified inside the main HTML code.
+      * Typical usage: http://plnkr.co/edit/WJBp7A6M3RB1MLERDXSS?p=info
+      * angular.module('myWebApp', ['csWeb.showModal'])
+      */
+    ShowModal.myModule.directive('showModal', [
+        '$parse',
+        function ($parse) {
+            return {
+                restrict: "A",
+                link: function (scope, element, attrs) {
+                    //Hide or show the modal
+                    scope.showModalDialog = function (visible, elem) {
+                        if (!elem)
+                            elem = element;
+                        var myElem = $(elem);
+                        if (visible)
+                            myElem.appendTo('body').modal("show");
+                        else
+                            myElem.modal("hide");
+                    };
+                    //Watch for changes to the modal-visible attribute
+                    scope.$watch(attrs.showModal, function (newValue, oldValue) {
+                        scope.showModalDialog(newValue, attrs.$$element);
+                    });
+                    //Update the visible value when the dialog is closed through UI actions (Ok, cancel, etc.)
+                    $(element).bind("hide.bs.modal", function () {
+                        $parse(attrs.showModal).assign(scope, false);
+                        if (!scope.$$phase && !scope.$root.$$phase)
+                            scope.$apply();
+                    });
+                }
+            };
+        }
+    ]);
+})(ShowModal || (ShowModal = {}));
+//# sourceMappingURL=ShowModal.js.map
 var StyleList;
 (function (StyleList) {
     /**
@@ -13293,6 +13293,56 @@ var Timeline;
     Timeline.TimelineCtrl = TimelineCtrl;
 })(Timeline || (Timeline = {}));
 //# sourceMappingURL=TimelineCtrl.js.map
+var Voting;
+(function (Voting) {
+    /**
+      * Config
+      */
+    var moduleName = 'csComp';
+    try {
+        Voting.myModule = angular.module(moduleName);
+    }
+    catch (err) {
+        // named module does not exist, so create one
+        Voting.myModule = angular.module(moduleName, []);
+    }
+    /**
+      * Directive to display an MCA control.
+      */
+    Voting.myModule.directive('voting', ['$timeout', function ($timeout) {
+            return {
+                restrict: 'EA',
+                require: '^ngModel',
+                scope: {
+                    min: '=',
+                    max: '=',
+                    ngModel: '=',
+                    ngChange: '&'
+                },
+                template: '<div style="line-height: 12px; vertical-align: top; margin: 0; background: rgba(0, 0, 0, 0.1); border-radius: 6px; padding: 4px 6px;">' +
+                    '<a href="" data-ng-click="decrement()" data-ng-disabled="ngModel <= min" style="float: left;"><i class="fa" data-ng-class="{true: \'fa-minus-square\', false: \'fa-minus-square-o\'}[ngModel > min]"></i></a>' +
+                    '<span style="float: left; width:28px; text-align: center;">{{ngModel}}</span>' +
+                    '<a href="" data-ng-click="increment()" data-ng-disabled="ngModel >= max"><i class="fa" data-ng-class="{true: \'fa-plus-square\' , false: \'fa-plus-square-o\' }[ngModel < max]"></i></a>' +
+                    '</div>',
+                link: function ($scope) {
+                    $scope.increment = function () {
+                        if ($scope.ngModel >= $scope.max)
+                            return;
+                        $scope.ngModel++;
+                        $timeout($scope.ngChange, 0);
+                    };
+                    $scope.decrement = function () {
+                        if ($scope.ngModel <= $scope.min)
+                            return;
+                        $scope.ngModel--;
+                        $timeout($scope.ngChange, 0);
+                    };
+                }
+            };
+        }
+    ]);
+})(Voting || (Voting = {}));
+//# sourceMappingURL=Voting.js.map
 var TripPlanner;
 (function (TripPlanner) {
     /**
@@ -13424,56 +13474,6 @@ var TripPlanner;
     TripPlanner.TripPlannerCtrl = TripPlannerCtrl;
 })(TripPlanner || (TripPlanner = {}));
 //# sourceMappingURL=TripPlannerCtrl.js.map
-var Voting;
-(function (Voting) {
-    /**
-      * Config
-      */
-    var moduleName = 'csComp';
-    try {
-        Voting.myModule = angular.module(moduleName);
-    }
-    catch (err) {
-        // named module does not exist, so create one
-        Voting.myModule = angular.module(moduleName, []);
-    }
-    /**
-      * Directive to display an MCA control.
-      */
-    Voting.myModule.directive('voting', ['$timeout', function ($timeout) {
-            return {
-                restrict: 'EA',
-                require: '^ngModel',
-                scope: {
-                    min: '=',
-                    max: '=',
-                    ngModel: '=',
-                    ngChange: '&'
-                },
-                template: '<div style="line-height: 12px; vertical-align: top; margin: 0; background: rgba(0, 0, 0, 0.1); border-radius: 6px; padding: 4px 6px;">' +
-                    '<a href="" data-ng-click="decrement()" data-ng-disabled="ngModel <= min" style="float: left;"><i class="fa" data-ng-class="{true: \'fa-minus-square\', false: \'fa-minus-square-o\'}[ngModel > min]"></i></a>' +
-                    '<span style="float: left; width:28px; text-align: center;">{{ngModel}}</span>' +
-                    '<a href="" data-ng-click="increment()" data-ng-disabled="ngModel >= max"><i class="fa" data-ng-class="{true: \'fa-plus-square\' , false: \'fa-plus-square-o\' }[ngModel < max]"></i></a>' +
-                    '</div>',
-                link: function ($scope) {
-                    $scope.increment = function () {
-                        if ($scope.ngModel >= $scope.max)
-                            return;
-                        $scope.ngModel++;
-                        $timeout($scope.ngChange, 0);
-                    };
-                    $scope.decrement = function () {
-                        if ($scope.ngModel <= $scope.min)
-                            return;
-                        $scope.ngModel--;
-                        $timeout($scope.ngChange, 0);
-                    };
-                }
-            };
-        }
-    ]);
-})(Voting || (Voting = {}));
-//# sourceMappingURL=Voting.js.map
 //# sourceMappingURL=AuthenticationService.js.map
 var csComp;
 (function (csComp) {

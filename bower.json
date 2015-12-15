@@ -1,6 +1,6 @@
 {
   "name": "csweb",
-  "version": "0.2.14-rc1",
+  "version": "0.2.15",
   "main": "dist-bower/csComp.js",
   "ignore": [
     "dist-npm",
@@ -12,6 +12,6 @@
   "description": "Client side component library for csWeb (http://github.com/TNOCS).",
   "dependencies": {
     "angularUtils-pagination": "angular-utils-pagination#~0.9.2",
-    "font-awesome": "Font-Awesome#~4.4.0"
+    "font-awesome": "~4.4.0"
   }
 }
