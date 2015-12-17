@@ -1,6 +1,7 @@
 var request = require('request');
 var xml2js = require('xml2js');
 var RssGeoJSON = require("../helpers/RssGeoJSON");
+/* Multiple storage engine supported, e.g. file system, mongo  */
 var RssService = (function () {
     function RssService() {
     }
@@ -8,6 +9,7 @@ var RssService = (function () {
         var _this = this;
         this.server = server;
         this.baseUrl = apiServiceManager.BaseUrl + (config['rssAddress'] || '/rss');
+        //console.log(this.baseUrl);
         server.get(this.baseUrl, function (req, res) {
             var id = req.query.url;
             _this.getRss(id, res);
@@ -16,6 +18,7 @@ var RssService = (function () {
     RssService.prototype.shutdown = function () { };
     RssService.prototype.getRss = function (feedUrl, res) {
         console.log('RSS request: ' + feedUrl);
+        //feedUrl = 'http://rss.politie.nl/rss/algemeen/ab/algemeen.xml';
         var parseNumbers = function (str) {
             if (!isNaN(str)) {
                 str = str % 1 === 0 ? parseInt(str, 10) : parseFloat(str);
@@ -24,7 +27,7 @@ var RssService = (function () {
         };
         request(feedUrl, function (error, response, xml) {
             if (!error && response.statusCode == 200) {
-                var parser = new xml2js.Parser({ trim: true, normalize: true, explicitArray: false, mergeAttrs: true });
+                var parser = new xml2js.Parser({ trim: true, normalize: true, explicitArray: false, mergeAttrs: true }); //, valueProcessors: [parseNumbers]
                 parser.parseString(xml, function (err, rssFeed) {
                     if (err) {
                         console.error(err);
@@ -32,9 +35,12 @@ var RssService = (function () {
                     else {
                         var r = rssFeed.rss;
                         var c = r.channel;
+                        //console.log(c.title);
+                        //console.log(c.description);
                         if (c.item) {
                             var geo = new RssGeoJSON.RssGeoJSON();
                             c.item.forEach(function (i) {
+                                //console.log(i.title);
                                 var feature;
                                 if (i["geo:lat"] && i["geo:long"])
                                     feature = new RssGeoJSON.RssFeature(i["geo:lat"], i["geo:long"]);

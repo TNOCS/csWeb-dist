@@ -405,12 +405,6 @@ var csComp;
             LayerActivationTypes[LayerActivationTypes["automatic"] = 1] = "automatic";
         })(Services.LayerActivationTypes || (Services.LayerActivationTypes = {}));
         var LayerActivationTypes = Services.LayerActivationTypes;
-        var PropertyInfo = (function () {
-            function PropertyInfo() {
-            }
-            return PropertyInfo;
-        })();
-        Services.PropertyInfo = PropertyInfo;
     })(Services = csComp.Services || (csComp.Services = {}));
 })(csComp || (csComp = {}));
 //# sourceMappingURL=feature.js.map
@@ -2302,7 +2296,7 @@ var csComp;
         }
         Helpers.cloneWithoutUnderscore = cloneWithoutUnderscore;
         function getDefaultFeatureStyle(feature) {
-            if (feature.geometry.type.toLowerCase() === 'point') {
+            if (feature && feature.geometry && feature.geometry.type && feature.geometry.type.toLowerCase() === 'point') {
                 var p = {
                     nameLabel: 'Name',
                     drawingMode: 'Point',
@@ -2329,6 +2323,8 @@ var csComp;
                     opacity: 0.75,
                     fillColor: '#FFFF00',
                     stroke: true,
+                    //EV TODO Shouldn't it be the following?
+                    // iconUri: 'bower_components/csweb/dist-bower/images/marker.png',
                     iconUri: 'cs/images/marker.png',
                 };
                 return s;
@@ -2547,7 +2543,7 @@ var csComp;
                                 pt.type = 'bbcode';
                             }
                         }
-                        if (resource) {
+                        if (resource && resource.propertyTypeData) {
                             var ke = findUniqueKey(resource.propertyTypeData, key);
                             if (ke === key) {
                                 delete pt.label;
@@ -2684,7 +2680,7 @@ var csComp;
             // Case two: the feature's style tells us what property to use for the name.
             if (feature.fType && feature.fType.style && feature.fType.style.nameLabel) {
                 var nameLabel = feature.fType.style.nameLabel;
-                if (nameLabel && feature.properties.hasOwnProperty(nameLabel)) {
+                if (feature.properties.hasOwnProperty(nameLabel)) {
                     if (propertyTypeData && propertyTypeData.hasOwnProperty(nameLabel)) {
                         feature.properties['Name'] = convertPropertyInfo(propertyTypeData[nameLabel], feature.properties[nameLabel]);
                     }
@@ -2695,7 +2691,8 @@ var csComp;
                 }
             }
             // Case three: the feature has a Name property which specifies a string format, meaning that the Name is derived from several existing properties.
-            if (feature.fType._propertyTypeData != null) {
+            if (feature.fType._propertyTypeData) {
+                // for .. of
                 for (var i = 0; i < feature.fType._propertyTypeData.length; i++) {
                     var propertyType = feature.fType._propertyTypeData[i];
                     if (propertyType.label !== 'Name' || !propertyType.stringFormat)
@@ -2900,16 +2897,6 @@ var csComp;
     })(Helpers = csComp.Helpers || (csComp.Helpers = {}));
 })(csComp || (csComp = {}));
 //# sourceMappingURL=Helpers.js.map
-var MathUtils;
-(function (MathUtils_1) {
-    var MathUtils = (function () {
-        function MathUtils() {
-        }
-        return MathUtils;
-    })();
-    MathUtils_1.MathUtils = MathUtils;
-})(MathUtils || (MathUtils = {}));
-//# sourceMappingURL=MathUtils.js.map
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -3589,9 +3576,8 @@ var csComp;
             }
         }
         Helpers.getImageUri = getImageUri;
-        function getColorFromStringLegend(v, l) {
-            var defaultcolor = '#000000';
-            var s = l.id;
+        function getColorFromStringLegend(v, l, defaultcolor) {
+            if (defaultcolor === void 0) { defaultcolor = '#000000'; }
             var n = l.legendEntries.length;
             if (n === 0)
                 return (defaultcolor);
@@ -3611,10 +3597,20 @@ var csComp;
         Helpers.getColorFromStringLegend = getColorFromStringLegend;
         function getColorFromLegend(v, l, defaultcolor) {
             if (defaultcolor === void 0) { defaultcolor = '#000000'; }
-            var s = l.id;
             var n = l.legendEntries.length;
-            if (n == 0)
+            if (n === 0)
                 return (defaultcolor);
+            if (l.legendKind.toLowerCase() === 'discretestrings') {
+                var i = 0;
+                while (i < n) {
+                    var e = l.legendEntries[i];
+                    if (v.toString() === e.stringValue) {
+                        return e.color;
+                    }
+                    i++;
+                }
+                return defaultcolor;
+            }
             var e1 = l.legendEntries[0]; // first
             var e2 = l.legendEntries[n - 1]; // last
             if (l.legendKind.toLowerCase() === 'interpolated') {
@@ -3637,14 +3633,20 @@ var csComp;
                 return (defaultcolor);
             }
             if (l.legendKind.toLowerCase() === 'discrete') {
-                if (v < e1.interval.min)
-                    return l.legendEntries[0].color;
-                if (v > e2.interval.max)
-                    return l.legendEntries[n - 1].color;
+                if (e1.interval && e2.interval && typeof e1.interval.min !== 'undefined' && typeof e2.interval.max !== 'undefined') {
+                    if (v < e1.interval.min)
+                        return e1.color;
+                    if (v > e2.interval.max)
+                        return e2.color;
+                }
                 var i = 0;
                 while (i < n) {
                     var e = l.legendEntries[i];
-                    if ((v >= e.interval.min) && (v <= e.interval.max)) {
+                    if (e.value) {
+                        if (v === e.value)
+                            return e.color;
+                    }
+                    else if (e.interval && (v >= e.interval.min) && (v <= e.interval.max)) {
                         return e.color;
                     }
                     i++;
@@ -3658,15 +3660,17 @@ var csComp;
             if (gs.activeLegend) {
                 return getColorFromLegend(v, gs.activeLegend);
             }
-            if (v > gs.info.max)
+            var max = gs.info.userMax || gs.info.max;
+            var min = gs.info.userMin || gs.info.min;
+            if (v > max)
                 return gs.colors[gs.colors.length - 1];
-            if (v < gs.info.min)
+            if (v < min)
                 return gs.colors[0];
             //var bezInterpolator = chroma.interpolate.bezier(gs.colors);
             //var r = bezInterpolator((v - gs.info.sdMin) / (gs.info.sdMax - gs.info.sdMin)).hex();
             //return r;
             var color = d3.scale.linear()
-                .domain([gs.info.min, gs.info.max]) //domain and range should have the same arraylength!!!
+                .domain([min, max]) //domain and range should have the same arraylength!!!
                 .range(gs.colors);
             var hexColor = color(v).toString();
             return hexColor;
@@ -4201,9 +4205,10 @@ var Translations;
             SAVE_EVERY_MARVEL: 'Save every ',
             MARVEL_WATER_LEVEL: 'Water level [m]',
             MARVEL_UPS_DURATION: 'UPS duration [mins]',
-            MARVEL_FEATURE_DEP: 'Specific features',
+            MARVEL_FEATURE_DEP: 'Depends on',
             STATE: 'State',
-            EVENT_INFO: 'Show a list of events'
+            EVENT_INFO: 'Show a list of events',
+            CLEAR_EVENTS: 'Clear event log'
         };
         return English;
     })();
@@ -4396,286 +4401,16 @@ var Translations;
             SAVE_EVERY_MARVEL: 'Bewaar ieder ',
             MARVEL_WATER_LEVEL: 'Waterniveau [m]',
             MARVEL_UPS_DURATION: 'Noodstroom duur [min]',
-            MARVEL_FEATURE_DEP: 'Specifieke objecten',
+            MARVEL_FEATURE_DEP: 'Afhankelijk van',
             STATE: 'Status',
-            EVENT_INFO: 'Show a list of events'
+            EVENT_INFO: 'Toon lijst van gebeurtenissen',
+            CLEAR_EVENTS: 'Lijst leegmaken'
         };
         return Dutch;
     })();
     Translations.Dutch = Dutch;
 })(Translations || (Translations = {}));
 //# sourceMappingURL=locale-nl.js.map
-var Accessibility;
-(function (Accessibility) {
-    /**
-      * Config
-      */
-    var moduleName = 'csComp';
-    try {
-        Accessibility.myModule = angular.module(moduleName);
-    }
-    catch (err) {
-        // named module does not exist, so create one
-        Accessibility.myModule = angular.module(moduleName, []);
-    }
-    /**
-      * Directive to display a feature's properties in a panel.
-      *
-      * @seealso          : http://www.youtube.com/watch?v=gjJ5vLRK8R8&list=UUGD_0i6L48hucTiiyhb5QzQ
-      * @seealso          : http://plnkr.co/edit/HyBP9d?p=preview
-      */
-    Accessibility.myModule.directive('accessibility', ['$compile',
-        function ($compile) {
-            return {
-                terminal: true,
-                restrict: 'E',
-                scope: {},
-                templateUrl: 'directives/Accessibility/Accessibility.tpl.html',
-                replace: true,
-                transclude: true,
-                controller: Accessibility.AccessibilityCtrl
-            };
-        }
-    ]);
-})(Accessibility || (Accessibility = {}));
-//# sourceMappingURL=Accessibility.js.map
-var Accessibility;
-(function (Accessibility) {
-    var AccessibilityModel = (function () {
-        function AccessibilityModel() {
-            this.id = "accessibilityActions";
-        }
-        AccessibilityModel.prototype.stop = function () { };
-        AccessibilityModel.prototype.addFeature = function (feature) { };
-        AccessibilityModel.prototype.removeFeature = function (feature) { };
-        AccessibilityModel.prototype.selectFeature = function (feature) {
-            console.log('accessibility:feature selected');
-        };
-        AccessibilityModel.prototype.getFeatureActions = function (feature) {
-            var accessibilityOption1 = {
-                title: "Show accessibility"
-            };
-            accessibilityOption1.callback = this.showAccessibility;
-            var accessibilityOption2 = {
-                title: "Remove accessibility"
-            };
-            accessibilityOption2.callback = this.removeAccessibility;
-            var accessibilityOption3 = {
-                title: "Plan route from"
-            };
-            accessibilityOption3.callback = this.planRouteFrom;
-            var accessibilityOption4 = {
-                title: "Plan route to"
-            };
-            accessibilityOption4.callback = this.planRouteTo;
-            return [accessibilityOption1, accessibilityOption2, accessibilityOption3, accessibilityOption4];
-        };
-        AccessibilityModel.prototype.getFeatureHoverActions = function (feature) { return []; };
-        AccessibilityModel.prototype.deselectFeature = function (feature) { };
-        AccessibilityModel.prototype.updateFeature = function (feature) { };
-        AccessibilityModel.prototype.showAccessibility = function (feature, layerService) {
-            console.log('accessibility:showAccessibility');
-            var accessibilityLayer = layerService.findLayer('accessibility');
-            if (accessibilityLayer) {
-                var urlParams = accessibilityLayer.url.split('&');
-                var locationIndex = -1;
-                urlParams.some(function (param, index) {
-                    if (param.substring(0, 9) === 'fromPlace') {
-                        locationIndex = index;
-                        return true;
-                    }
-                    return false;
-                });
-                if (feature.geometry.type !== 'Point') {
-                    console.log('Can only create accessibility layer from a Point');
-                    return;
-                }
-                urlParams[locationIndex] = 'fromPlace=' + feature.geometry.coordinates[1] + '%2C' + feature.geometry.coordinates[0];
-                accessibilityLayer.url = urlParams.join('&');
-                if (!accessibilityLayer.enabled) {
-                    layerService.addLayer(accessibilityLayer);
-                    var rpt = csComp.Helpers.createRightPanelTab("rightpanel", "accessibility", accessibilityLayer, "Accessibility options");
-                    layerService.$messageBusService.publish("rightpanel", "activate", rpt);
-                }
-                else {
-                    if (accessibilityLayer.layerSource)
-                        accessibilityLayer.layerSource.refreshLayer(accessibilityLayer);
-                }
-            }
-        };
-        AccessibilityModel.prototype.removeAccessibility = function (feature, layerService) {
-            console.log('accessibility:removeAccessibility');
-            var accessibilityLayer = layerService.findLayer('accessibility');
-            if (accessibilityLayer) {
-                var wasRightPanelVisible = layerService.visual.rightPanelVisible;
-                if (accessibilityLayer.enabled) {
-                    layerService.removeLayer(accessibilityLayer);
-                }
-                delete accessibilityLayer.data;
-                layerService.visual.rightPanelVisible = wasRightPanelVisible;
-            }
-        };
-        AccessibilityModel.planRoute = function (feature, layerService, destinationKey) {
-            var routeLayer = layerService.findLayer('tripplanner');
-            if (routeLayer) {
-                var urlParams = csComp.Helpers.parseUrlParameters(routeLayer.url, '?', '&', '=');
-                urlParams[destinationKey] = feature.geometry.coordinates[1] + '%2C' + feature.geometry.coordinates[0];
-                routeLayer.url = csComp.Helpers.joinUrlParameters(urlParams, '?', '&', '=');
-                if (!routeLayer.enabled) {
-                    layerService.addLayer(routeLayer);
-                }
-                else {
-                    if (routeLayer.layerSource)
-                        routeLayer.layerSource.refreshLayer(routeLayer);
-                }
-                var rpt = csComp.Helpers.createRightPanelTab("rightpanel", "tripplanner", routeLayer, "Route planner");
-                layerService.$messageBusService.publish("rightpanel", "activate", rpt);
-            }
-            else {
-            }
-        };
-        AccessibilityModel.prototype.planRouteFrom = function (feature, layerService) {
-            console.log('accessibility:planRouteFrom');
-            AccessibilityModel.planRoute(feature, layerService, 'fromPlace');
-        };
-        AccessibilityModel.prototype.planRouteTo = function (feature, layerService) {
-            console.log('accessibility:planRouteTo');
-            AccessibilityModel.planRoute(feature, layerService, 'toPlace');
-        };
-        AccessibilityModel.prototype.init = function (layerService) {
-            var _this = this;
-            console.log('init AccessibilityActionService');
-            this.layerService = layerService;
-            this.layerService.$messageBusService.serverSubscribe("accessibility", "msg", function (title, mcb) {
-                if (mcb["data"] === "restart") {
-                    _this.layerService.$messageBusService.notify("restarting server", "restarting", csComp.Services.NotifyLocation.TopRight);
-                    location.reload();
-                }
-                //
-                // var layer = this.layerService.findLayer("demo");
-                // layer.layerSource.refreshLayer(layer);
-                //console.log(title);
-            });
-        };
-        return AccessibilityModel;
-    })();
-    Accessibility.AccessibilityModel = AccessibilityModel;
-    var AccessibilityCtrl = (function () {
-        // dependencies are injected via AngularJS $injector
-        // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
-        function AccessibilityCtrl($scope, $http, $mapService, $layerService, $messageBusService, $dashboardService) {
-            var _this = this;
-            this.$scope = $scope;
-            this.$http = $http;
-            this.$mapService = $mapService;
-            this.$layerService = $layerService;
-            this.$messageBusService = $messageBusService;
-            this.$dashboardService = $dashboardService;
-            this.urlKeys = ['arriveBy', 'fromPlace', 'date', 'time', 'mode', 'walkSpeed', 'bikeSpeed',
-                'precisionMeters', 'cutoffSec'];
-            this.scope = $scope;
-            $scope.vm = this;
-            this.layer = $scope.$parent["data"];
-            this.cutoffTimes = [];
-            this.urlParameters = {};
-            this.bikeSpeedKm;
-            this.walkSpeedKm;
-            this.urlKeys.forEach(function (key) { _this.urlParameters[key] = 0; });
-            this.transportModes = {};
-            this.transportModes["Walking"] = "WALK";
-            this.transportModes["Biking"] = "BICYCLE";
-            //this.transportModes["Car"] = "CAR";
-        }
-        AccessibilityCtrl.prototype.refreshAccessibility = function () {
-            if (this.$layerService.lastSelectedFeature) {
-                var lsf = this.$layerService.lastSelectedFeature;
-                if (lsf.geometry && lsf.geometry.type === 'Point') {
-                    this.urlParameters['fromPlace'] = lsf.geometry.coordinates[1] + '%2C' + lsf.geometry.coordinates[0];
-                }
-            }
-            this.urlParameters['mode'] = this.transportMode;
-            this.urlParameters['time'] = encodeURIComponent(this.time);
-            if (this.walkSpeedKm)
-                this.urlParameters['walkSpeed'] = csComp.Helpers.GeoExtensions.convertKmToMile(this.walkSpeedKm);
-            if (this.bikeSpeedKm)
-                this.urlParameters['bikeSpeed'] = csComp.Helpers.GeoExtensions.convertKmToMile(this.bikeSpeedKm);
-            var url = this.urlAddress + '?';
-            for (var key in this.urlParameters) {
-                if (this.urlParameters.hasOwnProperty(key) && key !== 'cutoffSec') {
-                    url = url + key + '=' + this.urlParameters[key] + '&';
-                }
-            }
-            this.cutoffTimes.forEach(function (co) {
-                url = url + '&cutoffSec=' + (co * 60);
-            });
-            //url = url.substring(0, url.length - 1);
-            console.log(url);
-            this.layer.url = url;
-            if (!this.layer.enabled) {
-                this.$layerService.addLayer(this.layer);
-            }
-            else {
-                if (this.layer.layerSource)
-                    this.layer.layerSource.refreshLayer(this.layer);
-            }
-            this.$layerService.visual.rightPanelVisible = true;
-        };
-        AccessibilityCtrl.prototype.parseUrl = function () {
-            var _this = this;
-            this.urlParameters = {};
-            this.urlAddress = this.layer.url.split('?')[0];
-            var croppedUrl = this.layer.url.split('?')[1]; // Remove the address of the url, keep the parameters
-            var splittedUrl = croppedUrl.split('&');
-            splittedUrl.forEach(function (param) {
-                var keyValue = param.split('=');
-                if (keyValue[0] === 'cutoffSec') {
-                    _this.cutoffTimes.push((+keyValue[1]) / 60);
-                }
-                _this.urlParameters[keyValue[0]] = (isNaN(+keyValue[1])) ? keyValue[1] : +keyValue[1];
-            });
-            var d = new Date(Date.now());
-            this.time = ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2);
-            this.urlParameters['date'] = (d.getMonth() + 1) + '-' + d.getDate() + '-' + d.getFullYear();
-            this.transportMode = this.urlParameters['mode'];
-            if (this.urlParameters.hasOwnProperty('walkSpeed'))
-                this.walkSpeedKm = +csComp.Helpers.GeoExtensions.convertMileToKm(this.urlParameters['walkSpeed']).toFixed(2);
-            if (this.urlParameters.hasOwnProperty('bikeSpeed'))
-                this.bikeSpeedKm = +csComp.Helpers.GeoExtensions.convertMileToKm(this.urlParameters['bikeSpeed']).toFixed(2);
-            if (this.$scope.$root.$$phase != '$apply' && this.$scope.$root.$$phase != '$digest') {
-                this.$scope.$apply();
-            }
-        };
-        AccessibilityCtrl.prototype.addCutoffTime = function () {
-            this.cutoffTimes.push(0);
-            if (this.$scope.$root.$$phase != '$apply' && this.$scope.$root.$$phase != '$digest') {
-                this.$scope.$apply();
-            }
-        };
-        AccessibilityCtrl.prototype.removeCutoffTime = function (index) {
-            if (index < this.cutoffTimes.length && index > -1) {
-                this.cutoffTimes.splice(index, 1);
-            }
-            if (this.$scope.$root.$$phase != '$apply' && this.$scope.$root.$$phase != '$digest') {
-                this.$scope.$apply();
-            }
-        };
-        // $inject annotation.
-        // It provides $injector with information about dependencies to be injected into constructor
-        // it is better to have it close to the constructor, because the parameters must match in count and type.
-        // See http://docs.angularjs.org/guide/di
-        AccessibilityCtrl.$inject = [
-            '$scope',
-            '$http',
-            'mapService',
-            'layerService',
-            'messageBusService',
-            'dashboardService'
-        ];
-        return AccessibilityCtrl;
-    })();
-    Accessibility.AccessibilityCtrl = AccessibilityCtrl;
-})(Accessibility || (Accessibility = {}));
-//# sourceMappingURL=AccessibilityCtrl.js.map
 var BaseMapList;
 (function (BaseMapList) {
     /**
@@ -4764,6 +4499,44 @@ var BaseMapList;
     BaseMapList.BaseMapListCtrl = BaseMapListCtrl;
 })(BaseMapList || (BaseMapList = {}));
 //# sourceMappingURL=BaseMapListCtrl.js.map
+var Directives;
+(function (Directives) {
+    var Clock;
+    (function (Clock) {
+        /**
+         * Config
+         */
+        var moduleName = "csComp";
+        try {
+            Clock.myModule = angular.module(moduleName);
+        }
+        catch (err) {
+            // named module does not exist, so create one
+            Clock.myModule = angular.module(moduleName, []);
+        }
+        /**
+          * Directive to show the time.
+          */
+        Clock.myModule.directive('clock', ['dateFilter', function (dateFilter) {
+                return {
+                    restrict: 'E',
+                    scope: {
+                        time: '@',
+                        format: '@'
+                    },
+                    link: function (scope, element, attrs) {
+                        function updateTime() {
+                            element.html(dateFilter(scope.time, scope.format));
+                        }
+                        scope.$watch('time', function (value) {
+                            updateTime();
+                        });
+                    }
+                };
+            }]);
+    })(Clock = Directives.Clock || (Directives.Clock = {}));
+})(Directives || (Directives = {}));
+//# sourceMappingURL=Clock.js.map
 var Charts;
 (function (Charts) {
     'use strict';
@@ -4943,6 +4716,13 @@ var Charts;
         ChartHelpers.timestampToString = function (ts) {
             var date = new Date(ts);
             var dateString = String.format("{0}-{1:00}-{2:00}", date.getFullYear(), date.getUTCMonth() + 1, date.getUTCDate());
+            //if (date.getUTCHours() > 0 || date.getUTCMinutes() > 0)
+            //    dateString += String.format(" {0:00}:{1:00}", date.getUTCHours(), date.getUTCMinutes());
+            return dateString;
+        };
+        ChartHelpers.timestampToTimeString = function (ts) {
+            var date = new Date(ts);
+            var dateString = String.format("{0}:{2:00}:{2:00}", date.getHours(), date.getMinutes() + 1, date.getSeconds());
             //if (date.getUTCHours() > 0 || date.getUTCMinutes() > 0)
             //    dateString += String.format(" {0:00}:{1:00}", date.getUTCHours(), date.getUTCMinutes());
             return dateString;
@@ -5407,6 +5187,13 @@ var Charts;
                                 .attr("opacity", 0)
                                 .style("text-anchor", "end")
                                 .text("");
+                            var timestampTimeText = chart.append("text")
+                                .attr("x", 0)
+                                .attr("y", 16)
+                                .attr("dy", ".35em")
+                                .attr("opacity", 0)
+                                .style("text-anchor", "end")
+                                .text("");
                             var measurementText = chart.append("text")
                                 .attr("x", 0)
                                 .attr("y", 0)
@@ -5416,6 +5203,7 @@ var Charts;
                             var pathEl = path.node();
                             var pathLength = pathEl.getTotalLength();
                             chart
+                                .on("mouseover", function () { })
                                 .on("mouseout", function () {
                                 cursor.attr("opacity", 0);
                                 timestampText.attr("opacity", 0);
@@ -5472,6 +5260,12 @@ var Charts;
                                     .attr("dy", ".35em")
                                     .attr("opacity", 1)
                                     .text((d === data[0]) ? '' : Charts.ChartHelpers.timestampToString(d.time)); //Don't show timestamp for the first measurement, as it does not fit. Other option is to print it underneath the measurement value.
+                                timestampTimeText
+                                    .attr("x", xpos - 6)
+                                    .attr("y", 16)
+                                    .attr("dy", ".35em")
+                                    .attr("opacity", 1)
+                                    .text((d === data[0]) ? '' : Charts.ChartHelpers.timestampToTimeString(d.time)); //Don't show timestamp for the first measurement, as it does not fit. Other option is to print it underneath the measurement value.
                                 measurementText
                                     .attr("x", xpos + 6)
                                     .attr("y", 8)
@@ -5492,44 +5286,6 @@ var Charts;
         }]);
 })(Charts || (Charts = {}));
 //# sourceMappingURL=SparklineChart.js.map
-var Directives;
-(function (Directives) {
-    var Clock;
-    (function (Clock) {
-        /**
-         * Config
-         */
-        var moduleName = "csComp";
-        try {
-            Clock.myModule = angular.module(moduleName);
-        }
-        catch (err) {
-            // named module does not exist, so create one
-            Clock.myModule = angular.module(moduleName, []);
-        }
-        /**
-          * Directive to show the time.
-          */
-        Clock.myModule.directive('clock', ['dateFilter', function (dateFilter) {
-                return {
-                    restrict: 'E',
-                    scope: {
-                        time: '@',
-                        format: '@'
-                    },
-                    link: function (scope, element, attrs) {
-                        function updateTime() {
-                            element.html(dateFilter(scope.time, scope.format));
-                        }
-                        scope.$watch('time', function (value) {
-                            updateTime();
-                        });
-                    }
-                };
-            }]);
-    })(Clock = Directives.Clock || (Directives.Clock = {}));
-})(Directives || (Directives = {}));
-//# sourceMappingURL=Clock.js.map
 var Helpers;
 (function (Helpers) {
     var ContextMenu;
@@ -6175,6 +5931,275 @@ var DataTable;
     DataTable.DataTableCtrl = DataTableCtrl;
 })(DataTable || (DataTable = {}));
 //# sourceMappingURL=DataTableCtrl.js.map
+var EventTab;
+(function (EventTab) {
+    /**
+      * Config
+      */
+    var moduleName = 'csComp';
+    try {
+        EventTab.myModule = angular.module(moduleName);
+    }
+    catch (err) {
+        // named module does not exist, so create one
+        EventTab.myModule = angular.module(moduleName, []);
+    }
+    /**
+      * Directive to display a feature's properties in a panel.
+      *
+      * @seealso          : http://www.youtube.com/watch?v=gjJ5vLRK8R8&list=UUGD_0i6L48hucTiiyhb5QzQ
+      * @seealso          : http://plnkr.co/edit/HyBP9d?p=preview
+      */
+    EventTab.myModule.directive('eventtab', ['$compile',
+        function ($compile) {
+            return {
+                terminal: true,
+                restrict: 'E',
+                scope: {},
+                templateUrl: 'directives/EventTab/EventTab.tpl.html',
+                replace: true,
+                transclude: true,
+                controller: EventTab.EventTabCtrl
+            };
+        }
+    ]);
+})(EventTab || (EventTab = {}));
+//# sourceMappingURL=EventTab.js.map
+var EventTab;
+(function (EventTab) {
+    var EventTabCtrl = (function () {
+        // dependencies are injected via AngularJS $injector
+        // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
+        function EventTabCtrl($scope, $location, $sce, $mapService, $layerService, $messageBusService, $translate) {
+            var _this = this;
+            this.$scope = $scope;
+            this.$location = $location;
+            this.$sce = $sce;
+            this.$mapService = $mapService;
+            this.$layerService = $layerService;
+            this.$messageBusService = $messageBusService;
+            this.$translate = $translate;
+            /**
+             * Callback function
+             * @see {http://stackoverflow.com/questions/12756423/is-there-an-alias-for-this-in-typescript}
+             * @see {http://stackoverflow.com/questions/20627138/typescript-this-scoping-issue-when-called-in-jquery-callback}
+             * @todo {notice the strange syntax using a fat arrow =>, which is to preserve the this reference in a callback!}
+             */
+            this.sidebarMessageReceived = function (title) {
+                switch (title) {
+                    case 'toggle':
+                        _this.$scope.showMenu = !_this.$scope.showMenu;
+                        break;
+                    case 'show':
+                        _this.$scope.showMenu = true;
+                        break;
+                    case 'hide':
+                        _this.$scope.showMenu = false;
+                        break;
+                    default:
+                        break;
+                }
+                // NOTE EV: You need to call apply only when an event is received outside the angular scope.
+                // However, make sure you are not calling this inside an angular apply cycle, as it will generate an error.
+                if (_this.$scope.$root.$$phase !== '$apply' && _this.$scope.$root.$$phase !== '$digest') {
+                    _this.$scope.$apply();
+                }
+            };
+            this.scope = $scope;
+            $scope.vm = this;
+            $scope.showMenu = false;
+            var columnFilter = {
+                layerId: 'eventlayerid',
+                prio: 1,
+                roles: [],
+                tags: []
+            };
+            var column = {
+                title: 'Log',
+                id: 'eventtab',
+                filters: columnFilter,
+                roles: [],
+                fields: { 'title': 'Name', 'updated': 'updated', 'prio': 'prio', 'description': 'description' },
+                propertyTags: ['layerTitle', 'state'],
+                timeReference: 'timeline',
+                orderBy: 'Updated',
+                actions: null,
+                canShare: false
+            };
+            this.kanban = {
+                featureTypesToAdd: [],
+                columns: [column],
+                canAdd: false
+            };
+            // Don't flood the messagebus, but cache all items and send them together after a second
+            this.debounceSendItems = _.debounce(this.sendTimelineItems, 1000);
+            this.tlItems = [];
+            this.newItems = [];
+            this.tlGroups = [];
+            this.$messageBusService.subscribe('eventtab', function (topic, value) {
+                if (!value || !topic)
+                    return;
+                switch (topic) {
+                    case 'updated':
+                        _this.addEvent(value);
+                        break;
+                    case 'added':
+                        _this.addEvent(value);
+                        break;
+                    case 'reset':
+                        _this.reset();
+                        break;
+                    default:
+                        console.log('EventTab: Event type not found');
+                }
+            });
+            this.init();
+        }
+        /**
+         * Initialize an eventTab. Create a layer that contains all messages (features)
+         */
+        EventTabCtrl.prototype.init = function () {
+            var l = new csComp.Services.ProjectLayer();
+            l.url = '';
+            l.id = 'eventlayerid';
+            l.title = 'EventLayer';
+            l.enabled = false;
+            l.type = 'geojson';
+            l.data = {};
+            l.data.features = [];
+            l.isDynamic = false;
+            this.layer = l;
+        };
+        EventTabCtrl.prototype.reset = function () {
+            this.tlItems = [];
+            this.newItems = [];
+            this.tlGroups = [];
+            this.sendTimelineItems();
+            this.sendTimelineGroups();
+            this.layer.data.features = [];
+        };
+        EventTabCtrl.prototype.addUpdateEvent = function (f) {
+            var foundFeature;
+            this.layer.data.features.some(function (sf) {
+                if (sf.id === f.id) {
+                    foundFeature = sf;
+                    return true;
+                }
+                return false;
+            });
+            foundFeature.properties['updated'] = new Date();
+        };
+        EventTabCtrl.prototype.addEvent = function (f) {
+            var newF = new csComp.Services.Feature();
+            newF.layer = this.layer;
+            newF.geometry = f.geometry;
+            newF.fType = f.fType;
+            newF.effectiveStyle = f.effectiveStyle;
+            newF.type = f.type;
+            newF.id = csComp.Helpers.getGuid();
+            newF._gui = f._gui;
+            newF.properties = f.properties;
+            var pts = csComp.Helpers.getPropertyTypes(f.fType, {});
+            var stateText;
+            pts.some(function (p) {
+                if (p.hasOwnProperty && p.hasOwnProperty('label') && p.label === 'state') {
+                    stateText = p.options[newF.properties['state']];
+                    return true;
+                }
+                return false;
+            });
+            newF.properties['date'] = new Date(this.$layerService.project.timeLine.focus);
+            newF.properties['updated'] = new Date(this.$layerService.project.timeLine.focus);
+            newF.properties['layerTitle'] = (f.layer) ? f.layer.id : '';
+            if (!newF.properties.hasOwnProperty('tags'))
+                newF.properties['tags'] = [];
+            this.kanban.columns[0].propertyTags.forEach(function (tag) {
+                if (newF.properties.hasOwnProperty(tag)) {
+                    pts.some(function (p) {
+                        if (p.hasOwnProperty && p.hasOwnProperty('label') && p.label === 'state') {
+                            newF.properties['tags'].push(csComp.Helpers.convertPropertyInfo(p, newF.properties[tag]));
+                            return true;
+                        }
+                        return false;
+                    });
+                }
+            });
+            newF.properties['description'] = 'changed to state: ' + (stateText ? stateText : newF.properties['state']);
+            newF.layerId = 'eventlayerid';
+            this.addTimelineItem(newF);
+            this.layer.data.features.push(newF);
+        };
+        EventTabCtrl.prototype.addTimelineItem = function (f) {
+            var timelineItem = {
+                start: f.properties['updated'],
+                content: f.properties['Name'],
+                id: f.id,
+                group: f.fType.name
+            };
+            // Check if group exists on timeline, otherwise create it
+            if (!this.tlGroups.some(function (g) { return timelineItem.group === g.title; })) {
+                var timelineGroup = {
+                    content: f.fType.name,
+                    id: f.fType.name,
+                    title: f.fType.name
+                };
+                this.tlGroups.push(timelineGroup);
+                this.sendTimelineGroups();
+            }
+            this.newItems.push(timelineItem);
+            this.debounceSendItems();
+        };
+        EventTabCtrl.prototype.mergeItems = function () {
+            var _this = this;
+            //Sort items per group
+            var changedGroups = {};
+            this.newItems.forEach(function (i) {
+                if (changedGroups.hasOwnProperty(i.group)) {
+                    changedGroups[i.group].push(i);
+                }
+                else {
+                    changedGroups[i.group] = [i];
+                }
+            });
+            Object.keys(changedGroups).forEach(function (key) {
+                if (changedGroups[key].length === 1) {
+                    // If there is 1 item, send the raw item
+                    _this.tlItems.push(changedGroups[key][0]);
+                }
+                else if (changedGroups[key].length > 1) {
+                    // else merge items
+                    var mergedItem = changedGroups[key][0];
+                    mergedItem['content'] = changedGroups[key].length.toString() + ' ' + changedGroups[key][0].group + 's affected';
+                    _this.tlItems.push(mergedItem);
+                }
+            });
+            this.newItems = [];
+        };
+        EventTabCtrl.prototype.sendTimelineItems = function () {
+            this.mergeItems();
+            this.$messageBusService.publish('timeline', 'setItems', this.tlItems);
+        };
+        EventTabCtrl.prototype.sendTimelineGroups = function () {
+            this.$messageBusService.publish('timeline', 'setGroups', this.tlGroups);
+        };
+        // $inject annotation.
+        // It provides $injector with information about dependencies to be injected into constructor
+        // it is better to have it close to the constructor, because the parameters must match in count and type.
+        // See http://docs.angularjs.org/guide/di
+        EventTabCtrl.$inject = [
+            '$scope',
+            '$location',
+            '$sce',
+            'mapService',
+            'layerService',
+            'messageBusService',
+            '$translate'
+        ];
+        return EventTabCtrl;
+    })();
+    EventTab.EventTabCtrl = EventTabCtrl;
+})(EventTab || (EventTab = {}));
+//# sourceMappingURL=EventTabCtrl.js.map
 var ExpertMode;
 (function (ExpertMode) {
     /**
@@ -6486,18 +6511,14 @@ var FeatureProps;
             var hierarchyCallOutSection = new CallOutSection('fa-link');
             var displayValue;
             if (type != null) {
-                var propertyTypes = csComp.Helpers.getPropertyTypes(type, propertyTypeData);
-                if (propertyTypes.length === 0) {
-                    for (var pt in layerservice.propertyTypeData)
-                        propertyTypes.push(layerservice.propertyTypeData[pt]);
-                }
-                ;
+                //var propertyTypes = csComp.Helpers.getPropertyTypes(type, propertyTypeData);
+                //if (propertyTypes.length === 0) { for (var pt in layerservice.propertyTypeData) propertyTypes.push(layerservice.propertyTypeData[pt]); };
                 //
                 if (type.showAllProperties || this.mapservice.isAdminExpert) {
                 }
                 // if feature type has propertyTypeKeys defined use these to show the order of the properties 
                 if (feature.fType.propertyTypeKeys) {
-                    propertyTypes.forEach(function (mi) {
+                    feature.fType._propertyTypeData.forEach(function (mi) {
                         if (feature.properties.hasOwnProperty(mi.label) && mi.visibleInCallOut) {
                             _this.addProperty(mi, feature, infoCallOutSection, hierarchyCallOutSection);
                         }
@@ -6628,8 +6649,9 @@ var FeatureProps;
             this.$messageBusService = $messageBusService;
             this.$translate = $translate;
             this.$compile = $compile;
-            // list of active stats properties, used when switching between features to keep active stats open
-            this.stats = [];
+            // list of active stats/charts properties, used when switching between features to keep active stats open
+            this.showMore = [];
+            this.showChart = [];
             this.updateAllStatsDelay = _.debounce(this.updateAllStats, 500);
             this.updateStatsDelay = function (prop) { _.debounce(_this.getPropStats, 500, true); };
             /**
@@ -6819,23 +6841,28 @@ var FeatureProps;
                 });
             }
         };
-        FeaturePropsCtrl.prototype.createSparkLineChart = function (item) {
-            item.showChart = !item.showChart;
+        FeaturePropsCtrl.prototype.addSparkline = function (item) {
             var ch = $('#featurepropchart_' + item._id);
             ch.empty();
+            if (this.showChart.indexOf(item.property) < 0)
+                this.showChart.push(item.property);
+            var ns = this.$scope;
+            ns.item = item;
+            // create sparkline                
+            var chartElement = this.$compile('<sparkline-chart timestamps="item.timestamps" sensor="item.sensor" width="320" height="100" showaxis="true"></sparkline-chart>')(ch.scope());
+            ch.append(chartElement);
+        };
+        FeaturePropsCtrl.prototype.createSparkLineChart = function (item) {
+            item.showChart = !item.showChart;
             if (item.showChart) {
-                var ns = this.$scope;
-                ns.item = item;
-                // create sparkline                
-                var chartElement = this.$compile('<sparkline-chart timestamps="item.timestamps" sensor="item.sensor" width="320" height="100" showaxis="true"></sparkline-chart>')(ch.scope());
-                ch.append(chartElement);
+                this.addSparkline(item);
             }
         };
         FeaturePropsCtrl.prototype.getPropStats = function (item) {
             if (item.showMore) {
                 //console.log('stats: calc stats for ' + item.property);
-                if (this.stats.indexOf(item.property) < 0)
-                    this.stats.push(item.property);
+                if (this.showMore.indexOf(item.property) < 0)
+                    this.showMore.push(item.property);
                 var values = this.$layerService.getPropertyValues(item.feature.layer, item.property);
                 var d = item.property;
                 var res = vg.util.summary(values, [item.property]);
@@ -6843,8 +6870,8 @@ var FeatureProps;
                 item.stats.sum = item.stats.count * item.stats.mean;
             }
             else {
-                if (this.stats.indexOf(item.property) >= 0)
-                    this.stats = this.stats.filter(function (s) { return s !== item.property; });
+                if (this.showMore.indexOf(item.property) >= 0)
+                    this.showMore = this.showMore.filter(function (s) { return s !== item.property; });
             }
         };
         FeaturePropsCtrl.prototype.displayFeature = function (feature) {
@@ -6857,12 +6884,16 @@ var FeatureProps;
             if (typeof feature.sensors !== 'undefined' && typeof feature.timestamps === 'undefined')
                 feature.timestamps = this.$layerService.findLayer(feature.layerId).timestamps;
             this.$scope.callOut = new CallOut(this.featureType, feature, this.$layerService.propertyTypeData, this.$layerService, this.$mapService);
-            if (this.stats.length > 0) {
+            if (this.showMore.length > 0 || this.showChart.length > 0) {
                 for (var s in this.$scope.callOut.sections) {
                     var sec = this.$scope.callOut.sections[s];
                     sec.properties.forEach(function (p) {
-                        p.showMore = _this.stats.indexOf(p.property) >= 0;
-                        _this.getPropStats(p);
+                        p.showMore = _this.showMore.indexOf(p.property) >= 0;
+                        p.showChart = _this.showChart.indexOf(p.property) >= 0;
+                        if (p.showChart)
+                            _this.addSparkline(p);
+                        if (p.showMore)
+                            _this.getPropStats(p);
                     });
                 }
             }
@@ -6902,7 +6933,7 @@ var FeatureProps;
             //csComp.Helpers.getPropertyTypes
         };
         FeaturePropsCtrl.prototype.showSensorData = function (property) {
-            console.log(property);
+            //console.log(property);
         };
         FeaturePropsCtrl.prototype.setShowSimpleTimeline = function () {
             if (this.$mapService.timelineVisible
@@ -7384,6 +7415,277 @@ var FilterList;
     FilterList.FilterListCtrl = FilterListCtrl;
 })(FilterList || (FilterList = {}));
 //# sourceMappingURL=FilterListCtrl.js.map
+var Accessibility;
+(function (Accessibility) {
+    /**
+      * Config
+      */
+    var moduleName = 'csComp';
+    try {
+        Accessibility.myModule = angular.module(moduleName);
+    }
+    catch (err) {
+        // named module does not exist, so create one
+        Accessibility.myModule = angular.module(moduleName, []);
+    }
+    /**
+      * Directive to display a feature's properties in a panel.
+      *
+      * @seealso          : http://www.youtube.com/watch?v=gjJ5vLRK8R8&list=UUGD_0i6L48hucTiiyhb5QzQ
+      * @seealso          : http://plnkr.co/edit/HyBP9d?p=preview
+      */
+    Accessibility.myModule.directive('accessibility', ['$compile',
+        function ($compile) {
+            return {
+                terminal: true,
+                restrict: 'E',
+                scope: {},
+                templateUrl: 'directives/Accessibility/Accessibility.tpl.html',
+                replace: true,
+                transclude: true,
+                controller: Accessibility.AccessibilityCtrl
+            };
+        }
+    ]);
+})(Accessibility || (Accessibility = {}));
+//# sourceMappingURL=Accessibility.js.map
+var Accessibility;
+(function (Accessibility) {
+    var AccessibilityModel = (function () {
+        function AccessibilityModel() {
+            this.id = "accessibilityActions";
+        }
+        AccessibilityModel.prototype.stop = function () { };
+        AccessibilityModel.prototype.addFeature = function (feature) { };
+        AccessibilityModel.prototype.removeFeature = function (feature) { };
+        AccessibilityModel.prototype.selectFeature = function (feature) {
+            console.log('accessibility:feature selected');
+        };
+        AccessibilityModel.prototype.getFeatureActions = function (feature) {
+            var accessibilityOption1 = {
+                title: "Show accessibility"
+            };
+            accessibilityOption1.callback = this.showAccessibility;
+            var accessibilityOption2 = {
+                title: "Remove accessibility"
+            };
+            accessibilityOption2.callback = this.removeAccessibility;
+            var accessibilityOption3 = {
+                title: "Plan route from"
+            };
+            accessibilityOption3.callback = this.planRouteFrom;
+            var accessibilityOption4 = {
+                title: "Plan route to"
+            };
+            accessibilityOption4.callback = this.planRouteTo;
+            return [accessibilityOption1, accessibilityOption2, accessibilityOption3, accessibilityOption4];
+        };
+        AccessibilityModel.prototype.getFeatureHoverActions = function (feature) { return []; };
+        AccessibilityModel.prototype.deselectFeature = function (feature) { };
+        AccessibilityModel.prototype.updateFeature = function (feature) { };
+        AccessibilityModel.prototype.showAccessibility = function (feature, layerService) {
+            console.log('accessibility:showAccessibility');
+            var accessibilityLayer = layerService.findLayer('accessibility');
+            if (accessibilityLayer) {
+                var urlParams = accessibilityLayer.url.split('&');
+                var locationIndex = -1;
+                urlParams.some(function (param, index) {
+                    if (param.substring(0, 9) === 'fromPlace') {
+                        locationIndex = index;
+                        return true;
+                    }
+                    return false;
+                });
+                if (feature.geometry.type !== 'Point') {
+                    console.log('Can only create accessibility layer from a Point');
+                    return;
+                }
+                urlParams[locationIndex] = 'fromPlace=' + feature.geometry.coordinates[1] + '%2C' + feature.geometry.coordinates[0];
+                accessibilityLayer.url = urlParams.join('&');
+                if (!accessibilityLayer.enabled) {
+                    layerService.addLayer(accessibilityLayer);
+                    var rpt = csComp.Helpers.createRightPanelTab("rightpanel", "accessibility", accessibilityLayer, "Accessibility options");
+                    layerService.$messageBusService.publish("rightpanel", "activate", rpt);
+                }
+                else {
+                    if (accessibilityLayer.layerSource)
+                        accessibilityLayer.layerSource.refreshLayer(accessibilityLayer);
+                }
+            }
+        };
+        AccessibilityModel.prototype.removeAccessibility = function (feature, layerService) {
+            console.log('accessibility:removeAccessibility');
+            var accessibilityLayer = layerService.findLayer('accessibility');
+            if (accessibilityLayer) {
+                var wasRightPanelVisible = layerService.visual.rightPanelVisible;
+                if (accessibilityLayer.enabled) {
+                    layerService.removeLayer(accessibilityLayer);
+                }
+                delete accessibilityLayer.data;
+                layerService.visual.rightPanelVisible = wasRightPanelVisible;
+            }
+        };
+        AccessibilityModel.planRoute = function (feature, layerService, destinationKey) {
+            var routeLayer = layerService.findLayer('tripplanner');
+            if (routeLayer) {
+                var urlParams = csComp.Helpers.parseUrlParameters(routeLayer.url, '?', '&', '=');
+                urlParams[destinationKey] = feature.geometry.coordinates[1] + '%2C' + feature.geometry.coordinates[0];
+                routeLayer.url = csComp.Helpers.joinUrlParameters(urlParams, '?', '&', '=');
+                if (!routeLayer.enabled) {
+                    layerService.addLayer(routeLayer);
+                }
+                else {
+                    if (routeLayer.layerSource)
+                        routeLayer.layerSource.refreshLayer(routeLayer);
+                }
+                var rpt = csComp.Helpers.createRightPanelTab("rightpanel", "tripplanner", routeLayer, "Route planner");
+                layerService.$messageBusService.publish("rightpanel", "activate", rpt);
+            }
+            else {
+            }
+        };
+        AccessibilityModel.prototype.planRouteFrom = function (feature, layerService) {
+            console.log('accessibility:planRouteFrom');
+            AccessibilityModel.planRoute(feature, layerService, 'fromPlace');
+        };
+        AccessibilityModel.prototype.planRouteTo = function (feature, layerService) {
+            console.log('accessibility:planRouteTo');
+            AccessibilityModel.planRoute(feature, layerService, 'toPlace');
+        };
+        AccessibilityModel.prototype.init = function (layerService) {
+            var _this = this;
+            console.log('init AccessibilityActionService');
+            this.layerService = layerService;
+            this.layerService.$messageBusService.serverSubscribe("accessibility", "msg", function (title, mcb) {
+                if (mcb["data"] === "restart") {
+                    _this.layerService.$messageBusService.notify("restarting server", "restarting", csComp.Services.NotifyLocation.TopRight);
+                    location.reload();
+                }
+                //
+                // var layer = this.layerService.findLayer("demo");
+                // layer.layerSource.refreshLayer(layer);
+                //console.log(title);
+            });
+        };
+        return AccessibilityModel;
+    })();
+    Accessibility.AccessibilityModel = AccessibilityModel;
+    var AccessibilityCtrl = (function () {
+        // dependencies are injected via AngularJS $injector
+        // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
+        function AccessibilityCtrl($scope, $http, $mapService, $layerService, $messageBusService, $dashboardService) {
+            var _this = this;
+            this.$scope = $scope;
+            this.$http = $http;
+            this.$mapService = $mapService;
+            this.$layerService = $layerService;
+            this.$messageBusService = $messageBusService;
+            this.$dashboardService = $dashboardService;
+            this.urlKeys = ['arriveBy', 'fromPlace', 'date', 'time', 'mode', 'walkSpeed', 'bikeSpeed',
+                'precisionMeters', 'cutoffSec'];
+            this.scope = $scope;
+            $scope.vm = this;
+            this.layer = $scope.$parent["data"];
+            this.cutoffTimes = [];
+            this.urlParameters = {};
+            this.bikeSpeedKm;
+            this.walkSpeedKm;
+            this.urlKeys.forEach(function (key) { _this.urlParameters[key] = 0; });
+            this.transportModes = {};
+            this.transportModes["Walking"] = "WALK";
+            this.transportModes["Biking"] = "BICYCLE";
+            //this.transportModes["Car"] = "CAR";
+        }
+        AccessibilityCtrl.prototype.refreshAccessibility = function () {
+            if (this.$layerService.lastSelectedFeature) {
+                var lsf = this.$layerService.lastSelectedFeature;
+                if (lsf.geometry && lsf.geometry.type === 'Point') {
+                    this.urlParameters['fromPlace'] = lsf.geometry.coordinates[1] + '%2C' + lsf.geometry.coordinates[0];
+                }
+            }
+            this.urlParameters['mode'] = this.transportMode;
+            this.urlParameters['time'] = encodeURIComponent(this.time);
+            if (this.walkSpeedKm)
+                this.urlParameters['walkSpeed'] = csComp.Helpers.GeoExtensions.convertKmToMile(this.walkSpeedKm);
+            if (this.bikeSpeedKm)
+                this.urlParameters['bikeSpeed'] = csComp.Helpers.GeoExtensions.convertKmToMile(this.bikeSpeedKm);
+            var url = this.urlAddress + '?';
+            for (var key in this.urlParameters) {
+                if (this.urlParameters.hasOwnProperty(key) && key !== 'cutoffSec') {
+                    url = url + key + '=' + this.urlParameters[key] + '&';
+                }
+            }
+            this.cutoffTimes.forEach(function (co) {
+                url = url + '&cutoffSec=' + (co * 60);
+            });
+            //url = url.substring(0, url.length - 1);
+            console.log(url);
+            this.layer.url = url;
+            if (!this.layer.enabled) {
+                this.$layerService.addLayer(this.layer);
+            }
+            else {
+                if (this.layer.layerSource)
+                    this.layer.layerSource.refreshLayer(this.layer);
+            }
+            this.$layerService.visual.rightPanelVisible = true;
+        };
+        AccessibilityCtrl.prototype.parseUrl = function () {
+            var _this = this;
+            this.urlParameters = {};
+            this.urlAddress = this.layer.url.split('?')[0];
+            var croppedUrl = this.layer.url.split('?')[1]; // Remove the address of the url, keep the parameters
+            var splittedUrl = croppedUrl.split('&');
+            splittedUrl.forEach(function (param) {
+                var keyValue = param.split('=');
+                if (keyValue[0] === 'cutoffSec') {
+                    _this.cutoffTimes.push((+keyValue[1]) / 60);
+                }
+                _this.urlParameters[keyValue[0]] = (isNaN(+keyValue[1])) ? keyValue[1] : +keyValue[1];
+            });
+            var d = new Date(Date.now());
+            this.time = ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2);
+            this.urlParameters['date'] = (d.getMonth() + 1) + '-' + d.getDate() + '-' + d.getFullYear();
+            this.transportMode = this.urlParameters['mode'];
+            if (this.urlParameters.hasOwnProperty('walkSpeed'))
+                this.walkSpeedKm = +csComp.Helpers.GeoExtensions.convertMileToKm(this.urlParameters['walkSpeed']).toFixed(2);
+            if (this.urlParameters.hasOwnProperty('bikeSpeed'))
+                this.bikeSpeedKm = +csComp.Helpers.GeoExtensions.convertMileToKm(this.urlParameters['bikeSpeed']).toFixed(2);
+            if (this.$scope.$root.$$phase != '$apply' && this.$scope.$root.$$phase != '$digest') {
+                this.$scope.$apply();
+            }
+        };
+        AccessibilityCtrl.prototype.addCutoffTime = function () {
+            this.cutoffTimes.push(0);
+            if (this.$scope.$root.$$phase != '$apply' && this.$scope.$root.$$phase != '$digest') {
+                this.$scope.$apply();
+            }
+        };
+        AccessibilityCtrl.prototype.removeCutoffTime = function (index) {
+            if (index < this.cutoffTimes.length && index > -1) {
+                this.cutoffTimes.splice(index, 1);
+            }
+            if (this.$scope.$root.$$phase != '$apply' && this.$scope.$root.$$phase != '$digest') {
+                this.$scope.$apply();
+            }
+        };
+        // $inject annotation.
+        // It provides $injector with information about dependencies to be injected into constructor
+        // it is better to have it close to the constructor, because the parameters must match in count and type.
+        // See http://docs.angularjs.org/guide/di
+        AccessibilityCtrl.$inject = [
+            '$scope',
+            '$http',
+            'mapService',
+            'layerService',
+            'messageBusService',
+            'dashboardService'
+        ];
+        return AccessibilityCtrl;
+    })();
+    Accessibility.AccessibilityCtrl = AccessibilityCtrl;
+})(Accessibility || (Accessibility = {}));
+//# sourceMappingURL=AccessibilityCtrl.js.map
 var Heatmap;
 (function (Heatmap) {
     'use strict';
@@ -7779,13 +8081,14 @@ var Heatmap;
                     ft._propertyTypeData.forEach(function (pt) {
                         if (pt.type == 'options') {
                             var i = 0;
-                            pt.options.forEach(function (o) {
+                            for (var oo in pt.options) {
+                                var o = pt.options[oo];
                                 var hi = new Heatmap.HeatmapItem(o, ft);
                                 hi.propertyLabel = pt.label;
                                 hi.propertyTitle = pt.title;
                                 hi.optionIndex = i++;
                                 heatmap.addHeatmapItem(hi);
-                            });
+                            }
                         }
                     });
                 }
@@ -8739,13 +9042,13 @@ var KanbanColumn;
                     if (_this.column.timeReference && _this.column.timeReference.toLowerCase() === 'timeline') {
                         var d = feature.properties['date'];
                         if (!feature.hasOwnProperty('_gui'))
-                            feature._gui = new Object;
+                            feature._gui = {};
                         feature._gui['relativeTime'] = moment(d).from(moment(new Date(_this.$layerService.project.timeLine.focus)));
                     }
                     else {
                         var d = feature.properties['date'];
                         if (!feature.hasOwnProperty('_gui'))
-                            feature._gui = new Object;
+                            feature._gui = {};
                         feature._gui['relativeTime'] = moment(d).fromNow();
                     }
                 }
@@ -9332,12 +9635,13 @@ var LayersDirective;
                 this.$layerService.initLayer(group, this.newLayer);
                 group.layers.push(this.newLayer);
                 var nl = this.newLayer;
+                var id = nl.title.replace(' ', '_').toLowerCase();
                 /// create layer on server
                 if (this.newLayer.type === "dynamicgeojson") {
-                    this.newLayer.url = "api/layers/" + nl.title;
+                    this.newLayer.url = "api/layers/" + id;
                     if (this.layerResourceType === "<new>") {
-                        this.newLayer.typeUrl = "api/resources/" + this.newLayer.title;
-                        var r = { id: this.newLayer.title, title: this.newLayer.title, featureTypes: {}, propertyTypeData: {} };
+                        this.newLayer.typeUrl = "api/resources/" + id;
+                        var r = { id: id, title: this.newLayer.title, featureTypes: {}, propertyTypeData: {} };
                         if (this.newLayer.data && this.newLayer.data.features && this.newLayer.data.features.length > 0)
                             r.featureTypes["Default"] = csComp.Helpers.createDefaultType(this.newLayer.data.features[0], r);
                         this.$http.post("api/resources", r)
@@ -9350,7 +9654,7 @@ var LayersDirective;
                     else {
                         this.newLayer.typeUrl = this.layerResourceType;
                     }
-                    var l = { id: nl.title, title: nl.title, isDynamic: true, type: nl.type, storage: 'file', description: nl.description, typeUrl: nl.typeUrl, tags: nl.tags, url: nl.url, features: [] };
+                    var l = { id: id, title: nl.title, isDynamic: true, type: nl.type, storage: 'file', description: nl.description, typeUrl: nl.typeUrl, tags: nl.tags, url: nl.url, features: [] };
                     if (this.newLayer.data)
                         l.features = this.newLayer.data.features;
                     this.$http.post("/api/layers", l)
@@ -9986,6 +10290,726 @@ var MapElement;
     MapElement.MapElementCtrl = MapElementCtrl;
 })(MapElement || (MapElement = {}));
 //# sourceMappingURL=MapElementCtrl.js.map
+var Mobile;
+(function (Mobile) {
+    /**
+      * Config
+      */
+    var moduleName = 'csComp';
+    try {
+        Mobile.myModule = angular.module(moduleName);
+    }
+    catch (err) {
+        // named module does not exist, so create one
+        Mobile.myModule = angular.module(moduleName, []);
+    }
+    /**
+      * Directive to display the available map layers.
+      */
+    Mobile.myModule.directive('mobile', [
+        '$window', '$compile',
+        function ($window, $compile) {
+            return {
+                terminal: true,
+                restrict: 'E',
+                scope: {},
+                templateUrl: 'directives/Mobile/Mobile.tpl.html',
+                link: function (scope, element, attrs) {
+                    // Deal with resizing the element list
+                    scope.onResizeFunction = function () {
+                        var filterHeight = 50;
+                        var paginationCtrlHeight = 100;
+                        var itemHeight = 60;
+                        //scope.windowHeight          = $window.innerHeight;
+                        //scope.windowWidth           = $window.innerWidth;
+                        scope.numberOfItems = Math.floor(($window.innerHeight - filterHeight - paginationCtrlHeight) / itemHeight);
+                    };
+                    // Call to the function when the page is first loaded
+                    scope.onResizeFunction();
+                    angular.element($window).bind('resize', function () {
+                        scope.onResizeFunction();
+                        scope.$apply();
+                    });
+                },
+                replace: false,
+                transclude: false,
+                controller: Mobile.MobileCtrl
+            };
+        }
+    ]);
+})(Mobile || (Mobile = {}));
+//# sourceMappingURL=Mobile.js.map
+var Mobile;
+(function (Mobile) {
+    var MobileCtrl = (function () {
+        // dependencies are injected via AngularJS $injector
+        // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
+        function MobileCtrl($scope, $layerService, $messageBus, localStorageService, geoService) {
+            var _this = this;
+            this.$scope = $scope;
+            this.$layerService = $layerService;
+            this.$messageBus = $messageBus;
+            this.localStorageService = localStorageService;
+            this.geoService = geoService;
+            $scope.vm = this;
+            this.$messageBus.subscribe('project', function (a, p) {
+                if (a === 'loaded') {
+                    _this.availableLayers = [];
+                    p.groups.forEach((function (g) {
+                        g.layers.forEach(function (l) {
+                            if (l.tags && l.tags.indexOf('mobile') >= 0)
+                                _this.availableLayers.push(l);
+                        });
+                    }));
+                    // find mobile layer
+                    console.log('available layers');
+                    console.log(_this.availableLayers);
+                }
+            });
+            $messageBus.subscribe("geo", function (action, loc) {
+                switch (action) {
+                    case "pos":
+                        var f = new csComp.Services.Feature();
+                        //f.layerId = layer.id;
+                        f.geometry = {
+                            type: 'Point', coordinates: []
+                        };
+                        f.geometry.coordinates = [loc.coords.longitude, loc.coords.latitude];
+                        f.properties = { "Name": "test" };
+                        //layer.data.features.push(f);
+                        //this.$layerService.initFeature(f, layer);
+                        _this.$layerService.activeMapRenderer.addFeature(f);
+                        _this.$layerService.saveFeature(f);
+                        break;
+                }
+            });
+            this.geoService.start({});
+        }
+        // $inject annotation.
+        // It provides $injector with information about dependencies to be injected into constructor
+        // it is better to have it close to the constructor, because the parameters must match in count and type.
+        // See http://docs.angularjs.org/guide/di
+        MobileCtrl.$inject = [
+            '$scope',
+            'layerService',
+            'messageBusService', 'localStorageService', 'geoService'
+        ];
+        return MobileCtrl;
+    })();
+    Mobile.MobileCtrl = MobileCtrl;
+})(Mobile || (Mobile = {}));
+//# sourceMappingURL=MobileCtrl.js.map
+var Navigate;
+(function (Navigate) {
+    /**
+      * Config
+      */
+    var moduleName = 'csComp';
+    try {
+        Navigate.myModule = angular.module(moduleName);
+    }
+    catch (err) {
+        // named module does not exist, so create one
+        Navigate.myModule = angular.module(moduleName, []);
+    }
+    /**
+      * Directive to display the available map layers.
+      */
+    Navigate.myModule.directive('navigate', [
+        '$window', '$compile',
+        function ($window, $compile) {
+            return {
+                terminal: true,
+                restrict: 'E',
+                scope: {},
+                templateUrl: 'directives/Navigate/Navigate.tpl.html',
+                link: function (scope, element, attrs) {
+                    // Deal with resizing the element list
+                    scope.onResizeFunction = function () {
+                        var filterHeight = 50;
+                        var paginationCtrlHeight = 100;
+                        var itemHeight = 60;
+                        //scope.windowHeight          = $window.innerHeight;
+                        //scope.windowWidth           = $window.innerWidth;
+                        scope.numberOfItems = Math.floor(($window.innerHeight - filterHeight - paginationCtrlHeight) / itemHeight);
+                    };
+                    // Call to the function when the page is first loaded
+                    scope.onResizeFunction();
+                    angular.element($window).bind('resize', function () {
+                        scope.onResizeFunction();
+                        scope.$apply();
+                    });
+                },
+                replace: false,
+                transclude: false,
+                controller: Navigate.NavigateCtrl
+            };
+        }
+    ]).directive('bsPopover', function () {
+        return function (scope, element, attrs) {
+            element.find("a[rel=popover]").popover({ placement: 'right', html: 'true' });
+        };
+    });
+})(Navigate || (Navigate = {}));
+//# sourceMappingURL=Navigate.js.map
+var Navigate;
+(function (Navigate) {
+    var RecentFeature = (function () {
+        function RecentFeature() {
+        }
+        return RecentFeature;
+    })();
+    Navigate.RecentFeature = RecentFeature;
+    var NavigateCtrl = (function () {
+        // dependencies are injected via AngularJS $injector
+        // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
+        function NavigateCtrl($scope, $layerService, $messageBus, localStorageService, geoService) {
+            var _this = this;
+            this.$scope = $scope;
+            this.$layerService = $layerService;
+            this.$messageBus = $messageBus;
+            this.localStorageService = localStorageService;
+            this.geoService = geoService;
+            this.RecentLayers = [];
+            this.mobileLayers = [];
+            this.RecentFeatures = [];
+            this.lastPost = { longitude: 0, latitude: 0 };
+            this.searchResults = [];
+            $scope.vm = this;
+            this.$messageBus.subscribe('project', function (a, p) {
+                if (a === 'loaded') {
+                    _this.initRecentLayers();
+                    _this.initRecentFeatures();
+                    if (_this.$layerService.isMobile)
+                        _this.initMobileLayers(p);
+                }
+            });
+            $scope.$watch("search", _.throttle(function (search) {
+                // This code will be invoked after 1 second from the last time 'id' has changed.
+                if (search && search.length > 0) {
+                    _this.doSearch(search);
+                }
+                else {
+                    _this.searchResults = [];
+                }
+                // Code that does something based on $scope.id                
+            }, 500));
+        }
+        NavigateCtrl.prototype.selectSearchResult = function (item) {
+            if (item.click)
+                item.click(item);
+        };
+        NavigateCtrl.prototype.doSearch = function (search) {
+            var _this = this;
+            this.$layerService.actionServices.forEach(function (as) {
+                if (as.search)
+                    as.search({ query: search, results: _this.searchResults }, function (error, result) {
+                        _this.searchResults = _this.searchResults.filter(function (sr) { return sr.service !== as.id; });
+                        _this.searchResults = _this.searchResults.concat(result);
+                        if (_this.$scope.$root.$$phase != '$apply' && _this.$scope.$root.$$phase != '$digest') {
+                            _this.$scope.$apply();
+                        }
+                    });
+            });
+        };
+        NavigateCtrl.prototype.leave = function (l) {
+            if (this.mobileLayer && this.MyFeature) {
+                this.$layerService.removeFeature(this.MyFeature, true);
+                this.$layerService.activeMapRenderer.removeFeature(this.MyFeature);
+                //this.$layerService.saveFeature(this.MyFeature);
+                this.MyFeature = null;
+            }
+            this.mobileLayer = null;
+        };
+        NavigateCtrl.prototype.join = function (l) {
+            var _this = this;
+            this.localStorageService.set("username", this.UserName);
+            async.series([function (cb) {
+                    if (!l.enabled) {
+                        _this.$layerService.addLayer(l, function () {
+                            cb();
+                        });
+                    }
+                    else {
+                        cb();
+                    }
+                }, function (cb) {
+                    _this.mobileLayer = l;
+                    var f = new csComp.Services.Feature();
+                    f.layerId = _this.mobileLayer.id;
+                    f.geometry = {
+                        type: 'Point', coordinates: []
+                    };
+                    // todo disable
+                    f.geometry.coordinates = [_this.lastPost.longitude, _this.lastPost.latitude]; //[0, 0]; //loc.coords.longitude, loc.coords.latitude];
+                    f.id = _this.UserName;
+                    f.properties = { "Name": _this.UserName };
+                    //layer.data.features.push(f);
+                    _this.$layerService.initFeature(f, _this.mobileLayer);
+                    _this.$layerService.activeMapRenderer.addFeature(f);
+                    _this.$layerService.saveFeature(f);
+                    _this.MyFeature = f;
+                }]);
+        };
+        NavigateCtrl.prototype.initMobileLayers = function (p) {
+            var _this = this;
+            this.UserName = this.localStorageService.get("username");
+            if (!this.UserName)
+                this.UserName = "mobile user";
+            this.mobileLayers = [];
+            p.groups.forEach((function (g) {
+                g.layers.forEach(function (l) {
+                    if (l.tags && l.tags.indexOf('mobile') >= 0)
+                        _this.mobileLayers.push(l);
+                });
+            }));
+            if (this.$layerService.isMobile) {
+                this.$messageBus.subscribe("geo", function (action, loc) {
+                    switch (action) {
+                        case "pos":
+                            if (_this.mobileLayer && _this.MyFeature) {
+                                _this.lastPost = loc.coords;
+                                _this.MyFeature.geometry.coordinates = [loc.coords.longitude, loc.coords.latitude];
+                                _this.$layerService.activeMapRenderer.updateFeature(_this.MyFeature);
+                                _this.$layerService.saveFeature(_this.MyFeature);
+                            }
+                            break;
+                    }
+                });
+                this.geoService.start({});
+            }
+        };
+        NavigateCtrl.prototype.updateRecentFeaturesList = function () {
+            var _this = this;
+            setTimeout(function () {
+                var ids = _this.localStorageService.get("recentfeatures");
+                if (ids) {
+                    _this.RecentFeatures = ids;
+                    _this.RecentFeatures.forEach(function (rf) {
+                        var l = _this.$layerService.findLayer(rf.layerId);
+                        if (l && l.enabled) {
+                            rf.feature = _this.$layerService.findFeature(l, rf.id);
+                        }
+                    });
+                }
+            }, 0);
+        };
+        NavigateCtrl.prototype.selectFeature = function (feature) {
+            this.$layerService.selectFeature(feature, false, true);
+        };
+        NavigateCtrl.prototype.initRecentFeatures = function () {
+            var _this = this;
+            this.updateRecentFeaturesList();
+            this.$messageBus.subscribe('feature', function (a, feature) {
+                if (a === 'onFeatureSelect') {
+                    _this.RecentFeatures = _this.RecentFeatures.filter(function (f) { return f.id != feature.id; });
+                    var rf = { id: feature.id, name: csComp.Helpers.getFeatureTitle(feature), layerId: feature.layerId, feature: feature };
+                    _this.RecentFeatures.splice(0, 0, rf);
+                    if (_this.RecentFeatures.length > 5)
+                        _this.RecentFeatures.pop();
+                    var save = [];
+                    _this.RecentFeatures.forEach(function (f) { return save.push({ id: f.id, name: f.name, layerId: f.layerId }); });
+                    _this.localStorageService.set("recentfeatures", save);
+                    if (_this.$scope.$root.$$phase != '$apply' && _this.$scope.$root.$$phase != '$digest') {
+                        _this.$scope.$apply();
+                    }
+                }
+            });
+        };
+        NavigateCtrl.prototype.toggleLayer = function (layer) {
+            this.$layerService.toggleLayer(layer);
+        };
+        NavigateCtrl.prototype.initRecentLayers = function () {
+            var _this = this;
+            var ids = this.localStorageService.get("recentlayers");
+            if (ids)
+                ids.forEach(function (id) {
+                    var l = _this.$layerService.findLayer(id);
+                    if (l)
+                        _this.RecentLayers.push(l);
+                });
+            this.$messageBus.subscribe('layer', function (a, layer) {
+                if (a === 'activated') {
+                    _this.RecentLayers = _this.RecentLayers.filter(function (f) { return f.id != layer.id; });
+                    _this.RecentLayers.splice(0, 0, layer);
+                    if (_this.RecentLayers.length > 5)
+                        _this.RecentLayers.pop();
+                    ids = [];
+                    _this.RecentLayers.forEach(function (l) { return ids.push(l.id); });
+                    _this.localStorageService.set("recentlayers", ids);
+                    if (_this.$scope.$root.$$phase != '$apply' && _this.$scope.$root.$$phase != '$digest') {
+                        _this.$scope.$apply();
+                    }
+                }
+                _this.updateRecentFeaturesList();
+            });
+        };
+        // $inject annotation.
+        // It provides $injector with information about dependencies to be injected into constructor
+        // it is better to have it close to the constructor, because the parameters must match in count and type.
+        // See http://docs.angularjs.org/guide/di
+        NavigateCtrl.$inject = [
+            '$scope',
+            'layerService',
+            'messageBusService', 'localStorageService', 'geoService'
+        ];
+        return NavigateCtrl;
+    })();
+    Navigate.NavigateCtrl = NavigateCtrl;
+})(Navigate || (Navigate = {}));
+//# sourceMappingURL=NavigateCtrl.js.map
+var Search;
+(function (Search) {
+    var NavigateSteps = (function () {
+        function NavigateSteps() {
+        }
+        return NavigateSteps;
+    })();
+    Search.NavigateSteps = NavigateSteps;
+    var NavigateState = (function () {
+        function NavigateState() {
+        }
+        return NavigateState;
+    })();
+    Search.NavigateState = NavigateState;
+})(Search || (Search = {}));
+//# sourceMappingURL=SearchClasses.js.map
+var OfflineSearch;
+(function (OfflineSearch) {
+    /**
+      * Config
+      */
+    var moduleName = 'csComp';
+    try {
+        OfflineSearch.myModule = angular.module(moduleName);
+    }
+    catch (err) {
+        // named module does not exist, so create one
+        OfflineSearch.myModule = angular.module(moduleName, []);
+    }
+    /**
+      * Directive to display the available map layers.
+      */
+    OfflineSearch.myModule.directive('offlineSearch', [
+        '$compile',
+        function ($compile) {
+            return {
+                terminal: true,
+                restrict: 'E',
+                scope: {},
+                templateUrl: 'directives/OfflineSearch/OfflineSearch.tpl.html',
+                compile: function (el) {
+                    var fn = $compile(el);
+                    return function (scope) {
+                        fn(scope);
+                    };
+                },
+                replace: true,
+                transclude: true,
+                controller: OfflineSearch.OfflineSearchCtrl
+            };
+        }
+    ]);
+})(OfflineSearch || (OfflineSearch = {}));
+//# sourceMappingURL=OfflineSearch.js.map
+var OfflineSearch;
+(function (OfflineSearch) {
+    var Layer = (function () {
+        function Layer(groupTitle, index, id, title, path, type) {
+            this.groupTitle = groupTitle;
+            this.index = index;
+            this.id = id;
+            this.title = title;
+            this.path = path;
+            this.type = type;
+            /**
+             * Names of all the features.
+             * @type {string[]}
+             */
+            this.featureNames = [];
+        }
+        return Layer;
+    })();
+    OfflineSearch.Layer = Layer;
+    /**
+     * An index entry that contains a search result.
+     */
+    var Entry = (function () {
+        function Entry(layerIndexOrArray, featureIndex, propertyIndex) {
+            this.v = Array(2);
+            if (typeof layerIndexOrArray === 'number') {
+                this.v[0] = layerIndexOrArray;
+                this.v[1] = featureIndex;
+            }
+            else {
+                this.v = layerIndexOrArray;
+            }
+        }
+        Object.defineProperty(Entry.prototype, "layerIndex", {
+            get: function () { return this.v[0]; },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(Entry.prototype, "featureIndex", {
+            get: function () { return this.v[1]; },
+            enumerable: true,
+            configurable: true
+        });
+        /**
+         * This function is called when serializing the Entry object to JSON, which is
+         * much less verbose than the default JSON. In the constructor, I've used a
+         * Union type to deserialize it again.
+         */
+        Entry.prototype.toJSON = function () {
+            return this.v;
+        };
+        return Entry;
+    })();
+    OfflineSearch.Entry = Entry;
+    var KeywordIndex = (function () {
+        function KeywordIndex() {
+        }
+        return KeywordIndex;
+    })();
+    OfflineSearch.KeywordIndex = KeywordIndex;
+    var OfflineSearchResult = (function () {
+        function OfflineSearchResult(project, options) {
+            this.project = project;
+            this.options = options;
+            this.layers = [];
+            this.keywordIndex = {};
+        }
+        return OfflineSearchResult;
+    })();
+    OfflineSearch.OfflineSearchResult = OfflineSearchResult;
+})(OfflineSearch || (OfflineSearch = {}));
+//# sourceMappingURL=OfflineSearchClasses.js.map
+var OfflineSearch;
+(function (OfflineSearch) {
+    var OfflineSearchResultViewModel = (function () {
+        function OfflineSearchResultViewModel(title, layerTitle, groupTitle, entry) {
+            this.title = title;
+            this.layerTitle = layerTitle;
+            this.groupTitle = groupTitle;
+            this.entry = entry;
+            this.firstInGroup = false;
+        }
+        OfflineSearchResultViewModel.prototype.toString = function () {
+            return this.title;
+        };
+        Object.defineProperty(OfflineSearchResultViewModel.prototype, "fullTitle", {
+            get: function () {
+                return this.groupTitle + ' >> ' + this.layerTitle + ' >> ' + this.title;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        return OfflineSearchResultViewModel;
+    })();
+    OfflineSearch.OfflineSearchResultViewModel = OfflineSearchResultViewModel;
+    var OfflineSearchCtrl = (function () {
+        // dependencies are injected via AngularJS $injector
+        // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
+        function OfflineSearchCtrl($scope, $http, $layerService, $mapService, $messageBus) {
+            var _this = this;
+            this.$scope = $scope;
+            this.$http = $http;
+            this.$layerService = $layerService;
+            this.$mapService = $mapService;
+            this.$messageBus = $messageBus;
+            this.isReady = false;
+            $scope.vm = this;
+            $messageBus.subscribe('project', function (title) {
+                switch (title) {
+                    case 'loaded':
+                        var offlineSearchResultUrl = $layerService.projectUrl.url.replace('project.json', 'offline_search_result.json');
+                        _this.loadSearchResults(offlineSearchResultUrl);
+                        break;
+                }
+            });
+            $messageBus.subscribe('language', function (title, language) {
+                switch (title) {
+                    case 'newLanguage':
+                        // TODO switch language!
+                        break;
+                }
+            });
+        }
+        /**
+         * Load the offline search results (json file).
+         */
+        OfflineSearchCtrl.prototype.loadSearchResults = function (url) {
+            var _this = this;
+            this.$http.get(url)
+                .success(function (offlineSearchResult) {
+                _this.offlineSearchResult = offlineSearchResult;
+                var kwi = offlineSearchResult.keywordIndex;
+                var keywordIndex = {};
+                for (var key in kwi) {
+                    if (!kwi.hasOwnProperty(key))
+                        continue;
+                    kwi[key].forEach(function (entry) {
+                        if (!keywordIndex.hasOwnProperty(key))
+                            keywordIndex[key] = [];
+                        keywordIndex[key].push(new OfflineSearch.Entry(entry));
+                    });
+                }
+                _this.offlineSearchResult.keywordIndex = keywordIndex;
+                _this.isReady = true;
+            })
+                .error(function () { console.log("OfflineSearch: error with $http "); });
+        };
+        /**
+         * Get the locations based on the entered text.
+         */
+        OfflineSearchCtrl.prototype.getLocation = function (text, resultCount) {
+            if (resultCount === void 0) { resultCount = 15; }
+            if (!this.isReady || text === null || text.length < 3)
+                return [];
+            var searchWords = text.toLowerCase().split(' ');
+            // test if last word in text might be a (part of) a stopword, if so remove it
+            var lastSearchTerm = searchWords[searchWords.length - 1];
+            var possibleStopWords = this.offlineSearchResult.options.stopWords.filter(function (stopword) { return stopword.indexOf(lastSearchTerm) > -1; });
+            if (possibleStopWords.length > 0) {
+                searchWords.splice(searchWords.length - 1, 1);
+            }
+            // remove all exact stopwords
+            this.offlineSearchResult.options.stopWords.forEach(function (stopWord) {
+                while (searchWords.indexOf(stopWord) > -1) {
+                    searchWords.splice(searchWords.indexOf(stopWord), 1);
+                }
+            });
+            var totResults;
+            for (var j in searchWords) {
+                var result = this.getKeywordHits(searchWords[j]);
+                totResults = !totResults
+                    ? result
+                    : this.mergeResults(totResults, result);
+            }
+            var searchResults = [];
+            var layers = this.offlineSearchResult.layers;
+            var count = resultCount;
+            var resultIndex = 0;
+            while (count > 0 && resultIndex < totResults.length) {
+                var r = totResults[resultIndex++];
+                var subCount = Math.min(count, r.entries.length);
+                for (var i = 0; i < subCount; i++) {
+                    var entry = r.entries[i];
+                    var layer = layers[entry.layerIndex];
+                    count--;
+                    searchResults.push(new OfflineSearchResultViewModel(layer.featureNames[entry.featureIndex], layer.title, layer.groupTitle, entry));
+                }
+            }
+            // Group search results by groupTitle | layerTitle
+            var groups = {};
+            searchResults.forEach(function (sr) {
+                var group = sr.groupTitle + ' >> ' + sr.layerTitle;
+                if (!groups.hasOwnProperty(group))
+                    groups[group] = [];
+                groups[group].push(sr);
+            });
+            searchResults = [];
+            for (var key in groups) {
+                if (!groups.hasOwnProperty(key))
+                    continue;
+                var firstInGroup = true;
+                groups[key].forEach(function (sr) {
+                    sr.firstInGroup = firstInGroup;
+                    searchResults.push(sr);
+                    firstInGroup = false;
+                });
+            }
+            return searchResults;
+        };
+        /**
+         * Merge the resuls of two keyword lookups by checking whether different entries refer
+         * to the same layer and feature.
+         * @result1 {ILookupResult[]}
+         * @result2 {ILookupResult[]}
+         */
+        OfflineSearchCtrl.prototype.mergeResults = function (result1, result2) {
+            var r = [];
+            result1.forEach(function (r1) {
+                result2.forEach(function (r2) {
+                    r1.entries.forEach(function (entry1) {
+                        r2.entries.forEach(function (entry2) {
+                            if (entry1.layerIndex === entry2.layerIndex && entry1.featureIndex === entry2.featureIndex)
+                                r.push({ score: r1.score * r2.score, key: r1.key + ' ' + r2.key, entries: [entry1] });
+                        });
+                    });
+                });
+            });
+            r = r.sort(function (a, b) { return b.score - a.score; });
+            return r;
+        };
+        /**
+         * Do a fuzzy keyword comparison between the entered text and the list of keywords,
+         * and return a subset.
+         * @text: {string}
+         */
+        OfflineSearchCtrl.prototype.getKeywordHits = function (text) {
+            var results = [];
+            var keywordIndex = this.offlineSearchResult.keywordIndex;
+            var keywords = Object.getOwnPropertyNames(keywordIndex);
+            keywords.forEach(function (key) {
+                var score = key.score(text, null);
+                if (score < 0.5)
+                    return;
+                results.push({ score: score, key: key, entries: keywordIndex[key] });
+            });
+            results = results.sort(function (a, b) { return b.score - a.score; });
+            return results;
+        };
+        /**
+         * When an item is selected, optionally open the layer and jump to the selected feature.
+         */
+        OfflineSearchCtrl.prototype.onSelect = function (selectedItem) {
+            var _this = this;
+            var layerIndex = selectedItem.entry.layerIndex;
+            var layer = this.offlineSearchResult.layers[layerIndex];
+            var projectLayer = this.$layerService.findLayer(layer.id);
+            console.log(selectedItem);
+            if (!projectLayer)
+                return;
+            if (projectLayer.enabled) {
+                this.selectFeature(layer.id, selectedItem.entry.featureIndex);
+                return;
+            }
+            else {
+                var handle = this.$messageBus.subscribe('layer', function (title, layer) {
+                    if (title !== 'activated' || projectLayer.url !== layer.url)
+                        return;
+                    _this.selectFeature(layer.id, selectedItem.entry.featureIndex);
+                    _this.$messageBus.unsubscribe(handle);
+                });
+                this.$layerService.addLayer(projectLayer);
+            }
+            var group = $("#layergroup_" + projectLayer.groupId);
+            group.collapse("show");
+        };
+        OfflineSearchCtrl.prototype.selectFeature = function (layerId, featureIndex) {
+            var feature = this.$layerService.findFeatureByIndex(layerId, featureIndex);
+            if (feature == null)
+                return;
+            this.$mapService.zoomTo(feature);
+            this.$layerService.selectFeature(feature);
+        };
+        // $inject annotation.
+        // It provides $injector with information about dependencies to be injected into constructor
+        // it is better to have it close to the constructor, because the parameters must match in count and type.
+        // See http://docs.angularjs.org/guide/di
+        OfflineSearchCtrl.$inject = [
+            '$scope',
+            '$http',
+            'layerService',
+            'mapService',
+            'messageBusService'
+        ];
+        return OfflineSearchCtrl;
+    })();
+    OfflineSearch.OfflineSearchCtrl = OfflineSearchCtrl;
+})(OfflineSearch || (OfflineSearch = {}));
+//# sourceMappingURL=OfflineSearchCtrl.js.map
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -11332,698 +12356,6 @@ var Mca;
     Mca.McaEditorCtrl = McaEditorCtrl;
 })(Mca || (Mca = {}));
 //# sourceMappingURL=McaEditorCtrl.js.map
-var Mobile;
-(function (Mobile) {
-    /**
-      * Config
-      */
-    var moduleName = 'csComp';
-    try {
-        Mobile.myModule = angular.module(moduleName);
-    }
-    catch (err) {
-        // named module does not exist, so create one
-        Mobile.myModule = angular.module(moduleName, []);
-    }
-    /**
-      * Directive to display the available map layers.
-      */
-    Mobile.myModule.directive('mobile', [
-        '$window', '$compile',
-        function ($window, $compile) {
-            return {
-                terminal: true,
-                restrict: 'E',
-                scope: {},
-                templateUrl: 'directives/Mobile/Mobile.tpl.html',
-                link: function (scope, element, attrs) {
-                    // Deal with resizing the element list
-                    scope.onResizeFunction = function () {
-                        var filterHeight = 50;
-                        var paginationCtrlHeight = 100;
-                        var itemHeight = 60;
-                        //scope.windowHeight          = $window.innerHeight;
-                        //scope.windowWidth           = $window.innerWidth;
-                        scope.numberOfItems = Math.floor(($window.innerHeight - filterHeight - paginationCtrlHeight) / itemHeight);
-                    };
-                    // Call to the function when the page is first loaded
-                    scope.onResizeFunction();
-                    angular.element($window).bind('resize', function () {
-                        scope.onResizeFunction();
-                        scope.$apply();
-                    });
-                },
-                replace: false,
-                transclude: false,
-                controller: Mobile.MobileCtrl
-            };
-        }
-    ]);
-})(Mobile || (Mobile = {}));
-//# sourceMappingURL=Mobile.js.map
-var Mobile;
-(function (Mobile) {
-    var MobileCtrl = (function () {
-        // dependencies are injected via AngularJS $injector
-        // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
-        function MobileCtrl($scope, $layerService, $messageBus, localStorageService, geoService) {
-            var _this = this;
-            this.$scope = $scope;
-            this.$layerService = $layerService;
-            this.$messageBus = $messageBus;
-            this.localStorageService = localStorageService;
-            this.geoService = geoService;
-            $scope.vm = this;
-            this.$messageBus.subscribe('project', function (a, p) {
-                if (a === 'loaded') {
-                    _this.availableLayers = [];
-                    p.groups.forEach((function (g) {
-                        g.layers.forEach(function (l) {
-                            if (l.tags && l.tags.indexOf('mobile') >= 0)
-                                _this.availableLayers.push(l);
-                        });
-                    }));
-                    // find mobile layer
-                    console.log('available layers');
-                    console.log(_this.availableLayers);
-                }
-            });
-            $messageBus.subscribe("geo", function (action, loc) {
-                switch (action) {
-                    case "pos":
-                        var f = new csComp.Services.Feature();
-                        //f.layerId = layer.id;
-                        f.geometry = {
-                            type: 'Point', coordinates: []
-                        };
-                        f.geometry.coordinates = [loc.coords.longitude, loc.coords.latitude];
-                        f.properties = { "Name": "test" };
-                        //layer.data.features.push(f);
-                        //this.$layerService.initFeature(f, layer);
-                        _this.$layerService.activeMapRenderer.addFeature(f);
-                        _this.$layerService.saveFeature(f);
-                        break;
-                }
-            });
-            this.geoService.start({});
-        }
-        // $inject annotation.
-        // It provides $injector with information about dependencies to be injected into constructor
-        // it is better to have it close to the constructor, because the parameters must match in count and type.
-        // See http://docs.angularjs.org/guide/di
-        MobileCtrl.$inject = [
-            '$scope',
-            'layerService',
-            'messageBusService', 'localStorageService', 'geoService'
-        ];
-        return MobileCtrl;
-    })();
-    Mobile.MobileCtrl = MobileCtrl;
-})(Mobile || (Mobile = {}));
-//# sourceMappingURL=MobileCtrl.js.map
-var Navigate;
-(function (Navigate) {
-    /**
-      * Config
-      */
-    var moduleName = 'csComp';
-    try {
-        Navigate.myModule = angular.module(moduleName);
-    }
-    catch (err) {
-        // named module does not exist, so create one
-        Navigate.myModule = angular.module(moduleName, []);
-    }
-    /**
-      * Directive to display the available map layers.
-      */
-    Navigate.myModule.directive('navigate', [
-        '$window', '$compile',
-        function ($window, $compile) {
-            return {
-                terminal: true,
-                restrict: 'E',
-                scope: {},
-                templateUrl: 'directives/Navigate/Navigate.tpl.html',
-                link: function (scope, element, attrs) {
-                    // Deal with resizing the element list
-                    scope.onResizeFunction = function () {
-                        var filterHeight = 50;
-                        var paginationCtrlHeight = 100;
-                        var itemHeight = 60;
-                        //scope.windowHeight          = $window.innerHeight;
-                        //scope.windowWidth           = $window.innerWidth;
-                        scope.numberOfItems = Math.floor(($window.innerHeight - filterHeight - paginationCtrlHeight) / itemHeight);
-                    };
-                    // Call to the function when the page is first loaded
-                    scope.onResizeFunction();
-                    angular.element($window).bind('resize', function () {
-                        scope.onResizeFunction();
-                        scope.$apply();
-                    });
-                },
-                replace: false,
-                transclude: false,
-                controller: Navigate.NavigateCtrl
-            };
-        }
-    ]).directive('bsPopover', function () {
-        return function (scope, element, attrs) {
-            element.find("a[rel=popover]").popover({ placement: 'right', html: 'true' });
-        };
-    });
-})(Navigate || (Navigate = {}));
-//# sourceMappingURL=Navigate.js.map
-var Navigate;
-(function (Navigate) {
-    var RecentFeature = (function () {
-        function RecentFeature() {
-        }
-        return RecentFeature;
-    })();
-    Navigate.RecentFeature = RecentFeature;
-    var NavigateCtrl = (function () {
-        // dependencies are injected via AngularJS $injector
-        // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
-        function NavigateCtrl($scope, $layerService, $messageBus, localStorageService, geoService) {
-            var _this = this;
-            this.$scope = $scope;
-            this.$layerService = $layerService;
-            this.$messageBus = $messageBus;
-            this.localStorageService = localStorageService;
-            this.geoService = geoService;
-            this.RecentLayers = [];
-            this.mobileLayers = [];
-            this.RecentFeatures = [];
-            this.lastPost = { longitude: 0, latitude: 0 };
-            $scope.vm = this;
-            this.$messageBus.subscribe('project', function (a, p) {
-                if (a === 'loaded') {
-                    _this.initRecentLayers();
-                    _this.initRecentFeatures();
-                    if (_this.$layerService.isMobile)
-                        _this.initMobileLayers(p);
-                }
-            });
-        }
-        NavigateCtrl.prototype.leave = function (l) {
-            if (this.mobileLayer && this.MyFeature) {
-                this.$layerService.removeFeature(this.MyFeature, true);
-                this.$layerService.activeMapRenderer.removeFeature(this.MyFeature);
-                //this.$layerService.saveFeature(this.MyFeature);
-                this.MyFeature = null;
-            }
-            this.mobileLayer = null;
-        };
-        NavigateCtrl.prototype.join = function (l) {
-            var _this = this;
-            this.localStorageService.set("username", this.UserName);
-            async.series([function (cb) {
-                    if (!l.enabled) {
-                        _this.$layerService.addLayer(l, function () {
-                            cb();
-                        });
-                    }
-                    else {
-                        cb();
-                    }
-                }, function (cb) {
-                    _this.mobileLayer = l;
-                    var f = new csComp.Services.Feature();
-                    f.layerId = _this.mobileLayer.id;
-                    f.geometry = {
-                        type: 'Point', coordinates: []
-                    };
-                    // todo disable
-                    f.geometry.coordinates = [_this.lastPost.longitude, _this.lastPost.latitude]; //[0, 0]; //loc.coords.longitude, loc.coords.latitude];
-                    f.id = _this.UserName;
-                    f.properties = { "Name": _this.UserName };
-                    //layer.data.features.push(f);
-                    _this.$layerService.initFeature(f, _this.mobileLayer);
-                    _this.$layerService.activeMapRenderer.addFeature(f);
-                    _this.$layerService.saveFeature(f);
-                    _this.MyFeature = f;
-                }]);
-        };
-        NavigateCtrl.prototype.initMobileLayers = function (p) {
-            var _this = this;
-            this.UserName = this.localStorageService.get("username");
-            if (!this.UserName)
-                this.UserName = "mobile user";
-            this.mobileLayers = [];
-            p.groups.forEach((function (g) {
-                g.layers.forEach(function (l) {
-                    if (l.tags && l.tags.indexOf('mobile') >= 0)
-                        _this.mobileLayers.push(l);
-                });
-            }));
-            if (this.$layerService.isMobile) {
-                this.$messageBus.subscribe("geo", function (action, loc) {
-                    switch (action) {
-                        case "pos":
-                            if (_this.mobileLayer && _this.MyFeature) {
-                                _this.lastPost = loc.coords;
-                                _this.MyFeature.geometry.coordinates = [loc.coords.longitude, loc.coords.latitude];
-                                _this.$layerService.activeMapRenderer.updateFeature(_this.MyFeature);
-                                _this.$layerService.saveFeature(_this.MyFeature);
-                            }
-                            break;
-                    }
-                });
-                this.geoService.start({});
-            }
-        };
-        NavigateCtrl.prototype.updateRecentFeaturesList = function () {
-            var _this = this;
-            setTimeout(function () {
-                var ids = _this.localStorageService.get("recentfeatures");
-                if (ids) {
-                    _this.RecentFeatures = ids;
-                    _this.RecentFeatures.forEach(function (rf) {
-                        var l = _this.$layerService.findLayer(rf.layerId);
-                        if (l && l.enabled) {
-                            rf.feature = _this.$layerService.findFeature(l, rf.id);
-                        }
-                    });
-                }
-            }, 0);
-        };
-        NavigateCtrl.prototype.selectFeature = function (feature) {
-            this.$layerService.selectFeature(feature, false, true);
-        };
-        NavigateCtrl.prototype.initRecentFeatures = function () {
-            var _this = this;
-            this.updateRecentFeaturesList();
-            this.$messageBus.subscribe('feature', function (a, feature) {
-                if (a === 'onFeatureSelect') {
-                    _this.RecentFeatures = _this.RecentFeatures.filter(function (f) { return f.id != feature.id; });
-                    var rf = { id: feature.id, name: csComp.Helpers.getFeatureTitle(feature), layerId: feature.layerId, feature: feature };
-                    _this.RecentFeatures.splice(0, 0, rf);
-                    if (_this.RecentFeatures.length > 5)
-                        _this.RecentFeatures.pop();
-                    var save = [];
-                    _this.RecentFeatures.forEach(function (f) { return save.push({ id: f.id, name: f.name, layerId: f.layerId }); });
-                    _this.localStorageService.set("recentfeatures", save);
-                    if (_this.$scope.$root.$$phase != '$apply' && _this.$scope.$root.$$phase != '$digest') {
-                        _this.$scope.$apply();
-                    }
-                }
-            });
-        };
-        NavigateCtrl.prototype.toggleLayer = function (layer) {
-            this.$layerService.toggleLayer(layer);
-        };
-        NavigateCtrl.prototype.initRecentLayers = function () {
-            var _this = this;
-            var ids = this.localStorageService.get("recentlayers");
-            if (ids)
-                ids.forEach(function (id) {
-                    var l = _this.$layerService.findLayer(id);
-                    if (l)
-                        _this.RecentLayers.push(l);
-                });
-            this.$messageBus.subscribe('layer', function (a, layer) {
-                if (a === 'activated') {
-                    _this.RecentLayers = _this.RecentLayers.filter(function (f) { return f.id != layer.id; });
-                    _this.RecentLayers.splice(0, 0, layer);
-                    if (_this.RecentLayers.length > 5)
-                        _this.RecentLayers.pop();
-                    ids = [];
-                    _this.RecentLayers.forEach(function (l) { return ids.push(l.id); });
-                    _this.localStorageService.set("recentlayers", ids);
-                    if (_this.$scope.$root.$$phase != '$apply' && _this.$scope.$root.$$phase != '$digest') {
-                        _this.$scope.$apply();
-                    }
-                }
-                _this.updateRecentFeaturesList();
-            });
-        };
-        // $inject annotation.
-        // It provides $injector with information about dependencies to be injected into constructor
-        // it is better to have it close to the constructor, because the parameters must match in count and type.
-        // See http://docs.angularjs.org/guide/di
-        NavigateCtrl.$inject = [
-            '$scope',
-            'layerService',
-            'messageBusService', 'localStorageService', 'geoService'
-        ];
-        return NavigateCtrl;
-    })();
-    Navigate.NavigateCtrl = NavigateCtrl;
-})(Navigate || (Navigate = {}));
-//# sourceMappingURL=NavigateCtrl.js.map
-var Search;
-(function (Search) {
-    var NavigateSteps = (function () {
-        function NavigateSteps() {
-        }
-        return NavigateSteps;
-    })();
-    Search.NavigateSteps = NavigateSteps;
-    var NavigateState = (function () {
-        function NavigateState() {
-        }
-        return NavigateState;
-    })();
-    Search.NavigateState = NavigateState;
-})(Search || (Search = {}));
-//# sourceMappingURL=SearchClasses.js.map
-var OfflineSearch;
-(function (OfflineSearch) {
-    /**
-      * Config
-      */
-    var moduleName = 'csComp';
-    try {
-        OfflineSearch.myModule = angular.module(moduleName);
-    }
-    catch (err) {
-        // named module does not exist, so create one
-        OfflineSearch.myModule = angular.module(moduleName, []);
-    }
-    /**
-      * Directive to display the available map layers.
-      */
-    OfflineSearch.myModule.directive('offlineSearch', [
-        '$compile',
-        function ($compile) {
-            return {
-                terminal: true,
-                restrict: 'E',
-                scope: {},
-                templateUrl: 'directives/OfflineSearch/OfflineSearch.tpl.html',
-                compile: function (el) {
-                    var fn = $compile(el);
-                    return function (scope) {
-                        fn(scope);
-                    };
-                },
-                replace: true,
-                transclude: true,
-                controller: OfflineSearch.OfflineSearchCtrl
-            };
-        }
-    ]);
-})(OfflineSearch || (OfflineSearch = {}));
-//# sourceMappingURL=OfflineSearch.js.map
-var OfflineSearch;
-(function (OfflineSearch) {
-    var Layer = (function () {
-        function Layer(groupTitle, index, id, title, path, type) {
-            this.groupTitle = groupTitle;
-            this.index = index;
-            this.id = id;
-            this.title = title;
-            this.path = path;
-            this.type = type;
-            /**
-             * Names of all the features.
-             * @type {string[]}
-             */
-            this.featureNames = [];
-        }
-        return Layer;
-    })();
-    OfflineSearch.Layer = Layer;
-    /**
-     * An index entry that contains a search result.
-     */
-    var Entry = (function () {
-        function Entry(layerIndexOrArray, featureIndex, propertyIndex) {
-            this.v = Array(2);
-            if (typeof layerIndexOrArray === 'number') {
-                this.v[0] = layerIndexOrArray;
-                this.v[1] = featureIndex;
-            }
-            else {
-                this.v = layerIndexOrArray;
-            }
-        }
-        Object.defineProperty(Entry.prototype, "layerIndex", {
-            get: function () { return this.v[0]; },
-            enumerable: true,
-            configurable: true
-        });
-        Object.defineProperty(Entry.prototype, "featureIndex", {
-            get: function () { return this.v[1]; },
-            enumerable: true,
-            configurable: true
-        });
-        /**
-         * This function is called when serializing the Entry object to JSON, which is
-         * much less verbose than the default JSON. In the constructor, I've used a
-         * Union type to deserialize it again.
-         */
-        Entry.prototype.toJSON = function () {
-            return this.v;
-        };
-        return Entry;
-    })();
-    OfflineSearch.Entry = Entry;
-    var KeywordIndex = (function () {
-        function KeywordIndex() {
-        }
-        return KeywordIndex;
-    })();
-    OfflineSearch.KeywordIndex = KeywordIndex;
-    var OfflineSearchResult = (function () {
-        function OfflineSearchResult(project, options) {
-            this.project = project;
-            this.options = options;
-            this.layers = [];
-            this.keywordIndex = {};
-        }
-        return OfflineSearchResult;
-    })();
-    OfflineSearch.OfflineSearchResult = OfflineSearchResult;
-})(OfflineSearch || (OfflineSearch = {}));
-//# sourceMappingURL=OfflineSearchClasses.js.map
-var OfflineSearch;
-(function (OfflineSearch) {
-    var OfflineSearchResultViewModel = (function () {
-        function OfflineSearchResultViewModel(title, layerTitle, groupTitle, entry) {
-            this.title = title;
-            this.layerTitle = layerTitle;
-            this.groupTitle = groupTitle;
-            this.entry = entry;
-            this.firstInGroup = false;
-        }
-        OfflineSearchResultViewModel.prototype.toString = function () {
-            return this.title;
-        };
-        Object.defineProperty(OfflineSearchResultViewModel.prototype, "fullTitle", {
-            get: function () {
-                return this.groupTitle + ' >> ' + this.layerTitle + ' >> ' + this.title;
-            },
-            enumerable: true,
-            configurable: true
-        });
-        return OfflineSearchResultViewModel;
-    })();
-    OfflineSearch.OfflineSearchResultViewModel = OfflineSearchResultViewModel;
-    var OfflineSearchCtrl = (function () {
-        // dependencies are injected via AngularJS $injector
-        // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
-        function OfflineSearchCtrl($scope, $http, $layerService, $mapService, $messageBus) {
-            var _this = this;
-            this.$scope = $scope;
-            this.$http = $http;
-            this.$layerService = $layerService;
-            this.$mapService = $mapService;
-            this.$messageBus = $messageBus;
-            this.isReady = false;
-            $scope.vm = this;
-            $messageBus.subscribe('project', function (title) {
-                switch (title) {
-                    case 'loaded':
-                        var offlineSearchResultUrl = $layerService.projectUrl.url.replace('project.json', 'offline_search_result.json');
-                        _this.loadSearchResults(offlineSearchResultUrl);
-                        break;
-                }
-            });
-            $messageBus.subscribe('language', function (title, language) {
-                switch (title) {
-                    case 'newLanguage':
-                        // TODO switch language!
-                        break;
-                }
-            });
-        }
-        /**
-         * Load the offline search results (json file).
-         */
-        OfflineSearchCtrl.prototype.loadSearchResults = function (url) {
-            var _this = this;
-            this.$http.get(url)
-                .success(function (offlineSearchResult) {
-                _this.offlineSearchResult = offlineSearchResult;
-                var kwi = offlineSearchResult.keywordIndex;
-                var keywordIndex = {};
-                for (var key in kwi) {
-                    if (!kwi.hasOwnProperty(key))
-                        continue;
-                    kwi[key].forEach(function (entry) {
-                        if (!keywordIndex.hasOwnProperty(key))
-                            keywordIndex[key] = [];
-                        keywordIndex[key].push(new OfflineSearch.Entry(entry));
-                    });
-                }
-                _this.offlineSearchResult.keywordIndex = keywordIndex;
-                _this.isReady = true;
-            })
-                .error(function () { console.log("OfflineSearch: error with $http "); });
-        };
-        /**
-         * Get the locations based on the entered text.
-         */
-        OfflineSearchCtrl.prototype.getLocation = function (text, resultCount) {
-            if (resultCount === void 0) { resultCount = 15; }
-            if (!this.isReady || text === null || text.length < 3)
-                return [];
-            var searchWords = text.toLowerCase().split(' ');
-            // test if last word in text might be a (part of) a stopword, if so remove it
-            var lastSearchTerm = searchWords[searchWords.length - 1];
-            var possibleStopWords = this.offlineSearchResult.options.stopWords.filter(function (stopword) { return stopword.indexOf(lastSearchTerm) > -1; });
-            if (possibleStopWords.length > 0) {
-                searchWords.splice(searchWords.length - 1, 1);
-            }
-            // remove all exact stopwords
-            this.offlineSearchResult.options.stopWords.forEach(function (stopWord) {
-                while (searchWords.indexOf(stopWord) > -1) {
-                    searchWords.splice(searchWords.indexOf(stopWord), 1);
-                }
-            });
-            var totResults;
-            for (var j in searchWords) {
-                var result = this.getKeywordHits(searchWords[j]);
-                totResults = !totResults
-                    ? result
-                    : this.mergeResults(totResults, result);
-            }
-            var searchResults = [];
-            var layers = this.offlineSearchResult.layers;
-            var count = resultCount;
-            var resultIndex = 0;
-            while (count > 0 && resultIndex < totResults.length) {
-                var r = totResults[resultIndex++];
-                var subCount = Math.min(count, r.entries.length);
-                for (var i = 0; i < subCount; i++) {
-                    var entry = r.entries[i];
-                    var layer = layers[entry.layerIndex];
-                    count--;
-                    searchResults.push(new OfflineSearchResultViewModel(layer.featureNames[entry.featureIndex], layer.title, layer.groupTitle, entry));
-                }
-            }
-            // Group search results by groupTitle | layerTitle
-            var groups = {};
-            searchResults.forEach(function (sr) {
-                var group = sr.groupTitle + ' >> ' + sr.layerTitle;
-                if (!groups.hasOwnProperty(group))
-                    groups[group] = [];
-                groups[group].push(sr);
-            });
-            searchResults = [];
-            for (var key in groups) {
-                if (!groups.hasOwnProperty(key))
-                    continue;
-                var firstInGroup = true;
-                groups[key].forEach(function (sr) {
-                    sr.firstInGroup = firstInGroup;
-                    searchResults.push(sr);
-                    firstInGroup = false;
-                });
-            }
-            return searchResults;
-        };
-        /**
-         * Merge the resuls of two keyword lookups by checking whether different entries refer
-         * to the same layer and feature.
-         * @result1 {ILookupResult[]}
-         * @result2 {ILookupResult[]}
-         */
-        OfflineSearchCtrl.prototype.mergeResults = function (result1, result2) {
-            var r = [];
-            result1.forEach(function (r1) {
-                result2.forEach(function (r2) {
-                    r1.entries.forEach(function (entry1) {
-                        r2.entries.forEach(function (entry2) {
-                            if (entry1.layerIndex === entry2.layerIndex && entry1.featureIndex === entry2.featureIndex)
-                                r.push({ score: r1.score * r2.score, key: r1.key + ' ' + r2.key, entries: [entry1] });
-                        });
-                    });
-                });
-            });
-            r = r.sort(function (a, b) { return b.score - a.score; });
-            return r;
-        };
-        /**
-         * Do a fuzzy keyword comparison between the entered text and the list of keywords,
-         * and return a subset.
-         * @text: {string}
-         */
-        OfflineSearchCtrl.prototype.getKeywordHits = function (text) {
-            var results = [];
-            var keywordIndex = this.offlineSearchResult.keywordIndex;
-            var keywords = Object.getOwnPropertyNames(keywordIndex);
-            keywords.forEach(function (key) {
-                var score = key.score(text, null);
-                if (score < 0.5)
-                    return;
-                results.push({ score: score, key: key, entries: keywordIndex[key] });
-            });
-            results = results.sort(function (a, b) { return b.score - a.score; });
-            return results;
-        };
-        /**
-         * When an item is selected, optionally open the layer and jump to the selected feature.
-         */
-        OfflineSearchCtrl.prototype.onSelect = function (selectedItem) {
-            var _this = this;
-            var layerIndex = selectedItem.entry.layerIndex;
-            var layer = this.offlineSearchResult.layers[layerIndex];
-            var projectLayer = this.$layerService.findLayer(layer.id);
-            console.log(selectedItem);
-            if (!projectLayer)
-                return;
-            if (projectLayer.enabled) {
-                this.selectFeature(layer.id, selectedItem.entry.featureIndex);
-                return;
-            }
-            else {
-                var handle = this.$messageBus.subscribe('layer', function (title, layer) {
-                    if (title !== 'activated' || projectLayer.url !== layer.url)
-                        return;
-                    _this.selectFeature(layer.id, selectedItem.entry.featureIndex);
-                    _this.$messageBus.unsubscribe(handle);
-                });
-                this.$layerService.addLayer(projectLayer);
-            }
-            var group = $("#layergroup_" + projectLayer.groupId);
-            group.collapse("show");
-        };
-        OfflineSearchCtrl.prototype.selectFeature = function (layerId, featureIndex) {
-            var feature = this.$layerService.findFeatureByIndex(layerId, featureIndex);
-            if (feature == null)
-                return;
-            this.$mapService.zoomTo(feature);
-            this.$layerService.selectFeature(feature);
-        };
-        // $inject annotation.
-        // It provides $injector with information about dependencies to be injected into constructor
-        // it is better to have it close to the constructor, because the parameters must match in count and type.
-        // See http://docs.angularjs.org/guide/di
-        OfflineSearchCtrl.$inject = [
-            '$scope',
-            '$http',
-            'layerService',
-            'mapService',
-            'messageBusService'
-        ];
-        return OfflineSearchCtrl;
-    })();
-    OfflineSearch.OfflineSearchCtrl = OfflineSearchCtrl;
-})(OfflineSearch || (OfflineSearch = {}));
-//# sourceMappingURL=OfflineSearchCtrl.js.map
 var ProjectHeaderSelection;
 (function (ProjectHeaderSelection) {
     /**
@@ -12568,6 +12900,7 @@ var Timeline;
                 'height': "54px"
             };
             this.debounceUpdate = _.debounce(this.updateFeatures, 500);
+            this.debounceSetItems = _.debounce(function (items) { _this.setItems(items); }, 500);
             $scope.vm = this;
             this.$messageBusService.subscribe("project", function (s, data) {
                 setTimeout(function () {
@@ -12620,8 +12953,26 @@ var Timeline;
                     case "updateFeatures":
                         this.debounceUpdate();
                         break;
+                    case "setItems":
+                        this.debounceSetItems(data);
+                        break;
+                    case "setGroups":
+                        this.setGroups(data);
+                        break;
                 }
             }
+        };
+        TimelineCtrl.prototype.setItems = function (items) {
+            if (!items)
+                return;
+            var its = new vis.DataSet(items);
+            this.$scope.timeline.setItems(its);
+        };
+        TimelineCtrl.prototype.setGroups = function (groups) {
+            if (!groups)
+                return;
+            var gs = new vis.DataSet(groups);
+            this.$scope.timeline.setGroups(gs);
         };
         TimelineCtrl.prototype.updateFeatures = function () {
             var _this = this;
@@ -12942,6 +13293,56 @@ var Timeline;
     Timeline.TimelineCtrl = TimelineCtrl;
 })(Timeline || (Timeline = {}));
 //# sourceMappingURL=TimelineCtrl.js.map
+var Voting;
+(function (Voting) {
+    /**
+      * Config
+      */
+    var moduleName = 'csComp';
+    try {
+        Voting.myModule = angular.module(moduleName);
+    }
+    catch (err) {
+        // named module does not exist, so create one
+        Voting.myModule = angular.module(moduleName, []);
+    }
+    /**
+      * Directive to display an MCA control.
+      */
+    Voting.myModule.directive('voting', ['$timeout', function ($timeout) {
+            return {
+                restrict: 'EA',
+                require: '^ngModel',
+                scope: {
+                    min: '=',
+                    max: '=',
+                    ngModel: '=',
+                    ngChange: '&'
+                },
+                template: '<div style="line-height: 12px; vertical-align: top; margin: 0; background: rgba(0, 0, 0, 0.1); border-radius: 6px; padding: 4px 6px;">' +
+                    '<a href="" data-ng-click="decrement()" data-ng-disabled="ngModel <= min" style="float: left;"><i class="fa" data-ng-class="{true: \'fa-minus-square\', false: \'fa-minus-square-o\'}[ngModel > min]"></i></a>' +
+                    '<span style="float: left; width:28px; text-align: center;">{{ngModel}}</span>' +
+                    '<a href="" data-ng-click="increment()" data-ng-disabled="ngModel >= max"><i class="fa" data-ng-class="{true: \'fa-plus-square\' , false: \'fa-plus-square-o\' }[ngModel < max]"></i></a>' +
+                    '</div>',
+                link: function ($scope) {
+                    $scope.increment = function () {
+                        if ($scope.ngModel >= $scope.max)
+                            return;
+                        $scope.ngModel++;
+                        $timeout($scope.ngChange, 0);
+                    };
+                    $scope.decrement = function () {
+                        if ($scope.ngModel <= $scope.min)
+                            return;
+                        $scope.ngModel--;
+                        $timeout($scope.ngChange, 0);
+                    };
+                }
+            };
+        }
+    ]);
+})(Voting || (Voting = {}));
+//# sourceMappingURL=Voting.js.map
 var TripPlanner;
 (function (TripPlanner) {
     /**
@@ -13073,56 +13474,6 @@ var TripPlanner;
     TripPlanner.TripPlannerCtrl = TripPlannerCtrl;
 })(TripPlanner || (TripPlanner = {}));
 //# sourceMappingURL=TripPlannerCtrl.js.map
-var Voting;
-(function (Voting) {
-    /**
-      * Config
-      */
-    var moduleName = 'csComp';
-    try {
-        Voting.myModule = angular.module(moduleName);
-    }
-    catch (err) {
-        // named module does not exist, so create one
-        Voting.myModule = angular.module(moduleName, []);
-    }
-    /**
-      * Directive to display an MCA control.
-      */
-    Voting.myModule.directive('voting', ['$timeout', function ($timeout) {
-            return {
-                restrict: 'EA',
-                require: '^ngModel',
-                scope: {
-                    min: '=',
-                    max: '=',
-                    ngModel: '=',
-                    ngChange: '&'
-                },
-                template: '<div style="line-height: 12px; vertical-align: top; margin: 0; background: rgba(0, 0, 0, 0.1); border-radius: 6px; padding: 4px 6px;">' +
-                    '<a href="" data-ng-click="decrement()" data-ng-disabled="ngModel <= min" style="float: left;"><i class="fa" data-ng-class="{true: \'fa-minus-square\', false: \'fa-minus-square-o\'}[ngModel > min]"></i></a>' +
-                    '<span style="float: left; width:28px; text-align: center;">{{ngModel}}</span>' +
-                    '<a href="" data-ng-click="increment()" data-ng-disabled="ngModel >= max"><i class="fa" data-ng-class="{true: \'fa-plus-square\' , false: \'fa-plus-square-o\' }[ngModel < max]"></i></a>' +
-                    '</div>',
-                link: function ($scope) {
-                    $scope.increment = function () {
-                        if ($scope.ngModel >= $scope.max)
-                            return;
-                        $scope.ngModel++;
-                        $timeout($scope.ngChange, 0);
-                    };
-                    $scope.decrement = function () {
-                        if ($scope.ngModel <= $scope.min)
-                            return;
-                        $scope.ngModel--;
-                        $timeout($scope.ngChange, 0);
-                    };
-                }
-            };
-        }
-    ]);
-})(Voting || (Voting = {}));
-//# sourceMappingURL=Voting.js.map
 //# sourceMappingURL=AuthenticationService.js.map
 var csComp;
 (function (csComp) {
@@ -13724,6 +14075,10 @@ var csComp;
                 var _this = this;
                 this.ctrl = ctrl;
                 this.options = ctrl.$scope.data.generator;
+                this.mb.subscribe('timeline', function (action, range) {
+                    if (action === "timeSpanUpdated" && _this.lastSelectedFeature)
+                        _this.selectFeature(_this.lastSelectedFeature);
+                });
                 this.mb.subscribe('feature', function (action, feature) {
                     switch (action) {
                         case 'onFeatureSelect':
@@ -13737,11 +14092,12 @@ var csComp;
             };
             propertySensordataGenerator.prototype.selectFeature = function (f) {
                 if (!this.options.hasOwnProperty("featureType") || this.options["featureType"] === f.fType.name) {
+                    this.lastSelectedFeature = f;
                     var properties = [];
                     if (this.options.hasOwnProperty("properties")) {
                         // set width/height using the widget width/height (must be set) 
                         var width = parseInt(this.ctrl.widget.width.toLowerCase().replace('px', '').replace('%', '')) - 50;
-                        var height = parseInt(this.ctrl.widget.height.toLowerCase().replace('px', '').replace('%', '')) - 50;
+                        var height = parseInt(this.ctrl.widget.height.toLowerCase().replace('px', '').replace('%', '')) - 75;
                         // make sure we have an array of properties
                         if (this.options.properties instanceof Array) {
                             properties = this.options.properties;
@@ -13752,101 +14108,103 @@ var csComp;
                         var values = [];
                         properties.forEach(function (p) {
                             if (f.sensors.hasOwnProperty(p)) {
+                                var i = 0;
+                                f.layer.timestamps.forEach(function (t) {
+                                    var s = f.sensors[p][i];
+                                    if (s === -1)
+                                        s = null;
+                                    if (f.sensors[p].length > i)
+                                        values.push({ x: t, y: s, c: 0 });
+                                    i += 1;
+                                });
                             }
                         });
-                    } //f.properties.hasOwnProperty(this.options.property)) {
-                    this.ctrl.$scope.data.spec = {
-                        "width": width,
-                        "height": height,
-                        "padding": { "top": 10, "left": 30, "bottom": 30, "right": 10 },
-                        "data": [
-                            {
-                                "name": "table",
-                                "values": [
-                                    { "x": 0, "y": 28, "c": 0 }, { "x": 0, "y": 55, "c": 1 },
-                                    { "x": 1, "y": 43, "c": 0 }, { "x": 1, "y": 91, "c": 1 },
-                                    { "x": 2, "y": 81, "c": 0 }, { "x": 2, "y": 53, "c": 1 },
-                                    { "x": 3, "y": 19, "c": 0 }, { "x": 3, "y": 87, "c": 1 },
-                                    { "x": 4, "y": 52, "c": 0 }, { "x": 4, "y": 48, "c": 1 },
-                                    { "x": 5, "y": 24, "c": 0 }, { "x": 5, "y": 49, "c": 1 },
-                                    { "x": 6, "y": 87, "c": 0 }, { "x": 6, "y": 66, "c": 1 },
-                                    { "x": 7, "y": 17, "c": 0 }, { "x": 7, "y": 27, "c": 1 },
-                                    { "x": 8, "y": 68, "c": 0 }, { "x": 8, "y": 16, "c": 1 },
-                                    { "x": 9, "y": 49, "c": 0 }, { "x": 9, "y": 15, "c": 1 }
-                                ]
-                            },
-                            {
-                                "name": "stats",
-                                "source": "table",
-                                "transform": [
-                                    {
-                                        "type": "aggregate",
-                                        "groupby": ["x"],
-                                        "summarize": [{ "field": "y", "ops": ["sum"] }]
-                                    }
-                                ]
-                            }
-                        ],
-                        "scales": [
-                            {
-                                "name": "x",
-                                "type": "ordinal",
-                                "range": "width",
-                                "points": true,
-                                "domain": { "data": "table", "field": "x" }
-                            },
-                            {
-                                "name": "y",
-                                "type": "linear",
-                                "range": "height",
-                                "nice": true,
-                                "domain": { "data": "stats", "field": "sum_y" }
-                            },
-                            {
-                                "name": "color",
-                                "type": "ordinal",
-                                "range": "category10",
-                                "domain": { "data": "table", "field": "c" }
-                            }
-                        ],
-                        "axes": [
-                            { "type": "x", "scale": "x" },
-                            { "type": "y", "scale": "y" }
-                        ],
-                        "marks": [
-                            {
-                                "type": "group",
-                                "from": {
-                                    "data": "table",
-                                    "transform": [
-                                        { "type": "stack", "groupby": ["x"], "sortby": ["c"], "field": "y" },
-                                        { "type": "facet", "groupby": ["c"] }
-                                    ]
+                        var spec = {
+                            "width": width,
+                            "height": height,
+                            "padding": { "top": 10, "left": 30, "bottom": 30, "right": 10 },
+                            "data": [
+                                {
+                                    "values": values,
+                                    "name": "table"
                                 },
-                                "marks": [
-                                    {
-                                        "type": "area",
-                                        "properties": {
-                                            "enter": {
-                                                "interpolate": { "value": "monotone" },
-                                                "x": { "scale": "x", "field": "x" },
-                                                "y": { "scale": "y", "field": "layout_start" },
-                                                "y2": { "scale": "y", "field": "layout_end" },
-                                                "fill": { "scale": "color", "field": "c" }
-                                            },
-                                            "update": {
-                                                "fillOpacity": { "value": 1 }
-                                            },
-                                            "hover": {
-                                                "fillOpacity": { "value": 0.5 }
+                                {
+                                    "name": "stats",
+                                    "source": "table",
+                                    "transform": [
+                                        {
+                                            "type": "aggregate",
+                                            "groupby": ["x"],
+                                            "summarize": [{ "field": "y", "ops": ["sum"] }]
+                                        }
+                                    ]
+                                }
+                            ],
+                            "scales": [
+                                {
+                                    "name": "x",
+                                    "type": "time",
+                                    "range": "width",
+                                    "points": true,
+                                    "domain": { "data": "table", "field": "x" },
+                                    "domainMin": this.$layerService.project.timeLine.start,
+                                    "domainMax": this.$layerService.project.timeLine.end
+                                },
+                                {
+                                    "name": "y",
+                                    "type": "linear",
+                                    "range": "height",
+                                    "nice": true,
+                                    "domain": { "data": "stats", "field": "sum_y" }
+                                },
+                                {
+                                    "name": "color",
+                                    "type": "ordinal",
+                                    "range": "category10",
+                                    "domain": { "data": "table", "field": "c" }
+                                }
+                            ],
+                            "axes": [
+                                { "type": "x", "scale": "x" },
+                                { "type": "y", "scale": "y" }
+                            ],
+                            "marks": [
+                                {
+                                    "type": "group",
+                                    "from": {
+                                        "data": "table",
+                                        "transform": [
+                                            { "type": "stack", "groupby": ["x"], "sortby": ["c"], "field": "y" },
+                                            { "type": "facet", "groupby": ["c"] }
+                                        ]
+                                    },
+                                    "marks": [
+                                        {
+                                            "type": "area",
+                                            "properties": {
+                                                "enter": {
+                                                    "interpolate": { "value": "monotone" },
+                                                    "x": { "scale": "x", "field": "x" },
+                                                    "y": { "scale": "y", "field": "layout_start" },
+                                                    "y2": { "scale": "y", "field": "layout_end" },
+                                                    "fill": { "scale": "color", "field": "c" }
+                                                },
+                                                "update": {
+                                                    "fillOpacity": { "value": 1 }
+                                                },
+                                                "hover": {
+                                                    "fillOpacity": { "value": 0.5 }
+                                                }
                                             }
                                         }
-                                    }
-                                ]
-                            }
-                        ]
-                    };
-                    this.ctrl.updateChart();
+                                    ]
+                                }
+                            ]
+                        };
+                        //console.log(JSON.stringify(spec));
+                        this.ctrl.$scope.data.spec = spec;
+                        this.ctrl.updateChart();
+                    }
                 }
             };
             propertySensordataGenerator.prototype.stop = function () {
@@ -13892,7 +14250,7 @@ var csComp;
                 this.mainDashboard = new csComp.Services.Dashboard();
                 this.dashboards = [];
                 this.dashboards['main'] = this.mainDashboard;
-                this.chartGenerators['property-sensordata'] = function () { return new csComp.Services.propertySensordataGenerator(_this.$layerService, _this); };
+                this.chartGenerators['sensordata'] = function () { return new csComp.Services.propertySensordataGenerator(_this.$layerService, _this); };
                 this.chartGenerators['top10'] = function () { return new csComp.Services.top10Generator(_this.$layerService, _this); };
                 // this.$messageBusService.subscribe("dashboard", (event: string, id: string) => {
                 //     //alert(event);
@@ -14110,14 +14468,18 @@ var csComp;
                             break;
                         case 'activated':
                             _this.layer = layer;
-                            _this.style = null;
                             if (!_this.options.layer || layer.id === _this.options.layer) {
-                                _this.styleSub = _this.mb.subscribe('styles', function (l, style) {
-                                    if (l === 'updatedstyle') {
-                                        _this.style = style;
-                                        _this.updateChart(_this.layer);
-                                    }
-                                });
+                                if (!_this.options.property) {
+                                    _this.styleSub = _this.mb.subscribe('styles', function (l, style) {
+                                        if (l === 'updatedstyle') {
+                                            _this.property = style.property;
+                                            _this.updateChart(_this.layer);
+                                        }
+                                    });
+                                }
+                                else
+                                    _this.property = _this.options.property;
+                                _this.updateChart(_this.layer);
                             }
                             break;
                     }
@@ -14125,32 +14487,125 @@ var csComp;
             };
             top10Generator.prototype.updateChart = function (layer) {
                 var _this = this;
-                if (!layer || !layer.data || !this.style)
+                if (!layer || !layer.data || !this.property)
                     return;
                 // set width/height using the widget width/height (must be set) 
                 var width = parseInt(this.ctrl.widget.width.toLowerCase().replace('px', '').replace('%', '')) - 50;
                 var height = parseInt(this.ctrl.widget.height.toLowerCase().replace('px', '').replace('%', '')) - 80;
-                this.ctrl.$scope.data.lite = true;
+                this.ctrl.$scope.data.lite = false;
                 var values = [];
                 layer.data.features.forEach(function (f) {
-                    if (f.properties.hasOwnProperty(_this.style.property) && f.properties.hasOwnProperty(f.fType.style.nameLabel)) {
-                        var pr = { "value": f.properties[_this.style.property], "name": f.properties[f.fType.style.nameLabel] };
+                    if (f.properties.hasOwnProperty(_this.property) && f.properties.hasOwnProperty(f.fType.style.nameLabel)) {
+                        var pr = { "value": f.properties[_this.property], "name": " " + f.properties[f.fType.style.nameLabel].toString() };
                         values.push(pr);
                     }
                 });
-                this.ctrl.$scope.data.spec = {
-                    "width": width,
-                    "height": height,
-                    "data": { "values": _.first(_.sortBy(values, function (v) { return -v.value; }), 10) },
-                    "marktype": "bar",
-                    "encoding": {
-                        "x": { "name": "value", "type": "Q" },
-                        "y": { "name": "name", "type": "N" }
-                    }
-                };
-                this.ctrl.$scope.data.title = this.style.title;
-                console.log(JSON.stringify(this.ctrl.$scope.data.spec));
-                //this.ctrl.updateChart();
+                this.ctrl.$scope.data.spec =
+                    {
+                        "width": width,
+                        "height": height,
+                        "padding": "auto",
+                        "data": [
+                            {
+                                "name": "source",
+                                "values": _.first(_.sortBy(values, function (v) { return -v.value; }), 10),
+                                "format": { "type": "json", "parse": { "value": "number" } },
+                                "transform": [{ "type": "filter", "test": "datum.value!==null" }]
+                            },
+                            {
+                                "name": "layout",
+                                "source": "source",
+                                "transform": [
+                                    {
+                                        "type": "aggregate",
+                                        "summarize": [{ "field": "name", "ops": ["distinct"] }]
+                                    },
+                                    {
+                                        "type": "formula",
+                                        "field": "cellHeight",
+                                        "expr": "(datum.distinct_name + 1) * 21"
+                                    }
+                                ]
+                            }
+                        ],
+                        "marks": [
+                            {
+                                "name": "root",
+                                "type": "group",
+                                "from": { "data": "layout" },
+                                "properties": {
+                                    "update": {
+                                        "width": { "value": 200 },
+                                        "height": { "field": "cellHeight" }
+                                    }
+                                },
+                                "marks": [
+                                    {
+                                        "type": "rect",
+                                        "properties": {
+                                            "update": {
+                                                "x": { "scale": "x", "field": "value" },
+                                                "x2": { "value": 0 },
+                                                "yc": { "scale": "y", "field": "name" },
+                                                "height": { "value": 21, "offset": -1 },
+                                                "fill": { "value": "#4682b4" }
+                                            }
+                                        },
+                                        "from": { "data": "source" }
+                                    }
+                                ],
+                                "scales": [
+                                    {
+                                        "name": "x",
+                                        "type": "linear",
+                                        "domain": { "data": "source", "field": "value", "sort": true },
+                                        "rangeMin": 0,
+                                        "rangeMax": 200,
+                                        "round": true,
+                                        "clamp": true,
+                                        "nice": true
+                                    },
+                                    {
+                                        "name": "y",
+                                        "type": "ordinal",
+                                        "domain": { "data": "source", "field": "name" },
+                                        "rangeMin": 0,
+                                        "rangeMax": { "data": "layout", "field": "cellHeight" },
+                                        "round": true,
+                                        "clamp": true,
+                                        "bandWidth": 21,
+                                        "padding": 1,
+                                        "points": true
+                                    }
+                                ],
+                                "axes": [
+                                    {
+                                        "type": "x",
+                                        "scale": "x",
+                                        "format": "s",
+                                        "grid": true,
+                                        "layer": "back",
+                                        "ticks": 5,
+                                        "title": "value"
+                                    },
+                                    {
+                                        "type": "y",
+                                        "scale": "y",
+                                        "grid": false,
+                                        "title": "name",
+                                        "properties": {
+                                            "labels": {
+                                                "text": { "template": "{{ datum.data | truncate:25}}" }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        ]
+                    };
+                this.ctrl.$scope.data.title = this.property;
+                // console.log(JSON.stringify(this.ctrl.$scope.data.spec));
+                // this.ctrl.updateChart();
                 this.ctrl.initChart();
             };
             top10Generator.prototype.stop = function () {
@@ -14518,19 +14973,51 @@ var csComp;
     })(Services = csComp.Services || (csComp.Services = {}));
 })(csComp || (csComp = {}));
 //# sourceMappingURL=ExpressionService.js.map
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
 var csComp;
 (function (csComp) {
     var Services;
     (function (Services) {
         'use strict';
-        var LayerActions = (function () {
+        (function (ActionType) {
+            ActionType[ActionType["Context"] = 0] = "Context";
+            ActionType[ActionType["Hover"] = 1] = "Hover";
+        })(Services.ActionType || (Services.ActionType = {}));
+        var ActionType = Services.ActionType;
+        var BasicActionService = (function () {
+            function BasicActionService() {
+            }
+            BasicActionService.prototype.stop = function () { };
+            BasicActionService.prototype.addFeature = function (feature) { };
+            BasicActionService.prototype.removeFeature = function (feature) { };
+            BasicActionService.prototype.selectFeature = function (feature) { };
+            BasicActionService.prototype.getFeatureActions = function (feature) {
+                return [];
+            };
+            BasicActionService.prototype.getFeatureHoverActions = function (feature) {
+                return [];
+            };
+            BasicActionService.prototype.deselectFeature = function (feature) { };
+            BasicActionService.prototype.updateFeature = function (feuture) { };
+            BasicActionService.prototype.search = function (query, result) {
+                result(null, []);
+            };
+            BasicActionService.prototype.init = function (layerService) {
+                this.layerService = layerService;
+            };
+            return BasicActionService;
+        })();
+        Services.BasicActionService = BasicActionService;
+        var LayerActions = (function (_super) {
+            __extends(LayerActions, _super);
             function LayerActions() {
+                _super.apply(this, arguments);
                 this.id = 'LayerActions';
             }
-            LayerActions.prototype.stop = function () { };
-            LayerActions.prototype.addFeature = function (feature) { };
-            LayerActions.prototype.removeFeature = function (feature) { };
-            LayerActions.prototype.selectFeature = function (feature) { };
             LayerActions.prototype.getFeatureActions = function (feature) {
                 if (feature.layer.isDynamic) {
                     var setFilterActionOption = {
@@ -14546,17 +15033,38 @@ var csComp;
             LayerActions.prototype.getFeatureHoverActions = function (feature) {
                 return [];
             };
-            LayerActions.prototype.deselectFeature = function (feature) { };
-            LayerActions.prototype.updateFeature = function (feuture) { };
             LayerActions.prototype.setAsFilter = function (feature, layerService) {
                 layerService.editFeature(feature);
             };
+            LayerActions.prototype.search = function (query, result) {
+                var _this = this;
+                var r = [];
+                var temp = [];
+                this.layerService.project.features.forEach(function (f) {
+                    var title = csComp.Helpers.getFeatureTitle(f);
+                    if (title) {
+                        var score = title.toString().score(query.query, null);
+                        temp.push({ score: score, feature: f, title: title });
+                    }
+                });
+                temp.sort(function (a, b) { return b.score - a.score; }).forEach(function (rs) {
+                    if (r.length < 20) {
+                        var f = rs.feature;
+                        var res = { title: rs.title, description: f.layer.title, feature: f, score: rs.score, icon: 'data/projects/smartcycling/buurt.png', service: _this.id, click: function () {
+                                _this.layerService.$mapService.zoomTo(f);
+                                _this.layerService.selectFeature(f);
+                            } };
+                        //if (f.fType && f.fType.name!=="default") res.description += " (" + f.fType.name + ")";
+                        r.push(res);
+                    }
+                });
+                result(null, r);
+            };
             LayerActions.prototype.init = function (layerService) {
-                console.log('init LayerActions');
-                this.layerService = layerService;
+                _super.prototype.init.call(this, layerService);
             };
             return LayerActions;
-        })();
+        })(BasicActionService);
         Services.LayerActions = LayerActions;
     })(Services = csComp.Services || (csComp.Services = {}));
 })(csComp || (csComp = {}));
@@ -14566,11 +15074,6 @@ var csComp;
     var Services;
     (function (Services) {
         'use strict';
-        (function (ActionType) {
-            ActionType[ActionType["Context"] = 0] = "Context";
-            ActionType[ActionType["Hover"] = 1] = "Hover";
-        })(Services.ActionType || (Services.ActionType = {}));
-        var ActionType = Services.ActionType;
         /** layer service is responsible for reading and managing all project, layer and sensor related data */
         var LayerService = (function () {
             function LayerService($location, $compile, $translate, $messageBusService, $mapService, $rootScope, geoService, $http, expressionService) {
@@ -14709,7 +15212,6 @@ var csComp;
                 var _this = this;
                 var w = window;
                 if (w.File && w.FileList && w.FileReader) {
-                    console.log('enable drop');
                     var obj = $('body');
                     obj.on('dragenter', function (e) {
                         e.stopPropagation();
@@ -14772,7 +15274,7 @@ var csComp;
                 if (!feature || typeof type !== 'number')
                     return;
                 var options = [];
-                if (type === ActionType.Context) {
+                if (type === Services.ActionType.Context) {
                     this.actionServices.forEach(function (as) {
                         var asOptions = as.getFeatureActions(feature);
                         if (asOptions)
@@ -14782,7 +15284,7 @@ var csComp;
                         a.feature = feature;
                     });
                 }
-                else if (type === ActionType.Hover) {
+                else if (type === Services.ActionType.Hover) {
                     this.actionServices.forEach(function (as) {
                         var asOptions = as.getFeatureHoverActions(feature);
                         if (asOptions)
@@ -14921,7 +15423,7 @@ var csComp;
                         case 'onFeatureSelect':
                             // check sub-layers
                             props.forEach(function (prop) {
-                                if (prop.type === 'matrix' && prop.layerProps && prop.layerProps.activation === 'automatic' && feature.properties.hasOwnProperty(prop.label)) {
+                                if (prop.type === 'matrix' && feature.properties.hasOwnProperty(prop.label)) {
                                     var matrix = feature.properties[prop.label];
                                     _this.project.features.forEach(function (f) {
                                         if (f.layer === feature.layer && f.properties.hasOwnProperty(prop.targetid) && matrix.hasOwnProperty(f.properties[prop.targetid])) {
@@ -14952,7 +15454,7 @@ var csComp;
                                         }
                                         if (!pl.id)
                                             pl.id = l;
-                                        pl.groupId = 'Wegen';
+                                        pl.groupId = prop.layerProps.groupId;
                                         if (!pl.group) {
                                             if (pl.groupId) {
                                                 pl.group = _this.findGroupById(pl.groupId);
@@ -14971,9 +15473,10 @@ var csComp;
                                         if (!pl.title)
                                             pl.title = feature.properties['Name'] + ' ' + prop.title;
                                         if (!pl.defaultFeatureType)
-                                            pl.defaultFeatureType = 'link';
+                                            pl.defaultFeatureType = prop.layerProps.defaultFeatureType;
                                         if (!pl.typeUrl)
-                                            pl.typeUrl = 'api/resources/smartcycling';
+                                            pl.typeUrl = prop.layerProps.typeUrl;
+                                        pl.hasSensorData = true;
                                         //pl.parentFeature = feature;
                                         pl.group.layers.push(pl);
                                     }
@@ -15730,38 +16233,43 @@ var csComp;
                     if (gs.enabled && feature.properties.hasOwnProperty(gs.property)) {
                         //delete feature.gui[gs.property];
                         var v = Number(feature.properties[gs.property]);
-                        if (!isNaN(v)) {
-                            switch (gs.visualAspect) {
-                                case 'strokeColor':
-                                    s.strokeColor = csComp.Helpers.getColor(v, gs);
-                                    feature._gui['style'][gs.property] = s.strokeColor;
-                                    break;
-                                case 'fillColor':
-                                    s.fillColor = csComp.Helpers.getColor(v, gs);
-                                    feature._gui['style'][gs.property] = s.fillColor;
-                                    if (feature.geometry.type.toLowerCase() === 'linestring')
-                                        s.strokeColor = s.fillColor; //s.strokeColor = s.fillColor;                                
-                                    break;
-                                case 'strokeWidth':
-                                    s.strokeWidth = ((v - gs.info.min) / (gs.info.max - gs.info.min) * 10) + 1;
-                                    break;
-                                case 'height':
-                                    s.height = ((v - gs.info.min) / (gs.info.max - gs.info.min) * 25000);
-                                    break;
+                        try {
+                            if (!isNaN(v)) {
+                                switch (gs.visualAspect) {
+                                    case 'strokeColor':
+                                        s.strokeColor = csComp.Helpers.getColor(v, gs);
+                                        feature._gui['style'][gs.property] = s.strokeColor;
+                                        break;
+                                    case 'fillColor':
+                                        s.fillColor = csComp.Helpers.getColor(v, gs);
+                                        feature._gui['style'][gs.property] = s.fillColor;
+                                        if (feature.geometry && feature.geometry.type && feature.geometry.type.toLowerCase() === 'linestring')
+                                            s.strokeColor = s.fillColor; //s.strokeColor = s.fillColor;                                
+                                        break;
+                                    case 'strokeWidth':
+                                        s.strokeWidth = ((v - gs.info.min) / (gs.info.max - gs.info.min) * 10) + 1;
+                                        break;
+                                    case 'height':
+                                        s.height = ((v - gs.info.min) / (gs.info.max - gs.info.min) * 25000);
+                                        break;
+                                }
+                            }
+                            else {
+                                var ss = feature.properties[gs.property];
+                                switch (gs.visualAspect) {
+                                    case 'strokeColor':
+                                        s.strokeColor = csComp.Helpers.getColorFromStringValue(ss, gs);
+                                        feature._gui['style'][gs.property] = s.strokeColor;
+                                        break;
+                                    case 'fillColor':
+                                        s.fillColor = csComp.Helpers.getColorFromStringValue(ss, gs);
+                                        feature._gui['style'][gs.property] = s.fillColor;
+                                        break;
+                                }
                             }
                         }
-                        else {
-                            var ss = feature.properties[gs.property];
-                            switch (gs.visualAspect) {
-                                case 'strokeColor':
-                                    s.strokeColor = csComp.Helpers.getColorFromStringValue(ss, gs);
-                                    feature._gui['style'][gs.property] = s.strokeColor;
-                                    break;
-                                case 'fillColor':
-                                    s.fillColor = csComp.Helpers.getColorFromStringValue(ss, gs);
-                                    feature._gui['style'][gs.property] = s.fillColor;
-                                    break;
-                            }
+                        catch (e) {
+                            console.log('Error setting style for feature ' + e.message);
                         }
                     }
                 });
@@ -15832,6 +16340,15 @@ var csComp;
                     pt.visibleInCallOut = true;
                 if (typeof pt.isSearchable === 'undefined' && pt.type === 'text')
                     pt.isSearchable = true;
+                if (pt.options && _.isArray(pt.options)) {
+                    var oo = pt.options;
+                    pt.options = {};
+                    var i = 0;
+                    oo.forEach(function (o) {
+                        pt.options[i] = o;
+                        i += 1;
+                    });
+                }
             };
             LayerService.prototype.localizePropertyType = function (pt) {
                 if (pt.languages != null && this.currentLocale in pt.languages) {
@@ -16189,8 +16706,10 @@ var csComp;
                                             gf.filterType = 'date';
                                             break;
                                         case 'number':
-                                        case 'options':
                                             gf.filterType = 'bar';
+                                            break;
+                                        case 'options':
+                                            gf.filterType = 'row';
                                             break;
                                         //case 'rank':
                                         //    gf.filterType  = 'bar';
@@ -17100,7 +17619,7 @@ var csComp;
              */
             LayerService.prototype.calculatePropertyInfo = function (group, property) {
                 var _this = this;
-                var r = new Services.PropertyInfo();
+                var r = {};
                 r.count = 0;
                 var sum = 0; // stores sum of elements
                 var sumsq = 0; // stores sum of squares
@@ -17132,6 +17651,8 @@ var csComp;
                 }
                 if (this.propertyTypeData.hasOwnProperty(property)) {
                     var mid = this.propertyTypeData[property];
+                    r.userMin = mid.min;
+                    r.userMax = mid.max;
                 }
                 return r;
             };
@@ -17339,16 +17860,19 @@ var csComp;
     })(Services = csComp.Services || (csComp.Services = {}));
 })(csComp || (csComp = {}));
 //# sourceMappingURL=LayerService.js.map
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
 var MatrixAction;
 (function (MatrixAction) {
-    var MatrixActionModel = (function () {
+    var MatrixActionModel = (function (_super) {
+        __extends(MatrixActionModel, _super);
         function MatrixActionModel() {
+            _super.apply(this, arguments);
             this.id = 'MatrixActionModel';
         }
-        MatrixActionModel.prototype.stop = function () { };
-        MatrixActionModel.prototype.addFeature = function (feature) { };
-        MatrixActionModel.prototype.removeFeature = function (feature) { };
-        MatrixActionModel.prototype.selectFeature = function (feature) { };
         MatrixActionModel.prototype.getFeatureActions = function (feature) {
             return [];
         };
@@ -17365,8 +17889,6 @@ var MatrixAction;
             hideContourOption.callback = this.hideContour;
             return [showContourOption, hideContourOption];
         };
-        MatrixActionModel.prototype.deselectFeature = function (feature) { };
-        MatrixActionModel.prototype.updateFeature = function (feuture) { };
         MatrixActionModel.prototype.showContour = function (feature, layerService) {
             if (layerService.currentContour)
                 layerService.map.map.removeLayer(layerService.currentContour); //remove old contour first
@@ -17382,10 +17904,10 @@ var MatrixAction;
                 layerService.map.map.removeLayer(layerService.currentContour); //remove contour
         };
         MatrixActionModel.prototype.init = function (layerService) {
-            console.log('init ContourActionService');
+            _super.prototype.init.call(this, layerService);
         };
         return MatrixActionModel;
-    })();
+    })(csComp.Services.BasicActionService);
     MatrixAction.MatrixActionModel = MatrixActionModel;
 })(MatrixAction || (MatrixAction = {}));
 //# sourceMappingURL=MatrixAction.js.map
@@ -17508,30 +18030,35 @@ var csComp;
             MapService.prototype.zoomTo = function (feature, zoomLevel) {
                 var _this = this;
                 if (zoomLevel === void 0) { zoomLevel = 14; }
-                var center;
-                if (feature.geometry.type.toUpperCase() === 'POINT') {
-                    center = new L.LatLng(feature.geometry.coordinates[1], feature.geometry.coordinates[0]);
-                    this.map.setView(center, zoomLevel);
-                }
-                else {
-                    var bb;
-                    if (feature.geometry.type.toUpperCase().indexOf('MULTI') < 0) {
-                        bb = this.getBoundingBox(feature.geometry.coordinates[0]);
+                try {
+                    var center;
+                    if (feature.geometry.type.toUpperCase() === 'POINT') {
+                        center = new L.LatLng(feature.geometry.coordinates[1], feature.geometry.coordinates[0]);
+                        this.map.setView(center, zoomLevel);
                     }
                     else {
-                        bb = [1000, -1000, 1000, -1000];
-                        feature.geometry.coordinates.forEach(function (c) {
-                            var b = _this.getBoundingBox(c[0]);
-                            bb = [Math.min(bb[0], b[0]), Math.max(bb[1], b[1]), Math.min(bb[2], b[2]), Math.max(bb[3], b[3])];
-                        });
+                        var bb;
+                        if (feature.geometry.type.toUpperCase().indexOf('MULTI') < 0) {
+                            bb = this.getBoundingBox(feature.geometry.coordinates[0]);
+                        }
+                        else {
+                            bb = [1000, -1000, 1000, -1000];
+                            feature.geometry.coordinates.forEach(function (c) {
+                                var b = _this.getBoundingBox(c[0]);
+                                bb = [Math.min(bb[0], b[0]), Math.max(bb[1], b[1]), Math.min(bb[2], b[2]), Math.max(bb[3], b[3])];
+                            });
+                        }
+                        var spacingLon = 0.05; // extra spacing left and right, where the menus are.
+                        var southWest = L.latLng(Math.min(bb[2], bb[3]), Math.min(bb[0], bb[1]) - spacingLon);
+                        var northEast = L.latLng(Math.max(bb[2], bb[3]), Math.max(bb[0], bb[1]) + spacingLon);
+                        this.map.fitBounds(new L.LatLngBounds(southWest, northEast));
                     }
-                    var spacingLon = 0.05; // extra spacing left and right, where the menus are.
-                    var southWest = L.latLng(Math.min(bb[2], bb[3]), Math.min(bb[0], bb[1]) - spacingLon);
-                    var northEast = L.latLng(Math.max(bb[2], bb[3]), Math.max(bb[0], bb[1]) + spacingLon);
-                    this.map.fitBounds(new L.LatLngBounds(southWest, northEast));
+                    this.$messageBusService.publish('sidebar', 'show');
+                    this.$messageBusService.publish('feature', 'onFeatureSelect', feature);
                 }
-                this.$messageBusService.publish('sidebar', 'show');
-                this.$messageBusService.publish('feature', 'onFeatureSelect', feature);
+                catch (e) {
+                    console.log('error zooming to feature');
+                }
             };
             //private getCentroid(arr) {
             //    return arr.reduce((x, y) => [x[0] + y[0] / arr.length, x[1] + y[1] / arr.length], [0, 0]);
@@ -19346,6 +19873,7 @@ var ChartsWidget;
             if (vgspec)
                 var res = vg.embed('#vis' + d._id, vgspec, function (view, vega_spec) {
                     d._view = view;
+                    //$('.vega-actions').css("display","none");
                     // Callback receiving the View instance and parsed Vega spec...
                     // The View resides under the '#vis' element
                 });
@@ -19386,7 +19914,7 @@ var ChartsWidget;
                                 else if (msg.data.item.hasOwnProperty('data')) {
                                     d.spec = msg.data.item;
                                 }
-                                _this.updateChart();
+                                _this.initChart();
                                 break;
                         }
                     });
@@ -19676,8 +20204,8 @@ var Filters;
             this.$scope.$apply();
             var info = this.$layerService.calculatePropertyInfo(group, filter.property);
             var nBins = 20;
-            var min = info.min;
-            var max = info.max;
+            var min = info.min; //filter.meta.min || info.min;
+            var max = info.max; //filter.meta.max || info.max;
             filter.rangex[0] = min;
             filter.rangex[1] = max;
             filter.from = min;
@@ -20130,13 +20658,20 @@ var Filters;
     var RowFilterCtrl = (function () {
         // dependencies are injected via AngularJS $injector
         // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
-        function RowFilterCtrl($scope, $layerService, $messageBus, $timeout) {
+        function RowFilterCtrl($scope, $layerService, $messageBus, $timeout, $translate) {
             var _this = this;
             this.$scope = $scope;
             this.$layerService = $layerService;
             this.$messageBus = $messageBus;
             this.$timeout = $timeout;
+            this.$translate = $translate;
             $scope.vm = this;
+            $translate('REMOVE').then(function (translation) {
+                $scope.removeString = translation;
+            });
+            $translate('CREATE_SCATTER').then(function (translation) {
+                $scope.createScatterString = translation;
+            });
             var par = $scope.$parent.$parent;
             if (par.hasOwnProperty('filter')) {
                 $scope.filter = par['filter'];
@@ -20148,10 +20683,10 @@ var Filters;
                 //$timeout.call(()=>this.initBarFilter());
                 $scope.options = (function () {
                     var res = [];
-                    res.push(['remove', function () { return _this.remove(); }]);
+                    res.push([$scope.removeString, function () { return _this.remove(); }]);
                     $scope.filter.group.filters.forEach(function (gf) {
-                        if (gf.filterType == "bar" && gf.property != $scope.filter.property) {
-                            res.push(['create scatter with ' + gf.title, function () { return _this.createScatter(gf); }]);
+                        if (gf.filterType == "row" && gf.property != $scope.filter.property) {
+                            res.push([$scope.createScatterString + ' ' + gf.title, function () { return _this.createScatter(gf); }]);
                         }
                     });
                     return res;
@@ -20162,9 +20697,22 @@ var Filters;
             this.$layerService.createScatterFilter(this.$scope.filter.group, this.$scope.filter.property, gf.property);
         };
         RowFilterCtrl.prototype.displayFilterRange = function (min, max) {
+            if ((+min) > (+max)) {
+                min = max;
+            }
             var filter = this.$scope.filter;
-            filter.from = min;
-            filter.to = max;
+            if (filter.rangex[0] < min) {
+                filter.from = min;
+            }
+            else {
+                filter.from = filter.rangex[0];
+            }
+            if (filter.rangex[1] > max) {
+                filter.to = max;
+            }
+            else {
+                filter.to = filter.rangex[1];
+            }
             this.$scope.$apply();
         };
         RowFilterCtrl.prototype.initRowFilter = function () {
@@ -20174,79 +20722,66 @@ var Filters;
             var divid = 'filter_' + filter.id;
             this.dcChart = dc.rowChart('#' + divid);
             this.$scope.$apply();
-            // var filterFrom = $('#fsfrom_' + filter.id);
-            // var filterTo = $('#fsto_' + filter.id);
-            // var info = this.$layerService.calculatePropertyInfo(group, filter.property);
-            //
-            // var nBins = 20;
-            // var min = info.sdMin;
-            // var max = info.sdMax + (info.sdMax - info.sdMin) * 0.01;
-            //
-            // var binWidth = (max - min) / nBins;
+            var pt;
             var dcDim = group.ndx.dimension(function (d) {
                 if (!d.properties.hasOwnProperty(filter.property))
                     return null;
                 else {
+                    if (!pt)
+                        pt = _this.$layerService.getPropertyType(d, filter.property);
                     if (d.properties[filter.property] != null) {
-                        return d.properties[filter.property];
+                        var a = d.properties[filter.property];
+                        var r;
+                        if (pt && pt.options && pt.options.hasOwnProperty(a)) {
+                            r = a + "." + pt.options[a];
+                        }
+                        else {
+                            r = a + "." + a;
+                        }
+                        return r;
                     }
                     return null;
                 }
             });
             filter.dimension = dcDim;
-            var dcGroup = dcDim.group().reduceCount();
+            var dcGroup = dcDim.group();
             //var scale =
-            this.dcChart.width(275)
-                .height(110)
+            this.dcChart.width(315)
+                .height(210)
                 .dimension(dcDim)
                 .group(dcGroup)
-                .transitionDuration(100)
-                .gap(5) //d3.scale.quantize().domain([0, 10]).range(d3.range(1, 4));
-                .on('filtered', function (e) {
-                var fil = e.hasFilter();
-                if (fil) {
+                .title(function (d) {
+                console.log(d);
+                return d.key;
+            })
+                .elasticX(true)
+                .colors(function (d) {
+                if (pt.legend) {
+                    if (pt.options)
+                        return csComp.Helpers.getColorFromLegend(parseInt(d.split('.')[0]), pt.legend);
                 }
                 else {
+                    return "red";
                 }
+            })
+                .on('renderlet', function (e) {
+                // var fil = e.hasFilter();
+                // var s = '';
+                // if (e.filters.length > 0) {
+                //     var localFilter = e.filters[0];
+                //     this.displayFilterRange(+(localFilter[0]).toFixed(2), (+localFilter[1]).toFixed(2))
+                //     s += localFilter[0];
+                // }
                 dc.events.trigger(function () {
-                    group.filterResult = dcDim.top(Infinity);
                     _this.$layerService.updateFilterGroupCount(group);
                 }, 0);
                 dc.events.trigger(function () {
+                    group.filterResult = dcDim.top(Infinity);
                     _this.$layerService.updateMapFilter(group);
                 }, 100);
             });
+            this.dcChart.selectAll();
             //this.displayFilterRange(min,max);
-            //
-            //
-            // filterFrom.on('change', () => {
-            //     if ($.isNumeric(filterFrom.val())) {
-            //         var min = parseInt(filterFrom.val());
-            //         var filters = this.dcChart.filters();
-            //         if (filters.length > 0) {
-            //             filters[0][0] = min;
-            //             this.dcChart.filter(filters[0]);
-            //             this.dcChart.render();
-            //             //dcDim.filter(filters[0]);
-            //             dc.redrawAll();
-            //             //dc.renderAll();
-            //         }
-            //     }
-            // });
-            // filterTo.on('change', () => {
-            //     if ($.isNumeric(filterTo.val())) {
-            //         var max = parseInt(filterTo.val());
-            //         var filters = this.dcChart.filters();
-            //         if (filters.length > 0) {
-            //             filters[0][1] = max;
-            //             this.dcChart.filter(filters[0]);
-            //             dcDim.filter(filters[0]);
-            //             dc.renderAll();
-            //         }
-            //         //dc.redrawAll();
-            //     }
-            //     //dcDim.filter([min, min + 100]);
-            // });
             //this.$scope.$watch('filter.from',()=>this.updateFilter());
             //  this.$scope.$watch('filter.to',()=>this.updateFilter());
             //if (filter.meta != null && filter.meta.minValue != null) {
@@ -20256,10 +20791,11 @@ var Filters;
             //    var dif = (propInfo.max - propInfo.min) / 100;
             //    dcChart.x(d3.scale.linear().domain([propInfo.min - dif, propInfo.max + dif]));
             //}
-            // this.dcChart.yAxis().ticks(5);
-            // this.dcChart.xAxis().ticks(5);
+            //this.dcChart.yAxis().ticks(5);
+            //this.dcChart.xAxis().ticks(5);
             //this.dcChart.mouseZoomable(true);
             dc.renderAll();
+            this.updateRange();
             //  this.updateChartRange(this.dcChart,filter);
         };
         RowFilterCtrl.prototype.updateFilter = function () {
@@ -20269,17 +20805,22 @@ var Filters;
                 _this.dcChart.render();
                 dc.renderAll();
                 _this.$layerService.updateMapFilter(_this.$scope.filter.group);
-                console.log('update filter');
             }, 10);
         };
         RowFilterCtrl.prototype.updateRange = function () {
             var _this = this;
             setTimeout(function () {
-                _this.dcChart.filter([_this.$scope.filter.from, _this.$scope.filter.to]);
+                var filter = _this.$scope.filter;
+                var group = filter.group;
+                _this.displayFilterRange(_this.$scope.filter.from, _this.$scope.filter.to);
+                _this.dcChart.filterAll();
+                _this.dcChart.filter(dc.filters.RangedFilter(_this.$scope.filter.from, _this.$scope.filter.to));
                 _this.dcChart.render();
+                dc.redrawAll();
+                group.filterResult = filter.dimension.top(Infinity);
                 _this.$layerService.updateMapFilter(_this.$scope.filter.group);
-                console.log('update filter');
-            }, 10);
+                _this.$scope.$apply();
+            }, 0);
         };
         RowFilterCtrl.prototype.remove = function () {
             if (this.$scope.filter) {
@@ -20294,7 +20835,8 @@ var Filters;
             '$scope',
             'layerService',
             'messageBusService',
-            '$timeout'
+            '$timeout',
+            '$translate'
         ];
         return RowFilterCtrl;
     })();
@@ -20639,6 +21181,27 @@ var Filters;
                 replace: true,
                 transclude: true,
                 controller: Filters.BarFilterCtrl
+            };
+        }
+    ])
+        .directive('rowFilter', [
+        '$compile',
+        function ($compile) {
+            return {
+                terminal: true,
+                restrict: 'E',
+                scope: {},
+                templateUrl: 'directives/Widgets/Filters/RowFilter.tpl.html',
+                compile: function (el) {
+                    var fn = $compile(el);
+                    //console.log('this is the compile function of legendDirective');
+                    return function (scope) {
+                        fn(scope);
+                    };
+                },
+                replace: true,
+                transclude: true,
+                controller: Filters.RowFilterCtrl
             };
         }
     ])
@@ -21810,7 +22373,7 @@ var MarvelWidget;
             var pts = csComp.Helpers.getPropertyTypes(feature.fType, {});
             pts.forEach(function (p) {
                 if (p.hasOwnProperty && p.hasOwnProperty('label') && p.label === 'state') {
-                    _this.$scope.states = p.options;
+                    _this.$scope.states = _.values(p.options);
                 }
             });
             this.$scope.selectedFeature = feature;
@@ -21968,72 +22531,6 @@ var MCAWidget;
     MCAWidget.MCAWidgetCtrl = MCAWidgetCtrl;
 })(MCAWidget || (MCAWidget = {}));
 //# sourceMappingURL=MCAWidgetCtrl.js.map
-var NavigatorWidget;
-(function (NavigatorWidget) {
-    /**
-      * Config
-      */
-    var moduleName = 'csComp';
-    try {
-        NavigatorWidget.myModule = angular.module(moduleName);
-    }
-    catch (err) {
-        // named module does not exist, so create one
-        NavigatorWidget.myModule = angular.module(moduleName, []);
-    }
-    /**
-      * Directive to display the available map layers.
-      */
-    NavigatorWidget.myModule.directive('markdownwidgetEdit', [
-        '$compile',
-        function ($compile) {
-            return {
-                terminal: true,
-                restrict: 'E',
-                scope: {},
-                templateUrl: 'directives/Widgets/MarkdownWidget/Markdown-edit.tpl.html',
-                replace: true,
-                transclude: true,
-                controller: MarkdownEditCtrl
-            };
-        }
-    ]);
-    var MarkdownEditCtrl = (function () {
-        function MarkdownEditCtrl($scope, $timeout, $compile, $layerService, $templateCache, $messageBus, $mapService, $dashboardService) {
-            this.$scope = $scope;
-            this.$timeout = $timeout;
-            this.$compile = $compile;
-            this.$layerService = $layerService;
-            this.$templateCache = $templateCache;
-            this.$messageBus = $messageBus;
-            this.$mapService = $mapService;
-            this.$dashboardService = $dashboardService;
-            $scope.vm = this;
-            var par = $scope.$parent;
-            this.widget = par.data;
-            $scope.data = this.widget.data;
-        }
-        MarkdownEditCtrl.prototype.updateText = function () {
-            this.$scope.data.mdText = this.$scope.data.content;
-        };
-        // $inject annotation.
-        // It provides $injector with information about dependencies to be injected into constructor
-        // it is better to have it close to the constructor, because the parameters must match in count and type.
-        // See http://docs.angularjs.org/guide/di
-        MarkdownEditCtrl.$inject = [
-            '$scope',
-            '$timeout',
-            '$compile',
-            'layerService',
-            '$templateCache',
-            'messageBusService',
-            'mapService', 'dashboardService'
-        ];
-        return MarkdownEditCtrl;
-    })();
-    NavigatorWidget.MarkdownEditCtrl = MarkdownEditCtrl;
-})(NavigatorWidget || (NavigatorWidget = {}));
-//# sourceMappingURL=Navigator-edit.js.map
 var NavigatorWidget;
 (function (NavigatorWidget) {
     /**
@@ -22822,13 +23319,23 @@ var csComp;
                 var b = csComp.Helpers.GeoExtensions.getBoundingBox(layer.data);
                 this.service.$messageBusService.publish('map', 'setextent', b);
             };
+            /** zoom to boundaries of layer */
+            GeoJsonSource.prototype.fitTimeline = function (layer) {
+                if (layer.hasSensorData && layer.timestamps && layer.timestamps.length > 0) {
+                    var min = layer.timestamps[0];
+                    var max = layer.timestamps[layer.timestamps.length - 1];
+                    this.service.$messageBusService.publish('timeline', 'updateTimerange', { start: min, end: max });
+                }
+            };
             GeoJsonSource.prototype.layerMenuOptions = function (layer) {
                 var _this = this;
-                return [
-                    ['Fit map', (function ($itemScope) { return _this.fitMap(layer); })],
-                    null,
-                    ['Refresh', (function ($itemScope) { return _this.refreshLayer(layer); })]
-                ];
+                var result = [
+                    ['Fit map', (function ($itemScope) { return _this.fitMap(layer); })]];
+                if (layer.hasSensorData && layer.timestamps)
+                    result.push(['Fit time', (function ($itemScope) { return _this.fitTimeline(layer); })]);
+                result.push(null);
+                result.push(['Refresh', (function ($itemScope) { return _this.refreshLayer(layer); })]);
+                return result;
             };
             GeoJsonSource.prototype.baseAddLayer = function (layer, callback, data) {
                 var _this = this;
@@ -22859,8 +23366,10 @@ var csComp;
                                 layer.isLoading = false;
                                 layer.enabled = true;
                                 _this.initLayer(data, layer);
-                                if (_this.layer.fitToMap)
-                                    _this.fitMap(_this.layer);
+                                if (layer.fitToMap)
+                                    _this.fitMap(layer);
+                                if (layer.hasSensorData)
+                                    _this.fitTimeline(layer);
                                 cb(null, null);
                             })
                                 .error(function () {
@@ -23065,11 +23574,11 @@ var csComp;
                             _this.service.updateFeature(f);
                             done = true;
                             if (_this.service.project.eventTab) {
-                                _this.service.$messageBusService.publish('eventtab', 'updated', value);
+                                _this.service.$messageBusService.publish('eventtab', 'updated', f);
                             }
                             else {
                                 if (layer.showFeatureNotifications)
-                                    _this.service.$messageBusService.notify(_this.layer.title, value.properties['Name'] + ' updated');
+                                    _this.service.$messageBusService.notify(_this.layer.title, f.properties['Name'] + ' updated');
                             }
                             //  console.log('updating feature');
                             return true;
@@ -23195,10 +23704,11 @@ var csComp;
                                         case Services.LayerUpdateAction.deleteFeature:
                                             var feature = _this.service.findFeature(layer, lu.featureId);
                                             if (feature) {
-                                                _this.service.$messageBusService.notify(_this.layer.title, feature.properties['Name'] + ' removed');
+                                                if (layer.showFeatureNotifications)
+                                                    _this.service.$messageBusService.notify(_this.layer.title, feature.properties['Name'] + ' removed');
                                                 _this.service.removeFeature(feature, false);
                                             }
-                                            lu.featureId;
+                                            // lu.featureId
                                             // lu.object.forEach((f) => {
                                             //
                                             //     //this.service.removeFeature(f);
@@ -23925,13 +24435,13 @@ var csComp;
                     // Set default style for the heatmap:
                     if ((layer.data).features[0]) {
                         var calloutProp = new FeatureProps.CallOutProperty("totalIntensity", "0", "totalIntensity", true, true, (layer.data).features[0], false, false);
-                        var propinfo = new Services.PropertyInfo();
+                        var propinfo = {};
                         // Tweak the group style info to keep constant min/max color values on panning and zooming.
                         propinfo.count = (layer.data).features.length;
                         propinfo.max = 1;
                         propinfo.min = -1;
-                        //propinfo.sdMax = propinfo.max;
-                        //propinfo.sdMin = propinfo.min;
+                        propinfo.userMax = propinfo.max;
+                        propinfo.userMin = propinfo.min;
                         propinfo.mean = 0;
                         propinfo.varience = 0.67;
                         propinfo.sd = Math.sqrt(propinfo.varience);
@@ -25899,29 +26409,30 @@ var csComp;
                 var _this = this;
                 if (feature.geometry != null) {
                     var m = this.createFeature(feature);
-                    var l = feature.layer;
-                    l.group.markers[feature.id] = m;
-                    m.on({
-                        mouseover: function (a) { return _this.showFeatureTooltip(a, l.group); },
-                        mouseout: function (s) { return _this.hideFeatureTooltip(s); },
-                        mousemove: function (d) { return _this.updateFeatureTooltip(d); },
-                        click: function (e) {
-                            _this.selectFeature(feature);
+                    if (m) {
+                        var l = feature.layer;
+                        l.group.markers[feature.id] = m;
+                        m.on({
+                            mouseover: function (a) { return _this.showFeatureTooltip(a, l.group); },
+                            mouseout: function (s) { return _this.hideFeatureTooltip(s); },
+                            mousemove: function (d) { return _this.updateFeatureTooltip(d); },
+                            click: function (e) {
+                                _this.selectFeature(feature);
+                            }
+                        });
+                        m.feature = feature;
+                        if (l.group.clustering && l.group._cluster) {
+                            l.group._cluster.addLayer(m);
                         }
-                    });
-                    m.feature = feature;
-                    if (l.group.clustering && l.group._cluster) {
-                        l.group._cluster.addLayer(m);
-                    }
-                    else {
-                        if (l.mapLayer) {
-                            l.mapLayer.addLayer(m);
+                        else {
+                            if (l.mapLayer) {
+                                l.mapLayer.addLayer(m);
+                            }
                         }
+                        return m;
                     }
-                    return m;
                 }
-                else
-                    return null;
+                return null;
             };
             LeafletRenderer.prototype.canDrag = function (feature) {
                 return feature._gui.hasOwnProperty('editMode') && feature._gui['editMode'] == true;
@@ -25975,36 +26486,44 @@ var csComp;
                         });
                         break;
                     default:
-                        marker = L.GeoJSON.geometryToLayer(feature);
-                        marker.setStyle(this.getLeafletStyle(feature.effectiveStyle));
-                        marker.on('contextmenu', function (e) {
-                            _this.service._activeContextMenu = _this.service.getActions(feature, Services.ActionType.Context);
-                            //e.stopPropagation();
-                            var button = $('#map-contextmenu-button');
-                            var menu = $('#map-contextmenu');
-                            button.dropdown('toggle');
-                            var mapSize = _this.map.getSize();
-                            if (e.originalEvent.x < (mapSize.x / 2)) {
-                                menu.css('left', e.originalEvent.x + 5);
-                            }
-                            else {
-                                menu.css('left', e.originalEvent.x - 5 - menu.width());
-                            }
-                            if (e.originalEvent.y < (mapSize.y / 2)) {
-                                menu.css('top', e.originalEvent.y - 35);
-                            }
-                            else {
-                                menu.css('top', e.originalEvent.y - 70 - menu.height());
-                            }
-                            if (_this.service.$rootScope.$$phase != '$apply' && _this.service.$rootScope.$$phase != '$digest') {
-                                _this.service.$rootScope.$apply();
-                            }
-                        });
+                        try {
+                            marker = L.GeoJSON.geometryToLayer(feature);
+                            marker.setStyle(this.getLeafletStyle(feature.effectiveStyle));
+                            marker.on('contextmenu', function (e) {
+                                _this.service._activeContextMenu = _this.service.getActions(feature, Services.ActionType.Context);
+                                //e.stopPropagation();
+                                var button = $("#map-contextmenu-button");
+                                var menu = $("#map-contextmenu");
+                                button.dropdown('toggle');
+                                var mapSize = _this.map.getSize();
+                                if (e.originalEvent.x < (mapSize.x / 2)) {
+                                    menu.css("left", e.originalEvent.x + 5);
+                                }
+                                else {
+                                    menu.css("left", e.originalEvent.x - 5 - menu.width());
+                                }
+                                if (e.originalEvent.y < (mapSize.y / 2)) {
+                                    menu.css("top", e.originalEvent.y - 35);
+                                }
+                                else {
+                                    menu.css("top", e.originalEvent.y - 70 - menu.height());
+                                }
+                                if (_this.service.$rootScope.$$phase != '$apply' && _this.service.$rootScope.$$phase != '$digest') {
+                                    _this.service.$rootScope.$apply();
+                                }
+                            });
+                        }
+                        catch (e) {
+                            console.log('Error creating leaflet feature');
+                            console.log(feature);
+                        }
                         //marker = L.multiPolygon(latlng, polyoptions);
                         break;
                 }
-                marker.feature = feature;
-                feature.layer.group.markers[feature.id] = marker;
+                if (marker) {
+                    marker.feature = feature;
+                    feature.layer.group.markers[feature.id] = marker;
+                }
                 return marker;
             };
             /**

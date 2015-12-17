@@ -7,6 +7,7 @@ var AggregateOpportunitiesToGeoJsonTransformer = (function () {
         this.title = title;
         this.type = "AggregateOpportunitiesToGeoJsonTransformer";
         this.id = Utils.newGuid();
+        //this.description = description;
     }
     AggregateOpportunitiesToGeoJsonTransformer.prototype.initialize = function (opt, callback) {
         var _this = this;
@@ -34,17 +35,21 @@ var AggregateOpportunitiesToGeoJsonTransformer = (function () {
     AggregateOpportunitiesToGeoJsonTransformer.prototype.create = function (config, opt) {
         var _this = this;
         var t = new stream.Transform();
+        /*stream.Transform.call(t);*/
         var accumulator = {};
         var index = 0;
         t.setEncoding("utf8");
         t._transform = function (chunk, encoding, done) {
             var startTs = new Date();
+            /*console.log((new Date().getTime() - startTs.getTime()) + ": start");*/
+            /*console.log("##### GJAT #####");*/
             if (!_this.geometry) {
                 console.log("No target geometry found");
                 done();
                 return;
             }
             var feature = JSON.parse(chunk);
+            /*console.log("Start aggregation");*/
             var found = false;
             _this.geometry.features.forEach(function (f) {
                 if (found)
@@ -84,28 +89,40 @@ var AggregateOpportunitiesToGeoJsonTransformer = (function () {
             if (!found) {
                 console.log("feature " + feature.properties.name + " could not be aggregated, town: " + feature.properties.town + ". " + feature.geometry.coordinates);
             }
+            /*console.log("Aggregation finished");*/
+            // console.log("=== After:");
+            // console.log(feature);
+            //t.push(JSON.stringify(feature));
             done();
+            /*console.log((new Date().getTime() - startTs.getTime()) + ": finish " + index++);*/
         };
         t._flush = function (done) {
             try {
                 console.log("#### start AOTGJT flush");
+                /*console.log(accumulator);*/
                 for (var key in accumulator) {
                     console.log(key);
                     var featureAcc = accumulator[key];
+                    /*console.log ("#### push feature");*/
+                    /*console.log(featureAcc);*/
+                    /*console.log("kans");*/
                     featureAcc.feature.properties.kans_min = featureAcc.kans_min;
                     featureAcc.feature.properties.kans_max = featureAcc.kans_max;
                     featureAcc.feature.properties.kans_totaal = featureAcc.kans_totaal;
                     featureAcc.feature.properties.kans_gemiddeld = featureAcc.kans_totaal / featureAcc.aantalOpportunities;
+                    /*console.log("brutoOmvang");*/
                     featureAcc.feature.properties.brutoOmvang_min = featureAcc.brutoOmvang_min;
                     featureAcc.feature.properties.brutoOmvang_max = featureAcc.brutoOmvang_max;
                     featureAcc.feature.properties.brutoOmvang_totaal = featureAcc.brutoOmvang_totaal;
                     featureAcc.feature.properties.brutoOmvang_gemiddeld = featureAcc.brutoOmvang_totaal / featureAcc.aantalOpportunities;
+                    /*console.log("nettoOmvang");*/
                     featureAcc.feature.properties.nettoOmvang_min = featureAcc.nettoOmvang_min;
                     featureAcc.feature.properties.nettoOmvang_max = featureAcc.nettoOmvang_max;
                     featureAcc.feature.properties.nettoOmvang_totaal = featureAcc.nettoOmvang_totaal;
                     featureAcc.feature.properties.nettoOmvang_gemiddeld = featureAcc.nettoOmvang_totaal / featureAcc.aantalOpportunities;
                     featureAcc.feature.properties.opportunityManagers = featureAcc.opportunityManagers;
                     featureAcc.feature.properties.aantalOpportunities = featureAcc.aantalOpportunities;
+                    /*console.log(JSON.stringify(featureAcc.feature));*/
                     t.push(JSON.stringify(featureAcc.feature));
                 }
                 done();

@@ -17,12 +17,18 @@ var ApiServiceManager = (function () {
         enumerable: true,
         configurable: true
     });
+    /**
+     * Add a service, initialize it, and return the service GUID.
+     */
     ApiServiceManager.prototype.addService = function (service) {
         service.id = Utils.newGuid();
         service.init(this, this.server, this.config);
         this.apiServices.push(service);
         return service.id;
     };
+    /**
+     * Find a service by ID (GUID). Returns null when no matching service is found.
+     */
     ApiServiceManager.prototype.findServiceById = function (serviceId) {
         for (var i = 0; i < this.apiServices.length; i++) {
             var service = this.apiServices[i];
@@ -32,6 +38,9 @@ var ApiServiceManager = (function () {
         }
         return null;
     };
+    /**
+     * Remove service by ID (GUID).
+     */
     ApiServiceManager.prototype.removeService = function (serviceId) {
         for (var i = 0; i < this.apiServices.length; i++) {
             var service = this.apiServices[i];
@@ -44,5 +53,5 @@ var ApiServiceManager = (function () {
     };
     return ApiServiceManager;
 })();
-module.exports = ApiServiceManager;
+exports.ApiServiceManager = ApiServiceManager;
 //# sourceMappingURL=ApiServiceManager.js.map

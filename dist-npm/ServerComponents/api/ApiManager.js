@@ -10,7 +10,10 @@ var path = require('path');
 var events = require('events');
 var _ = require('underscore');
 var async = require('async');
-var StringExt = require('../helpers/StringExt');
+var StringExt = require('../helpers/StringExt'); // to remove the BOM.
+/**
+ * Api Result status
+ */
 (function (ApiResult) {
     ApiResult[ApiResult["OK"] = 200] = "OK";
     ApiResult[ApiResult["Error"] = 400] = "Error";
@@ -27,12 +30,16 @@ var StringExt = require('../helpers/StringExt');
     ApiResult[ApiResult["SearchNotImplemented"] = 440] = "SearchNotImplemented";
 })(exports.ApiResult || (exports.ApiResult = {}));
 var ApiResult = exports.ApiResult;
+/**
+ * Default result object for api calls
+ */
 var CallbackResult = (function () {
     function CallbackResult() {
     }
     return CallbackResult;
 })();
 exports.CallbackResult = CallbackResult;
+/** Event emitted by the ApiManager */
 (function (Event) {
     Event[Event["KeyChanged"] = 0] = "KeyChanged";
     Event[Event["PropertyChanged"] = 1] = "PropertyChanged";
@@ -41,6 +48,7 @@ exports.CallbackResult = CallbackResult;
     Event[Event["ProjectChanged"] = 4] = "ProjectChanged";
 })(exports.Event || (exports.Event = {}));
 var Event = exports.Event;
+/** Type of change in an ApiEvent */
 (function (ChangeType) {
     ChangeType[ChangeType["Create"] = 0] = "Create";
     ChangeType[ChangeType["Update"] = 1] = "Update";
@@ -71,6 +79,9 @@ var KeySubscription = (function () {
     return KeySubscription;
 })();
 exports.KeySubscription = KeySubscription;
+/**
+ * Geojson Layer definition
+ */
 var Layer = (function () {
     function Layer() {
         this.features = [];
@@ -78,18 +89,27 @@ var Layer = (function () {
     return Layer;
 })();
 exports.Layer = Layer;
+/**
+ * Geojson ProjectId definition
+ */
 var ProjectId = (function () {
     function ProjectId() {
     }
     return ProjectId;
 })();
 exports.ProjectId = ProjectId;
+/**
+ * Geojson geometry definition
+ */
 var Geometry = (function () {
     function Geometry() {
     }
     return Geometry;
 })();
 exports.Geometry = Geometry;
+/**
+ * Geojson feature definition
+ */
 var Feature = (function () {
     function Feature() {
         this.type = 'Feature';
@@ -97,6 +117,9 @@ var Feature = (function () {
     return Feature;
 })();
 exports.Feature = Feature;
+/**
+ * Geojson property definition
+ */
 var Property = (function () {
     function Property() {
     }
@@ -127,8 +150,20 @@ var ResourceFile = (function () {
     return ResourceFile;
 })();
 exports.ResourceFile = ResourceFile;
+/**
+ * ApiManager, the main csWeb router that receives and sends layer/feature/keys updates around using
+ * connectors and keeps all endpoints in sync.
+ *
+ * EMITS ApiEvents, which all return an IChangedEvent.
+ * KeyChanged event when a key is changed (CRUD).
+ * PropertyChanged event when a layer is changed (CRUD).
+ * FeatureChanged event when a feature is changed (CRUD).
+ * LayerChanged event when a layer is changed (CRUD).
+ * ProjectChanged event when a project is changed (CRUD).
+ */
 var ApiManager = (function (_super) {
     __extends(ApiManager, _super);
+    /** Create a new client, optionally specifying whether it should act as client. */
     function ApiManager(namespace, name, isClient, options) {
         var _this = this;
         if (isClient === void 0) { isClient = false; }
@@ -136,31 +171,57 @@ var ApiManager = (function (_super) {
         _super.call(this);
         this.isClient = isClient;
         this.options = options;
+        /**
+         * Dictionary of connectors (e.g. storage, interface, etc.)
+         */
         this.connectors = {};
+        /**
+         * Dictionary of resources
+         */
         this.resources = {};
+        /**
+         * Dictionary of layers (doesn't contain actual data)
+         */
         this.layers = {};
+        /**
+         * Dictionary of projects (doesn't contain actual data)
+         */
         this.projects = {};
+        /**
+         * Dictionary of sensor sets
+         */
         this.keys = {};
         this.keySubscriptions = {};
         this.defaultStorage = 'file';
         this.defaultLogging = false;
         this.rootPath = '';
+        // public resourceFolder = '/data/resourceTypes';
         this.projectsFile = '';
         this.layersFile = '';
+        /** The namespace is used for creating channels/layers/keys namespaces */
         this.namespace = 'cs';
+        /** The name is used to identify this instance, and should be unique in the federation */
         this.name = 'cs';
+        /**
+         * Have a 1 sec. delay before saving project config
+         */
         this.saveProjectDelay = _.debounce(function (project) {
             _this.saveProjectConfig();
         }, 1000);
+        /**
+         * Have a 1 sec. delay before saving layer config
+         */
         this.saveLayersDelay = _.debounce(function (layer) {
             _this.saveLayerConfig();
         }, 1000);
         this.namespace = namespace;
         this.name = name;
         if (this.options.server) {
+            // If we do not specify the protocal, add it
             if (this.options.server.indexOf('http') < 0) {
                 this.options.server = 'http://' + this.options.server;
             }
+            // If we specify the trailing slash, remove it
             if (this.options.server.slice(-1) === '/') {
                 this.options.server = this.options.server.slice(0, -1);
             }
@@ -180,6 +241,7 @@ var ApiManager = (function (_super) {
             });
         });
     };
+    /** Open layer config file*/
     ApiManager.prototype.loadLayerConfig = function (cb) {
         var _this = this;
         Winston.info('manager: loading layer config');
@@ -204,6 +266,9 @@ var ApiManager = (function (_super) {
         catch (e) {
         }
     };
+    /**
+     * Open project config file
+     */
     ApiManager.prototype.loadProjectConfig = function (cb) {
         var _this = this;
         Winston.info('manager: loading project config');
@@ -224,6 +289,9 @@ var ApiManager = (function (_super) {
             cb();
         });
     };
+    /**
+     * Store layer config file
+     */
     ApiManager.prototype.saveProjectConfig = function () {
         fs.writeFile(this.projectsFile, JSON.stringify(this.projects), function (error) {
             if (error) {
@@ -234,6 +302,9 @@ var ApiManager = (function (_super) {
             }
         });
     };
+    /**
+     * Store layer config file
+     */
     ApiManager.prototype.saveLayerConfig = function () {
         var temp = {};
         for (var s in this.layers) {
@@ -253,8 +324,12 @@ var ApiManager = (function (_super) {
             }
         });
     };
+    /**
+     * Look for available resources (from folder)
+     */
     ApiManager.prototype.initResources = function (resourcesPath) {
         var _this = this;
+        //TODO implement
         if (!fs.existsSync(resourcesPath)) {
             fs.mkdirSync(resourcesPath);
         }
@@ -276,6 +351,7 @@ var ApiManager = (function (_super) {
             });
         });
     };
+    /** Add a file to the store, e.g. an icon or other media. */
     ApiManager.prototype.addFile = function (base64, folder, file, meta, callback) {
         var s = this.connectors.hasOwnProperty('file') ? this.connectors['file'] : null;
         if (s) {
@@ -286,12 +362,16 @@ var ApiManager = (function (_super) {
             callback({ result: ApiResult.Error, error: 'Failed to add resource.' });
         }
     };
+    /**
+     * Update/add a resource and save it to file
+     */
     ApiManager.prototype.addResource = function (resource, meta, callback) {
         this.resources[resource.id] = resource;
         var s = this.findStorage(resource);
         this.getInterfaces(meta).forEach(function (i) {
             i.addResource(resource, meta, function () { });
         });
+        // store resource
         if (s) {
             s.addResource(resource, meta, function (r) {
                 callback({ result: ApiResult.OK, error: 'Resource added' });
@@ -306,6 +386,7 @@ var ApiManager = (function (_super) {
             return this.resources[id];
         }
         return null;
+        //TODO implement
     };
     ApiManager.prototype.addLayerToProject = function (projectId, groupId, layerId, meta, callback) {
         var p = this.findProject(projectId);
@@ -442,8 +523,10 @@ var ApiManager = (function (_super) {
         Winston.info('api: add project ' + project.id);
         var s = this.findStorage(project);
         project.storage = project.storage || s.id;
+        // check if layer already exists
         if (!this.projects.hasOwnProperty(project.id)) {
             this.projects[project.id] = this.getProjectDefinition(project);
+            // store project
             var meta = { source: 'rest' };
             this.getInterfaces(meta).forEach(function (i) {
                 i.initProject(_this.projects[project.id]);
@@ -457,10 +540,15 @@ var ApiManager = (function (_super) {
         else {
             callback({ result: ApiResult.ProjectAlreadyExists, error: 'Project already exists' });
         }
+        // ARNOUD? Shouldn't this be at the end of the if clause, as the project may already exist?
         this.saveProjectDelay(this.projects[project.id]);
     };
+    /**
+     * Add connector to available connectors
+     */
     ApiManager.prototype.addConnector = function (key, s, options, callback) {
         if (callback === void 0) { callback = function () { }; }
+        // TODO If client, check that only one interface is added (isInterface = true)
         s.id = key;
         this.connectors[key] = s;
         s.init(this, options, function () {
@@ -480,28 +568,43 @@ var ApiManager = (function (_super) {
             callback();
         });
     };
+    /**
+     * Find layer for a specific layerId (can return null)
+     */
     ApiManager.prototype.findLayer = function (layerId) {
         if (this.layers.hasOwnProperty(layerId)) {
             return this.layers[layerId];
         }
         return null;
     };
+    /**
+     * Find project for a specific projectId (can return null)
+     */
     ApiManager.prototype.findProject = function (projectId) {
         if (this.projects.hasOwnProperty(projectId)) {
             return this.projects[projectId];
         }
         return null;
     };
+    /**
+     * Find layer for a specific layerId (can return null)
+     */
     ApiManager.prototype.findKey = function (keyId) {
         return this.keys.hasOwnProperty(keyId)
             ? this.keys[keyId]
             : null;
     };
+    /**
+     * find feature in a layer by featureid
+     */
     ApiManager.prototype.findFeature = function (layerId, featureId, callback) {
         var layer = this.findLayer(layerId);
         var s = this.findStorage(layer);
         s.getFeature(layerId, featureId, {}, function (r) { return callback(r); });
     };
+    /**
+     * Find storage for a layer
+     */
     ApiManager.prototype.findStorage = function (object) {
         var storage = (object && object.storage) || this.defaultStorage;
         if (this.connectors.hasOwnProperty(storage)) {
@@ -509,18 +612,30 @@ var ApiManager = (function (_super) {
         }
         return null;
     };
+    /**
+     * Lookup layer and return storage engine for this layer
+     */
     ApiManager.prototype.findStorageForLayerId = function (layerId) {
         var layer = this.findLayer(layerId);
         return this.findStorage(layer);
     };
+    /**
+     * Lookup Project and return storage engine for this project
+     */
     ApiManager.prototype.findStorageForProjectId = function (projectId) {
         var project = this.findProject(projectId);
         return this.findStorage(project);
     };
+    /**
+     * Lookup layer and return storage engine for this layer
+     */
     ApiManager.prototype.findStorageForKeyId = function (keyId) {
         var key = this.findKey(keyId);
         return this.findStorage(key);
     };
+    /**
+     * Returns project definition for a project
+     */
     ApiManager.prototype.getProjectDefinition = function (project) {
         var p = {
             id: project.id ? project.id : helpers.newGuid(),
@@ -533,6 +648,9 @@ var ApiManager = (function (_super) {
         };
         return p;
     };
+    /**
+     * Returns project definition for a project
+     */
     ApiManager.prototype.getGroupDefinition = function (group) {
         var g = {
             id: group.id ? group.id : helpers.newGuid(),
@@ -544,6 +662,9 @@ var ApiManager = (function (_super) {
         };
         return g;
     };
+    /**
+     * Returns layer definition for a layer, this is the layer without the features (mostly used for directory)
+     */
     ApiManager.prototype.getLayerDefinition = function (layer) {
         if (!layer.hasOwnProperty('type')) {
             layer.type = 'geojson';
@@ -562,12 +683,14 @@ var ApiManager = (function (_super) {
             typeUrl: layer.typeUrl,
             opacity: layer.opacity ? layer.opacity : 75,
             type: layer.type,
+            // We are returning a definition, so remove the data
             features: [],
             data: '',
             storage: layer.storage ? layer.storage : '',
             url: layer.url ? layer.url : (server + '/api/layers/' + layer.id),
             isDynamic: layer.isDynamic ? layer.isDynamic : false
         };
+        // Copy additional properties too.
         for (var key in layer) {
             if (layer.hasOwnProperty(key) && !r.hasOwnProperty(key)) {
                 r[key] = layer[key];
@@ -575,6 +698,7 @@ var ApiManager = (function (_super) {
         }
         return r;
     };
+    //layer methods start here, in CRUD order.
     ApiManager.prototype.getProject = function (projectId, meta, callback) {
         Winston.debug('Looking for storage of project ' + projectId);
         var s = this.findStorageForProjectId(projectId);
@@ -622,11 +746,15 @@ var ApiManager = (function (_super) {
             callback({ result: ApiResult.LayerNotFound });
         }
     };
+    /** Create a new layer, store it, and return it. */
     ApiManager.prototype.createLayer = function (layer, meta, callback) {
+        // give it an id if not available
         if (!layer.hasOwnProperty('id')) {
             layer.id = helpers.newGuid();
         }
+        // make sure layerid is lowercase
         layer.id = layer.id.toLowerCase();
+        // take the id for the title if not available
         if (!layer.hasOwnProperty('title')) {
             layer.title = layer.id;
         }
@@ -638,12 +766,17 @@ var ApiManager = (function (_super) {
         }
         this.setUpdateLayer(layer, meta);
         Winston.info('api: add layer ' + layer.id);
+        // If the layer already exists, overwrite it (we may have received a new description, for example, or a new location)
         var s = this.findStorage(layer);
+        // add storage connector if available
         layer.storage = s ? s.id : '';
+        // get layer definition (without features)
         this.layers[layer.id] = this.getLayerDefinition(layer);
         this.getInterfaces(meta).forEach(function (i) {
             i.initLayer(layer);
+            //    i.addLayer(layer, meta, () => { });
         });
+        // store layer
         if (s && s.id != meta.source) {
             s.addLayer(layer, meta, function (r) { return callback(r); });
         }
@@ -654,11 +787,15 @@ var ApiManager = (function (_super) {
     ApiManager.prototype.addUpdateLayer = function (layer, meta, callback) {
         var _this = this;
         async.series([
+            // make sure layer exists
+            // make sure layer exists
             function (cb) {
                 _this.createLayer(layer, meta, function () {
                     cb();
                 });
             },
+            // update layer
+            // update layer
             function (cb) {
                 _this.setUpdateLayer(layer, meta);
                 var l = _this.getLayerDefinition(layer);
@@ -680,6 +817,7 @@ var ApiManager = (function (_super) {
         ]);
     };
     ApiManager.prototype.updateProjectTitle = function (projectTitle, projectId, meta, callback) {
+        // Does not send update to connections and storages, should be done separately!
         var p = this.findProject(projectId);
         if (!p) {
             callback({ result: ApiResult.ProjectNotFound, error: 'Project not found' });
@@ -692,6 +830,8 @@ var ApiManager = (function (_super) {
     ApiManager.prototype.updateProject = function (project, meta, callback) {
         var _this = this;
         async.series([
+            // make sure project exists
+            // make sure project exists
             function (cb) {
                 if (!_this.projects.hasOwnProperty(project.id)) {
                     _this.addProject(project, meta, function () {
@@ -702,6 +842,8 @@ var ApiManager = (function (_super) {
                     cb();
                 }
             },
+            // update project
+            // update project
             function (cb) {
                 var p = _this.getProjectDefinition(project);
                 _this.projects[p.id] = p;
@@ -760,6 +902,7 @@ var ApiManager = (function (_super) {
     ApiManager.prototype.setUpdateLayer = function (layer, meta) {
         layer.updated = new Date().getTime();
     };
+    // Feature methods start here, in CRUD order.
     ApiManager.prototype.addFeature = function (layerId, feature, meta, callback) {
         var _this = this;
         Winston.info('feature added');
@@ -791,6 +934,7 @@ var ApiManager = (function (_super) {
         var layer = this.findLayer(layerId);
         this.setUpdateLayer(layer, meta);
         var s = this.findStorage(layer);
+        // check if timestamps are set (if not, do it)
         for (var p in logs) {
             logs[p].forEach(function (l) {
                 if (!l.ts)
@@ -827,6 +971,7 @@ var ApiManager = (function (_super) {
                 callback(result);
             });
     };
+    //log stuff (new: 26/7)
     ApiManager.prototype.addLog = function (layerId, featureId, property, log, meta, callback) {
         var s = this.findStorageForLayerId(layerId);
         s.addLog(layerId, featureId, property, log, meta, function (result) { return callback(result); });
@@ -843,6 +988,7 @@ var ApiManager = (function (_super) {
         var s = this.findStorageForLayerId(layerId);
         s.deleteLog(layerId, featureId, ts, prop, meta, function (result) { return callback(result); });
     };
+    //geospatial queries (thus only supported for mongo)
     ApiManager.prototype.getBBox = function (layerId, southWest, northEast, meta, callback) {
         var s = this.findStorageForLayerId(layerId);
         s.getBBox(layerId, southWest, northEast, meta, function (result) { return callback(result); });
@@ -864,6 +1010,9 @@ var ApiManager = (function (_super) {
         sub.callback = callback;
         this.keySubscriptions[sub.id] = sub;
         return sub;
+        // this.getInterfaces(meta).forEach((i: IConnector) => {
+        //     i.subscribeKey(pattern, meta, callback);
+        // });
     };
     ApiManager.prototype.addKey = function (key, meta, callback) {
         Winston.info('add key ' + key.id);
@@ -872,6 +1021,7 @@ var ApiManager = (function (_super) {
         this.keys[key.id] = k;
     };
     ApiManager.prototype.getKeys = function (meta, callback) {
+        // check subscriptions
         callback({ result: ApiResult.OK, keys: this.keys });
     };
     ApiManager.prototype.getKey = function (id, meta, callback) {
@@ -889,6 +1039,8 @@ var ApiManager = (function (_super) {
             meta = {};
         if (!callback)
             callback = function () { };
+        // Winston.info('updatekey: received ' + keyId);
+        // check if keys exists
         var key = this.findKey(keyId);
         if (!key) {
             var k = { id: keyId, title: keyId, storage: 'file' };
@@ -902,26 +1054,40 @@ var ApiManager = (function (_super) {
         for (var subId in this.keySubscriptions) {
             var sub = this.keySubscriptions[subId];
             if (sub.regexPattern.test(keyId)) {
+                //Winston.info(`   pattern ${sub.pattern} found.`);
                 sub.callback(keyId, value, meta);
             }
         }
         this.getInterfaces(meta).forEach(function (i) {
             i.updateKey(keyId, value, meta, function () { });
         });
+        // Emit key changed events so others can subscribe to it.
         this.emit(Event[Event.KeyChanged], { id: keyId, type: ChangeType.Update, value: value });
+        // check subscriptions
         callback({ result: ApiResult.OK });
     };
+    /**
+     * Register a callback which is being called before the process exits.
+     * @method cleanup
+     * @param  {Function} callback Callback function that performs the cleanup
+     * See also: http://stackoverflow.com/questions/14031763/doing-a-cleanup-action-just-before-node-js-exits
+     */
     ApiManager.prototype.cleanup = function (callback) {
+        // attach user callback to the process event emitter
+        // if no callback, it will still exit gracefully on Ctrl-C
         if (!callback)
             callback = function () { };
         process.on('cleanup', callback);
+        // do app specific cleaning before exiting
         process.on('exit', function () {
             process.emit('cleanup');
         });
+        // catch ctrl+c event and exit normally
         process.on('SIGINT', function () {
             console.log('Ctrl-C...');
             process.exit(2);
         });
+        //catch uncaught exceptions, trace, then exit normally
         process.on('uncaughtException', function (e) {
             console.log('Uncaught Exception...');
             console.log(e.stack);

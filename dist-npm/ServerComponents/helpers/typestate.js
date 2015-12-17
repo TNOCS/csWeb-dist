@@ -3,10 +3,19 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
+/**
+ * Transition grouping to faciliate fluent api
+ * @class Transitions<T>
+ */
 var Transitions = (function () {
     function Transitions(fsm) {
         this.fsm = fsm;
     }
+    /**
+     * Specify the end state(s) of a transition function
+     * @method to
+     * @param ...states {T[]}
+     */
     Transitions.prototype.to = function () {
         var states = [];
         for (var _i = 0; _i < arguments.length; _i++) {
@@ -28,7 +37,17 @@ var Transitions = (function () {
     return Transitions;
 })();
 exports.Transitions = Transitions;
+/**
+ * Internal representation of a transition function
+ * @class TransitionFunction<T>
+ */
 var TransitionFunction = (function () {
+    // public events: {
+    //     [trigger: number]: {
+    //         callback: Function,
+    //         args: any[]
+    //     }
+    // }[];
     function TransitionFunction(fsm, from, to) {
         this.fsm = fsm;
         this.from = from;
@@ -54,7 +73,16 @@ var TransitionFunctions = (function (_super) {
     return TransitionFunctions;
 })(Array);
 exports.TransitionFunctions = TransitionFunctions;
+/***
+ * A simple finite state machine implemented in TypeScript, the templated argument is meant to be used
+ * with an enumeration.
+ * @class FiniteStateMachine<T>
+ */
 var FiniteStateMachine = (function () {
+    /**
+     * @constructor
+     * @param startState {T} Intial starting state
+     */
     function FiniteStateMachine(startState) {
         this._transitionFunctions = [];
         this._onCallbacks = {};
@@ -69,6 +97,7 @@ var FiniteStateMachine = (function () {
         var newTransitions = new TransitionFunctions(this);
         fcn.fromStates.forEach(function (from) {
             fcn.toStates.forEach(function (to) {
+                // self transitions are invalid and don't add duplicates
                 if (from !== to && !_this._validTransition(from, to)) {
                     newTransitions.push(new TransitionFunction(_this, from, to));
                 }
@@ -92,6 +121,12 @@ var FiniteStateMachine = (function () {
             return;
         this.go(this._triggers[current][t], options);
     };
+    /**
+     * Listen for the transition to this state and fire the associated callback
+     * @method on
+     * @param state {T} State to listen to
+     * @param callback {fcn} Callback to fire
+     */
     FiniteStateMachine.prototype.on = function (state, callback) {
         var key = state.toString();
         if (!this._onCallbacks[key]) {
@@ -100,6 +135,13 @@ var FiniteStateMachine = (function () {
         this._onCallbacks[key].push(callback);
         return this;
     };
+    /**
+        * Listen for the transition to this state and fire the associated callback, returning
+        * false in the callback will block the transition to this state.
+        * @method on
+        * @param state {T} State to listen to
+        * @param callback {fcn} Callback to fire
+        */
     FiniteStateMachine.prototype.onEnter = function (state, callback) {
         var key = state.toString();
         if (!this._enterCallbacks[key]) {
@@ -108,6 +150,13 @@ var FiniteStateMachine = (function () {
         this._enterCallbacks[key].push(callback);
         return this;
     };
+    /**
+        * Listen for the transition to this state and fire the associated callback, returning
+        * false in the callback will block the transition from this state.
+        * @method on
+        * @param state {T} State to listen to
+        * @param callback {fcn} Callback to fire
+        */
     FiniteStateMachine.prototype.onExit = function (state, callback) {
         var key = state.toString();
         if (!this._exitCallbacks[key]) {
@@ -116,6 +165,11 @@ var FiniteStateMachine = (function () {
         this._exitCallbacks[key].push(callback);
         return this;
     };
+    /**
+        * Declares the start state(s) of a transition function, must be followed with a '.to(...endStates)'
+        * @method from
+        * @param ...states {T[]}
+        */
     FiniteStateMachine.prototype.from = function () {
         var states = [];
         for (var _i = 0; _i < arguments.length; _i++) {
@@ -141,17 +195,40 @@ var FiniteStateMachine = (function () {
             return (tf.from === from && tf.to === to);
         });
     };
+    /**
+     * Check whether a transition to a new state is valide
+     * @method canGo
+     * @param state {T}
+     */
     FiniteStateMachine.prototype.canGo = function (state) {
         return this.currentState === state || this._validTransition(this.currentState, state);
     };
+    /**
+     * Transition to another valid state
+     * @method go
+     * @param state {T}
+     */
     FiniteStateMachine.prototype.go = function (state, options) {
         if (!this.canGo(state)) {
             throw new Error('Error no transition function exists from state ' + this.currentState.toString() + ' to ' + state.toString());
         }
         this._transitionTo(state, options);
     };
+    /**
+     * This method is availble for overridding for the sake of extensibility.
+     * It is called in the event of a successful transition.
+     * @method onTransition
+     * @param from {T}
+     * @param to {T}
+     */
     FiniteStateMachine.prototype.onTransition = function (from, to, options) {
+        // pass, does nothing untill overridden
     };
+    /**
+     * Reset the finite state machine back to the start state, DO NOT USE THIS AS A SHORTCUT for a transition.
+     * This is for starting the fsm from the beginning.
+     * @method reset
+     */
     FiniteStateMachine.prototype.reset = function () {
         this.currentState = this._startState;
     };

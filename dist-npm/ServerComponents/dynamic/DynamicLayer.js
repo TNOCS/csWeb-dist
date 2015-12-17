@@ -60,12 +60,30 @@ var DynamicLayer = (function (_super) {
         if (this.manager) {
             this.manager.addFeature(this.layerId, f, {}, function (cb) { });
         }
+        //f.insertDate = new Date().getTime();
+        //this.connection.updateFeature(this.layerId, f, 'feature-update');
     };
     DynamicLayer.prototype.start = function () {
         var _this = this;
         console.log('start case layer');
         this.server.get('/cases/' + this.layerId, function (req, res) { _this.getLayer(req, res); });
         this.startDate = new Date().getTime();
+        //this.OpenFile();
+        // this.connection.registerLayer(this.layerId, (action: string, msg: ClientConnection.LayerMessage, client: string) => {
+        //     var feature;
+        //     switch (action) {
+        //         case 'logUpdate':
+        //             // find feature
+        //             var featureId = msg.object.featureId;
+        //
+        //             this.updateLog(featureId, msg.object, client, true);
+        //             break;
+        //         case 'featureUpdate':
+        //             var ft: Feature = msg.object;
+        //             this.updateFeature(ft, client, true);
+        //             break;
+        //     }
+        // });
     };
     DynamicLayer.prototype.updateLog = function (featureId, msgBody, client, notify) {
         var f;
@@ -74,11 +92,12 @@ var DynamicLayer = (function (_super) {
             if (!feature.id || feature.id !== featureId) {
                 return false;
             }
+            // feature found
             f = feature;
             return true;
         });
         if (!f) {
-            return;
+            return; // feature not found
         }
         if (!f.hasOwnProperty('logs')) {
             f.logs = {};
@@ -86,6 +105,7 @@ var DynamicLayer = (function (_super) {
         if (!f.hasOwnProperty('properties')) {
             f.properties = {};
         }
+        // apply changes
         var logs = msgBody.logs;
         for (var key in logs) {
             if (!f.logs.hasOwnProperty(key))
@@ -110,6 +130,10 @@ var DynamicLayer = (function (_super) {
         else {
             this.geojson.features.push(ft);
         }
+        //if (client)
+        //this.connection.updateFeature(this.layerId, ft, 'feature-update', client);
+        //else
+        //this.connection.updateFeature(this.layerId, ft, 'feature-update');
         if (notify) {
             this.emit('featureUpdated', this.layerId, ft.id);
         }

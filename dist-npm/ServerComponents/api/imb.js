@@ -1,3 +1,7 @@
+//http://stackoverflow.com/questions/20606456/whats-the-recommended-way-of-creating-objects-in-nodejs
+//https://gist.github.com/creationix/707146
+//http://www.nodebeginner.org/
+//http://nodejs.org/docs/v0.10.29/api/addons.html
 var MAGIC_LO = 0x7161472F;
 var MAGIC_HI = 0xFBC5AD95;
 var MAGIC_PAYLOAD = 0x10F13467;
@@ -65,63 +69,68 @@ var ekTimerSetSpeed = 47;
 var ekTimerTick = 48;
 var ekTimerAcknowledge = 49;
 var ekTimerStatusRequest = 50;
+// ********************** low level wire command *******************************
 function signalCommand(aSocket, aCommand, aPayload) {
     var buffer = new Buffer(20 + aPayload.length);
+    // magic
     buffer.writeUInt32LE(MAGIC_LO, 0);
     buffer.writeUInt32LE(MAGIC_HI, 4);
+    // command and payload size
     buffer.writeInt32LE(aCommand, 8);
     buffer.writeInt32LE(aPayload.length, 12);
+    // payload
     if (aPayload.length > 0) {
+        // payload and payload magic
         aPayload.copy(buffer, 16);
         buffer.writeUInt32LE(MAGIC_PAYLOAD, buffer.length - 4);
     }
     aSocket.write(buffer);
 }
 function signalSubscribe(aSocket, aEventID, aEventEntryType, aEventName) {
-    var eventNameByteLength = Buffer.byteLength(aEventName);
+    var eventNameByteLength = Buffer.byteLength(aEventName); // default is utf8
     var payload = new Buffer(12 + eventNameByteLength);
     payload.writeInt32LE(aEventID, 0);
     payload.writeInt32LE(aEventEntryType, 4);
     payload.writeInt32LE(eventNameByteLength, 8);
-    payload.write(aEventName, 12);
+    payload.write(aEventName, 12); // default is utf8
     signalCommand(aSocket, icSubscribe, payload);
 }
 function signalUnSubscribe(aSocket, aEventName) {
-    var eventNameByteLength = Buffer.byteLength(aEventName);
+    var eventNameByteLength = Buffer.byteLength(aEventName); // default is utf8
     var payload = new Buffer(4 + eventNameByteLength);
     payload.writeInt32LE(eventNameByteLength, 0);
-    payload.write(aEventName, 4);
+    payload.write(aEventName, 4); // default is utf8
     signalCommand(aSocket, icUnsubscribe, payload);
 }
 function signalPublish(aSocket, aEventID, aEventEntryType, aEventName) {
-    var eventNameByteLength = Buffer.byteLength(aEventName);
+    var eventNameByteLength = Buffer.byteLength(aEventName); // default is utf8
     var payload = new Buffer(12 + eventNameByteLength);
     payload.writeInt32LE(aEventID, 0);
     payload.writeInt32LE(aEventEntryType, 4);
     payload.writeInt32LE(eventNameByteLength, 8);
-    payload.write(aEventName, 12);
+    payload.write(aEventName, 12); // default is utf8
     signalCommand(aSocket, icPublish, payload);
 }
 function signalUnPublish(aSocket, aEventName) {
-    var eventNameByteLength = Buffer.byteLength(aEventName);
+    var eventNameByteLength = Buffer.byteLength(aEventName); // default is utf8
     var payload = new Buffer(4 + eventNameByteLength);
     payload.writeInt32LE(eventNameByteLength, 0);
-    payload.write(aEventName, 4);
+    payload.write(aEventName, 4); // default is utf8
     signalCommand(aSocket, icUnpublish, payload);
 }
 function signalClientInfo(aSocket, aOwnerID, aOwnerName) {
-    var ownerNameByteLength = Buffer.byteLength(aOwnerName);
+    var ownerNameByteLength = Buffer.byteLength(aOwnerName); // default is utf8
     var payload = new Buffer(8 + ownerNameByteLength);
     payload.writeInt32LE(aOwnerID, 0);
     payload.writeInt32LE(ownerNameByteLength, 4);
-    payload.write(aOwnerName, 8);
+    payload.write(aOwnerName, 8); // default is utf8
     signalCommand(aSocket, icSetClientInfo, payload);
 }
 function signalChangeObject(aSocket, aEventID, aAction, aObjectID, aAttribute) {
-    var attributeByteLength = Buffer.byteLength(aAttribute);
+    var attributeByteLength = Buffer.byteLength(aAttribute); // default is utf8
     var payload = new Buffer(4 + 4 + 4 + 4 + 4 + 4 + attributeByteLength);
     payload.writeInt32LE(aEventID, 0);
-    payload.writeInt32LE(0, 4);
+    payload.writeInt32LE(0, 4); // tick
     payload.writeInt32LE(ekChangeObjectEvent, 8);
     payload.writeInt32LE(aAction, 12);
     payload.writeInt32LE(aObjectID, 16);
@@ -132,7 +141,7 @@ function signalChangeObject(aSocket, aEventID, aAction, aObjectID, aAttribute) {
 function signalNormalEvent(aSocket, aEventID, aEventKind, aEventPayload) {
     var payload = new Buffer(4 + 4 + 4 + aEventPayload.length);
     payload.writeInt32LE(aEventID, 0);
-    payload.writeInt32LE(0, 4);
+    payload.writeInt32LE(0, 4); // tick
     payload.writeInt32LE(aEventKind, 8);
     aEventPayload.copy(payload, 12);
     signalCommand(aSocket, icEvent, payload);
@@ -141,34 +150,40 @@ function hashCode(s) {
     return s.split("").reduce(function (a, b) { a = ((a << 5) - a) + b.charCodeAt(0); return a & a; }, 0);
 }
 function signalStream(aSocket, aEventID, aStreamName, aStream) {
-    var streamID = hashCode(aStreamName) + hashCode(aSocket.toString());
+    var streamID = hashCode(aStreamName) + hashCode(aSocket.toString()); //hashCode(aSocket.remoteAddress)+hashCode(aSocket.remotePort.toString()); // todo: make more unique by using id
+    // stream header
     var streamNameLength = Buffer.byteLength(aStreamName);
     var payload = new Buffer(4 + 4 + 4 + 4 + 4 + streamNameLength);
     payload.writeInt32LE(aEventID, 0);
-    payload.writeInt32LE(0, 4);
+    payload.writeInt32LE(0, 4); // tick
     payload.writeInt32LE(ekStreamHeader, 8);
     payload.writeInt32LE(streamID, 12);
     payload.writeInt32LE(streamNameLength, 16);
     payload.write(aStreamName, 20);
     signalCommand(aSocket, icEvent, payload);
+    //console.log("stream start");
     aStream.on('data', function (chunk) {
+        // stream body
         payload = new Buffer(4 + 4 + 4 + 4 + chunk.length);
         payload.writeInt32LE(aEventID, 0);
-        payload.writeInt32LE(0, 4);
+        payload.writeInt32LE(0, 4); // tick
         payload.writeInt32LE(ekStreamBody, 8);
         payload.writeInt32LE(streamID, 12);
         chunk.copy(payload, 16);
         signalCommand(aSocket, icEvent, payload);
+        //console.log("stream body "+chunk.length.toString());
     });
     aStream.on('end', function () {
         payload = new Buffer(4 + 4 + 4 + 4);
         payload.writeInt32LE(aEventID, 0);
-        payload.writeInt32LE(0, 4);
+        payload.writeInt32LE(0, 4); // tick
         payload.writeInt32LE(ekStreamTail, 8);
         payload.writeInt32LE(streamID, 12);
         signalCommand(aSocket, icEvent, payload);
+        //console.log("stream tail");
     });
 }
+// **************** handlers called from command reader ********************
 exports.TIMBConnection = function () {
     var fSocket = require("net").Socket();
     var fEventNames = [];
@@ -187,6 +202,7 @@ exports.TIMBConnection = function () {
         else {
             shortEventName = eventName;
         }
+        // todo: handle event
         switch (aEventKind) {
             case ekNormalEvent:
                 if (eventDefinition.onNormalEvent !== null) {
@@ -244,6 +260,7 @@ exports.TIMBConnection = function () {
         }
     }
     function handleEndSession() {
+        // todo: handle end of session received from hub
     }
     function handleCommand(aCommand, aPayload) {
         var rxEventID;
@@ -263,6 +280,7 @@ exports.TIMBConnection = function () {
                     var tick = aPayload.readUInt32LE(4);
                     var eventDef = aPayload.readUInt32LE(8);
                     var eventPayload = new Buffer(aPayload.length - 12);
+                    // todo: could probably use slice
                     aPayload.copy(eventPayload, 0, 12, aPayload.length);
                     handleEvent(rxEventID, eventDef, eventPayload);
                 }
@@ -270,9 +288,14 @@ exports.TIMBConnection = function () {
                     console.log("## received invalid event id " + txEventID.toString());
                 }
                 break;
+            //case -32:; // set variable
+            //	break;
+            //case -37:; // set variable prefixed
+            //	break;
             case icSetEventIDTranslation:
                 txEventID = aPayload.readInt32LE(0);
                 rxEventID = aPayload.readInt32LE(4);
+                // check and make room for event id
                 if (txEventID >= fEventTranslations.length) {
                     var preLength = fEventTranslations.length;
                     fEventTranslations.length = txEventID + 1;
@@ -297,10 +320,13 @@ exports.TIMBConnection = function () {
                 var payloadSize = fBuffer.readUInt32LE(offset + 4);
                 offset += 8;
                 if (payloadSize > 0) {
+                    // check if we have enough data in the buffer to completely read command else break and retry in next data event
                     if (fBuffer.length - offset < payloadSize + 4) {
+                        // reset offset to start of packet
                         offset -= 8 + 8;
                         break;
                     }
+                    // we can safely read the data
                     var payload = new Buffer(payloadSize);
                     fBuffer.copy(payload, 0, offset, offset + payloadSize);
                     offset += payloadSize;
@@ -321,8 +347,10 @@ exports.TIMBConnection = function () {
                 console.log("## invalid magic: " + ml.toString(16) + mh.toString(16));
             }
         }
+        // remove processed data (all up to, and including, offset)
         if (offset !== 0) {
             if (offset < fBuffer.length) {
+                //fBuffer.copy(fBuffer, 0, offset, fBuffer.length);
                 var newBuffer = new Buffer(fBuffer.length - offset);
                 fBuffer.copy(newBuffer, 0, offset, fBuffer.length);
                 fBuffer = newBuffer;
@@ -333,8 +361,10 @@ exports.TIMBConnection = function () {
         }
     }
     function onDisconnect() {
+        // todo:
     }
     function EventDefinition(aEventID, aEventName) {
+        // define event
         this.name = aEventName;
         this.id = aEventID;
         this.subscribed = false;
@@ -343,6 +373,7 @@ exports.TIMBConnection = function () {
         this.onNormalEvent = null;
         this.onStreamCreate = null;
         this.onStreamEnd = null;
+        //this.onBuffer = null;
         this.changeObject = function (aAction, aObjectID, aAttribute) {
             if (!this.published) {
                 signalPublish(fSocket, this.id, 0, this.name);
@@ -372,15 +403,19 @@ exports.TIMBConnection = function () {
             if (fEventDefinitions.length < eventID + 1) {
                 fEventDefinitions.length = eventID + 1;
             }
+            // store this
             fEventDefinitions[eventID] = new EventDefinition(eventID, aEventName);
         }
         return eventID;
     }
     this.connect = function (aRemoteHost, aRemotePort, aOwnerID, aOwnerName, aFederation) {
         fFederation = aFederation;
+        // connect
         fSocket.connect(aRemotePort, aRemoteHost);
+        // link handlers
         fSocket.on("data", onReadCommand);
         fSocket.on("end", onDisconnect);
+        // send client info
         signalClientInfo(fSocket, aOwnerID, aOwnerName);
     };
     this.disconnect = function () {
@@ -437,6 +472,7 @@ exports.TIMBConnection = function () {
         }
     };
 };
+// exports for consts
 exports.actionNew = actionNew;
 exports.actionDelete = actionDelete;
 exports.actionChange = actionChange;

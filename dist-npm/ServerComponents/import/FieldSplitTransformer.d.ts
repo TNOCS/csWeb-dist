@@ -4,7 +4,13 @@ declare class FieldSplitTransformer implements transform.ITransform {
     id: string;
     description: string;
     type: string;
+    /**
+     * Accepted input types.
+     */
     inputDataTypes: transform.InputDataType[];
+    /**
+     * Generated output types.
+     */
     outputDataTypes: transform.OutputDataType[];
     keyProperty: string;
     constructor(title: string);

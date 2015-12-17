@@ -1,12 +1,19 @@
 var pg = require('pg');
 var IBagOptions = require('../database/IBagOptions');
+/**
+ * Export a connection to the BAG database.
+ */
 var BagDatabase = (function () {
     function BagDatabase(config) {
         this.connectionString = process.env.DATABASE_URL || config["bagConnectionString"];
+        //console.log("Poolsize: " + pg.defaults.poolSize);
         pg.defaults.poolSize = 10;
         console.log("BAG connection: " + this.connectionString);
         console.log("Poolsize: " + pg.defaults.poolSize);
     }
+    /**
+     * Format the zip code so spaces are removed and the letters are all capitals.
+     */
     BagDatabase.prototype.formatZipCode = function (zipCode) {
         if (!zipCode)
             return null;
@@ -20,6 +27,9 @@ var BagDatabase = (function () {
             return null;
         }
     };
+    /**
+     * Expect the house number format in NUMBER-LETTER-ADDITION
+     */
     BagDatabase.prototype.splitAdressNumber = function (input) {
         var result = { nr: null, letter: null, addition: null };
         if (!input)
@@ -44,6 +54,9 @@ var BagDatabase = (function () {
         }
         return result;
     };
+    /**
+     * Format the house number such that we keep an actual number, e.g. 1a -> 1.
+     */
     BagDatabase.prototype.formatHouseNumber = function (input) {
         if (!input)
             return null;
@@ -60,6 +73,9 @@ var BagDatabase = (function () {
             }
         }
     };
+    /**
+     * Format the house letter, max 1 character and in uppercase.
+     */
     BagDatabase.prototype.formatHouseLetter = function (input) {
         if (typeof input === 'string' && input.length > 0) {
             var houseLetter = input.replace(/[^a-zA-Z]+/g, "");
@@ -69,6 +85,9 @@ var BagDatabase = (function () {
         }
         return null;
     };
+    /**
+     * Format the housenumber addition and in uppercase.
+     */
     BagDatabase.prototype.formatHouseNumberAddition = function (input) {
         if (typeof input === 'number') {
             input = input.toString();
@@ -93,6 +112,7 @@ var BagDatabase = (function () {
                 callback(null);
                 return;
             }
+            //var sql = `SELECT ST_AsGeoJSON(ST_Transform(geovlak, 4326)) as area FROM ${sqlTable} WHERE ${sqlColumn}='${name}'`;
             var sql = "SELECT adres.postcode, adres.huisnummer, ST_AsGeoJSON(ST_Force_2D(ST_Transform(pand.geovlak, 4326)), 6, 0) as contour, pand.bouwjaar FROM adres, pand, verblijfsobjectpand WHERE adres.adresseerbaarobject = verblijfsobjectpand.identificatie AND verblijfsobjectpand.gerelateerdpand = pand.identificatie AND ST_Within(pand.geovlak, ST_Transform(ST_GeomFromGeoJSON('" + bounds + "'),28992))";
             client.query(sql, function (err, result) {
                 done();
@@ -107,6 +127,9 @@ var BagDatabase = (function () {
             });
         });
     };
+    /**
+     * Lookup the address from the BAG.
+     */
     BagDatabase.prototype.lookupBagAddress = function (zip, houseNumber, bagOptions, callback) {
         var zipCode = this.formatZipCode(zip);
         if (!zipCode) {
@@ -129,6 +152,7 @@ var BagDatabase = (function () {
                 callback(null);
                 return;
             }
+            //var sql = `SELECT openbareruimtenaam, huisnummer, huisletter, huisnummertoevoeging, gemeentenaam, provincienaam, ST_X(ST_Transform(geopunt, 4326)) as lon, ST_Y(ST_Transform(geopunt, 4326)) as lat FROM adres WHERE adres.postcode='${zipCode}' AND adres.huisnummer=${houseNumber}`;
             var sql;
             switch (bagOptions) {
                 case IBagOptions.OnlyCoordinates:
@@ -147,9 +171,11 @@ var BagDatabase = (function () {
                     console.log("Error: Unknown IBagOptions");
                     break;
             }
+            // If we have a house letter, add it to the query
             if (houseLetter) {
                 sql = sql.replace(/adres\.huisletter\) IS NULL/g, "adres.huisletter)='" + houseLetter + "'");
             }
+            // If we have a house number addition, add it to the query
             if (houseNumberAddition) {
                 sql = sql.replace(/adres\.huisnummertoevoeging\) IS NULL/g, "adres.huisnummertoevoeging)='" + houseNumberAddition + "'");
             }
@@ -176,6 +202,9 @@ var BagDatabase = (function () {
         }
         return result;
     };
+    /**
+     * Lookup the address from the BAG.
+     */
     BagDatabase.prototype.lookupAddress = function (req, res) {
         var zipCode = this.formatZipCode(req.params.zip);
         if (!zipCode)

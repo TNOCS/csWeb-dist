@@ -10,6 +10,7 @@ var GeoJsonSaveTransformer = (function () {
         this.generateKeysOnly = false;
         this.nameLabel = "Name";
         this.id = Utils.newGuid();
+        //this.description = description;
     }
     GeoJsonSaveTransformer.prototype.initialize = function (opt, callback) {
         var keyPropertyParameter = opt.parameters.filter(function (p) { return p.type.title == "filenameKeyProperty"; })[0];
@@ -49,10 +50,13 @@ var GeoJsonSaveTransformer = (function () {
     GeoJsonSaveTransformer.prototype.create = function (config, opt) {
         var _this = this;
         var t = new stream.Transform();
+        /*stream.Transform.call(t);*/
         var index = 0;
         t.setEncoding("utf8");
         t._transform = function (chunk, encoding, done) {
             var startTs = new Date();
+            // console.log((new Date().getTime() - startTs.getTime()) + ": start");
+            /*console.log(index++);*/
             var featureCollection = JSON.parse(chunk);
             var propertyTypeData = {};
             if (_this.generateMetadata && !featureCollection.featureTypes) {
@@ -101,6 +105,9 @@ var GeoJsonSaveTransformer = (function () {
             if (_this.FeatureTypeId) {
                 featureCollection.features.forEach(function (f) { return f.properties["FeatureTypeId"] = _this.FeatureTypeId; });
             }
+            /*console.log("##### GJST #####");*/
+            // console.log("=== Before:")
+            // console.log(feature);
             var filename = _this.filename;
             if (_this.filenameKey) {
                 filename = featureCollection.features[0].properties[_this.filenameKey] + ".json";
@@ -114,6 +121,8 @@ var GeoJsonSaveTransformer = (function () {
             outputStream.write(JSON.stringify(featureCollection));
             outputStream.close();
             console.log("Output written to " + _this.targetFolder + "/" + filename);
+            // console.log("=== After:");
+            // console.log(feature);
             t.push(JSON.stringify(featureCollection));
             done();
         };

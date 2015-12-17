@@ -6,13 +6,23 @@ var Api = require('../api/ApiManager');
 var RuleEngine = (function () {
     function RuleEngine(manager, layerId) {
         var _this = this;
-        this.loadedScripts = [];
+        this.loadedScripts = []; // needed to restart
         this.worldState = new WorldState();
+        /** A set of rules that are active but have not yet fired. */
         this.activeRules = [];
+        /** A set of rules that are inactive and may become activated. */
         this.inactiveRules = [];
+        /** A set of rules to activate at the end of the rule evaluation cycle */
         this.activateRules = [];
+        /** A set of rules to deactivate at the end of the rule evaluation cycle */
         this.deactivateRules = [];
+        /** Unprocessed features that haven't been evaluated yet */
         this.featureQueue = [];
+        /**
+         * Send update to all clients.
+         * @action: logs-update, feature-update
+         * @skip: this one will be skipped ( e.g original source)
+         */
         this.service = {};
         this.timer = new HyperTimer();
         manager.getLayer(layerId, {}, function (result) {
@@ -43,8 +53,37 @@ var RuleEngine = (function () {
                     return true;
                 });
             });
+            // layer.connection.subscribe("rti", (msg: { action: string; data: any }, id: string) => {
+            //     switch (msg.data) {
+            //         case "restart":
+            //             console.log("Rule engine: restarting script");
+            //             this.timer.destroy();
+            //             this.timer = new HyperTimer();
+            //             this.timer.on('error', (err) => {
+            //                 console.log('Error:', err);
+            //             });
+            //             this.worldState = new WorldState();
+            //             this.activeRules = [];
+            //             this.inactiveRules = [];
+            //             this.activateRules = [];
+            //             this.deactivateRules = [];
+            //             this.featureQueue = [];
+            //             this.isBusy = false;
+            //             var scriptCount = this.loadedScripts.length;
+            //             this.loadedScripts.forEach(s => {
+            //                 this.loadRuleFile(s, this.timer.getTime());
+            //             });
+            //             break;
+            //     }
+            // });
         });
     }
+    /**
+     * Activate a specific rule.
+     * @method activateRule
+     * @param  {string}     ruleId The Id of the rule
+     * @return {void}
+     */
     RuleEngine.prototype.activateRule = function (ruleId) {
         for (var i = 0; i < this.inactiveRules.length; i++) {
             var rule = this.inactiveRules[i];
@@ -55,6 +94,12 @@ var RuleEngine = (function () {
             return;
         }
     };
+    /**
+     * Deactivate a specific rule.
+     * @method deactivateRule
+     * @param  {string}       ruleId The Id of the rule
+     * @return {void}
+     */
     RuleEngine.prototype.deactivateRule = function (ruleId) {
         for (var i = 0; i < this.activeRules.length; i++) {
             var rule = this.activeRules[i];
@@ -65,7 +110,17 @@ var RuleEngine = (function () {
             return;
         }
     };
+    /**
+     * Indicates whether the engine is ready to evaluate the rules.
+     */
     RuleEngine.prototype.isReady = function () { return this.isBusy; };
+    /**
+     * Load one or more rule files.
+     * @method loadRules
+     * @param  {string | string[]}    filename String or string[] with the full filename
+     * @param  {Date}      activationTime Optional date that indicates when the rules are activated.
+     * @return {void}
+     */
     RuleEngine.prototype.loadRules = function (filename, activationTime) {
         var _this = this;
         if (typeof activationTime === 'undefined')
@@ -77,6 +132,9 @@ var RuleEngine = (function () {
             filename.forEach(function (f) { return _this.loadRuleFile(f, activationTime); });
         }
     };
+    /**
+     * Internal method to actually load a rule file.
+     */
     RuleEngine.prototype.loadRuleFile = function (filename, activationTime) {
         var _this = this;
         if (this.loadedScripts.indexOf(filename) < 0)
@@ -94,11 +152,15 @@ var RuleEngine = (function () {
                 if (typeof f.properties === 'undefined' || !f.properties.hasOwnProperty("_rules"))
                     return;
                 var rules = f.properties["_rules"];
+                /*console.log(JSON.stringify(rules, null, 2));*/
                 rules.forEach(function (r) { return _this.addRule(r, f, activationTime); });
             });
             _this.evaluateRules();
         });
     };
+    /**
+     * Add a rule to the engine.
+     */
     RuleEngine.prototype.addRule = function (rule, feature, activationTime) {
         if (typeof rule.actions === 'undefined' || rule.actions.length === 0 || rule.actions[0].length === 0)
             return;
@@ -111,6 +173,9 @@ var RuleEngine = (function () {
         else
             this.inactiveRules.push(newRule);
     };
+    /**
+     * Evaluate the rules, processing the current feature
+     */
     RuleEngine.prototype.evaluateRules = function (feature) {
         var _this = this;
         if (this.isBusy) {
@@ -119,11 +184,36 @@ var RuleEngine = (function () {
             return;
         }
         this.isBusy = true;
+        // Update the set of applicable rules
         this.activeRules = this.activeRules.filter(function (r) { return r.isActive; });
         this.inactiveRules = this.inactiveRules.filter(function (r) { return !r.isActive; });
         console.log("Starting to evaluate " + this.activeRules.length + " rules...");
+        // Process all rules
         this.worldState.activeFeature = feature;
         this.activeRules.forEach(function (r) { return r.process(_this.worldState, _this.service); });
+        // Add rules to activate to the activeRules
+        /*this.activateRules.forEach(ruleId => {
+            // use array.some
+            for (let i = 0; i < this.inactiveRules.length; i++) {
+                var rule = this.inactiveRules[i];
+                if (rule.id !== ruleId) continue;
+                rule.isActive = true;
+                this.activeRules.push(rule);
+                this.inactiveRules.splice(i, 1);
+                return;
+            }
+        });*/
+        // Add rules to deactivate to the inactiveRules
+        /*this.deactivateRules.forEach(ruleId => {
+            for (let i = 0; i < this.activeRules.length; i++) {
+                var rule = this.activeRules[i];
+                if (rule.id !== ruleId) continue;
+                rule.isActive = false;
+                this.inactiveRules.push(rule);
+                this.activeRules.splice(i, 1);
+                return;
+            }
+        });*/
         this.isBusy = false;
         if (this.featureQueue.length > 0) {
             var f = this.featureQueue.pop();

@@ -1,6 +1,6 @@
 import express = require('express');
 import ClientConnection = require('./ClientConnection');
-declare module LayerDirectory {
+export declare module LayerDirectory {
     class LayerDirectory {
         server: express.Express;
         connection: ClientConnection.ConnectionManager;
@@ -10,4 +10,3 @@ declare module LayerDirectory {
         GetDirectory(req: express.Request, res: express.Response): void;
     }
 }
-export = LayerDirectory;

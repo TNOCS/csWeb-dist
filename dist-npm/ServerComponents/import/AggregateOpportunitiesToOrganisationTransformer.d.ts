@@ -4,7 +4,13 @@ declare class AggregateOpportunitiesToOrganisationTransformer implements transfo
     id: string;
     description: string;
     type: string;
+    /**
+     * Accepted input types.
+     */
     inputDataTypes: transform.InputDataType[];
+    /**
+     * Generated output types.
+     */
     outputDataTypes: transform.OutputDataType[];
     geometry: any;
     keyProperty: string;

@@ -3,7 +3,7 @@ import IApiServiceManager = require('../api/IApiServiceManager');
 import IStore = require("../import/IStore");
 import IProjectRepositoryService = require("./IProjectRepositoryService");
 import ConfigurationService = require('../configuration/ConfigurationService');
-declare class ProjectRepositoryService implements IProjectRepositoryService {
+export declare class ProjectRepositoryService implements IProjectRepositoryService {
     private store;
     private server;
     private config;
@@ -22,4 +22,3 @@ declare class ProjectRepositoryService implements IProjectRepositoryService {
     delete(id: string): void;
     update(id: string, newObject: any): void;
 }
-export = ProjectRepositoryService;

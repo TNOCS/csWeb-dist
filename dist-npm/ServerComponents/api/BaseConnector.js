@@ -6,6 +6,7 @@ var BaseConnector = (function () {
     }
     BaseConnector.prototype.initLayer = function (layer) {
     };
+    // layer methods first, in crud order.
     BaseConnector.prototype.addLayer = function (layer, meta, callback) {
     };
     BaseConnector.prototype.getLayer = function (layerId, meta, callback) {
@@ -27,16 +28,23 @@ var BaseConnector = (function () {
     };
     BaseConnector.prototype.removeGroup = function (groupId, projectId, meta, callback) {
     };
+    // feature methods, in crud order
     BaseConnector.prototype.addFeature = function (layerId, feature, meta, callback) {
     };
+    //TODO: implement
     BaseConnector.prototype.getFeature = function (layerId, i, meta, callback) {
     };
+    //TODO: implement
     BaseConnector.prototype.updateFeature = function (layerId, feature, useLog, meta, callback) {
     };
+    //TODO: test further. Result is the # of deleted docs.
     BaseConnector.prototype.deleteFeature = function (layerId, featureId, meta, callback) {
     };
     BaseConnector.prototype.updateProperty = function (layerId, featureId, property, value, useLog, meta, callback) {
     };
+    // public addLog(layerId: string, featureId: string, property: any, callback: Function) {
+    //
+    // }
     BaseConnector.prototype.updateLogs = function (layerId, featureId, logs, meta, callback) {
     };
     BaseConnector.prototype.addLog = function (layerId, featureId, property, log, meta, callback) {
@@ -65,12 +73,25 @@ var BaseConnector = (function () {
     };
     BaseConnector.prototype.addResource = function (resource, meta, callback) {
     };
+    /** Get a specific key */
     BaseConnector.prototype.getKey = function (keyId, meta, callback) { };
+    /** Get a list of available keys */
     BaseConnector.prototype.getKeys = function (meta, callback) { };
+    /** Update the value for a given keyId */
     BaseConnector.prototype.updateKey = function (keyId, value, meta, callback) { };
+    /** Delete key */
     BaseConnector.prototype.deleteKey = function (keyId, meta, callback) { };
+    //TODO: Move connection set-up params from static to parameterized.
     BaseConnector.prototype.init = function (layerManager, options, callback) {
     };
+    /**
+     * Subscribe to certain keys.
+     * @method subscribeKey
+     * @param  {string}     keyPattern Pattern to listen for, e.g. hello/me/+:person listens for all hello/me/xxx topics.
+     * @param  {ApiMeta}    meta       [description]
+     * @param  {Function}   callback   Called when topic is called.
+     * @return {[type]}                [description]
+     */
     BaseConnector.prototype.subscribeKey = function (keyPattern, meta, callback) { };
     return BaseConnector;
 })();

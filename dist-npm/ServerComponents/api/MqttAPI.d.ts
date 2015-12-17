@@ -15,6 +15,15 @@ export declare class MqttAPI extends BaseConnector.BaseConnector {
     constructor(server: string, port?: number, layerPrefix?: string, keyPrefix?: string);
     init(layerManager: ApiManager.ApiManager, options: any, callback: Function): void;
     private extractLayer(message);
+    /**
+     * Subscribe to certain keys using the internal MQTT router.
+     * See also https://github.com/wolfeidau/mqtt-router.
+     * @method subscribeKey
+     * @param  {string}     keyPattern Pattern to listen for, e.g. hello/me/+:person listens for all hello/me/xxx topics.
+     * @param  {ApiMeta}    meta       [description]
+     * @param  {Function}   callback   Called when topic is called.
+     * @return {[type]}                [description]
+     */
     subscribeKey(keyPattern: string, meta: ApiMeta, callback: (topic: string, message: string, params?: Object) => void): void;
     addLayer(layer: Layer, meta: ApiMeta, callback: Function): void;
     addFeature(layerId: string, feature: any, meta: ApiMeta, callback: Function): void;

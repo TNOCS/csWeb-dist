@@ -6,6 +6,7 @@ var AggregateOpportunitiesToOrganisationTransformer = (function () {
         this.title = title;
         this.type = "AggregateOpportunitiesToOrganisationTransformer";
         this.id = Utils.newGuid();
+        //this.description = description;
     }
     AggregateOpportunitiesToOrganisationTransformer.prototype.initialize = function (opt, callback) {
         var _this = this;
@@ -33,10 +34,13 @@ var AggregateOpportunitiesToOrganisationTransformer = (function () {
     AggregateOpportunitiesToOrganisationTransformer.prototype.create = function (config, opt) {
         var _this = this;
         var t = new stream.Transform();
+        /*stream.Transform.call(t);*/
         var index = 0;
         t.setEncoding("utf8");
         t._transform = function (chunk, encoding, done) {
             var startTs = new Date();
+            /*console.log((new Date().getTime() - startTs.getTime()) + ": start");*/
+            /*console.log("##### GJAT #####");*/
             if (!_this.geometry) {
                 console.log("No target geometry found");
                 done();
@@ -91,8 +95,13 @@ var AggregateOpportunitiesToOrganisationTransformer = (function () {
             for (var field in aggregatedOpportunities) {
                 feature.properties[field] = aggregatedOpportunities[field];
             }
+            /*console.log(feature.properties);*/
             t.push(JSON.stringify(feature));
+            // console.log("=== After:");
+            // console.log(feature);
+            //t.push(JSON.stringify(feature));
             done();
+            /*console.log((new Date().getTime() - startTs.getTime()) + ": finish " + index++);*/
         };
         return t;
     };

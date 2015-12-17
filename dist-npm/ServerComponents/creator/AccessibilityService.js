@@ -6,6 +6,7 @@ var AccessibilityService = (function () {
         var _this = this;
         this.server = server;
         this.baseUrl = apiServiceManager.BaseUrl + (config['accessibilityAddress'] || '/accessibility');
+        //console.log(this.baseUrl);
         server.get(this.baseUrl, function (req, res) {
             var id = req.query.url;
             _this.getAccessibility(id, res);
@@ -16,7 +17,7 @@ var AccessibilityService = (function () {
         console.log('Accessibility request: ' + url);
         var options = {
             url: url,
-            headers: { 'Accept': 'application/json' }
+            headers: { 'Accept': 'application/json' } //Required to receive a reply in json format instead of xml
         };
         request(options, function (error, response) {
             if (!error && response.statusCode == 200) {

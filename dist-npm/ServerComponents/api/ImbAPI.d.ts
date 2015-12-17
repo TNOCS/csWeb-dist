@@ -19,6 +19,8 @@ export declare class ImbAPI extends BaseConnector.BaseConnector {
     addFeature(layerId: string, feature: any, meta: ApiMeta, callback: Function): void;
     updateFeature(layerId: string, feature: any, useLog: boolean, meta: ApiMeta, callback: Function): void;
     deleteFeature(layerId: string, featureId: string, meta: ApiMeta, callback: Function): void;
+    /** Update the value for a given keyId */
     updateKey(keyId: string, value: Object, meta: ApiMeta, callback: Function): void;
+    /** Delete key */
     deleteKey(keyId: string, meta: ApiMeta, callback: Function): void;
 }

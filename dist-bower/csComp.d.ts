@@ -362,6 +362,7 @@ declare module csComp.Services {
         activation?: string;
         groupId?: string;
         defaultFeatureType?: string;
+        typeUrl?: string;
     }
     interface IPropertyType {
         id?: string;
@@ -384,11 +385,13 @@ declare module csComp.Services {
         target?: string;
         targetrelation?: string;
         targetproperty?: string;
-        options?: string[];
+        options?: Object;
         categories?: string[];
         languages?: ILanguageData;
         legend?: Legend;
         layerProps?: ILayerPropertyDetails;
+        min?: number;
+        max?: number;
         targetid?: string;
         /** Angular expression */
         expression?: string;
@@ -451,13 +454,15 @@ declare module csComp.Services {
         type: string;
         features: Array<IFeature>;
     }
-    class PropertyInfo {
+    interface PropertyInfo {
         max: number;
         min: number;
         count: number;
         mean: number;
         varience: number;
         sd: number;
+        userMin?: number;
+        userMax?: number;
     }
 }
 
@@ -772,7 +777,7 @@ declare module csComp.Services {
          * When enabling the refresh timer, store the returned timer token so we can stop the timer later.
          * @type {number}
          */
-        timerToken: number;
+        timerToken: any;
         /**
         * A list of UNIX timestamp, or the UTC time in milliseconds since 1/1/1970, which define the time a sensor value
         * was taken. So in case we have 10 timestamps, each feature's sensor (key) in the feature's sensors dictionary should
@@ -1485,37 +1490,6 @@ declare module csComp.Helpers {
     };
 }
 
-declare module MathUtils {
-    /**
-     * For calculating derived values based on other properties.
-     *
-     * How it works:
-     * An IMathFunction object is added to a propertyType. By itself, this propertyType is never shown (except in a specific editor).
-     * Instead, upon loading of the layer, the result of the function is computed, and a new property and corresponding type are generated.
-     *
-     * Different types of functions:
-     * A. The output is based on the current feature, e.g.
-     *    amount_men + amount_women => amount_people, or
-     *    percentage_children * amount_men = amount_children.
-     * B. The output is based on all features in the layer, e.g.
-     *    avg_count_children = sum(amount_children) / count(features)
-     */
-    interface IMathFunction {
-        /** The label of the generated property and property type. */
-        propLabel: string;
-        /** The actual function that needs to be computed. */
-        function: string;
-        /** List of property names on which are required for the calculation. */
-        depends?: string[];
-        /** When true, it means that the outcome of the function needs to be calculated only once. */
-        isStatic?: boolean;
-        /** Specifies what the output type is, e.g. number, text etc. Should be a valid property type. */
-        type?: string;
-    }
-    class MathUtils {
-    }
-}
-
 declare module csComp.Helpers {
     class PieData {
         id: number;
@@ -1594,8 +1568,8 @@ interface String {
 declare module csComp.Helpers {
     function getColorFromStringValue(v: string, gs: csComp.Services.GroupStyle): string;
     function getImageUri(ft: csComp.Services.IFeatureType): string;
-    function getColorFromStringLegend(v: string, l: csComp.Services.Legend): string;
-    function getColorFromLegend(v: number, l: csComp.Services.Legend, defaultcolor?: string): any;
+    function getColorFromStringLegend(v: string, l: csComp.Services.Legend, defaultcolor?: string): string;
+    function getColorFromLegend(v: any, l: csComp.Services.Legend, defaultcolor?: string): any;
     function getColor(v: number, gs: csComp.Services.GroupStyle): any;
     /**
      * Extract a valid color string, without transparency.
@@ -1746,68 +1720,7 @@ declare module Translations {
     }
 }
 
-declare module Accessibility {
-    /**
-      * Module
-      */
-    var myModule: any;
-}
-
-import IFeature = csComp.Services.IFeature;
 import IPropertyType = csComp.Services.IPropertyType;
-import IActionOption = csComp.Services.IActionOption;
-declare module Accessibility {
-    class AccessibilityModel implements csComp.Services.IActionService {
-        private layerService;
-        id: string;
-        stop(): void;
-        addFeature(feature: IFeature): void;
-        removeFeature(feature: IFeature): void;
-        selectFeature(feature: IFeature): void;
-        getFeatureActions(feature: IFeature): IActionOption[];
-        getFeatureHoverActions(feature: IFeature): IActionOption[];
-        deselectFeature(feature: IFeature): void;
-        updateFeature(feature: IFeature): void;
-        showAccessibility(feature: IFeature, layerService: csComp.Services.LayerService): void;
-        removeAccessibility(feature: IFeature, layerService: csComp.Services.LayerService): void;
-        static planRoute(feature: IFeature, layerService: csComp.Services.LayerService, destinationKey: string): void;
-        planRouteFrom(feature: IFeature, layerService: csComp.Services.LayerService): void;
-        planRouteTo(feature: IFeature, layerService: csComp.Services.LayerService): void;
-        init(layerService: csComp.Services.LayerService): void;
-    }
-    interface IAccessibilityScope extends ng.IScope {
-        vm: AccessibilityCtrl;
-    }
-    interface IOtpUrlParameters {
-        [key: string]: any;
-    }
-    class AccessibilityCtrl {
-        private $scope;
-        private $http;
-        private $mapService;
-        private $layerService;
-        private $messageBusService;
-        private $dashboardService;
-        private scope;
-        layer: csComp.Services.ProjectLayer;
-        private urlAddress;
-        private urlParameters;
-        private transportModes;
-        private transportMode;
-        private walkSpeedKm;
-        private bikeSpeedKm;
-        private time;
-        private cutoffTimes;
-        urlKeys: string[];
-        static $inject: string[];
-        constructor($scope: IAccessibilityScope, $http: ng.IHttpService, $mapService: csComp.Services.MapService, $layerService: csComp.Services.LayerService, $messageBusService: csComp.Services.MessageBusService, $dashboardService: csComp.Services.DashboardService);
-        refreshAccessibility(): void;
-        parseUrl(): void;
-        private addCutoffTime();
-        private removeCutoffTime(index);
-    }
-}
-
 declare module BaseMapList {
     /**
       * Module
@@ -1829,6 +1742,13 @@ declare module BaseMapList {
         constructor($scope: IBaseMapScope, $layerService: csComp.Services.LayerService, $mapService: csComp.Services.MapService, $messageBusService: csComp.Services.MessageBusService);
         selectBaseLayer(key: any): void;
     }
+}
+
+declare module Directives.Clock {
+    /**
+      * Module
+      */
+    var myModule: any;
 }
 
 declare module Charts {
@@ -1877,6 +1797,7 @@ declare module Charts {
         * Convert a timestamp to string.
         */
         static timestampToString(ts: number): any;
+        static timestampToTimeString(ts: number): any;
         static windowResize(fun: any): void;
         static initializeMargin(scope: any, attrs: any): void;
         static getD3Selector(attrs: any, element: any): string;
@@ -1946,13 +1867,6 @@ declare module Charts {
         };
         showaxis?: boolean;
     }
-}
-
-declare module Directives.Clock {
-    /**
-      * Module
-      */
-    var myModule: any;
 }
 
 declare module Helpers.ContextMenu {
@@ -2045,6 +1959,58 @@ declare module DataTable {
          * Convert to trusted html string.
          */
         toTrusted(html: string): any;
+    }
+}
+
+declare module EventTab {
+    /**
+      * Module
+      */
+    var myModule: any;
+}
+
+declare module EventTab {
+    interface IEventTabScope extends ng.IScope {
+        vm: EventTabCtrl;
+        showMenu: boolean;
+        title: string;
+        icon: string;
+    }
+    class EventTabCtrl {
+        private $scope;
+        private $location;
+        private $sce;
+        private $mapService;
+        private $layerService;
+        private $messageBusService;
+        private $translate;
+        private scope;
+        kanban: KanbanColumn.KanbanConfig;
+        layer: csComp.Services.ProjectLayer;
+        private debounceSendItems;
+        private tlItems;
+        private newItems;
+        private tlGroups;
+        static $inject: string[];
+        constructor($scope: IEventTabScope, $location: ng.ILocationService, $sce: ng.ISCEService, $mapService: csComp.Services.MapService, $layerService: csComp.Services.LayerService, $messageBusService: csComp.Services.MessageBusService, $translate: ng.translate.ITranslateService);
+        /**
+         * Initialize an eventTab. Create a layer that contains all messages (features)
+         */
+        private init();
+        reset(): void;
+        private addUpdateEvent(f);
+        private addEvent(f);
+        private addTimelineItem(f);
+        private mergeItems();
+        private sendTimelineItems();
+        private sendTimelineGroups();
+        /**
+         * Callback function
+         * @see {http://stackoverflow.com/questions/12756423/is-there-an-alias-for-this-in-typescript}
+         * @see {http://stackoverflow.com/questions/20627138/typescript-this-scoping-issue-when-called-in-jquery-callback}
+         * @todo {notice the strange syntax using a fat arrow =>, which is to preserve the this reference in a callback!}
+         */
+        private sidebarMessageReceived;
     }
 }
 
@@ -2230,7 +2196,8 @@ declare module FeatureProps {
         private scope;
         lastSelectedProperty: IPropertyType;
         private defaultDropdownTitle;
-        private stats;
+        private showMore;
+        private showChart;
         static $inject: string[];
         constructor($scope: IFeaturePropsScope, $location: ng.ILocationService, $sce: ng.ISCEService, $mapService: csComp.Services.MapService, $layerService: csComp.Services.LayerService, $messageBusService: csComp.Services.MessageBusService, $translate: ng.translate.ITranslateService, $compile: ng.ICompileService);
         updateAllStatsDelay: () => void;
@@ -2254,6 +2221,7 @@ declare module FeatureProps {
         private sidebarMessageReceived;
         private featureMessageReceived;
         setCorrelation(item: ICallOutProperty, $event: ng.IAngularEvent): void;
+        addSparkline(item: ICallOutProperty): void;
         createSparkLineChart(item: ICallOutProperty): void;
         getPropStats(item: ICallOutProperty): void;
         featureType: IFeatureType;
@@ -2363,6 +2331,68 @@ declare module FilterList {
         static $inject: string[];
         constructor($scope: IFilterListScope, $layerService: csComp.Services.LayerService, $messageBus: csComp.Services.MessageBusService);
         private setLocationFilter(group);
+    }
+}
+
+declare module Accessibility {
+    /**
+      * Module
+      */
+    var myModule: any;
+}
+
+import IFeature = csComp.Services.IFeature;
+import IPropertyType = csComp.Services.IPropertyType;
+import IActionOption = csComp.Services.IActionOption;
+declare module Accessibility {
+    class AccessibilityModel implements csComp.Services.IActionService {
+        private layerService;
+        id: string;
+        stop(): void;
+        addFeature(feature: IFeature): void;
+        removeFeature(feature: IFeature): void;
+        selectFeature(feature: IFeature): void;
+        getFeatureActions(feature: IFeature): IActionOption[];
+        getFeatureHoverActions(feature: IFeature): IActionOption[];
+        deselectFeature(feature: IFeature): void;
+        updateFeature(feature: IFeature): void;
+        showAccessibility(feature: IFeature, layerService: csComp.Services.LayerService): void;
+        removeAccessibility(feature: IFeature, layerService: csComp.Services.LayerService): void;
+        static planRoute(feature: IFeature, layerService: csComp.Services.LayerService, destinationKey: string): void;
+        planRouteFrom(feature: IFeature, layerService: csComp.Services.LayerService): void;
+        planRouteTo(feature: IFeature, layerService: csComp.Services.LayerService): void;
+        init(layerService: csComp.Services.LayerService): void;
+    }
+    interface IAccessibilityScope extends ng.IScope {
+        vm: AccessibilityCtrl;
+    }
+    interface IOtpUrlParameters {
+        [key: string]: any;
+    }
+    class AccessibilityCtrl {
+        private $scope;
+        private $http;
+        private $mapService;
+        private $layerService;
+        private $messageBusService;
+        private $dashboardService;
+        private scope;
+        layer: csComp.Services.ProjectLayer;
+        private urlAddress;
+        private urlParameters;
+        private transportModes;
+        private transportMode;
+        private walkSpeedKm;
+        private bikeSpeedKm;
+        private time;
+        private cutoffTimes;
+        urlKeys: string[];
+        static $inject: string[];
+        constructor($scope: IAccessibilityScope, $http: ng.IHttpService, $mapService: csComp.Services.MapService, $layerService: csComp.Services.LayerService, $messageBusService: csComp.Services.MessageBusService, $dashboardService: csComp.Services.DashboardService);
+        refreshAccessibility(): void;
+        parseUrl(): void;
+        private addCutoffTime();
+        private removeCutoffTime(index);
     }
 }
 
@@ -3089,6 +3119,238 @@ declare module MapElement {
     }
 }
 
+declare module Mobile {
+    /**
+      * Module
+      */
+    var myModule: any;
+}
+
+declare module Mobile {
+    interface IMobileScope extends ng.IScope {
+        vm: MobileCtrl;
+    }
+    class MobileCtrl {
+        private $scope;
+        private $layerService;
+        private $messageBus;
+        private localStorageService;
+        private geoService;
+        private scope;
+        private availableLayers;
+        static $inject: string[];
+        constructor($scope: IMobileScope, $layerService: csComp.Services.LayerService, $messageBus: csComp.Services.MessageBusService, localStorageService: ng.localStorage.ILocalStorageService, geoService: csComp.Services.GeoService);
+    }
+}
+
+declare module Navigate {
+    /**
+      * Module
+      */
+    var myModule: any;
+}
+
+declare module Navigate {
+    interface INavigateScope extends ng.IScope {
+        vm: NavigateCtrl;
+        search: string;
+    }
+    class RecentFeature {
+        id: string;
+        name: string;
+        layerId: string;
+        feature: csComp.Services.IFeature;
+    }
+    class NavigateCtrl {
+        private $scope;
+        private $layerService;
+        private $messageBus;
+        private localStorageService;
+        private geoService;
+        private scope;
+        RecentLayers: csComp.Services.ProjectLayer[];
+        mobileLayers: csComp.Services.ProjectLayer[];
+        mobileLayer: csComp.Services.ProjectLayer;
+        RecentFeatures: RecentFeature[];
+        UserName: string;
+        MyFeature: csComp.Services.Feature;
+        private lastPost;
+        searchResults: csComp.Services.ISearchResultItem[];
+        static $inject: string[];
+        constructor($scope: INavigateScope, $layerService: csComp.Services.LayerService, $messageBus: csComp.Services.MessageBusService, localStorageService: ng.localStorage.ILocalStorageService, geoService: csComp.Services.GeoService);
+        selectSearchResult(item: csComp.Services.ISearchResultItem): void;
+        private doSearch(search);
+        private leave(l);
+        private join(l);
+        private initMobileLayers(p);
+        private updateRecentFeaturesList();
+        private selectFeature(feature);
+        private initRecentFeatures();
+        toggleLayer(layer: csComp.Services.ProjectLayer): void;
+        private initRecentLayers();
+    }
+}
+
+declare module Search {
+    class NavigateSteps {
+    }
+    class NavigateState {
+        state: any;
+    }
+    interface INavigateProvider {
+        title: string;
+        url: string;
+    }
+}
+
+declare module OfflineSearch {
+    /**
+      * Module
+      */
+    var myModule: any;
+}
+
+declare module OfflineSearch {
+    interface IProjectLocation {
+        title: string;
+        url: string;
+    }
+    /**
+     * The name of the property you include in generating the offline search result.
+     */
+    interface IPropertyType {
+        /**
+         * Name of the property
+         * @type {string}
+         */
+        name: string;
+        /**
+         * The title of the property.
+         * @type {string}
+         */
+        title: string;
+        /**
+         * Language information for localisation.
+         * @type {f.ILanguageData}
+         */
+        languages?: csComp.Services.ILanguageData;
+    }
+    /**
+     * Specify the offline search options.
+     */
+    interface IOfflineSearchOptions {
+        /**
+         * Words you wish to exclude from the index.
+         * @type {string[]}
+         */
+        stopWords: string[];
+        /**
+         * The property types that you wish to use for generating the index.
+         * @type {osr.PropertyType}
+         */
+        propertyTypes: IPropertyType[];
+    }
+    class Layer {
+        groupTitle: string;
+        index: number;
+        id: string;
+        title: string;
+        path: string;
+        type: string;
+        /**
+         * Names of all the features.
+         * @type {string[]}
+         */
+        featureNames: string[];
+        constructor(groupTitle: string, index: number, id: string, title: string, path: string, type: string);
+    }
+    /**
+     * An index entry that contains a search result.
+     */
+    class Entry {
+        private v;
+        constructor(layerIndexOrArray: Array<number> | number, featureIndex?: number, propertyIndex?: number);
+        layerIndex: number;
+        featureIndex: number;
+        /**
+         * This function is called when serializing the Entry object to JSON, which is
+         * much less verbose than the default JSON. In the constructor, I've used a
+         * Union type to deserialize it again.
+         */
+        toJSON(): number[];
+    }
+    class KeywordIndex {
+        [key: string]: Entry[];
+    }
+    class OfflineSearchResult {
+        project: IProjectLocation;
+        options: IOfflineSearchOptions;
+        layers: Layer[];
+        keywordIndex: KeywordIndex;
+        constructor(project: IProjectLocation, options: IOfflineSearchOptions);
+    }
+}
+
+declare module OfflineSearch {
+    interface IOfflineSearchScope extends ng.IScope {
+        vm: OfflineSearchCtrl;
+    }
+    interface ILookupResult {
+        title?: string;
+        score: number;
+        key: string;
+        entries: Entry[];
+    }
+    class OfflineSearchResultViewModel {
+        title: string;
+        layerTitle: string;
+        groupTitle: string;
+        entry: Entry;
+        firstInGroup: boolean;
+        constructor(title: string, layerTitle: string, groupTitle: string, entry: Entry);
+        toString(): string;
+        fullTitle: string;
+    }
+    class OfflineSearchCtrl {
+        private $scope;
+        private $http;
+        private $layerService;
+        private $mapService;
+        private $messageBus;
+        private offlineSearchResult;
+        searchText: string;
+        isReady: boolean;
+        static $inject: string[];
+        constructor($scope: IOfflineSearchScope, $http: ng.IHttpService, $layerService: csComp.Services.LayerService, $mapService: csComp.Services.MapService, $messageBus: csComp.Services.MessageBusService);
+        /**
+         * Load the offline search results (json file).
+         */
+        private loadSearchResults(url);
+        /**
+         * Get the locations based on the entered text.
+         */
+        getLocation(text: string, resultCount?: number): OfflineSearchResultViewModel[];
+        /**
+         * Merge the resuls of two keyword lookups by checking whether different entries refer
+         * to the same layer and feature.
+         * @result1 {ILookupResult[]}
+         * @result2 {ILookupResult[]}
+         */
+        private mergeResults(result1, result2);
+        /**
+         * Do a fuzzy keyword comparison between the entered text and the list of keywords,
+         * and return a subset.
+         * @text: {string}
+         */
+        private getKeywordHits(text);
+        /**
+         * When an item is selected, optionally open the layer and jump to the selected feature.
+         */
+        onSelect(selectedItem: OfflineSearchResultViewModel): void;
+        private selectFeature(layerId, featureIndex);
+    }
+}
+
 declare module Mca.Models {
     import IFeature = csComp.Services.IFeature;
     enum ScoringFunctionType {
@@ -3321,234 +3583,6 @@ declare module Mca {
     }
 }
 
-declare module Mobile {
-    /**
-      * Module
-      */
-    var myModule: any;
-}
-
-declare module Mobile {
-    interface IMobileScope extends ng.IScope {
-        vm: MobileCtrl;
-    }
-    class MobileCtrl {
-        private $scope;
-        private $layerService;
-        private $messageBus;
-        private localStorageService;
-        private geoService;
-        private scope;
-        private availableLayers;
-        static $inject: string[];
-        constructor($scope: IMobileScope, $layerService: csComp.Services.LayerService, $messageBus: csComp.Services.MessageBusService, localStorageService: ng.localStorage.ILocalStorageService, geoService: csComp.Services.GeoService);
-    }
-}
-
-declare module Navigate {
-    /**
-      * Module
-      */
-    var myModule: any;
-}
-
-declare module Navigate {
-    interface INavigateScope extends ng.IScope {
-        vm: NavigateCtrl;
-    }
-    class RecentFeature {
-        id: string;
-        name: string;
-        layerId: string;
-        feature: csComp.Services.IFeature;
-    }
-    class NavigateCtrl {
-        private $scope;
-        private $layerService;
-        private $messageBus;
-        private localStorageService;
-        private geoService;
-        private scope;
-        RecentLayers: csComp.Services.ProjectLayer[];
-        mobileLayers: csComp.Services.ProjectLayer[];
-        mobileLayer: csComp.Services.ProjectLayer;
-        RecentFeatures: RecentFeature[];
-        UserName: string;
-        MyFeature: csComp.Services.Feature;
-        private lastPost;
-        static $inject: string[];
-        constructor($scope: INavigateScope, $layerService: csComp.Services.LayerService, $messageBus: csComp.Services.MessageBusService, localStorageService: ng.localStorage.ILocalStorageService, geoService: csComp.Services.GeoService);
-        private leave(l);
-        private join(l);
-        private initMobileLayers(p);
-        private updateRecentFeaturesList();
-        private selectFeature(feature);
-        private initRecentFeatures();
-        toggleLayer(layer: csComp.Services.ProjectLayer): void;
-        private initRecentLayers();
-    }
-}
-
-declare module Search {
-    class NavigateSteps {
-    }
-    class NavigateState {
-        state: any;
-    }
-    interface INavigateProvider {
-        title: string;
-        url: string;
-    }
-}
-
-declare module OfflineSearch {
-    /**
-      * Module
-      */
-    var myModule: any;
-}
-
-declare module OfflineSearch {
-    interface IProjectLocation {
-        title: string;
-        url: string;
-    }
-    /**
-     * The name of the property you include in generating the offline search result.
-     */
-    interface IPropertyType {
-        /**
-         * Name of the property
-         * @type {string}
-         */
-        name: string;
-        /**
-         * The title of the property.
-         * @type {string}
-         */
-        title: string;
-        /**
-         * Language information for localisation.
-         * @type {f.ILanguageData}
-         */
-        languages?: csComp.Services.ILanguageData;
-    }
-    /**
-     * Specify the offline search options.
-     */
-    interface IOfflineSearchOptions {
-        /**
-         * Words you wish to exclude from the index.
-         * @type {string[]}
-         */
-        stopWords: string[];
-        /**
-         * The property types that you wish to use for generating the index.
-         * @type {osr.PropertyType}
-         */
-        propertyTypes: IPropertyType[];
-    }
-    class Layer {
-        groupTitle: string;
-        index: number;
-        id: string;
-        title: string;
-        path: string;
-        type: string;
-        /**
-         * Names of all the features.
-         * @type {string[]}
-         */
-        featureNames: string[];
-        constructor(groupTitle: string, index: number, id: string, title: string, path: string, type: string);
-    }
-    /**
-     * An index entry that contains a search result.
-     */
-    class Entry {
-        private v;
-        constructor(layerIndexOrArray: Array<number> | number, featureIndex?: number, propertyIndex?: number);
-        layerIndex: number;
-        featureIndex: number;
-        /**
-         * This function is called when serializing the Entry object to JSON, which is
-         * much less verbose than the default JSON. In the constructor, I've used a
-         * Union type to deserialize it again.
-         */
-        toJSON(): number[];
-    }
-    class KeywordIndex {
-        [key: string]: Entry[];
-    }
-    class OfflineSearchResult {
-        project: IProjectLocation;
-        options: IOfflineSearchOptions;
-        layers: Layer[];
-        keywordIndex: KeywordIndex;
-        constructor(project: IProjectLocation, options: IOfflineSearchOptions);
-    }
-}
-
-declare module OfflineSearch {
-    interface IOfflineSearchScope extends ng.IScope {
-        vm: OfflineSearchCtrl;
-    }
-    interface ILookupResult {
-        title?: string;
-        score: number;
-        key: string;
-        entries: Entry[];
-    }
-    class OfflineSearchResultViewModel {
-        title: string;
-        layerTitle: string;
-        groupTitle: string;
-        entry: Entry;
-        firstInGroup: boolean;
-        constructor(title: string, layerTitle: string, groupTitle: string, entry: Entry);
-        toString(): string;
-        fullTitle: string;
-    }
-    class OfflineSearchCtrl {
-        private $scope;
-        private $http;
-        private $layerService;
-        private $mapService;
-        private $messageBus;
-        private offlineSearchResult;
-        searchText: string;
-        isReady: boolean;
-        static $inject: string[];
-        constructor($scope: IOfflineSearchScope, $http: ng.IHttpService, $layerService: csComp.Services.LayerService, $mapService: csComp.Services.MapService, $messageBus: csComp.Services.MessageBusService);
-        /**
-         * Load the offline search results (json file).
-         */
-        private loadSearchResults(url);
-        /**
-         * Get the locations based on the entered text.
-         */
-        getLocation(text: string, resultCount?: number): OfflineSearchResultViewModel[];
-        /**
-         * Merge the resuls of two keyword lookups by checking whether different entries refer
-         * to the same layer and feature.
-         * @result1 {ILookupResult[]}
-         * @result2 {ILookupResult[]}
-         */
-        private mergeResults(result1, result2);
-        /**
-         * Do a fuzzy keyword comparison between the entered text and the list of keywords,
-         * and return a subset.
-         * @text: {string}
-         */
-        private getKeywordHits(text);
-        /**
-         * When an item is selected, optionally open the layer and jump to the selected feature.
-         */
-        onSelect(selectedItem: OfflineSearchResultViewModel): void;
-        private selectFeature(layerId, featureIndex);
-    }
-}
-
 declare module ProjectHeaderSelection {
     /**
       * Module
@@ -3689,10 +3723,13 @@ declare module Timeline {
         expandButtonBottom: number;
         items: any;
         private debounceUpdate;
+        private debounceSetItems;
         private ids;
         constructor($scope: ITimelineScope, $layerService: csComp.Services.LayerService, $mapService: csComp.Services.MapService, $messageBusService: csComp.Services.MessageBusService, TimelineService: Timeline.ITimelineService);
         private update(s, data);
         private setFocusContainerDebounce;
+        private setItems(items);
+        private setGroups(groups);
         private updateFeatures();
         private initTimeline();
         updateDragging(): void;
@@ -3725,6 +3762,13 @@ declare module Timeline {
         */
         loadLocales(): void;
     }
+}
+
+declare module Voting {
+    /**
+      * Module
+      */
+    var myModule: any;
 }
 
 declare module TripPlanner {
@@ -3776,13 +3820,6 @@ declare module TripPlanner {
         parseUrl(): void;
         private featureTabActivated(title);
     }
-}
-
-declare module Voting {
-    /**
-      * Module
-      */
-    var myModule: any;
 }
 
 declare module Authentication {
@@ -3951,6 +3988,7 @@ declare module csComp.Services {
         private options;
         constructor($layerService: Services.LayerService, $dashboardService: Services.DashboardService);
         start(ctrl: ChartsWidget.ChartCtrl): void;
+        private lastSelectedFeature;
         private selectFeature(f);
         stop(): void;
     }
@@ -4018,7 +4056,7 @@ declare module csComp.Services {
         constructor($layerService: Services.LayerService, $dashboardService: Services.DashboardService);
         private layerSub;
         private styleSub;
-        private style;
+        private property;
         private layer;
         start(ctrl: ChartsWidget.ChartCtrl): void;
         private updateChart(layer);
@@ -4127,24 +4165,6 @@ declare module csComp.Services {
 
 declare module csComp.Services {
     import IFeature = csComp.Services.IFeature;
-    import IActionOption = csComp.Services.IActionOption;
-    class LayerActions implements csComp.Services.IActionService {
-        id: string;
-        private layerService;
-        stop(): void;
-        addFeature(feature: IFeature): void;
-        removeFeature(feature: IFeature): void;
-        selectFeature(feature: IFeature): void;
-        getFeatureActions(feature: IFeature): IActionOption[];
-        getFeatureHoverActions(feature: IFeature): IActionOption[];
-        deselectFeature(feature: IFeature): void;
-        updateFeature(feuture: IFeature): void;
-        private setAsFilter(feature, layerService);
-        init(layerService: csComp.Services.LayerService): void;
-    }
-}
-
-declare module csComp.Services {
     enum ActionType {
         Context = 0,
         Hover = 1,
@@ -4154,6 +4174,21 @@ declare module csComp.Services {
         icon: string;
         feature: IFeature;
         callback: Function;
+    }
+    interface ISearchResultItem {
+        type?: string;
+        feature?: IFeature;
+        description?: string;
+        title: string;
+        score?: number;
+        icon?: string;
+        service: string;
+        click: Function;
+    }
+    type SearchResultHandler = (error: Error, result: ISearchResultItem[]) => void;
+    interface ISearchQuery {
+        query: string;
+        results: ISearchResultItem[];
     }
     interface IActionService {
         id: string;
@@ -4166,7 +4201,33 @@ declare module csComp.Services {
         getFeatureHoverActions(feature: IFeature): IActionOption[];
         deselectFeature(feature: IFeature): any;
         updateFeature(feuture: IFeature): any;
+        search?(query: ISearchQuery, result: SearchResultHandler): any;
     }
+    class BasicActionService implements csComp.Services.IActionService {
+        id: any;
+        layerService: csComp.Services.LayerService;
+        stop(): void;
+        addFeature(feature: IFeature): void;
+        removeFeature(feature: IFeature): void;
+        selectFeature(feature: IFeature): void;
+        getFeatureActions(feature: IFeature): IActionOption[];
+        getFeatureHoverActions(feature: IFeature): IActionOption[];
+        deselectFeature(feature: IFeature): void;
+        updateFeature(feuture: IFeature): void;
+        search(query: ISearchQuery, result: Function): void;
+        init(layerService: csComp.Services.LayerService): void;
+    }
+    class LayerActions extends BasicActionService {
+        id: string;
+        getFeatureActions(feature: IFeature): IActionOption[];
+        getFeatureHoverActions(feature: IFeature): IActionOption[];
+        private setAsFilter(feature, layerService);
+        search(query: ISearchQuery, result: SearchResultHandler): void;
+        init(layerService: csComp.Services.LayerService): void;
+    }
+}
+
+declare module csComp.Services {
     /** describes a layer source, every layer has a layer source that is responsible for importing the data (e.g. geojson, wms, etc */
     interface ILayerSource {
         title: string;
@@ -4535,17 +4596,10 @@ declare module csComp.Services {
 declare module MatrixAction {
     import IFeature = csComp.Services.IFeature;
     import IActionOption = csComp.Services.IActionOption;
-    class MatrixActionModel implements csComp.Services.IActionService {
+    class MatrixActionModel extends csComp.Services.BasicActionService {
         id: string;
-        private layerService;
-        stop(): void;
-        addFeature(feature: IFeature): void;
-        removeFeature(feature: IFeature): void;
-        selectFeature(feature: IFeature): void;
         getFeatureActions(feature: IFeature): IActionOption[];
         getFeatureHoverActions(feature: IFeature): IActionOption[];
-        deselectFeature(feature: IFeature): void;
-        updateFeature(feuture: IFeature): void;
         private showContour(feature, layerService);
         private hideContour(feature, layerService);
         init(layerService: csComp.Services.LayerService): void;
@@ -5195,17 +5249,19 @@ declare module Filters {
         vm: RowFilterCtrl;
         filter: csComp.Services.GroupFilter;
         options: Function;
-        editMode: boolean;
+        removeString: string;
+        createScatterString: string;
     }
     class RowFilterCtrl {
         $scope: IRowFilterScope;
         private $layerService;
         private $messageBus;
         private $timeout;
+        private $translate;
         private scope;
         private widget;
         static $inject: string[];
-        constructor($scope: IRowFilterScope, $layerService: csComp.Services.LayerService, $messageBus: csComp.Services.MessageBusService, $timeout: ng.ITimeoutService);
+        constructor($scope: IRowFilterScope, $layerService: csComp.Services.LayerService, $messageBus: csComp.Services.MessageBusService, $timeout: ng.ITimeoutService, $translate: ng.translate.ITranslateService);
         private createScatter(gf);
         private displayFilterRange(min, max);
         private dcChart;
@@ -5630,32 +5686,6 @@ declare module NavigatorWidget {
       * Module
       */
     var myModule: any;
-    interface IMarkdownEditCtrl extends ng.IScope {
-        vm: MarkdownEditCtrl;
-        data: any;
-    }
-    class MarkdownEditCtrl {
-        private $scope;
-        private $timeout;
-        private $compile;
-        private $layerService;
-        private $templateCache;
-        private $messageBus;
-        private $mapService;
-        private $dashboardService;
-        private scope;
-        widget: csComp.Services.IWidget;
-        static $inject: string[];
-        constructor($scope: IMarkdownEditCtrl, $timeout: ng.ITimeoutService, $compile: any, $layerService: csComp.Services.LayerService, $templateCache: any, $messageBus: csComp.Services.MessageBusService, $mapService: csComp.Services.MapService, $dashboardService: csComp.Services.DashboardService);
-        updateText(): void;
-    }
-}
-
-declare module NavigatorWidget {
-    /**
-      * Module
-      */
-    var myModule: any;
 }
 
 declare module NavigatorWidget {
@@ -5939,6 +5969,8 @@ declare module csComp.Services {
         addLayer(layer: ProjectLayer, callback: (layer: ProjectLayer) => void, data?: any): void;
         /** zoom to boundaries of layer */
         fitMap(layer: ProjectLayer): void;
+        /** zoom to boundaries of layer */
+        fitTimeline(layer: ProjectLayer): void;
         layerMenuOptions(layer: ProjectLayer): [[string, Function]];
         protected baseAddLayer(layer: ProjectLayer, callback: (layer: ProjectLayer) => void, data?: any): void;
         protected initLayer(data: any, layer: ProjectLayer): void;

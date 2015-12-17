@@ -4,7 +4,13 @@ declare class AggregateOpportunitiesToGeoJsonTransformer implements transform.IT
     id: string;
     description: string;
     type: string;
+    /**
+     * Accepted input types.
+     */
     inputDataTypes: transform.InputDataType[];
+    /**
+     * Generated output types.
+     */
     outputDataTypes: transform.OutputDataType[];
     geometry: any;
     keyProperty: string;

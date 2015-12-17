@@ -11,6 +11,9 @@ export declare class DynamicProject {
     Start(): void;
     AddLayer(data: any): void;
     private splitJson(data);
+    /***
+    Open project file from disk
+    */
     openFile(): void;
     watchFolder(): void;
     removeLayer(file: string): void;

@@ -69,6 +69,7 @@ export interface IBagContourRequest {
     bounds: string;
     layer: any;
 }
+/** A factory class to create new map layers based on input, e.g. from Excel */
 export declare class MapLayerFactory {
     private bag;
     private messageBus;
@@ -87,9 +88,21 @@ export declare class MapLayerFactory {
         featureTypes: {};
         features: IGeoJsonFeature[];
     };
+    /**
+     * This function extracts the timestamps and sensorvalues from the
+     * template.propertyTypes. Every sensorvalue is parsed as propertyType in
+     * MS Excel, which should be converted to a sensor-array for each feature.
+     * Note: Each propertyname is appended with a 6-digit number, as JSON objects
+     * need unique keys. These are trimmed in this function.
+     * @param  {ILayerTemplate} template : The input template coming from MS Excel
+     * @return {array} timestamps        : An array with all date/times converted to milliseconds
+     */
     private convertTimebasedPropertyData(template);
     private createPolygonFeature(templateName, par1, inclTemplProps, features, properties, propertyTypes, sensors, callback);
     private createLatLonFeature(latString, lonString, features, properties, sensors, callback);
+    /**
+     * Convert the RD coordinate to WGS84.
+     */
     private createRDFeature(rdX, rdY, features, properties, sensors, callback);
     private mergeHouseNumber(zipCode, houseNumber, letter, addition, properties);
     private createPointFeature(zipCode, houseNumber, bagOptions, features, properties, propertyTypes, sensors, callback);

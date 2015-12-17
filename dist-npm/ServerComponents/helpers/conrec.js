@@ -1,3 +1,70 @@
+/**
+ * Translated Jason Davies' JavaScript version to TypeScript in 2015.
+ * Erik Vullings
+ *
+ * Copyright (c) 2010, Jason Davies.
+ *
+ * All rights reserved.  This code is based on Bradley White's Java version,
+ * which is in turn based on Nicholas Yue's C++ version, which in turn is based
+ * on Paul D. Bourke's original Fortran version.  See below for the respective
+ * copyright notices.
+ *
+ * See http://paulbourke.net/papers/conrec for the original
+ * paper by Paul D. Bourke.
+ *
+ * The vector conversion code is based on http://apptree.net/conrec.htm by
+ * Graham Cox.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *     * Redistributions of source code must retain the above copyright
+ *       notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the
+ *       documentation and/or other materials provided with the distribution.
+ *     * Neither the name of the <organization> nor the
+ *       names of its contributors may be used to endorse or promote products
+ *       derived from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BE LIABLE FOR ANY
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+ * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+/*
+ * Copyright (c) 1996-1997 Nicholas Yue
+ *
+ * This software is copyrighted by Nicholas Yue. This code is based on Paul D.
+ * Bourke's CONREC.F routine.
+ *
+ * The authors hereby grant permission to use, copy, and distribute this
+ * software and its documentation for any purpose, provided that existing
+ * copyright notices are retained in all copies and that this notice is
+ * included verbatim in any distributions. Additionally, the authors grant
+ * permission to modify this software and its documentation for any purpose,
+ * provided that such modifications are not distributed without the explicit
+ * consent of the authors and that existing copyright notices are retained in
+ * all copies. Some of the algorithms implemented by this software are
+ * patented, observe all applicable patent law.
+ *
+ * IN NO EVENT SHALL THE AUTHORS OR DISTRIBUTORS BE LIABLE TO ANY PARTY FOR
+ * DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES ARISING OUT
+ * OF THE USE OF THIS SOFTWARE, ITS DOCUMENTATION, OR ANY DERIVATIVES THEREOF,
+ * EVEN IF THE AUTHORS HAVE BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * THE AUTHORS AND DISTRIBUTORS SPECIFICALLY DISCLAIM ANY WARRANTIES,
+ * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS
+ * PROVIDED ON AN "AS IS" BASIS, AND THE AUTHORS AND DISTRIBUTORS HAVE NO
+ * OBLIGATION TO PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR
+ * MODIFICATIONS.
+ */
 var EPSILON = 1e-10;
 var ContourBuilder = (function () {
     function ContourBuilder(level) {
@@ -11,6 +78,7 @@ var ContourBuilder = (function () {
         var prependA = false, prependB = false;
         while (ss) {
             if (ma === null) {
+                // no match for a yet
                 if (this.pointsEqual(a, ss.head.p)) {
                     ma = ss;
                     prependA = true;
@@ -20,6 +88,7 @@ var ContourBuilder = (function () {
                 }
             }
             if (mb === null) {
+                // no match for b yet
                 if (this.pointsEqual(b, ss.head.p)) {
                     mb = ss;
                     prependB = true;
@@ -28,6 +97,7 @@ var ContourBuilder = (function () {
                     mb = ss;
                 }
             }
+            // if we matched both no need to continue searching
             if (mb != null && ma != null) {
                 break;
             }
@@ -35,6 +105,7 @@ var ContourBuilder = (function () {
                 ss = ss.next;
             }
         }
+        // c is the case selector based on which of ma and/or mb are set
         var c = ((ma != null) ? 1 : 0) | ((mb != null) ? 2 : 0);
         switch (c) {
             case 0:
@@ -42,12 +113,14 @@ var ContourBuilder = (function () {
                 var bb = { p: b, next: null };
                 aa.next = bb;
                 bb.prev = aa;
+                // create sequence element and push onto head of main list. The order
+                // of items in this list is unimportant
                 ma = { head: aa, tail: bb, next: this.s, prev: null, closed: false };
                 if (this.s) {
                     this.s.prev = ma;
                 }
                 this.s = ma;
-                ++this.count;
+                ++this.count; // not essential - tracks number of unmerged sequences
                 break;
             case 1:
                 var pp = { p: b };
@@ -80,6 +153,7 @@ var ContourBuilder = (function () {
                 }
                 break;
             case 3:
+                // if the sequences are the same, do nothing, as we are simply closing this path (could set a flag)
                 if (ma === mb) {
                     var pp = { p: ma.tail.p, next: ma.head, prev: null };
                     ma.head.prev = pp;
@@ -87,27 +161,39 @@ var ContourBuilder = (function () {
                     ma.closed = true;
                     break;
                 }
+                // there are 4 ways the sequence pair can be joined. The current setting of prependA and
+                // prependB will tell us which type of join is needed. For head/head and tail/tail joins
+                // one sequence needs to be reversed
                 switch ((prependA ? 1 : 0) | (prependB ? 2 : 0)) {
                     case 0:
+                        // reverse ma and append to mb
                         this.reverseList(ma);
+                    // fall through to head/tail case
                     case 1:
+                        // ma is appended to mb and ma discarded
                         mb.tail.next = ma.head;
                         ma.head.prev = mb.tail;
                         mb.tail = ma.tail;
+                        //discard ma sequence record
                         this.remove_seq(ma);
                         break;
                     case 3:
+                        // reverse ma and append mb to it
                         this.reverseList(ma);
+                    // fall through to tail/head case
                     case 2:
+                        // mb is appended to ma and mb is discarded
                         ma.tail.next = mb.head;
                         mb.head.prev = ma.tail;
                         ma.tail = mb.tail;
+                        //discard mb sequence record
                         this.remove_seq(mb);
                         break;
                 }
         }
     };
     ContourBuilder.prototype.remove_seq = function (list) {
+        // if list is the first item, static ptr s is updated
         if (list.prev) {
             list.prev.next = list.next;
         }
@@ -119,6 +205,12 @@ var ContourBuilder = (function () {
         }
         --this.count;
     };
+    /**
+     * Are two points equal.
+     * @param  {IPoint} a Point 1
+     * @param  {IPoint} b Point 2
+     * @return {boolean}  [True if equal, false otherwise]
+     */
     ContourBuilder.prototype.pointsEqual = function (a, b) {
         var dx = a.x - b.x, dy = a.y - b.y;
         return dx * dx + dy * dy < EPSILON;
@@ -126,18 +218,33 @@ var ContourBuilder = (function () {
     ContourBuilder.prototype.reverseList = function (list) {
         var pp = list.head;
         while (pp) {
+            // swap prev/next pointers
             var temp = pp.next;
             pp.next = pp.prev;
             pp.prev = temp;
+            // continue through the list
             pp = temp;
         }
+        // swap head/tail pointers
         var temp = list.head;
         list.head = list.tail;
         list.tail = temp;
     };
     return ContourBuilder;
 })();
+/**
+  * Implements CONREC.
+  *
+  * @param {function} drawContour function for drawing contour.  Defaults to a
+  *                               custom "contour builder", which populates the
+  *                               contourList property.
+  */
 var Conrec = (function () {
+    /**
+     * Create a new Conrec class, optionally specifying the function to use for drawing the contour line.
+     * @param  {number} drawContour [description]
+     * @return {[type]}             [description]
+     */
     function Conrec(drawContour) {
         this.h = new Array(5);
         this.sh = new Array(5);
@@ -146,11 +253,35 @@ var Conrec = (function () {
         if (drawContour)
             this.drawContour = drawContour;
     }
+    /**
+     * contour is a contouring subroutine for rectangularily spaced data
+     *
+     * It emits calls to a line drawing subroutine supplied by the user which
+     * draws a contour map corresponding to real*4data on a randomly spaced
+     * rectangular grid. The coordinates emitted are in the same units given in
+     * the x() and y() arrays.
+     *
+     * Any number of contour levels may be specified but they must be in order of
+     * increasing value.
+     *
+     *
+     * @param {number[][]} d - matrix of data to contour
+     * @param {number} ilb,iub,jlb,jub - index lower and upper bounds of data matrix,
+     *                                 	 i in rows/latitude direction, j in columns/longitude direction
+     *
+     *             The following two, one dimensional arrays (x and y) contain
+     *             the horizontal and vertical coordinates of each sample points.
+     * @param {number[]} x  - data matrix column coordinates, e.g. latitude coordinates
+     * @param {number[]} y  - data matrix row coordinates, e.g. longitude coordinates
+     * @param {number} nc   - number of contour levels
+     * @param {number[]} z  - contour levels in increasing order.
+     */
     Conrec.prototype.contour = function (d, ilb, iub, jlb, jub, x, y, nc, z, noDataValue) {
         if (noDataValue === void 0) { noDataValue = -999; }
         var h = this.h, sh = this.sh, xh = this.xh, yh = this.yh;
         var drawContour = this.drawContour;
         this.contours = {};
+        /** private */
         var xsect = function (p1, p2) {
             return (h[p2] * xh[p1] - h[p1] * xh[p2]) / (h[p2] - h[p1]);
         };
@@ -164,8 +295,13 @@ var Conrec = (function () {
         var x2 = 0.0;
         var y1 = 0.0;
         var y2 = 0.0;
+        // The indexing of im and jm should be noted as it has to start from zero
+        // unlike the fortran counter part
         var im = [0, 1, 1, 0];
         var jm = [0, 0, 1, 1];
+        // Note that castab is arranged differently from the FORTRAN code because
+        // Fortran and C/C++ arrays are transposed of each other, in this case
+        // it is more tricky as castab is in 3 dimensions
         var castab = [
             [
                 [0, 0, 8], [0, 2, 5], [7, 6, 9]
@@ -179,6 +315,7 @@ var Conrec = (function () {
         ];
         for (var j = (jub - 1); j >= jlb; j--) {
             for (var i = ilb; i < iub; i++) {
+                // Skip cells that contain a no data value.
                 if (d[i][j] === noDataValue || d[i + 1][j] === noDataValue || d[i][j + 1] === noDataValue || d[i + 1][j + 1] === noDataValue)
                     continue;
                 var temp1, temp2;
@@ -194,6 +331,8 @@ var Conrec = (function () {
                     if (z[k] >= dmin && z[k] <= dmax) {
                         for (var m = 4; m >= 0; m--) {
                             if (m > 0) {
+                                // The indexing of im and jm should be noted as it has to
+                                // start from zero
                                 h[m] = d[i + im[m - 1]][j + jm[m - 1]] - z[k];
                                 xh[m] = x[i + im[m - 1]];
                                 yh[m] = y[j + jm[m - 1]];
@@ -212,6 +351,36 @@ var Conrec = (function () {
                             else
                                 sh[m] = 0;
                         }
+                        //
+                        // Note: at this stage the relative heights of the corners and the
+                        // centre are in the h array, and the corresponding coordinates are
+                        // in the xh and yh arrays. The centre of the box is indexed by 0
+                        // and the 4 corners by 1 to 4 as shown below.
+                        // Each triangle is then indexed by the parameter m, and the 3
+                        // vertices of each triangle are indexed by parameters m1,m2,and
+                        // m3.
+                        // It is assumed that the centre of the box is always vertex 2
+                        // though this isimportant only when all 3 vertices lie exactly on
+                        // the same contour level, in which case only the side of the box
+                        // is drawn.
+                        //
+                        //
+                        //      vertex 4 +-------------------+ vertex 3
+                        //               | \               / |
+                        //               |   \    m-3    /   |
+                        //               |     \       /     |
+                        //               |       \   /       |
+                        //               |  m=2    X   m=2   |       the centre is vertex 0
+                        //               |       /   \       |
+                        //               |     /       \     |
+                        //               |   /    m=1    \   |
+                        //               | /               \ |
+                        //      vertex 1 +-------------------+ vertex 2
+                        //
+                        //
+                        //
+                        //               Scan each triangle in the box
+                        //
                         for (m = 1; m <= 4; m++) {
                             m1 = m;
                             m2 = 0;
@@ -281,14 +450,28 @@ var Conrec = (function () {
                                     default:
                                         break;
                                 }
+                                // Put your processing code here and comment out the printf
+                                //printf("%f %f %f %f %f\n",x1,y1,x2,y2,z[k]);
                                 this.drawContour(x1, y1, x2, y2, z[k], k);
-                            }
-                        }
-                    }
-                }
-            }
-        }
+                            } // if case_value
+                        } // for m
+                    } // for z
+                } // for k
+            } // for i
+        } // for j
     };
+    /**
+     * drawContour - interface for implementing the user supplied method to
+     * render the countours.
+     *
+     * Draws a line between the start and end coordinates.
+     *
+     * @param startX    - start coordinate for X
+     * @param startY    - start coordinate for Y
+     * @param endX      - end coordinate for X
+     * @param endY      - end coordinate for Y
+     * @param contourLevel - Contour level for line.
+     */
     Conrec.prototype.drawContour = function (startX, startY, endX, endY, contourLevel, k) {
         var cb = this.contours[k];
         if (!cb) {

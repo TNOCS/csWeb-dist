@@ -1,8 +1,15 @@
 import IConfiguration = require('./IConfiguration');
+/**
+ * Service that contains default configuration options.
+ * Is based on csComp.Helpers.Dictionary.
+ */
 export declare class ConfigurationService implements IConfiguration {
     private configurationFile;
     private static theKeys;
     private static theValues;
+    /**
+     * Create a configuration service based on a configuration file.
+     */
     constructor(configurationFile: string);
     initialize(init: {
         key: string;

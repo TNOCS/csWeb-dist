@@ -24,6 +24,23 @@ var MobileLayer;
             else {
                 console.log('no manager');
             }
+            // this.connection.subscribe("rti", (msg, id: string) => {
+            //     switch (msg.data) {
+            //         case "bot":
+            //
+            //
+            //             break;
+            //         case "restart":
+            //             Winston.warn("restarting script")
+            //
+            //             this.startDate = new Date().getTime();
+            //             this.layer.features = [];
+            //             this.manager.addUpdateLayer(this.layer, {}, (cb) => {
+            //                 this.connection.publish("rti", "msg", "msg", "restart");
+            //             });
+            //             break;
+            //     }
+            // });
         }
         return MobileLayer;
     })();

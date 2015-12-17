@@ -1,3 +1,6 @@
+/**
+ * Template for describing an RSS item, that contains coordinates, as GeoJSON.
+ */
 export declare class RssGeoJSON {
     type: string;
     features: RssFeature[];

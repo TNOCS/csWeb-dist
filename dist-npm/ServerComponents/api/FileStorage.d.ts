@@ -62,6 +62,9 @@ export declare class FileStorage extends BaseConnector.BaseConnector {
     private openKeyFile(fileName);
     private openResourceFile(fileName);
     private openProjectFile(fileName);
+    /**
+     * Find layer for a specific layerId (can return null)
+     */
     findLayer(layerId: string): Layer;
     addProject(project: Project, meta: ApiMeta, callback: Function): void;
     getProject(projectId: string, meta: ApiMeta, callback: Function): void;
@@ -79,6 +82,7 @@ export declare class FileStorage extends BaseConnector.BaseConnector {
     getFeature(layerId: string, featureId: string, meta: ApiMeta, callback: Function): void;
     updateFeature(layerId: string, feature: any, useLog: boolean, meta: ApiMeta, callback: Function): void;
     deleteFeature(layerId: string, featureId: string, meta: ApiMeta, callback: Function): void;
+    /** Add a file: images go to the iconPath folder, others to the blob folder */
     addFile(base64: string, folder: string, file: string, meta: ApiMeta, callback: Function): void;
     addResource(res: ResourceFile, meta: ApiMeta, callback: Function): void;
     addKey(key: Key, meta: ApiMeta, callback: Function): void;

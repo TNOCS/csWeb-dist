@@ -18,8 +18,11 @@ export interface IDynamicLayer {
     on?: (event: string, listener: Function) => events.EventEmitter;
 }
 export interface IPropertyUpdate {
+    /** Timestamp */
     ts: number;
+    /** Property key */
     prop: string;
+    /** Property value */
     value: any;
 }
 export interface IMessageBody {
@@ -32,6 +35,9 @@ export declare class DynamicLayer extends events.EventEmitter implements IDynami
     manager: ApiManager.ApiManager;
     layerId: string;
     private file;
+    /**
+     * Working copy of geojson file
+     */
     geojson: Layer;
     server: express.Express;
     messageBus: MessageBus.MessageBusService;

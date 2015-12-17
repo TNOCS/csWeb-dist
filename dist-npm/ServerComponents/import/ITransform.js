@@ -15,4 +15,17 @@ var InputDataType = exports.InputDataType;
     OutputDataType[OutputDataType["pg"] = 3] = "pg";
 })(exports.OutputDataType || (exports.OutputDataType = {}));
 var OutputDataType = exports.OutputDataType;
+// import s = require('stream');
+// class t {
+//     constructor() {
+//         var opts: stream.TransformOptions = {
+//
+//         }
+//         _transform(chunk: string | Buffer, encoding: string, callback: Function);
+//         new(opt?: stream.TransformOptions);
+//         var transform = new stream.Transform();
+//         transform._transform()
+//         transform.pipe()
+//     }
+// }
 //# sourceMappingURL=ITransform.js.map

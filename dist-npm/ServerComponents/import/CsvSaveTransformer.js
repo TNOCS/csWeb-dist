@@ -10,6 +10,7 @@ var CsvSaveTransformer = (function () {
         this.generateKeysOnly = false;
         this.nameLabel = "Name";
         this.id = Utils.newGuid();
+        //this.description = description;
     }
     CsvSaveTransformer.prototype.initialize = function (opt, callback) {
         var keyPropertyParameter = opt.parameters.filter(function (p) { return p.type.title == "filenameKeyProperty"; })[0];
@@ -49,10 +50,13 @@ var CsvSaveTransformer = (function () {
     CsvSaveTransformer.prototype.create = function (config, opt) {
         var _this = this;
         var t = new stream.Transform();
+        /*stream.Transform.call(t);*/
         var index = 0;
         t.setEncoding("utf8");
         t._transform = function (chunk, encoding, done) {
             var startTs = new Date();
+            // console.log((new Date().getTime() - startTs.getTime()) + ": start");
+            /*console.log(index++);*/
             var featureCollection = JSON.parse(chunk);
             var propertyTypeData = {};
             if (_this.generateMetadata && !featureCollection.featureTypes) {
@@ -97,7 +101,7 @@ var CsvSaveTransformer = (function () {
                 featureCollection.featureTypes = featureTypes;
             }
             _this.rows = [];
-            _this.rows.push(featureTypes[typeId].propertyTypeKeys);
+            _this.rows.push(featureTypes[typeId].propertyTypeKeys); //headers
             featureCollection.features.forEach(function (f) {
                 var row = [];
                 propertyNames.forEach(function (pn) {
@@ -111,6 +115,9 @@ var CsvSaveTransformer = (function () {
                 _this.rows.push(row.join(';'));
             });
             var csvString = _this.rows.join('\r\n');
+            /*console.log("##### GJST #####");*/
+            // console.log("=== Before:")
+            // console.log(feature);
             var filename = _this.filename;
             if (_this.filenameKey) {
                 filename = featureCollection.features[0].properties[_this.filenameKey] + ".csv";
@@ -120,8 +127,13 @@ var CsvSaveTransformer = (function () {
                 console.log("Folder does not exist, create " + _this.targetFolder);
                 fs.mkdirSync(_this.targetFolder);
             }
-            fs.writeFileSync(_this.targetFolder + '/' + filename, csvString);
+            //   var outputStream = fs.createWriteStream(this.targetFolder + '/' + filename)
+            //   outputStream.write(JSON.stringify(featureCollection));
+            //   outputStream.close();
+            fs.writeFileSync(_this.targetFolder + '/' + filename, csvString); //JSON.stringify(featureCollection));
             console.log("Output written to " + _this.targetFolder + "/" + filename);
+            // console.log("=== After:");
+            // console.log(feature);
             t.push(JSON.stringify(featureCollection));
             done();
         };
