@@ -1,3 +1,4 @@
+"use strict";
 var Utils = require("../helpers/Utils");
 var stream = require('stream');
 var request = require("request");
@@ -114,6 +115,6 @@ var GeoJsonSplitTransformer = (function () {
         return t;
     };
     return GeoJsonSplitTransformer;
-})();
+}());
 module.exports = GeoJsonSplitTransformer;
 //# sourceMappingURL=GeoJsonSplitTransformer.js.map

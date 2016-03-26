@@ -1,3 +1,4 @@
+"use strict";
 var fs = require('fs');
 var path = require('path');
 /* Multiple storage engine supported, e.g. file system, mongo  */
@@ -101,6 +102,6 @@ var ProjectRepositoryService = (function () {
         this.store.update(id, newObject);
     };
     return ProjectRepositoryService;
-})();
+}());
 exports.ProjectRepositoryService = ProjectRepositoryService;
 //# sourceMappingURL=ProjectRepositoryService.js.map

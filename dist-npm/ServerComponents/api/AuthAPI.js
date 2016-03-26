@@ -1,3 +1,4 @@
+"use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -369,7 +370,6 @@ var AuthAPI = (function () {
     AuthAPI.prototype.windowsLiveLogin = function (req, res) {
         async.waterfall([
             // Step 1. Exchange authorization code for access token.
-            // Step 1. Exchange authorization code for access token.
             function (done) {
                 var accessTokenUrl = 'https://login.live.com/oauth20_token.srf';
                 var params = {
@@ -383,7 +383,6 @@ var AuthAPI = (function () {
                     done(null, accessToken);
                 });
             },
-            // Step 2. Retrieve profile information about the current user.
             // Step 2. Retrieve profile information about the current user.
             function (accessToken, done) {
                 var profileUrl = 'https://apis.live.net/v5.0/me?access_token=' + accessToken.access_token;
@@ -754,7 +753,7 @@ var AuthAPI = (function () {
         });
     };
     return AuthAPI;
-})();
+}());
 exports.AuthAPI = AuthAPI;
 var User = (function (_super) {
     __extends(User, _super);
@@ -930,6 +929,6 @@ var User = (function (_super) {
         });
     };
     return User;
-})(Feature);
+}(Feature));
 exports.User = User;
 //# sourceMappingURL=AuthAPI.js.map

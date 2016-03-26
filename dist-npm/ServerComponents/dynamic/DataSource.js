@@ -1,3 +1,4 @@
+"use strict";
 var DataSource;
 (function (DataSource_1) {
     var SensorSet = (function () {
@@ -7,7 +8,7 @@ var DataSource;
             this.values = [];
         }
         return SensorSet;
-    })();
+    }());
     DataSource_1.SensorSet = SensorSet;
     var DataSource = (function () {
         function DataSource() {
@@ -27,7 +28,7 @@ var DataSource;
             }
         };
         return DataSource;
-    })();
+    }());
     DataSource_1.DataSource = DataSource;
     var DataSourceService = (function () {
         function DataSourceService(Connection, layerId) {
@@ -63,7 +64,7 @@ var DataSource;
             }, 5000);
         };
         return DataSourceService;
-    })();
+    }());
     DataSource_1.DataSourceService = DataSourceService;
 })(DataSource = exports.DataSource || (exports.DataSource = {}));
 //# sourceMappingURL=DataSource.js.map

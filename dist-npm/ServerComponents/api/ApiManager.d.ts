@@ -54,6 +54,7 @@ export declare enum Event {
     FeatureChanged = 2,
     LayerChanged = 3,
     ProjectChanged = 4,
+    FeaturesChanged = 5,
 }
 /** Type of change in an ApiEvent */
 export declare enum ChangeType {
@@ -84,6 +85,7 @@ export interface IConnector {
     getFeature(layerId: string, featureId: string, meta: ApiMeta, callback: Function): any;
     updateFeature(layerId: string, feature: any, useLog: boolean, meta: ApiMeta, callback: Function): any;
     deleteFeature(layerId: string, featureId: string, meta: ApiMeta, callback: Function): any;
+    addUpdateFeatureBatch(layerId: string, features: any[], useLog: boolean, meta: ApiMeta, callback: Function): any;
     addLog(layerId: string, featureId: string, property: string, log: Log, meta: ApiMeta, callback: Function): any;
     getLog(layerId: string, featureId: string, meta: ApiMeta, callback: Function): any;
     deleteLog(layerId: string, featureId: string, ts: number, prop: string, meta: ApiMeta, callback: Function): any;
@@ -131,15 +133,19 @@ export declare class Key implements StorageObject {
     storage: string;
     values: Object[];
 }
+/**
+ * Project definition
+ */
 export declare class Project implements StorageObject {
     id: string;
     title: string;
     url: string;
+    _localFile: string;
     description: string;
     logo: string;
-    connected: boolean;
     storage: string;
     groups: Group[];
+    isDynamic: boolean;
 }
 export declare class Group {
     id: string;
@@ -149,7 +155,7 @@ export declare class Group {
     clusterLevel: number;
     layers: Layer[];
 }
-export declare class KeySubscription {
+export declare class ApiKeySubscription {
     id: string;
     /** Pattern you subscribe too */
     pattern: string;
@@ -185,7 +191,9 @@ export interface ILayer extends StorageObject {
     isDynamic?: boolean;
     features?: Feature[];
     data?: any;
+    timestamps?: number[];
     [key: string]: any;
+    hasSensorData?: boolean;
 }
 /**
  * Geojson Layer definition
@@ -215,6 +223,7 @@ export declare class Layer implements StorageObject, ILayer {
     tags: string[];
     isDynamic: boolean;
     features: Feature[];
+    hasSensorData: boolean;
 }
 /**
  * Geojson ProjectId definition
@@ -242,6 +251,11 @@ export declare class Feature {
     logs: {
         [key: string]: Log[];
     };
+    coordinates: any[];
+    sensors: {
+        [key: string]: any[];
+    };
+    timestamps: number[];
 }
 /**
  * Geojson IProperty definition
@@ -265,6 +279,7 @@ export declare class FeatureType {
 export declare class PropertyType {
 }
 export declare class ResourceFile implements StorageObject {
+    _localFile: string;
     featureTypes: {
         [key: string]: FeatureType;
     };
@@ -284,6 +299,7 @@ export declare class ResourceFile implements StorageObject {
  * FeatureChanged event when a feature is changed (CRUD).
  * LayerChanged event when a layer is changed (CRUD).
  * ProjectChanged event when a project is changed (CRUD).
+ * FeaturesChanged event when an array of features is changed (CRUD).
  */
 export declare class ApiManager extends events.EventEmitter {
     isClient: boolean;
@@ -319,7 +335,7 @@ export declare class ApiManager extends events.EventEmitter {
         [keyId: string]: Key;
     };
     keySubscriptions: {
-        [id: string]: KeySubscription;
+        [id: string]: ApiKeySubscription;
     };
     defaultStorage: string;
     defaultLogging: boolean;
@@ -334,6 +350,8 @@ export declare class ApiManager extends events.EventEmitter {
     /** Create a new client, optionally specifying whether it should act as client. */
     constructor(namespace: string, name: string, isClient?: boolean, options?: IApiManagerOptions);
     init(rootPath: string, callback: Function): void;
+    /** Sends a message (json) to a specific project, only works with socket io for now */
+    sendClientMessage(project: string, message: Object): void;
     /** Open layer config file*/
     loadLayerConfig(cb: Function): void;
     /**
@@ -371,6 +389,7 @@ export declare class ApiManager extends events.EventEmitter {
     removeLayerFromProject(projectId: string, groupId: string, layerId: string, meta: ApiMeta, callback: Function): void;
     allGroups(projectId: string, meta: ApiMeta, callback: Function): void;
     addGroup(group: Group, projectId: string, meta: ApiMeta, callback: Function): void;
+    updateGroup(projectId: string, groupId: string, newGroup: Group, meta: ApiMeta, callback: Function): void;
     removeGroup(groupId: string, projectId: string, meta: ApiMeta, callback: Function): void;
     addProject(project: Project, meta: ApiMeta, callback: Function): void;
     /**
@@ -415,6 +434,10 @@ export declare class ApiManager extends events.EventEmitter {
      */
     findStorageForKeyId(keyId: string): IConnector;
     /**
+     * Make sure the project has an unique project id
+     */
+    getProjectId(project: Project): string;
+    /**
      * Returns project definition for a project
      */
     getProjectDefinition(project: Project): Project;
@@ -432,6 +455,7 @@ export declare class ApiManager extends events.EventEmitter {
     /** Create a new layer, store it, and return it. */
     createLayer(layer: ILayer, meta: ApiMeta, callback: (result: CallbackResult) => void): void;
     addUpdateLayer(layer: ILayer, meta: ApiMeta, callback: Function): void;
+    clearProject(projectId: string, meta: ApiMeta, callback: Function): void;
     updateProjectTitle(projectTitle: string, projectId: string, meta: ApiMeta, callback: Function): void;
     updateProject(project: Project, meta: ApiMeta, callback: Function): void;
     deleteLayer(layerId: string, meta: ApiMeta, callback: Function): void;
@@ -445,6 +469,10 @@ export declare class ApiManager extends events.EventEmitter {
     }, meta: ApiMeta, callback: Function): void;
     getFeature(layerId: string, featureId: string, meta: ApiMeta, callback: Function): void;
     updateFeature(layerId: string, feature: any, meta: ApiMeta, callback: Function): void;
+    /** Similar to updateFeature, but with an array of updated features instead of one feature.
+     *
+     */
+    addUpdateFeatureBatch(layerId: string, features: IChangeEvent[], meta: ApiMeta, callback: Function): void;
     deleteFeature(layerId: string, featureId: string, meta: ApiMeta, callback: Function): void;
     addLog(layerId: string, featureId: string, property: string, log: Log, meta: ApiMeta, callback: Function): void;
     initLayer(layer: Layer): void;
@@ -454,7 +482,7 @@ export declare class ApiManager extends events.EventEmitter {
     getBBox(layerId: string, southWest: number[], northEast: number[], meta: ApiMeta, callback: Function): void;
     getSphere(layerId: string, maxDistance: number, lng: number, lat: number, meta: ApiMeta, callback: Function): void;
     getWithinPolygon(layerId: string, feature: Feature, meta: ApiMeta, callback: Function): void;
-    subscribeKey(pattern: string, meta: ApiMeta, callback: (topic: string, message: string, params?: Object) => void): KeySubscription;
+    subscribeKey(pattern: string, meta: ApiMeta, callback: (topic: string, message: string, params?: Object) => void): ApiKeySubscription;
     addKey(key: Key, meta: ApiMeta, callback: Function): void;
     getKeys(meta: ApiMeta, callback: Function): void;
     getKey(id: string, meta: ApiMeta, callback: Function): void;

@@ -1,3 +1,4 @@
+"use strict";
 var io = require('socket.io');
 var Winston = require('winston');
 //GetDataSource: Function;
@@ -5,25 +6,25 @@ var MsgSubscription = (function () {
     function MsgSubscription() {
     }
     return MsgSubscription;
-})();
+}());
 exports.MsgSubscription = MsgSubscription;
 var ProjectSubscription = (function () {
     function ProjectSubscription() {
     }
     return ProjectSubscription;
-})();
+}());
 exports.ProjectSubscription = ProjectSubscription;
 var LayerSubscription = (function () {
     function LayerSubscription() {
     }
     return LayerSubscription;
-})();
+}());
 exports.LayerSubscription = LayerSubscription;
 var KeySubscription = (function () {
     function KeySubscription() {
     }
     return KeySubscription;
-})();
+}());
 exports.KeySubscription = KeySubscription;
 /**
  * object for sending project messages over socket.io channel
@@ -32,7 +33,7 @@ var ProjectUpdate = (function () {
     function ProjectUpdate() {
     }
     return ProjectUpdate;
-})();
+}());
 exports.ProjectUpdate = ProjectUpdate;
 /**
  * object for sending layer messages over socket.io channel
@@ -41,7 +42,7 @@ var LayerUpdate = (function () {
     function LayerUpdate() {
     }
     return LayerUpdate;
-})();
+}());
 exports.LayerUpdate = LayerUpdate;
 /**
  * object for sending layer messages over socket.io channel
@@ -50,7 +51,7 @@ var KeyUpdate = (function () {
     function KeyUpdate() {
     }
     return KeyUpdate;
-})();
+}());
 exports.KeyUpdate = KeyUpdate;
 /**
  * List of available action for sending/receiving project actions over socket.io channel
@@ -69,6 +70,7 @@ var ProjectUpdateAction = exports.ProjectUpdateAction;
     LayerUpdateAction[LayerUpdateAction["deleteFeature"] = 2] = "deleteFeature";
     LayerUpdateAction[LayerUpdateAction["updateLayer"] = 3] = "updateLayer";
     LayerUpdateAction[LayerUpdateAction["deleteLayer"] = 4] = "deleteLayer";
+    LayerUpdateAction[LayerUpdateAction["addUpdateFeatureBatch"] = 5] = "addUpdateFeatureBatch";
 })(exports.LayerUpdateAction || (exports.LayerUpdateAction = {}));
 var LayerUpdateAction = exports.LayerUpdateAction;
 /**
@@ -85,7 +87,7 @@ var ClientMessage = (function () {
         this.data = data;
     }
     return ClientMessage;
-})();
+}());
 exports.ClientMessage = ClientMessage;
 var WebClient = (function () {
     function WebClient(Client) {
@@ -116,7 +118,7 @@ var WebClient = (function () {
         Winston.info('clientconnection: subscribed to : ' + sub.target + " (" + sub.id + " : " + sub.type + ")");
     };
     return WebClient;
-})();
+}());
 exports.WebClient = WebClient;
 var ConnectionManager = (function () {
     function ConnectionManager(httpServer) {
@@ -252,7 +254,7 @@ var ConnectionManager = (function () {
     };
     /**
      * Send update to all clients.
-     * @action: logs-update, feature-update
+     * @action: logs-update, feature-update, feature-batch-update
      * @meta: used to determine source/user, will skip
      */
     ConnectionManager.prototype.updateFeature = function (layerId, update, meta) {
@@ -305,6 +307,6 @@ var ConnectionManager = (function () {
         }
     };
     return ConnectionManager;
-})();
+}());
 exports.ConnectionManager = ConnectionManager;
 //# sourceMappingURL=ClientConnection.js.map

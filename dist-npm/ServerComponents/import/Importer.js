@@ -1,3 +1,4 @@
+"use strict";
 var Utils = require("../helpers/Utils");
 var RepeatEnum = require("./RepeatEnum");
 var BaseImport = (function () {
@@ -8,6 +9,6 @@ var BaseImport = (function () {
         this.id = Utils.newGuid();
     }
     return BaseImport;
-})();
+}());
 exports.BaseImport = BaseImport;
 //# sourceMappingURL=Importer.js.map

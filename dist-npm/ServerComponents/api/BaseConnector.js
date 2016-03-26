@@ -1,3 +1,4 @@
+"use strict";
 var ApiManager = require('./ApiManager');
 var ApiResult = ApiManager.ApiResult;
 var BaseConnector = (function () {
@@ -36,6 +37,9 @@ var BaseConnector = (function () {
     };
     //TODO: implement
     BaseConnector.prototype.updateFeature = function (layerId, feature, useLog, meta, callback) {
+    };
+    //TODO: implement
+    BaseConnector.prototype.addUpdateFeatureBatch = function (layerId, feature, useLog, meta, callback) {
     };
     //TODO: test further. Result is the # of deleted docs.
     BaseConnector.prototype.deleteFeature = function (layerId, featureId, meta, callback) {
@@ -94,6 +98,6 @@ var BaseConnector = (function () {
      */
     BaseConnector.prototype.subscribeKey = function (keyPattern, meta, callback) { };
     return BaseConnector;
-})();
+}());
 exports.BaseConnector = BaseConnector;
 //# sourceMappingURL=BaseConnector.js.map

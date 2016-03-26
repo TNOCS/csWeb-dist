@@ -1,3 +1,4 @@
+"use strict";
 var request = require('request');
 /* Multiple storage engine supported, e.g. file system, mongo  */
 var ProxyService = (function () {
@@ -36,6 +37,6 @@ var ProxyService = (function () {
         });
     };
     return ProxyService;
-})();
+}());
 module.exports = ProxyService;
 //# sourceMappingURL=ProxyService.js.map

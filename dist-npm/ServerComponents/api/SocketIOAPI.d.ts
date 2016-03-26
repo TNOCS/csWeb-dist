@@ -11,6 +11,8 @@ export declare class SocketIOAPI extends BaseConnector.BaseConnector {
     manager: ApiManager.ApiManager;
     constructor(connection: ClientConnection.ConnectionManager);
     init(layerManager: ApiManager.ApiManager, options: any, callback: Function): void;
+    /** Sends a message (json) to a specific project, only works with socket io for now */
+    sendClientMessage(project: string, message: Object): void;
     addLayer(layer: Layer, meta: ApiMeta, callback: Function): void;
     updateLayer(layer: Layer, meta: ApiMeta, callback: Function): void;
     deleteLayer(layerId: string, meta: ApiMeta, callback: Function): void;
@@ -21,6 +23,7 @@ export declare class SocketIOAPI extends BaseConnector.BaseConnector {
     initProject(project: Project): void;
     addFeature(layerId: string, feature: Feature, meta: ApiMeta, callback: Function): void;
     updateFeature(layerId: string, feature: Feature, useLog: boolean, meta: ApiMeta, callback: Function): void;
+    addUpdateFeatureBatch(layerId: string, features: ApiManager.IChangeEvent[], useLog: boolean, meta: ApiMeta, callback: Function): void;
     updateLogs(layerId: string, featureId: string, logs: {
         [key: string]: Log[];
     }, meta: ApiMeta, callback: Function): void;

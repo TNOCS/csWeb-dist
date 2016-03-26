@@ -19,6 +19,9 @@ export declare class MessageBusHandle {
  */
 export declare class MessageBusService {
     private static cache;
+    static data: {
+        [topic: string]: any;
+    };
     /**
      * Publish to a topic
      */

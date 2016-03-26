@@ -37,6 +37,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+"use strict";
 /*
  * Copyright (c) 1996-1997 Nicholas Yue
  *
@@ -231,7 +232,7 @@ var ContourBuilder = (function () {
         list.tail = temp;
     };
     return ContourBuilder;
-})();
+}());
 /**
   * Implements CONREC.
   *
@@ -506,6 +507,6 @@ var Conrec = (function () {
         configurable: true
     });
     return Conrec;
-})();
+}());
 exports.Conrec = Conrec;
 //# sourceMappingURL=conrec.js.map

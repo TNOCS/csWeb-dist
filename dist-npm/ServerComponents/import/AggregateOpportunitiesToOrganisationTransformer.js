@@ -1,3 +1,4 @@
+"use strict";
 var Utils = require("../helpers/Utils");
 var stream = require('stream');
 var request = require("request");
@@ -106,6 +107,6 @@ var AggregateOpportunitiesToOrganisationTransformer = (function () {
         return t;
     };
     return AggregateOpportunitiesToOrganisationTransformer;
-})();
+}());
 module.exports = AggregateOpportunitiesToOrganisationTransformer;
 //# sourceMappingURL=AggregateOpportunitiesToOrganisationTransformer.js.map

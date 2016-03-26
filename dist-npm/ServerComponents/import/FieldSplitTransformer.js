@@ -1,3 +1,4 @@
+"use strict";
 var Utils = require("../helpers/Utils");
 var stream = require('stream');
 var turf = require("turf");
@@ -63,6 +64,6 @@ var FieldSplitTransformer = (function () {
         return t;
     };
     return FieldSplitTransformer;
-})();
+}());
 module.exports = FieldSplitTransformer;
 //# sourceMappingURL=FieldSplitTransformer.js.map

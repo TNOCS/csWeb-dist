@@ -1,3 +1,4 @@
+"use strict";
 var Utils = require("../helpers/Utils");
 var stream = require('stream');
 var request = require("request");
@@ -139,6 +140,6 @@ var BushalteAggregateTransformer = (function () {
         return t;
     };
     return BushalteAggregateTransformer;
-})();
+}());
 module.exports = BushalteAggregateTransformer;
 //# sourceMappingURL=BushalteAggregateTransformer.js.map

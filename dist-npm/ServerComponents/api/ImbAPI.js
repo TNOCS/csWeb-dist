@@ -1,3 +1,4 @@
+"use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -179,6 +180,6 @@ var ImbAPI = (function (_super) {
         callback({ result: ApiResult.OK });
     };
     return ImbAPI;
-})(BaseConnector.BaseConnector);
+}(BaseConnector.BaseConnector));
 exports.ImbAPI = ImbAPI;
 //# sourceMappingURL=ImbAPI.js.map

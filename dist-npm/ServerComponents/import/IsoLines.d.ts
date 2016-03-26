@@ -1,5 +1,6 @@
+import Api = require('../api/ApiManager');
 import GeoJSON = require('../helpers/GeoJSON');
-export interface IGridDataSourceParameters extends GeoJSON.IProperty {
+export interface IGridDataSourceParameters extends Api.IProperty {
     /**
      * Grid type, for example 'custom' (default) or 'esri' ASCII Grid
      */

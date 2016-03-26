@@ -1,3 +1,4 @@
+"use strict";
 var Utils = require('../helpers/Utils');
 /**
  * Simple rule, consisting of a condition and an action.
@@ -334,6 +335,6 @@ var Rule = (function () {
             : 0;
     };
     return Rule;
-})();
+}());
 exports.Rule = Rule;
 //# sourceMappingURL=Rule.js.map

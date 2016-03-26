@@ -1,3 +1,4 @@
+"use strict";
 var request = require("request");
 var async = require("async");
 var split = require("split");
@@ -177,6 +178,6 @@ var ImporterRepositoryService = (function () {
         this.store.update(null, importer);
     };
     return ImporterRepositoryService;
-})();
+}());
 module.exports = ImporterRepositoryService;
 //# sourceMappingURL=ImporterRepositoryService.js.map

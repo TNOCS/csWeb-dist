@@ -29,6 +29,7 @@ export declare class MqttAPI extends BaseConnector.BaseConnector {
     addFeature(layerId: string, feature: any, meta: ApiMeta, callback: Function): void;
     updateLayer(layer: Layer, meta: ApiMeta, callback: Function): void;
     updateFeature(layerId: string, feature: any, useLog: boolean, meta: ApiMeta, callback: Function): void;
+    addUpdateFeatureBatch(layerId: string, features: ApiManager.IChangeEvent[], useLog: boolean, meta: ApiMeta, callback: Function): void;
     private sendFeature(layerId, featureId);
     updateProperty(layerId: string, featureId: string, property: string, value: any, useLog: boolean, meta: ApiMeta, callback: Function): void;
     updateLogs(layerId: string, featureId: string, logs: {

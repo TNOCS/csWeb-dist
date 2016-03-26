@@ -1,4 +1,4 @@
-import transform = require("./ITransform");
+import transform = require('./ITransform');
 declare class GeoJsonSaveTransformer implements transform.ITransform {
     title: string;
     id: string;

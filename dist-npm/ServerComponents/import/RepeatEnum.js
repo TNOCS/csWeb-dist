@@ -1,3 +1,4 @@
+"use strict";
 var RepeatEnum;
 (function (RepeatEnum) {
     RepeatEnum[RepeatEnum["never"] = 0] = "never";

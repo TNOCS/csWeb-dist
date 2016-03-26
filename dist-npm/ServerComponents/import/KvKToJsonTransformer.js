@@ -1,3 +1,4 @@
+"use strict";
 var Utils = require("../helpers/Utils");
 var stream = require('stream');
 var splitStream = require("split");
@@ -55,6 +56,6 @@ var KvKToJsonTransformer = (function () {
         return t;
     };
     return KvKToJsonTransformer;
-})();
+}());
 module.exports = KvKToJsonTransformer;
 //# sourceMappingURL=KvKToJsonTransformer.js.map

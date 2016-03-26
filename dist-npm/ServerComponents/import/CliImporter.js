@@ -1,3 +1,4 @@
+"use strict";
 var Store = require('./Store');
 var ConfigurationService = require('../configuration/ConfigurationService');
 var ImporterRepositoryService = require('./ImporterRepositoryService');

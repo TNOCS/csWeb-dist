@@ -1,3 +1,4 @@
+"use strict";
 var fs = require('fs'), path = require('path');
 /** Create a new GUID */
 function newGuid() {
@@ -16,6 +17,13 @@ function getDirectories(srcpath) {
     });
 }
 exports.getDirectories = getDirectories;
+/** Get all the files in a folder. */
+function getFiles(srcpath) {
+    return fs.readdirSync(srcpath).filter(function (file) {
+        return fs.statSync(path.join(srcpath, file)).isFile();
+    });
+}
+exports.getFiles = getFiles;
 /**
  * Get the IP4 address (assuming you have only one active network card).
  * See also: http://stackoverflow.com/a/15075395/319711

@@ -1,3 +1,4 @@
+"use strict";
 var MobileLayer;
 (function (MobileLayer_1) {
     var MobileLayer = (function () {
@@ -43,7 +44,7 @@ var MobileLayer;
             // });
         }
         return MobileLayer;
-    })();
+    }());
     MobileLayer_1.MobileLayer = MobileLayer;
 })(MobileLayer || (MobileLayer = {}));
 module.exports = MobileLayer;

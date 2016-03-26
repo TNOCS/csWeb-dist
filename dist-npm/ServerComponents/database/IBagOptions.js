@@ -1,3 +1,4 @@
+"use strict";
 var BagOptions;
 (function (BagOptions) {
     BagOptions[BagOptions["OnlyCoordinates"] = 0] = "OnlyCoordinates";

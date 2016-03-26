@@ -1,3 +1,4 @@
+"use strict";
 /**
  * A class representing the world state
  */
@@ -21,6 +22,6 @@ var WorldState = (function () {
         this.features = [];
     }
     return WorldState;
-})();
+}());
 module.exports = WorldState;
 //# sourceMappingURL=WorldState.js.map

@@ -1,3 +1,4 @@
+"use strict";
 var Utils = require("../helpers/Utils");
 var BaseTransformer = (function () {
     function BaseTransformer(title) {
@@ -10,6 +11,6 @@ var BaseTransformer = (function () {
     BaseTransformer.prototype.initialize = function () {
     };
     return BaseTransformer;
-})();
+}());
 module.exports = BaseTransformer;
 //# sourceMappingURL=BaseTransformer.js.map

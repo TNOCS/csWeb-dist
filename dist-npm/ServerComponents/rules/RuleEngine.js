@@ -1,3 +1,4 @@
+"use strict";
 var fs = require('fs');
 var HyperTimer = require('hypertimer');
 var WorldState = require('./WorldState');
@@ -222,6 +223,6 @@ var RuleEngine = (function () {
         console.log('Ready evaluating rules...');
     };
     return RuleEngine;
-})();
+}());
 exports.RuleEngine = RuleEngine;
 //# sourceMappingURL=RuleEngine.js.map

@@ -1,3 +1,4 @@
+"use strict";
 var Utils = require("../helpers/Utils");
 var stream = require('stream');
 var request = require("request");
@@ -64,6 +65,6 @@ var MergeGeoJsonTransformer = (function () {
         return t;
     };
     return MergeGeoJsonTransformer;
-})();
+}());
 module.exports = MergeGeoJsonTransformer;
 //# sourceMappingURL=MergeGeoJsonTransformer.js.map

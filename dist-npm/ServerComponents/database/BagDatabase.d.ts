@@ -7,7 +7,10 @@ import IBagOptions = require('../database/IBagOptions');
  */
 export declare class BagDatabase {
     private connectionString;
+    private isInitialized;
+    private pg;
     constructor(config: ConfigurationService.ConfigurationService);
+    init(): void;
     /**
      * Format the zip code so spaces are removed and the letters are all capitals.
      */
@@ -28,7 +31,9 @@ export declare class BagDatabase {
      * Format the housenumber addition and in uppercase.
      */
     private formatHouseNumberAddition(input);
+    searchAddress(query: string, limit: number, callback: (searchResults) => void): void;
     lookupBagArea(bounds: string, callback: (areas: Location[]) => void): void;
+    lookupBagBuurt(bounds: string, callback: (areas: Location[]) => void): void;
     /**
      * Lookup the address from the BAG.
      */

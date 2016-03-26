@@ -1,3 +1,4 @@
+"use strict";
 var Utils = require("../helpers/Utils");
 var stream = require('stream');
 var GeoJsonFeaturesTransformer = (function () {
@@ -47,6 +48,6 @@ var GeoJsonFeaturesTransformer = (function () {
         return t;
     };
     return GeoJsonFeaturesTransformer;
-})();
+}());
 module.exports = GeoJsonFeaturesTransformer;
 //# sourceMappingURL=GeoJsonFeaturesTransformer.js.map

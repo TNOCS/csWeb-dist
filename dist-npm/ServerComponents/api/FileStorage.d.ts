@@ -31,10 +31,13 @@ export declare class FileStorage extends BaseConnector.BaseConnector {
     blobPath: string;
     iconPath: string;
     projectsPath: string;
+    staticProjectsPath: string;
     resourcesPath: string;
     constructor(rootpath: string, watch?: boolean);
     watchLayersFolder(): void;
+    private getDirectories(srcpath);
     watchProjectsFolder(): void;
+    openStaticFolder(folder: string): void;
     watchKeysFolder(): void;
     watchResourcesFolder(): void;
     saveProjectDelay: (project: ApiManager.Project) => void;
@@ -44,10 +47,12 @@ export declare class FileStorage extends BaseConnector.BaseConnector {
     private getProjectFilename(projectId);
     private getLayerFilename(layerId);
     private getKeyFilename(keyId);
-    private getResourceFilename(resId);
+    private getResourceFilename(re);
     private saveKeyFile(key);
     private saveResourceFile(res);
+    /** Save project file to disk */
     private saveProjectFile(project);
+    /** save media file */
     private saveBase64(media);
     private saveLayerFile(layer);
     private getProjectId(fileName);
@@ -61,7 +66,7 @@ export declare class FileStorage extends BaseConnector.BaseConnector {
     private openLayerFile(fileName);
     private openKeyFile(fileName);
     private openResourceFile(fileName);
-    private openProjectFile(fileName);
+    private openProjectFile(fileName, id?, isDynamic?);
     /**
      * Find layer for a specific layerId (can return null)
      */

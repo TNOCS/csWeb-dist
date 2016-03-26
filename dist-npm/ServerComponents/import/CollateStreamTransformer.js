@@ -1,3 +1,4 @@
+"use strict";
 var Utils = require("../helpers/Utils");
 var stream = require('stream');
 var CollateStreamTransformer = (function () {
@@ -41,6 +42,6 @@ var CollateStreamTransformer = (function () {
         return t;
     };
     return CollateStreamTransformer;
-})();
+}());
 module.exports = CollateStreamTransformer;
 //# sourceMappingURL=CollateStreamTransformer.js.map

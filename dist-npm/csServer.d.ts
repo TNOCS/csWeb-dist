@@ -2,6 +2,8 @@ import express = require('express');
 import csweb = require('./index');
 export declare class csServerOptions {
     port: number;
+    swagger: boolean;
+    connectors: Object;
 }
 export declare class csServer {
     dir: string;

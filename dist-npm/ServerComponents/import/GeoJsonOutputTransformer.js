@@ -1,3 +1,4 @@
+"use strict";
 var Utils = require("../helpers/Utils");
 var stream = require('stream');
 var turf = require("turf");
@@ -53,6 +54,6 @@ var GeoJsonOutputTransformer = (function () {
         return t;
     };
     return GeoJsonOutputTransformer;
-})();
+}());
 module.exports = GeoJsonOutputTransformer;
 //# sourceMappingURL=GeoJsonOutputTransformer.js.map

@@ -1,3 +1,4 @@
+"use strict";
 var Utils = require("../helpers/Utils");
 var stream = require('stream');
 var request = require("request");
@@ -86,6 +87,6 @@ var GeoJsonAggregateTransformer = (function () {
         return t;
     };
     return GeoJsonAggregateTransformer;
-})();
+}());
 module.exports = GeoJsonAggregateTransformer;
 //# sourceMappingURL=GeoJsonAggregateTransformer.js.map

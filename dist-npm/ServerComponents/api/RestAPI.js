@@ -1,3 +1,4 @@
+"use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -67,8 +68,9 @@ var RestAPI = (function (_super) {
             var project = new Project();
             project = req.body;
             _this.manager.addProject(project, { source: 'rest' }, function (result) {
-                if (result.result === ApiResult.OK)
+                if (result.result === ApiResult.OK || result.result === ApiResult.ProjectAlreadyExists) {
                     res.send(result.project);
+                }
             });
         });
         // gets the entire project
@@ -313,22 +315,26 @@ var RestAPI = (function (_super) {
         this.server.get(this.proxyUrl, function (req, res) {
             var id = req.query.url;
             console.log(id);
-            _this.getUrl(id, res);
+            _this.getUrl(id, req, res);
         });
         callback();
     };
-    RestAPI.prototype.getUrl = function (feedUrl, res) {
-        Winston.info('proxy request: ' + feedUrl);
+    RestAPI.prototype.getUrl = function (feedUrl, req, res) {
+        Winston.info('proxy request 2: ' + feedUrl);
         //feedUrl = 'http://rss.politie.nl/rss/algemeen/ab/algemeen.xml';
+        var options = {
+            method: 'get',
+            headers: req.headers
+        };
         var parseNumbers = function (str) {
             if (!isNaN(str)) {
                 str = str % 1 === 0 ? parseInt(str, 10) : parseFloat(str);
             }
             return str;
         };
-        request(feedUrl, function (error, response, xml) {
+        request(feedUrl, options, function (error, response, xml) {
             if (!error && response.statusCode == 200) {
-                res.json(xml);
+                res.send(xml);
             }
             else {
                 res.statusCode = 404;
@@ -337,6 +343,6 @@ var RestAPI = (function (_super) {
         });
     };
     return RestAPI;
-})(BaseConnector.BaseConnector);
+}(BaseConnector.BaseConnector));
 exports.RestAPI = RestAPI;
 //# sourceMappingURL=RestAPI.js.map

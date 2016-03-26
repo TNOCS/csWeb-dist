@@ -15,5 +15,5 @@ export declare class RestAPI extends BaseConnector.BaseConnector {
     tilesUrl: any;
     constructor(server: express.Express, baseUrl?: string);
     init(layerManager: ApiManager.ApiManager, options: any, callback: Function): void;
-    private getUrl(feedUrl, res);
+    private getUrl(feedUrl, req, res);
 }

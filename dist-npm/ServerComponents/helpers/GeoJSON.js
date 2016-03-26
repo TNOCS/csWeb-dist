@@ -1,3 +1,4 @@
+"use strict";
 var Utils = require('./Utils');
 /**
  * Simple helper class to easily create a GeoJSON file.
@@ -16,7 +17,7 @@ var GeoJSONFactory = (function () {
         };
     };
     return GeoJSONFactory;
-})();
+}());
 exports.GeoJSONFactory = GeoJSONFactory;
 /**
 * A set of static geo tools
@@ -87,6 +88,6 @@ var GeoExtensions = (function () {
         };
     };
     return GeoExtensions;
-})();
+}());
 exports.GeoExtensions = GeoExtensions;
 //# sourceMappingURL=GeoJSON.js.map

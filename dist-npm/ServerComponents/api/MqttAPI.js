@@ -1,3 +1,4 @@
+"use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -35,7 +36,7 @@ var MqttAPI = (function (_super) {
             Winston.error("mqtt: error " + e);
         });
         this.client.on('connect', function () {
-            Winston.info("mqtt: connected");
+            Winston.debug("mqtt: connected");
             // server listens to all key updates
             if (!_this.manager.isClient) {
                 var subscriptions = layerManager.options.mqttSubscriptions || '#';
@@ -63,7 +64,7 @@ var MqttAPI = (function (_super) {
                 var layer = _this.extractLayer(message);
                 if (layer && layer.id) {
                     Winston.info("mqtt: received definition for layer " + layer.id + " on topic " + topic);
-                    Winston.info("Definition: " + JSON.stringify(layer, null, 2));
+                    Winston.debug("Definition: " + JSON.stringify(layer, null, 2));
                     _this.manager.addUpdateLayer(layer, { source: _this.id }, function () { });
                 }
             }
@@ -78,7 +79,7 @@ var MqttAPI = (function (_super) {
                     try {
                         var layer = _this.extractLayer(message);
                         if (layer) {
-                            Winston.info("mqtt: update layer " + layerId + " on topic " + topic);
+                            Winston.debug("mqtt: update layer " + layerId + " on topic " + topic);
                             _this.manager.addUpdateLayer(layer, { source: _this.id }, function () { });
                         }
                     }
@@ -91,7 +92,7 @@ var MqttAPI = (function (_super) {
                         var featureId = ids[1];
                         var feature = JSON.parse(message);
                         if (feature) {
-                            Winston.info("mqtt: update feature " + featureId + " for layer " + layerId + " on topic " + topic + ".");
+                            Winston.debug("mqtt: update feature " + featureId + " for layer " + layerId + " on topic " + topic + ".");
                             _this.manager.updateFeature(layerId, feature, { source: _this.id }, function () { });
                         }
                     }
@@ -105,7 +106,7 @@ var MqttAPI = (function (_super) {
                 if (kid) {
                     try {
                         var obj = JSON.parse(message);
-                        //Winston.info('mqtt: update key for id ' + kid + " : " + message);
+                        //Winston.debug('mqtt: update key for id ' + kid + " : " + message);
                         _this.manager.updateKey(kid, obj, { source: _this.id }, function () { });
                     }
                     catch (e) {
@@ -166,6 +167,13 @@ var MqttAPI = (function (_super) {
             this.client.publish("" + this.layerPrefix + layerId + "/feature/" + feature.id, JSON.stringify(feature));
         callback({ result: ApiResult.OK });
     };
+    MqttAPI.prototype.addUpdateFeatureBatch = function (layerId, features, useLog, meta, callback) {
+        Winston.info('mqtt update feature batch');
+        if (meta.source !== this.id) {
+            this.client.publish("" + this.layerPrefix + layerId + "/featurebatch", JSON.stringify(features));
+        }
+        callback({ result: ApiResult.OK });
+    };
     MqttAPI.prototype.sendFeature = function (layerId, featureId) {
         var _this = this;
         this.manager.findFeature(layerId, featureId, function (r) {
@@ -193,6 +201,6 @@ var MqttAPI = (function (_super) {
         this.client.publish(this.getKeyChannel(keyId), JSON.stringify(value));
     };
     return MqttAPI;
-})(BaseConnector.BaseConnector);
+}(BaseConnector.BaseConnector));
 exports.MqttAPI = MqttAPI;
 //# sourceMappingURL=MqttAPI.js.map

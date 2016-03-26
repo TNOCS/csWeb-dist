@@ -1,16 +1,22 @@
-var pg = require('pg');
+"use strict";
 var IBagOptions = require('../database/IBagOptions');
 /**
  * Export a connection to the BAG database.
  */
 var BagDatabase = (function () {
     function BagDatabase(config) {
+        this.isInitialized = false;
         this.connectionString = process.env.DATABASE_URL || config["bagConnectionString"];
-        //console.log("Poolsize: " + pg.defaults.poolSize);
-        pg.defaults.poolSize = 10;
-        console.log("BAG connection: " + this.connectionString);
-        console.log("Poolsize: " + pg.defaults.poolSize);
     }
+    BagDatabase.prototype.init = function () {
+        this.pg = require('pg');
+        if (this.isInitialized)
+            return;
+        this.pg.defaults.poolSize = 10;
+        console.log("BAG connection: " + this.connectionString);
+        console.log("Poolsize: " + this.pg.defaults.poolSize);
+        this.isInitialized = true;
+    };
     /**
      * Format the zip code so spaces are removed and the letters are all capitals.
      */
@@ -100,20 +106,75 @@ var BagDatabase = (function () {
         }
         return null;
     };
+    BagDatabase.prototype.searchAddress = function (query, limit, callback) {
+        if (limit === void 0) { limit = 15; }
+        if (!query) {
+            console.log('No valid query supplied');
+            callback(null);
+            return;
+        }
+        this.pg.connect(this.connectionString, function (err, client, done) {
+            if (err) {
+                console.log(err);
+                callback(null);
+                return;
+            }
+            // var sql = `SELECT ST_AsGeoJSON(ST_Force_2D(ST_Transform(adres.geopunt, 4326))) as location, adres.openbareruimtenaam as straatnaam, adres.huisnummer as huisnummer, adres.huisletter as huisletter, adres.huisnummertoevoeging as huisnummertoevoeging, adres.woonplaatsnaam as woonplaatsnaam FROM bagactueel.adres WHERE textsearchable_adres @@ to_tsquery('dutch', '${query}') ORDER BY adres.openbareruimtenaam, adres.woonplaatsnaam, adres.huisnummer LIMIT ${limit}`;
+            var sql = "WITH q_adr as ( SELECT ST_AsGeoJSON(ST_Force_2D(ST_Transform(adres.geopunt, 4326))) as location, concat(left(adres.huisletter, 0), 'Adres') as description, concat(adres.openbareruimtenaam, ' ', adres.huisnummer, adres.huisletter, adres.huisnummertoevoeging, ', ', adres.woonplaatsnaam) as title FROM bagactueel.adres WHERE textsearchable_adres @@ to_tsquery('dutch', '" + query + "') ORDER BY adres.openbareruimtenaam, adres.woonplaatsnaam, adres.huisnummer LIMIT " + (limit - 1) + " ) SELECT q_adr.* FROM q_adr UNION ALL (SELECT ST_AsGeoJSON(ST_Force_2D(ST_Transform(gemeente.geovlak, 4326))) as location, 'Gemeente' as description, gemeente.gemeentenaam FROM bagactueel.gemeente WHERE lower(gemeente.gemeentenaam) LIKE '" + query + "%' ORDER BY gemeentenaam ) LIMIT " + limit;
+            client.query(sql, function (err, result) {
+                done();
+                if (err) {
+                    console.log(err);
+                    console.log("Cannot find address with query: " + query);
+                    callback(null);
+                }
+                else {
+                    callback(result.rows);
+                }
+            });
+        });
+    };
     BagDatabase.prototype.lookupBagArea = function (bounds, callback) {
         if (!bounds) {
             console.log('No valid bounds supplied');
             callback(null);
             return;
         }
-        pg.connect(this.connectionString, function (err, client, done) {
+        this.pg.connect(this.connectionString, function (err, client, done) {
             if (err) {
                 console.log(err);
                 callback(null);
                 return;
             }
             //var sql = `SELECT ST_AsGeoJSON(ST_Transform(geovlak, 4326)) as area FROM ${sqlTable} WHERE ${sqlColumn}='${name}'`;
-            var sql = "SELECT adres.postcode, adres.huisnummer, ST_AsGeoJSON(ST_Force_2D(ST_Transform(pand.geovlak, 4326)), 6, 0) as contour, pand.bouwjaar FROM adres, pand, verblijfsobjectpand WHERE adres.adresseerbaarobject = verblijfsobjectpand.identificatie AND verblijfsobjectpand.gerelateerdpand = pand.identificatie AND ST_Within(pand.geovlak, ST_Transform(ST_GeomFromGeoJSON('" + bounds + "'),28992))";
+            // var sql = `SELECT adres.postcode, adres.huisnummer, ST_AsGeoJSON(ST_Force_2D(ST_Transform(pand.geovlak, 4326)), 6, 0) as contour, pand.bouwjaar FROM bagactueel.adres, bagactueel.pand, bagactueel.verblijfsobjectpand WHERE adres.adresseerbaarobject = verblijfsobjectpand.identificatie AND verblijfsobjectpand.gerelateerdpand = pand.identificatie AND ST_Within(pand.geovlak, ST_Transform(ST_GeomFromGeoJSON('${bounds}'),28992))`
+            var sql = "SELECT DISTINCT ON (verblijfsobject.identificatie) verblijfsobject.identificatie as vbo_id, pand.woningen_in_pand, adres.postcode, adres.openbareruimtenaam, adres.huisnummer, adres.huisletter, adres.huisnummertoevoeging, adres.woonplaatsnaam, adres.gemeentenaam, adres.buurtnaam, adres.wijknaam, adres.wijkcode, adres.buurtcode, pand.bouwjaar, verblijfsobjectgebruiksdoel.gebruiksdoelverblijfsobject as gebruiksdoelverblijfsobject, verblijfsobject.oppervlakteverblijfsobject as oppervlakteverblijfsobject, verblijfsobjectpand.gerelateerdpand as pandid, ST_AsGeoJSON(ST_Force_2D(ST_Transform(adres.geopunt, 4326)), 6, 0) as latlon, ST_AsGeoJSON(ST_Force_2D(ST_Transform(pand.geovlak, 4326)), 6, 0) as contour FROM bagactueel.adres, bagactueel.pand, bagactueel.verblijfsobject, bagactueel.verblijfsobjectpand, bagactueel.verblijfsobjectgebruiksdoel WHERE adres.adresseerbaarobject = verblijfsobjectpand.identificatie AND verblijfsobjectgebruiksdoel.identificatie = verblijfsobjectpand.identificatie AND verblijfsobjectgebruiksdoel.gebruiksdoelverblijfsobject = 'woonfunctie' AND verblijfsobjectpand.gerelateerdpand = pand.identificatie AND verblijfsobject.identificatie = verblijfsobjectpand.identificatie AND (verblijfsobject.verblijfsobjectstatus = 'Verblijfsobject in gebruik' OR verblijfsobject.verblijfsobjectstatus = 'Verblijfsobject in gebruik (niet ingemeten)') AND ST_Within(pand.geovlak, ST_Transform(ST_GeomFromGeoJSON('" + bounds + "'),28992)) ORDER BY verblijfsobject.identificatie, verblijfsobject.documentdatum DESC LIMIT 1000";
+            client.query(sql, function (err, result) {
+                done();
+                if (err) {
+                    console.log(err);
+                    console.log("Cannot find areas in bounds: " + bounds);
+                    callback(null);
+                }
+                else {
+                    callback(result.rows);
+                }
+            });
+        });
+    };
+    BagDatabase.prototype.lookupBagBuurt = function (bounds, callback) {
+        if (!bounds) {
+            console.log('No valid bounds supplied');
+            callback(null);
+            return;
+        }
+        this.pg.connect(this.connectionString, function (err, client, done) {
+            if (err) {
+                console.log(err);
+                callback(null);
+                return;
+            }
+            var sql = "SELECT bu_naam, buurt.bu_code, gm_naam, aant_inw, a_woning, g_woz, p_1gezw, p_mgezw, p_koopw,p_huurw, p_e_o_w, ST_AsGeoJSON(ST_Force_2D(ST_Transform(buurt.geom, 4326)), 6, 0) as contour FROM bagactueel.buurt, bagactueel.buurt_2014 WHERE ST_Intersects(buurt.geom, ST_Transform(ST_GeomFromGeoJSON('" + bounds + "'),28992)) AND buurt.bu_code = buurt_2014.bu_code AND aant_inw > 0 LIMIT 75";
             client.query(sql, function (err, result) {
                 done();
                 if (err) {
@@ -146,7 +207,7 @@ var BagDatabase = (function () {
         }
         var houseLetter = splittedAdressNumber.letter;
         var houseNumberAddition = splittedAdressNumber.addition;
-        pg.connect(this.connectionString, function (err, client, done) {
+        this.pg.connect(this.connectionString, function (err, client, done) {
             if (err) {
                 console.log(err);
                 callback(null);
@@ -212,7 +273,7 @@ var BagDatabase = (function () {
         var houseNumber = this.formatHouseNumber(req.params.number);
         if (!houseNumber)
             return res.send(400, 'house number is missing');
-        pg.connect(this.connectionString, function (err, client, done) {
+        this.pg.connect(this.connectionString, function (err, client, done) {
             if (err) {
                 console.log(err);
                 return;
@@ -229,6 +290,6 @@ var BagDatabase = (function () {
         });
     };
     return BagDatabase;
-})();
+}());
 exports.BagDatabase = BagDatabase;
 //# sourceMappingURL=BagDatabase.js.map

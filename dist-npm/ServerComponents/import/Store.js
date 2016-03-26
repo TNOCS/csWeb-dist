@@ -1,3 +1,4 @@
+"use strict";
 var fs = require('fs');
 var path = require('path');
 var Utils = require("../helpers/Utils");
@@ -83,7 +84,7 @@ var FileStore = (function () {
         this.save();
     };
     return FileStore;
-})();
+}());
 exports.FileStore = FileStore;
 var FolderStore = (function () {
     function FolderStore(opt) {
@@ -199,6 +200,6 @@ var FolderStore = (function () {
         this.save(id, resource);
     };
     return FolderStore;
-})();
+}());
 exports.FolderStore = FolderStore;
 //# sourceMappingURL=Store.js.map

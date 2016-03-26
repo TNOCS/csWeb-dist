@@ -1,3 +1,4 @@
+"use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -41,9 +42,11 @@ var SocketIOAPI = (function (_super) {
                     case ClientConnection.LayerUpdateAction.deleteFeature:
                         _this.manager.deleteFeature(lu.layerId, lu.item, { source: _this.id, user: clientId }, function (r) { });
                         break;
+                    case ClientConnection.LayerUpdateAction.addUpdateFeatureBatch:
+                        _this.manager.addUpdateFeatureBatch(lu.layerId, lu.item, { source: _this.id, user: clientId }, function (r) { });
+                        break;
                 }
             }
-            //result.data
         });
         this.connection.subscribe('project', function (result, clientId) {
             var lu = result.data;
@@ -51,7 +54,7 @@ var SocketIOAPI = (function (_super) {
                 ///TODO: check if lu.layerId really exists
                 switch (lu.action) {
                     case ClientConnection.ProjectUpdateAction.updateProject:
-                        var p = lu.item;
+                        var p = JSON.parse(lu.item);
                         _this.manager.updateProject(p, { source: _this.id, user: clientId }, function (r) { });
                         break;
                     case ClientConnection.ProjectUpdateAction.deleteProject:
@@ -76,6 +79,10 @@ var SocketIOAPI = (function (_super) {
             //result.data
         });
         callback();
+    };
+    /** Sends a message (json) to a specific project, only works with socket io for now */
+    SocketIOAPI.prototype.sendClientMessage = function (project, message) {
+        this.connection.publish(project, "layer", "msg", message);
     };
     SocketIOAPI.prototype.addLayer = function (layer, meta, callback) {
         //this.connection.publish();
@@ -132,6 +139,12 @@ var SocketIOAPI = (function (_super) {
         this.connection.updateFeature(layerId, lu, meta);
         callback({ result: ApiResult.OK });
     };
+    SocketIOAPI.prototype.addUpdateFeatureBatch = function (layerId, features, useLog, meta, callback) {
+        Winston.info('socketio: update feature batch');
+        var lu = { layerId: layerId, featureId: null, action: LayerUpdateAction.addUpdateFeatureBatch, item: features };
+        this.connection.updateFeature(layerId, lu, meta);
+        callback({ result: ApiResult.OK });
+    };
     SocketIOAPI.prototype.updateLogs = function (layerId, featureId, logs, meta, callback) {
         Winston.info('socketio: update logs ' + JSON.stringify(logs));
         var lu = { layerId: layerId, action: LayerUpdateAction.updateLog, item: logs, featureId: featureId };
@@ -149,6 +162,6 @@ var SocketIOAPI = (function (_super) {
         callback({ result: ApiResult.OK });
     };
     return SocketIOAPI;
-})(BaseConnector.BaseConnector);
+}(BaseConnector.BaseConnector));
 exports.SocketIOAPI = SocketIOAPI;
 //# sourceMappingURL=SocketIOAPI.js.map

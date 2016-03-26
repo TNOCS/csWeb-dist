@@ -1,3 +1,4 @@
+"use strict";
 /**
  * Template for describing an RSS item, that contains coordinates, as GeoJSON.
  */
@@ -7,7 +8,7 @@ var RssGeoJSON = (function () {
         this.features = [];
     }
     return RssGeoJSON;
-})();
+}());
 exports.RssGeoJSON = RssGeoJSON;
 var RssFeature = (function () {
     function RssFeature(lat, lon) {
@@ -21,6 +22,6 @@ var RssFeature = (function () {
         }
     }
     return RssFeature;
-})();
+}());
 exports.RssFeature = RssFeature;
 //# sourceMappingURL=RssGeoJSON.js.map

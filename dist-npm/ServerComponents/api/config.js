@@ -1,3 +1,4 @@
+"use strict";
 var AuthConfig = (function () {
     function AuthConfig() {
     }
@@ -16,6 +17,6 @@ var AuthConfig = (function () {
     AuthConfig.TWITTER_KEY = process.env.TWITTER_KEY || '';
     AuthConfig.TWITTER_SECRET = process.env.TWITTER_SECRET || '';
     return AuthConfig;
-})();
+}());
 module.exports = AuthConfig;
 //# sourceMappingURL=config.js.map

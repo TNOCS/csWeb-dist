@@ -61,6 +61,7 @@ export declare enum LayerUpdateAction {
     deleteFeature = 2,
     updateLayer = 3,
     deleteLayer = 4,
+    addUpdateFeatureBatch = 5,
 }
 /**
  * List of available action for sending/receiving key actions over socket.io channel
@@ -104,7 +105,7 @@ export declare class ConnectionManager {
     updateProject(projectId: string, update: ProjectUpdate, meta: ApiMeta): void;
     /**
      * Send update to all clients.
-     * @action: logs-update, feature-update
+     * @action: logs-update, feature-update, feature-batch-update
      * @meta: used to determine source/user, will skip
      */
     updateFeature(layerId: string, update: LayerUpdate, meta: ApiMeta): void;

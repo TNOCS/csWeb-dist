@@ -3,6 +3,7 @@ import MessageBus = require('../bus/MessageBus');
 import BagDatabase = require('../database/BagDatabase');
 import IGeoJsonFeature = require('./IGeoJsonFeature');
 import Api = require('../api/ApiManager');
+import IProperty = Api.IProperty;
 export interface ILayerDefinition {
     projectTitle: string;
     reference: string;
@@ -29,9 +30,8 @@ export interface ILayerDefinition {
     nameLabel: string;
     includeOriginalProperties: boolean;
     defaultFeatureType: string;
-}
-export interface IProperty {
-    [key: string]: any;
+    geometryFile: string;
+    geometryKey: string;
 }
 export interface IPropertyType {
     label?: string;
@@ -51,7 +51,7 @@ export interface IPropertyType {
     calculation?: string;
     subject?: string;
     target?: string;
-    targetrelation?: string;
+    targetlayers?: string[];
     targetproperty?: string;
     options?: string[];
     activation?: string;
@@ -69,6 +69,10 @@ export interface IBagContourRequest {
     bounds: string;
     layer: any;
 }
+export interface IBagSearchRequest {
+    query: string;
+    nrItems: number;
+}
 /** A factory class to create new map layers based on input, e.g. from Excel */
 export declare class MapLayerFactory {
     private bag;
@@ -83,6 +87,8 @@ export declare class MapLayerFactory {
     sendResourceThroughApiManager(data: any, resourceId: string): void;
     sendLayerThroughApiManager(data: any): void;
     processBagContours(req: express.Request, res: express.Response): void;
+    processBagSearchQuery(req: express.Request, res: express.Response): void;
+    processBagBuurten(req: express.Request, res: express.Response): void;
     createMapLayer(template: ILayerTemplate, callback: (Object) => void): {
         type: string;
         featureTypes: {};
@@ -92,13 +98,11 @@ export declare class MapLayerFactory {
      * This function extracts the timestamps and sensorvalues from the
      * template.propertyTypes. Every sensorvalue is parsed as propertyType in
      * MS Excel, which should be converted to a sensor-array for each feature.
-     * Note: Each propertyname is appended with a 6-digit number, as JSON objects
-     * need unique keys. These are trimmed in this function.
      * @param  {ILayerTemplate} template : The input template coming from MS Excel
      * @return {array} timestamps        : An array with all date/times converted to milliseconds
      */
     private convertTimebasedPropertyData(template);
-    private createPolygonFeature(templateName, par1, inclTemplProps, features, properties, propertyTypes, sensors, callback);
+    private createPolygonFeature(templateName, templateKey, par1, inclTemplProps, features, properties, propertyTypes, sensors, callback);
     private createLatLonFeature(latString, lonString, features, properties, sensors, callback);
     /**
      * Convert the RD coordinate to WGS84.

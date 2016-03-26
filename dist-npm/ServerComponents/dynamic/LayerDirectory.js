@@ -1,3 +1,4 @@
+"use strict";
 var chokidar = require('chokidar');
 var LayerDirectory;
 (function (LayerDirectory_1) {
@@ -34,7 +35,7 @@ var LayerDirectory;
             res.send(result);
         };
         return LayerDirectory;
-    })();
+    }());
     LayerDirectory_1.LayerDirectory = LayerDirectory;
 })(LayerDirectory = exports.LayerDirectory || (exports.LayerDirectory = {}));
 //# sourceMappingURL=LayerDirectory.js.map

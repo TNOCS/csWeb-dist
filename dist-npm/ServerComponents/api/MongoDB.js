@@ -1,3 +1,4 @@
+"use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -453,6 +454,6 @@ var MongoDBStorage = (function (_super) {
         callback();
     };
     return MongoDBStorage;
-})(BaseConnector.BaseConnector);
+}(BaseConnector.BaseConnector));
 exports.MongoDBStorage = MongoDBStorage;
 //# sourceMappingURL=MongoDB.js.map

@@ -1,3 +1,4 @@
+"use strict";
 var request = require('request');
 var xml2js = require('xml2js');
 var RssGeoJSON = require("../helpers/RssGeoJSON");
@@ -72,6 +73,6 @@ var RssService = (function () {
         });
     };
     return RssService;
-})();
+}());
 module.exports = RssService;
 //# sourceMappingURL=RssService.js.map

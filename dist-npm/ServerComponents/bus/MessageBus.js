@@ -1,3 +1,4 @@
+"use strict";
 /**
  *  Handle returned when subscribing to a topic
  */
@@ -7,7 +8,7 @@ var MessageBusHandle = (function () {
         this.callback = callback;
     }
     return MessageBusHandle;
-})();
+}());
 exports.MessageBusHandle = MessageBusHandle;
 /**
  * Simple message bus service, used for subscribing and unsubsubscribing to topics.
@@ -58,6 +59,6 @@ var MessageBusService = (function () {
     };
     MessageBusService.cache = {};
     return MessageBusService;
-})();
+}());
 exports.MessageBusService = MessageBusService;
 //# sourceMappingURL=MessageBus.js.map

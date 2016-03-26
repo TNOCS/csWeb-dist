@@ -1,3 +1,4 @@
+"use strict";
 (function (InputDataType) {
     InputDataType[InputDataType["file"] = 0] = "file";
     InputDataType[InputDataType["url"] = 1] = "url";

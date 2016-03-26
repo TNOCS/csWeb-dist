@@ -1,3 +1,4 @@
+"use strict";
 var request = require('request');
 var AccessibilityService = (function () {
     function AccessibilityService() {
@@ -30,6 +31,6 @@ var AccessibilityService = (function () {
         });
     };
     return AccessibilityService;
-})();
+}());
 exports.AccessibilityService = AccessibilityService;
 //# sourceMappingURL=AccessibilityService.js.map

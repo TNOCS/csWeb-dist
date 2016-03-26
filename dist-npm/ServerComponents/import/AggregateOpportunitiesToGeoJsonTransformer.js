@@ -1,3 +1,4 @@
+"use strict";
 var Utils = require("../helpers/Utils");
 var stream = require('stream');
 var request = require("request");
@@ -135,6 +136,6 @@ var AggregateOpportunitiesToGeoJsonTransformer = (function () {
         return t;
     };
     return AggregateOpportunitiesToGeoJsonTransformer;
-})();
+}());
 module.exports = AggregateOpportunitiesToGeoJsonTransformer;
 //# sourceMappingURL=AggregateOpportunitiesToGeoJsonTransformer.js.map

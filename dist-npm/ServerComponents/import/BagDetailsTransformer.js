@@ -1,3 +1,4 @@
+"use strict";
 var Utils = require("../helpers/Utils");
 var stream = require('stream');
 var BagDatabase = require("../database/BagDatabase");
@@ -78,6 +79,6 @@ var BagDetailsTransformer = (function () {
         return t;
     };
     return BagDetailsTransformer;
-})();
+}());
 module.exports = BagDetailsTransformer;
 //# sourceMappingURL=BagDetailsTransformer.js.map

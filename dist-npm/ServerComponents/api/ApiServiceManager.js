@@ -1,3 +1,4 @@
+"use strict";
 var Utils = require('../helpers/Utils');
 var ApiServiceManager = (function () {
     function ApiServiceManager(server, config) {
@@ -52,6 +53,6 @@ var ApiServiceManager = (function () {
         }
     };
     return ApiServiceManager;
-})();
+}());
 exports.ApiServiceManager = ApiServiceManager;
 //# sourceMappingURL=ApiServiceManager.js.map

@@ -1,3 +1,4 @@
+"use strict";
 var sqlite3 = require('sqlite3');
 /**
  * Export a connection to the BAG database.
@@ -163,6 +164,6 @@ var LocalBag = (function () {
         return result;
     };
     return LocalBag;
-})();
+}());
 exports.LocalBag = LocalBag;
 //# sourceMappingURL=LocalBag.js.map

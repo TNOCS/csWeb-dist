@@ -1,3 +1,4 @@
+"use strict";
 var Utils = require("../helpers/Utils");
 var stream = require('stream');
 var SplitAdresTransformer = (function () {
@@ -55,6 +56,6 @@ var SplitAdresTransformer = (function () {
         return t;
     };
     return SplitAdresTransformer;
-})();
+}());
 module.exports = SplitAdresTransformer;
 //# sourceMappingURL=SplitAdresTransformer.js.map

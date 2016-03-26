@@ -1,3 +1,4 @@
+"use strict";
 var GeoJSON = require('../helpers/GeoJSON');
 var Conrec = require('../helpers/conrec');
 var IsoLines = (function () {
@@ -248,6 +249,6 @@ var IsoLines = (function () {
         return GeoJSON.GeoJSONFactory.Create(features);
     }; // convertDataToIsoLines
     return IsoLines;
-})();
+}());
 exports.IsoLines = IsoLines;
 //# sourceMappingURL=IsoLines.js.map

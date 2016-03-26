@@ -1,3 +1,4 @@
+"use strict";
 var Utils = require("../helpers/Utils");
 var stream = require('stream');
 var splitStream = require("split");
@@ -109,6 +110,6 @@ var CsvToJsonTransformer = (function () {
         return t;
     };
     return CsvToJsonTransformer;
-})();
+}());
 module.exports = CsvToJsonTransformer;
 //# sourceMappingURL=CsvToJsonTransformer.js.map

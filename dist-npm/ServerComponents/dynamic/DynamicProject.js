@@ -1,3 +1,4 @@
+"use strict";
 var fs = require('fs');
 var path = require('path');
 var chokidar = require('chokidar');
@@ -203,7 +204,7 @@ var DynamicProject = (function () {
         //res.send("postgres layer");
     };
     return DynamicProject;
-})();
+}());
 exports.DynamicProject = DynamicProject;
 var DynamicProjectService = (function () {
     function DynamicProjectService(server, connection, messageBus) {
@@ -247,6 +248,6 @@ var DynamicProjectService = (function () {
         });
     };
     return DynamicProjectService;
-})();
+}());
 exports.DynamicProjectService = DynamicProjectService;
 //# sourceMappingURL=DynamicProject.js.map

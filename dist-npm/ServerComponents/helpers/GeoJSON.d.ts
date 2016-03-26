@@ -41,9 +41,6 @@ export interface IFeature {
     };
     timestamps?: number[];
 }
-export interface IProperty {
-    [key: string]: any;
-}
 /**
 * A set of static geo tools
 * Source: http://www.csgnetwork.com/degreelenllavcalc.html

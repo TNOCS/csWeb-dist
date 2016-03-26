@@ -1,3 +1,4 @@
+"use strict";
 var fs = require('fs');
 /**
  * Service that contains default configuration options.
@@ -9,6 +10,8 @@ var ConfigurationService = (function () {
      */
     function ConfigurationService(configurationFile) {
         this.configurationFile = configurationFile;
+        if (!configurationFile)
+            return;
         var data = fs.readFileSync(configurationFile, 'utf8');
         var content = JSON.parse(data);
         for (var key in content) {
@@ -70,6 +73,6 @@ var ConfigurationService = (function () {
     ConfigurationService.theKeys = [];
     ConfigurationService.theValues = [];
     return ConfigurationService;
-})();
+}());
 exports.ConfigurationService = ConfigurationService;
 //# sourceMappingURL=ConfigurationService.js.map
