@@ -1,3 +1,2 @@
 dist-npm/node_modules/**/*.*
-dist-npm/ServerComponents/import/**/*.*
 dist-npm/node_modules/
