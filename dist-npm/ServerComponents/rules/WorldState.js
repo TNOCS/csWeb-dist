@@ -23,5 +23,5 @@ var WorldState = (function () {
     }
     return WorldState;
 }());
-module.exports = WorldState;
+exports.WorldState = WorldState;
 //# sourceMappingURL=WorldState.js.map

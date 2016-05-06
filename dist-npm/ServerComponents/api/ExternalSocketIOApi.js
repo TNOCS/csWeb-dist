@@ -12,18 +12,18 @@ var KeyUpdateAction = ClientConnection.KeyUpdateAction;
 var ApiResult = ApiManager.ApiResult;
 var BaseConnector = require('./BaseConnector');
 var Winston = require('winston');
-var SocketIOAPI = (function (_super) {
-    __extends(SocketIOAPI, _super);
-    function SocketIOAPI(connection) {
+var ExternalSocketIOAPI = (function (_super) {
+    __extends(ExternalSocketIOAPI, _super);
+    function ExternalSocketIOAPI(connection) {
         _super.call(this);
         this.connection = connection;
-        this.id = 'socketio';
+        this.id = "socketio";
         this.isInterface = true;
     }
-    SocketIOAPI.prototype.init = function (layerManager, options, callback) {
+    ExternalSocketIOAPI.prototype.init = function (layerManager, options, callback) {
         var _this = this;
         this.manager = layerManager;
-        Winston.info('socketio: init SocketIO API');
+        Winston.info('externalsocketio: init ExternalSocketIO API');
         this.connection.subscribe('layer', function (result, clientId) {
             var lu = result.data;
             if (lu) {
@@ -32,7 +32,7 @@ var SocketIOAPI = (function (_super) {
                     case ClientConnection.LayerUpdateAction.updateLog:
                         // find feature
                         var featureId = lu.item.featureId;
-                        var logs = lu.item['logs'];
+                        var logs = lu.item["logs"];
                         _this.manager.updateLogs(lu.layerId, featureId, logs, { source: _this.id, user: clientId }, function () { });
                         break;
                     case ClientConnection.LayerUpdateAction.updateFeature:
@@ -41,9 +41,6 @@ var SocketIOAPI = (function (_super) {
                         break;
                     case ClientConnection.LayerUpdateAction.deleteFeature:
                         _this.manager.deleteFeature(lu.layerId, lu.item, { source: _this.id, user: clientId }, function (r) { });
-                        break;
-                    case ClientConnection.LayerUpdateAction.addUpdateFeatureBatch:
-                        _this.manager.addUpdateFeatureBatch(lu.layerId, lu.item, { source: _this.id, user: clientId }, function (r) { });
                         break;
                 }
             }
@@ -81,87 +78,81 @@ var SocketIOAPI = (function (_super) {
         callback();
     };
     /** Sends a message (json) to a specific project, only works with socket io for now */
-    SocketIOAPI.prototype.sendClientMessage = function (project, message) {
-        this.connection.publish(project, 'layer', 'msg', message);
+    ExternalSocketIOAPI.prototype.sendClientMessage = function (project, message) {
+        this.connection.publish(project, "layer", "msg", message);
     };
-    SocketIOAPI.prototype.addLayer = function (layer, meta, callback) {
+    ExternalSocketIOAPI.prototype.addLayer = function (layer, meta, callback) {
         //this.connection.publish();
         var lu = { layerId: layer.id, action: LayerUpdateAction.updateLayer, item: layer };
         this.connection.updateLayer(layer.id, lu, meta);
         callback({ result: ApiResult.OK });
     };
-    SocketIOAPI.prototype.updateLayer = function (layer, meta, callback) {
+    ExternalSocketIOAPI.prototype.updateLayer = function (layer, meta, callback) {
         var lu = { layerId: layer.id, action: LayerUpdateAction.updateLayer, item: layer };
         this.connection.updateLayer(layer.id, lu, meta);
         callback({ result: ApiResult.OK });
     };
-    SocketIOAPI.prototype.deleteLayer = function (layerId, meta, callback) {
+    ExternalSocketIOAPI.prototype.deleteLayer = function (layerId, meta, callback) {
         var lu = { layerId: layerId, action: LayerUpdateAction.deleteLayer };
         this.connection.updateLayer(layerId, lu, meta);
         callback({ result: ApiResult.OK });
     };
-    SocketIOAPI.prototype.initLayer = function (layer) {
+    ExternalSocketIOAPI.prototype.initLayer = function (layer) {
         Winston.info('socketio: init layer ' + layer.id);
         this.connection.registerLayer(layer.id, function (action, msg, client) {
             Winston.debug('socketio: action:' + action);
         });
     };
-    SocketIOAPI.prototype.addProject = function (project, meta, callback) {
+    ExternalSocketIOAPI.prototype.addProject = function (project, meta, callback) {
         //this.connection.publish();
         var lu = { projectId: project.id, action: ProjectUpdateAction.updateProject, item: project };
         this.connection.updateProject(project.id, lu, meta);
         callback({ result: ApiResult.OK });
     };
-    SocketIOAPI.prototype.updateProject = function (project, meta, callback) {
+    ExternalSocketIOAPI.prototype.updateProject = function (project, meta, callback) {
         var lu = { projectId: project.id, action: ProjectUpdateAction.updateProject, item: project };
         this.connection.updateProject(project.id, lu, meta);
         callback({ result: ApiResult.OK });
     };
-    SocketIOAPI.prototype.deleteProject = function (projectId, meta, callback) {
+    ExternalSocketIOAPI.prototype.deleteProject = function (projectId, meta, callback) {
         var lu = { projectId: projectId, action: ProjectUpdateAction.deleteProject };
         this.connection.updateProject(projectId, lu, meta);
         callback({ result: ApiResult.OK });
     };
-    SocketIOAPI.prototype.initProject = function (project) {
+    ExternalSocketIOAPI.prototype.initProject = function (project) {
         Winston.info('socketio: init project ' + project.id);
         this.connection.registerProject(project.id, function (action, msg, client) {
             Winston.debug('socketio: action:' + action);
         });
     };
-    SocketIOAPI.prototype.addFeature = function (layerId, feature, meta, callback) {
+    ExternalSocketIOAPI.prototype.addFeature = function (layerId, feature, meta, callback) {
         var lu = { layerId: layerId, action: LayerUpdateAction.updateFeature, item: feature };
         this.connection.updateFeature(layerId, lu, meta);
         callback({ result: ApiResult.OK });
     };
-    SocketIOAPI.prototype.updateFeature = function (layerId, feature, useLog, meta, callback) {
+    ExternalSocketIOAPI.prototype.updateFeature = function (layerId, feature, useLog, meta, callback) {
         Winston.info('socketio: update feature');
         var lu = { layerId: layerId, featureId: feature.id, action: LayerUpdateAction.updateFeature, item: feature };
         this.connection.updateFeature(layerId, lu, meta);
         callback({ result: ApiResult.OK });
     };
-    SocketIOAPI.prototype.addUpdateFeatureBatch = function (layerId, features, useLog, meta, callback) {
-        Winston.info('socketio: update feature batch');
-        var lu = { layerId: layerId, featureId: null, action: LayerUpdateAction.addUpdateFeatureBatch, item: features };
-        this.connection.updateFeature(layerId, lu, meta);
-        callback({ result: ApiResult.OK });
-    };
-    SocketIOAPI.prototype.updateLogs = function (layerId, featureId, logs, meta, callback) {
+    ExternalSocketIOAPI.prototype.updateLogs = function (layerId, featureId, logs, meta, callback) {
         Winston.info('socketio: update logs ' + JSON.stringify(logs));
         var lu = { layerId: layerId, action: LayerUpdateAction.updateLog, item: logs, featureId: featureId };
         this.connection.updateFeature(layerId, lu, meta);
         callback({ result: ApiResult.OK });
     };
-    SocketIOAPI.prototype.deleteFeature = function (layerId, featureId, meta, callback) {
+    ExternalSocketIOAPI.prototype.deleteFeature = function (layerId, featureId, meta, callback) {
         var lu = { layerId: layerId, action: LayerUpdateAction.deleteFeature, featureId: featureId };
         this.connection.updateFeature(layerId, lu, meta);
         callback({ result: ApiResult.OK });
     };
-    SocketIOAPI.prototype.updateKey = function (keyId, value, meta, callback) {
+    ExternalSocketIOAPI.prototype.updateKey = function (keyId, value, meta, callback) {
         var ku = { keyId: keyId, action: KeyUpdateAction.updateKey, item: value };
         this.connection.updateKey(keyId, ku, meta);
         callback({ result: ApiResult.OK });
     };
-    return SocketIOAPI;
+    return ExternalSocketIOAPI;
 }(BaseConnector.BaseConnector));
-exports.SocketIOAPI = SocketIOAPI;
-//# sourceMappingURL=SocketIOAPI.js.map
+exports.ExternalSocketIOAPI = ExternalSocketIOAPI;
+//# sourceMappingURL=ExternalSocketIOApi.js.map

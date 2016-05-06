@@ -39,6 +39,7 @@ var Rule = (function () {
             return;
         // Finally, check the conditions, if any (if none, just go ahead and execute the actions)
         if (typeof this.conditions === 'undefined' || this.evaluateConditions(worldState)) {
+            console.log('Start executing actions...');
             this.executeActions(worldState, service);
             if (this.recurrence > 0)
                 this.recurrence--;
@@ -53,25 +54,26 @@ var Rule = (function () {
             var check = c[0];
             if (typeof check === 'string') {
                 var length = c.length;
+                var prop;
                 switch (check.toLowerCase()) {
-                    case "propertyexists":
+                    case 'propertyexists':
                         if (typeof worldState.activeFeature === 'undefined')
                             return false;
                         if (length !== 2)
                             return this.showWarning(c);
-                        var prop = c[1];
+                        prop = c[1];
                         if (typeof prop === 'string') {
                             if (!worldState.activeFeature.properties.hasOwnProperty(prop))
                                 return false;
                             console.log("Property " + prop + " exists.");
                         }
                         break;
-                    case "propertyisset":
+                    case 'propertyisset':
                         if (typeof worldState.activeFeature === 'undefined')
                             return false;
                         if (length < 2)
                             return this.showWarning(c);
-                        var prop = c[1];
+                        prop = c[1];
                         if (typeof prop === 'string') {
                             if (!worldState.activeFeature.properties.hasOwnProperty(prop))
                                 return false;
@@ -83,12 +85,12 @@ var Rule = (function () {
                             console.log(("Property " + prop + " is set") + (length === 2 ? '.' : ' ' + c[2]));
                         }
                         break;
-                    case "propertygreaterorequalthan":
+                    case 'propertygreaterorequalthan':
                         if (typeof worldState.activeFeature === 'undefined')
                             return false;
                         if (length !== 3)
                             return this.showWarning(c);
-                        var prop = c[1];
+                        prop = c[1];
                         if (typeof prop === 'string') {
                             if (!worldState.activeFeature.properties.hasOwnProperty(prop))
                                 return false;
@@ -98,12 +100,12 @@ var Rule = (function () {
                             console.log("Property " + prop + " is greater than " + c[2] + ".");
                         }
                         break;
-                    case "propertygreaterthan":
+                    case 'propertygreaterthan':
                         if (typeof worldState.activeFeature === 'undefined')
                             return false;
                         if (length !== 3)
                             return this.showWarning(c);
-                        var prop = c[1];
+                        prop = c[1];
                         if (typeof prop === 'string') {
                             if (!worldState.activeFeature.properties.hasOwnProperty(prop))
                                 return false;
@@ -113,12 +115,12 @@ var Rule = (function () {
                             console.log("Property " + prop + " is greater than " + c[2] + ".");
                         }
                         break;
-                    case "propertyequals":
+                    case 'propertyequals':
                         if (typeof worldState.activeFeature === 'undefined')
                             return false;
                         if (length !== 3)
                             return this.showWarning(c);
-                        var prop = c[1];
+                        prop = c[1];
                         if (typeof prop === 'string') {
                             if (!worldState.activeFeature.properties.hasOwnProperty(prop))
                                 return false;
@@ -128,13 +130,13 @@ var Rule = (function () {
                             console.log("Property " + prop + " equals " + c[2] + ".");
                         }
                         break;
-                    case "propertydoesnotequal":
-                    case "propertynotequal":
+                    case 'propertydoesnotequal':
+                    case 'propertynotequal':
                         if (typeof worldState.activeFeature === 'undefined')
                             return false;
                         if (length !== 3)
                             return this.showWarning(c);
-                        var prop = c[1];
+                        prop = c[1];
                         if (typeof prop === 'string') {
                             if (!worldState.activeFeature.properties.hasOwnProperty(prop))
                                 return false;
@@ -144,12 +146,12 @@ var Rule = (function () {
                             console.log("Property " + prop + " does not equal " + c[2] + ".");
                         }
                         break;
-                    case "propertylessthan":
+                    case 'propertylessthan':
                         if (typeof worldState.activeFeature === 'undefined')
                             return false;
                         if (length !== 3)
                             return this.showWarning(c);
-                        var prop = c[1];
+                        prop = c[1];
                         if (typeof prop === 'string') {
                             if (!worldState.activeFeature.properties.hasOwnProperty(prop))
                                 return false;
@@ -159,12 +161,12 @@ var Rule = (function () {
                             console.log("Property " + prop + " is less than " + c[2] + ".");
                         }
                         break;
-                    case "propertylessorequalthan":
+                    case 'propertylessorequalthan':
                         if (typeof worldState.activeFeature === 'undefined')
                             return false;
                         if (length !== 3)
                             return this.showWarning(c);
-                        var prop = c[1];
+                        prop = c[1];
                         if (typeof prop === 'string') {
                             if (!worldState.activeFeature.properties.hasOwnProperty(prop))
                                 return false;
@@ -174,12 +176,12 @@ var Rule = (function () {
                             console.log("Property " + prop + " is less or equal than " + c[2] + ".");
                         }
                         break;
-                    case "propertycontains":
+                    case 'propertycontains':
                         if (typeof worldState.activeFeature === 'undefined')
                             return false;
                         if (length !== 3)
                             return this.showWarning(c);
-                        var prop = c[1];
+                        prop = c[1];
                         if (typeof prop === 'string') {
                             if (!worldState.activeFeature.properties.hasOwnProperty(prop))
                                 return false;
@@ -205,14 +207,16 @@ var Rule = (function () {
         return false;
     };
     Rule.prototype.executeActions = function (worldState, service) {
+        console.log("Executing " + this.actions.length + " actions:");
         for (var i = 0; i < this.actions.length; i++) {
             var a = this.actions[i];
+            console.log("Executing action: " + JSON.stringify(a, null, 2));
             var action = a[0];
             var key;
             if (typeof action === 'string') {
                 var length = a.length;
                 switch (action.toLowerCase()) {
-                    case "add":
+                    case 'add':
                         // add feature
                         var id = service.timer.setTimeout(function (f, fid, service) {
                             return function () {
@@ -230,14 +234,14 @@ var Rule = (function () {
                                 if (!feature.properties.hasOwnProperty('date'))
                                     feature.properties['date'] = new Date();
                                 if (!feature.properties.hasOwnProperty('roles'))
-                                    feature.properties['roles'] = ["rti"];
+                                    feature.properties['roles'] = ['rti'];
                                 service.addFeature(feature);
                             };
-                        }(this.feature, length > 1 ? a[1] : "", service), this.getDelay(a, length - 1));
+                        }(this.feature, length > 1 ? a[1] : '', service), this.getDelay(a, length - 1));
                         console.log("Timer " + id + ": Add feature " + (this.isGenericRule ? a[1] : this.feature.id));
                         break;
-                    case "answer":
-                    case "set":
+                    case 'answer':
+                    case 'set':
                         // Anwer, property, value [, delay], as set, but also sets answered to true and removes the action tag.
                         // Set, property, value [, delay] sets value and updated.
                         if (length < 3) {
@@ -249,26 +253,28 @@ var Rule = (function () {
                             this.setTimerForProperty(service, key, a[2], this.getDelay(a, 3), action === 'answer');
                         }
                         break;
-                    case "push":
+                    case 'push':
                         // push property value [, delay]
                         if (length < 3) {
                             console.warn("Rule " + this.id + " contains an invalid action (ignored): " + a + "!");
                             return;
                         }
-                        var key = a[1];
-                        if (typeof key === 'string') {
+                        var key2 = a[1];
+                        if (typeof key2 === 'string') {
                             var valp = a[2];
                             var id = service.timer.setTimeout(function (f, k, v, service, updateProperty) {
                                 return function () {
                                     console.log("Feature " + f.id + ". Pushing " + k + ": " + v);
-                                    if (!f.properties.hasOwnProperty(k))
+                                    if (!f.properties.hasOwnProperty(k)) {
                                         f.properties[k] = [v];
-                                    else
+                                    }
+                                    else {
                                         f.properties[k].push(v);
+                                    }
                                     updateProperty(f, service, k, f.properties[k]);
                                 };
-                            }(this.feature, key, valp, service, this.updateProperty), this.getDelay(a, 3));
-                            console.log("Timer " + id + ": push " + key + ": " + valp);
+                            }(this.feature, key2, valp, service, this.updateProperty), this.getDelay(a, 3));
+                            console.log("Timer " + id + ": push " + key2 + ": " + valp);
                         }
                         break;
                 }
@@ -294,9 +300,9 @@ var Rule = (function () {
         if (!f.logs.hasOwnProperty(key))
             f.logs[key] = [];
         var log = {
-            "prop": key,
-            "ts": now,
-            "value": value
+            'prop': key,
+            'ts': now,
+            'value': value
         };
         f.logs[key].push(log);
         if (logs)
@@ -309,10 +315,10 @@ var Rule = (function () {
             f.logs = {};
         var logs = {};
         Rule.updateLog(f, logs, key, now, value);
-        Rule.updateLog(f, null, "updated", now, now);
+        Rule.updateLog(f, null, 'updated', now, now);
         if (isAnswer) {
-            Rule.updateLog(f, logs, "answered", now, true);
-            key = "tags";
+            Rule.updateLog(f, logs, 'answered', now, true);
+            key = 'tags';
             if (f.properties.hasOwnProperty(key)) {
                 var index = f.properties[key].indexOf('action');
                 if (index >= 0) {

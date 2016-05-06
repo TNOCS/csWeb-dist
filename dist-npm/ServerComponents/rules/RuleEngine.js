@@ -8,7 +8,7 @@ var RuleEngine = (function () {
     function RuleEngine(manager, layerId) {
         var _this = this;
         this.loadedScripts = []; // needed to restart
-        this.worldState = new WorldState();
+        this.worldState = new WorldState.WorldState();
         /** A set of rules that are active but have not yet fired. */
         this.activeRules = [];
         /** A set of rules that are inactive and may become activated. */
@@ -188,7 +188,7 @@ var RuleEngine = (function () {
         // Update the set of applicable rules
         this.activeRules = this.activeRules.filter(function (r) { return r.isActive; });
         this.inactiveRules = this.inactiveRules.filter(function (r) { return !r.isActive; });
-        console.log("Starting to evaluate " + this.activeRules.length + " rules...");
+        console.log("Starting to evaluate " + this.activeRules.length + " rules:");
         // Process all rules
         this.worldState.activeFeature = feature;
         this.activeRules.forEach(function (r) { return r.process(_this.worldState, _this.service); });

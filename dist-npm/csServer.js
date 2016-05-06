@@ -6,6 +6,10 @@ var csweb = require('./index');
 var csServerOptions = (function () {
     function csServerOptions() {
         this.port = 3002;
+        /** If true (default), use CORRS. Optionally, specify the supported methods in corsSupportedMethods. */
+        this.corrsEnabled = true;
+        /** Comma separated string with CORRS messages, e.g. POST, PATCH, GET (default), OPTIONS, DELETE, PUT */
+        this.corrsSupportedMethods = 'GET';
     }
     return csServerOptions;
 }());
@@ -31,6 +35,18 @@ var csServer = (function () {
         //increased limit size, see: http://stackoverflow.com/questions/19917401/node-js-express-request-entity-too-large
         this.server.use(bodyParser.json({ limit: '25mb' })); // support json encoded bodies
         this.server.use(bodyParser.urlencoded({ limit: '25mb', extended: true })); // support encoded bodies
+        if (this.options.corrsEnabled) {
+            // CORRS: see http://stackoverflow.com/a/25148861/319711
+            this.server.use(function (req, res, next) {
+                res.header('Access-Control-Allow-Origin', 'http://localhost');
+                res.header('Access-Control-Allow-Methods', this.options.corrsSupportedMethods);
+                res.header('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, cache-control');
+                // res.header('Access-Control-Max-Age', '3600');
+                // res.header('Access-Control-Expose-Headers', 'Location');
+                // res.header('cache-control', 'no-store');
+                next();
+            });
+        }
         this.config.add('server', 'http://localhost:' + this.options.port);
         if (this.options.swagger === true)
             this.server.use('/swagger', express.static(path.join(this.dir, 'swagger')));

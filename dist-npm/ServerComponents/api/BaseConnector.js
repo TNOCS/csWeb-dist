@@ -77,6 +77,9 @@ var BaseConnector = (function () {
     };
     BaseConnector.prototype.addResource = function (resource, meta, callback) {
     };
+    /** Get a resource file  */
+    BaseConnector.prototype.getResource = function (resourceId, meta, callback) {
+    };
     /** Get a specific key */
     BaseConnector.prototype.getKey = function (keyId, meta, callback) { };
     /** Get a list of available keys */

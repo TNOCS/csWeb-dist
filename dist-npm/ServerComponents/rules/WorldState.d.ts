@@ -4,7 +4,7 @@ import Property = ApiManager.Property;
 /**
  * A class representing the world state
  */
-declare class WorldState {
+export declare class WorldState {
     /**
      * Time the world state was created.
      */
@@ -33,4 +33,3 @@ declare class WorldState {
      */
     activeLayerId: string;
 }
-export = WorldState;

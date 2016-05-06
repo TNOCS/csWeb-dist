@@ -240,7 +240,7 @@ var ApiManager = (function (_super) {
         if (!fs.existsSync(rootPath)) {
             fs.mkdirSync(rootPath);
         }
-        this.initResources(path.join(this.rootPath, '/resourceTypes/'));
+        //this.initResources(path.join(this.rootPath, '/resourceTypes/'));
         this.loadLayerConfig(function () {
             _this.loadProjectConfig(function () {
                 callback();
@@ -378,31 +378,50 @@ var ApiManager = (function (_super) {
     /**
      * Update/add a resource and save it to file
      */
-    ApiManager.prototype.addResource = function (resource, meta, callback) {
-        if (this.resources.hasOwnProperty(resource.id)) {
-            resource._localFile = this.resources[resource.id]._localFile;
-        }
-        this.resources[resource.id] = resource;
-        var s = this.findStorage(resource);
-        this.getInterfaces(meta).forEach(function (i) {
-            i.addResource(resource, meta, function () { });
-        });
-        // store resource
-        if (s) {
-            s.addResource(resource, meta, function (r) {
-                callback({ result: ApiResult.OK, error: 'Resource added' });
-            });
+    ApiManager.prototype.addResource = function (resource, replace, meta, callback) {
+        if (this.resources.hasOwnProperty(resource.id) && !replace) {
+            callback({ result: ApiResult.ResourceAlreadyExists, error: 'Resource already exists' });
         }
         else {
-            callback({ result: ApiResult.OK });
+            // reuse existing local file location
+            if (this.resources.hasOwnProperty(resource.id)) {
+                resource._localFile = this.resources[resource.id]._localFile;
+            }
+            // create new resource definition (without actual content)
+            this.resources[resource.id] = { _localFile: resource._localFile, id: resource.id, title: resource.title, storage: resource.storage };
+            // don't actually save it, if this method is called from the storage connector it self
+            if (resource.storage != meta.source) {
+                var s = this.findStorage(resource);
+                this.getInterfaces(meta).forEach(function (i) {
+                    i.addResource(resource, meta, function () { });
+                });
+                // store resource
+                if (s) {
+                    s.addResource(resource, meta, function (r) {
+                        callback({ result: ApiResult.OK, error: 'Resource added' });
+                    });
+                }
+                else {
+                    callback({ result: ApiResult.OK });
+                }
+            }
         }
     };
-    ApiManager.prototype.getResource = function (id) {
+    ApiManager.prototype.getResource = function (id, meta, callback) {
         if (this.resources.hasOwnProperty(id)) {
-            return this.resources[id];
+            var s = this.findStorage(this.resources[id]);
+            if (s) {
+                s.getResource(id, meta, function (r) {
+                    callback(r);
+                });
+            }
+            else {
+                callback({ result: ApiResult.ResourceNotFound });
+            }
         }
-        return null;
-        //TODO implement
+        else {
+            callback({ result: ApiResult.ResourceNotFound });
+        }
     };
     ApiManager.prototype.addLayerToProject = function (projectId, groupId, layerId, meta, callback) {
         var p = this.findProject(projectId);
@@ -661,6 +680,7 @@ var ApiManager = (function (_super) {
      */
     ApiManager.prototype.findStorageForLayerId = function (layerId) {
         var layer = this.findLayer(layerId);
+        Winston.info('Find layer ' + JSON.stringify(layer));
         return this.findStorage(layer);
     };
     /**
@@ -688,13 +708,14 @@ var ApiManager = (function (_super) {
      * Returns project definition for a project
      */
     ApiManager.prototype.getProjectDefinition = function (project) {
+        var _this = this;
         var p = {
             id: project.id ? project.id : helpers.newGuid(),
             storage: project.storage ? project.storage : '',
             title: project.title ? project.title : project.id,
             isDynamic: (typeof project.isDynamic !== 'undefined') ? project.isDynamic : true,
             logo: project.logo ? project.logo : 'images/CommonSenseRound.png',
-            //groups: project.groups ? project.groups : [],
+            groups: project.groups ? _.map(project.groups, function (g) { return _this.getGroupDefinition(g); }) : [],
             url: project.url ? project.url : '/api/projects/' + project.id,
             _localFile: project._localFile
         };
@@ -704,13 +725,14 @@ var ApiManager = (function (_super) {
      * Returns project definition for a project
      */
     ApiManager.prototype.getGroupDefinition = function (group) {
+        var _this = this;
         var g = {
             id: group.id ? group.id : helpers.newGuid(),
             description: group.description ? group.description : '',
             title: group.title ? group.title : group.id,
             clusterLevel: group.clusterLevel ? group.clusterLevel : 19,
             clustering: true,
-            layers: group.layers ? group.layers : []
+            layers: group.layers ? _.map(group.layers, function (l) { return _this.getLayerDefinition(l); }) : []
         };
         return g;
     };
@@ -1014,9 +1036,14 @@ var ApiManager = (function (_super) {
         s.getFeature(layerId, featureId, meta, function (result) { return callback(result); });
     };
     ApiManager.prototype.updateFeature = function (layerId, feature, meta, callback) {
+        Winston.info("ApiManger.updateFeature: Saving feature with id " + feature.id + " to layer " + layerId + ".");
         var s = this.findStorageForLayerId(layerId);
-        if (s)
+        if (s) {
             s.updateFeature(layerId, feature, true, meta, function (result) { return callback(result); });
+        }
+        else {
+            Winston.error("ApiManger.updateFeature: Error saving feature with id " + feature.id + " to layer " + layerId + ".");
+        }
         this.getInterfaces(meta).forEach(function (i) {
             i.updateFeature(layerId, feature, false, meta, function () { });
         });

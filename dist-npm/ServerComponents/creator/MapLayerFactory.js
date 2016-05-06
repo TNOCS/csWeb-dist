@@ -3,6 +3,7 @@ var fs = require('fs');
 var proj4 = require('proj4');
 var IBagOptions = require('../database/IBagOptions');
 var Api = require('../api/ApiManager');
+var Utils = require('../helpers/Utils');
 var async = require('async');
 var path = require('path');
 /** A factory class to create new map layers based on input, e.g. from Excel */
@@ -97,6 +98,7 @@ var MapLayerFactory = (function () {
             for (var ftName in combinedjson.featureTypes) {
                 if (combinedjson.featureTypes.hasOwnProperty(ftName)) {
                     var defaultFeatureType = combinedjson.featureTypes[ftName];
+                    defaultFeatureType['contourProperty'] = '_bag_contour';
                     if (defaultFeatureType.hasOwnProperty('propertyTypeData')) {
                         var propertyTypeObjects = {};
                         var propKeys = '';
@@ -128,9 +130,7 @@ var MapLayerFactory = (function () {
     };
     MapLayerFactory.prototype.sendResourceThroughApiManager = function (data, resourceId) {
         data.id = resourceId;
-        this.apiManager.addResource(data, { source: 'maplayerfactory' }, function (result) {
-            console.log(result);
-        });
+        this.apiManager.addResource(data, true, { source: 'maplayerfactory' }, function (result) { console.log(result); });
     };
     MapLayerFactory.prototype.sendLayerThroughApiManager = function (data) {
         var _this = this;
@@ -238,7 +238,8 @@ var MapLayerFactory = (function () {
                     var f = {
                         type: 'Feature',
                         geometry: (getPointFeatures) ? JSON.parse(area.latlon) : JSON.parse(area.contour),
-                        properties: props
+                        properties: props,
+                        id: (getPointFeatures) ? 'p_' + props['pandid'] || Utils.newGuid() : 'c_' + props['pandid'] || Utils.newGuid()
                     };
                     layer.data.features.push(f);
                 });
@@ -304,7 +305,8 @@ var MapLayerFactory = (function () {
                     var f = {
                         type: 'Feature',
                         geometry: JSON.parse(area.contour),
-                        properties: props
+                        properties: props,
+                        id: props['bu_code'] || Utils.newGuid()
                     };
                     layer.data.features.push(f);
                 });
@@ -322,8 +324,8 @@ var MapLayerFactory = (function () {
         // Check propertyTypeData for time-based data
         var timestamps = this.convertTimebasedPropertyData(template);
         //Add projectID to the icon name to make it unique
-        var iconName = path.join(path.basename(ld.iconUri, path.extname(ld.iconUri)) + template.projectId + path.extname(ld.iconUri));
-        ld.iconUri = path.join('data', 'images', iconName);
+        var iconName = path.basename(ld.iconUri, path.extname(ld.iconUri)) + template.projectId + path.extname(ld.iconUri);
+        ld.iconUri = ['data', 'images', iconName].join('/');
         var featureTypeName = ld.featureType || 'Default';
         var featureTypeContent = {
             name: featureTypeName,
@@ -792,6 +794,15 @@ var MapLayerFactory = (function () {
         if (section) {
             propType['section'] = section;
         }
+        switch (name.toLowerCase()) {
+            case 'oppervlakteverblijfsobject':
+            case 'bouwjaar':
+                propType.type = 'number';
+                break;
+            case '_bag_contour':
+                propType.visibleInCallOut = false;
+                break;
+        }
         propertyTypes.push(propType);
     };
     MapLayerFactory.prototype.convertTime = function (date, time) {
@@ -837,14 +848,16 @@ var MapLayerFactory = (function () {
                 properties.forEach(function (p) {
                     if (p.hasOwnProperty(name)) {
                         if (p[name].substring(0, 3) === 'www') {
-                            p[name] = '[url=http://' + p[name] + ']' + p[name] + '[/url]';
+                            p[name] = '[url=http://' + p[name] + ']' + (pt['stringFormat'] ? pt['stringFormat'] : p[name]) + '[/url]';
                         }
                         else {
-                            p[name] = '[url=' + p[name] + ']' + p[name] + '[/url]';
+                            p[name] = '[url=' + p[name] + ']' + (pt['stringFormat'] ? pt['stringFormat'] : p[name]) + '[/url]';
                         }
                     }
                 });
+                // Prepare propType for use in csWeb-client
                 pt['type'] = 'bbcode';
+                delete pt['stringFormat'];
             }
         });
     };

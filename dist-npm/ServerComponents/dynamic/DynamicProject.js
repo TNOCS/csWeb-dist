@@ -19,13 +19,13 @@ var DynamicProject = (function () {
         // watch directory changes for new geojson files
         this.watchFolder();
         // setup http handler
-        this.service.server.get("/project/" + this.id, function (req, res) { _this.GetLayer(req, res); });
+        this.service.server.get('/project/' + this.id, function (req, res) { _this.GetLayer(req, res); });
     };
     DynamicProject.prototype.AddLayer = function (data) {
-        var groupFolder = this.folder + "\\" + data.group;
-        var resourceFolder = this.folder + "\\..\\..\\resourceTypes";
-        var geojsonfile = groupFolder + "\\" + data.reference + ".json";
-        var resourcefile = resourceFolder + "\\" + data.featureType + ".json";
+        var groupFolder = this.folder + '\\' + data.group;
+        var resourceFolder = this.folder + '\\..\\..\\resourceTypes';
+        var geojsonfile = groupFolder + '\\' + data.reference + '.json';
+        var resourcefile = resourceFolder + '\\' + data.featureType + '.json';
         if (!fs.existsSync(groupFolder))
             fs.mkdirSync(groupFolder);
         if (!fs.existsSync(resourceFolder))
@@ -77,7 +77,7 @@ var DynamicProject = (function () {
     */
     DynamicProject.prototype.openFile = function () {
         var _this = this;
-        var f = this.folder + "\\project.json";
+        var f = this.folder + '\\project.json';
         fs.readFile(f, 'utf8', function (err, data) {
             if (!err) {
                 try {
@@ -88,7 +88,7 @@ var DynamicProject = (function () {
                         _this.project.groups = [];
                 }
                 catch (e) {
-                    console.log("Error (" + f + "): " + e);
+                    console.log('Error (' + f + '): ' + e);
                 }
             }
         });
@@ -99,28 +99,28 @@ var DynamicProject = (function () {
         setTimeout(function () {
             var watcher = chokidar.watch(_this.folder, { ignoreInitial: false, ignored: /[\/\\]\./, persistent: true });
             watcher.on('all', (function (action, path) {
-                if (action == "add") {
+                if (action === 'add') {
                     _this.addLayer(path);
                 }
-                if (action == "unlink") {
+                if (action === 'unlink') {
                     _this.removeLayer(path);
                 }
-                if (action == "change") {
+                if (action === 'change') {
                     _this.addLayer(path);
                 }
             }));
         }, 1000);
-        //console.log(action + " - " + path); });
+        //console.log(action + ' - ' + path); });
     };
     DynamicProject.prototype.removeLayer = function (file) {
-        console.log("removing : " + file);
+        console.log('removing : ' + file);
         var p = path;
         var pp = file.split(p.sep);
         if (p.basename(file) === 'project.json')
             return;
         // determine group
-        var groupTitle = p.dirname(file).replace(this.folder, "").replace(p.sep, "");
-        if (groupTitle === "")
+        var groupTitle = p.dirname(file).replace(this.folder, '').replace(p.sep, '');
+        if (groupTitle === '')
             return;
         // check if group exists
         var gg = this.project.groups.filter(function (element) { return (element != null && element.title && element.title.toLowerCase() == groupTitle.toLowerCase()); });
@@ -131,7 +131,7 @@ var DynamicProject = (function () {
             layer.id = file;
             layer.groupId = g.title;
             g.layers = g.layers.filter(function (l) { return layer.id != l.id; });
-            this.service.connection.publish(this.project.id, "project", "layer-remove", [layer]);
+            this.service.connection.publish(this.project.id, 'project', 'layer-remove', [layer]);
         }
     };
     DynamicProject.prototype.addLayer = function (file) {
@@ -142,8 +142,8 @@ var DynamicProject = (function () {
         if (p.basename(file) === 'project.json')
             return;
         // determine group
-        var groupTitle = p.dirname(file).replace(this.folder, "").replace(p.sep, "");
-        if (groupTitle === "")
+        var groupTitle = p.dirname(file).replace(this.folder, '').replace(p.sep, '');
+        if (groupTitle === '')
             return;
         // obtain additional parameters (useClustering, isEnabled, etc.)
         var parameters = this.service.projectParameters[groupTitle];
@@ -176,15 +176,15 @@ var DynamicProject = (function () {
         layer.id = file;
         layer.description = parameters.description;
         layer.title = parameters.layerTitle; //pp.name.split('_').join(' ');
-        layer.type = "geojson";
+        layer.type = 'geojson';
         layer.dynamicResource = true;
-        layer.url = "data/projects/" + this.id + "/" + g.title + "/" + p.basename(file);
+        layer.url = 'data/projects/' + this.id + '/' + g.title + '/' + p.basename(file);
         layer.groupId = g.id;
         layer.enabled = parameters.enabled;
         layer.reference = parameters.reference;
         layer.defaultFeatureType = parameters.featureType;
         if (parameters.featureType)
-            layer.typeUrl = "data/resourceTypes/" + parameters.featureType + ".json";
+            layer.typeUrl = 'data/resourceTypes/' + parameters.featureType + '.json';
         var layerExists = false;
         for (var i = 0; i < g.layers.length; i++) {
             if (g.layers[i].id === layer.id) {
@@ -194,12 +194,12 @@ var DynamicProject = (function () {
         }
         if (!layerExists)
             g.layers.push(layer);
-        this.service.connection.publish(this.project.id, "project", "layer-update", { layer: [layer], group: g });
+        this.service.connection.publish(this.project.id, 'project', 'layer-update', { layer: [layer], group: g });
         // save project.json (+backup)
-        //console.log("g:" + group);
+        //console.log('g:' + group);
     };
     DynamicProject.prototype.GetLayer = function (req, res) {
-        console.log("Get Layer: " + this.folder);
+        console.log('Get Layer: ' + this.folder);
         res.send(JSON.stringify(this.project));
         //res.send("postgres layer");
     };
@@ -216,28 +216,28 @@ var DynamicProjectService = (function () {
     }
     DynamicProjectService.prototype.Start = function (server) {
         var _this = this;
-        console.log("Start project service");
+        console.log('Start project service');
         this.messageBus.subscribe('dynamic_project_layer', function (title, data) {
             if (title === 'send-layer') {
-                _this.connection.publish(data.id, "layer", "layer-update", data);
+                _this.connection.publish(data.id, 'layer', 'layer-update', data);
             }
             else {
                 // find project
                 if (_this.projects.hasOwnProperty(data.project)) {
                     var dp = _this.projects[data.project];
-                    //console.log("adding layer");
+                    //console.log('adding layer');
                     dp.AddLayer(data);
                     _this.projectParameters[data.group] = data;
                 }
             }
         });
-        var rootDir = "public\\data\\projects";
+        var rootDir = 'public\\data\\projects';
         fs.readdir(rootDir, function (error, folders) {
             if (!error) {
                 folders.forEach(function (f) {
-                    var filePath = rootDir + "\\" + f;
+                    var filePath = rootDir + '\\' + f;
                     fs.stat(filePath, function (error, stat) {
-                        if (!error && stat.isDirectory && filePath.indexOf('projects.json') == -1) {
+                        if (!error && stat.isDirectory && filePath.indexOf('projects.json') === -1) {
                             var dp = new DynamicProject(filePath, f, _this, _this.messageBus);
                             _this.projects[f] = dp;
                             dp.Start();

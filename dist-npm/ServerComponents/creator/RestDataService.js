@@ -1,6 +1,7 @@
 "use strict";
 var Winston = require('winston');
 var request = require('request');
+var moment = require('moment');
 var path = require('path');
 var fs = require('fs-extra');
 var _ = require('underscore');
@@ -24,6 +25,7 @@ var RestDataSource = (function () {
         /** Features that should be added on the client */
         this.featuresUpdates = [];
         this.restDataSourceOpts = {};
+        this.enableLogging = false;
         this.restDataSourceUrl = url;
         this.layerId = layerId;
     }
@@ -43,6 +45,12 @@ var RestDataSource = (function () {
         this.restDataSourceOpts.diffIgnoreGeometry = (options.hasOwnProperty('diffIgnoreGeometry')) ? false : options['diffIgnoreGeometry'];
         this.restDataSourceOpts.diffPropertiesBlacklist = options.diffPropertiesBlacklist || [];
         this.restDataSourceOpts.diffPropertiesWhitelist = options.diffPropertiesWhitelist || [];
+        this.restDataSourceOpts.dateProperty = options.dateProperty || '';
+        this.restDataSourceOpts.timeProperty = options.timeProperty || '';
+        this.restDataSourceOpts.dateFormat = options.dateFormat || '';
+        this.restDataSourceOpts.timeFormat = options.timeFormat || '';
+        this.restDataSourceOpts.maxFeatureAgeMinutes = options.maxFeatureAgeMinutes || Number.MAX_VALUE;
+        this.restDataSourceOpts.logFile = options.logFile || null;
         if (this.restDataSourceOpts.diffPropertiesBlacklist.length > 0 && this.restDataSourceOpts.diffPropertiesWhitelist.length > 0) {
             Winston.info('Both whitelist and blacklist properties provided, ignoring the blacklist.');
             this.restDataSourceOpts.diffPropertiesBlacklist.length = 0;
@@ -55,6 +63,18 @@ var RestDataSource = (function () {
         if (!this.isConverterValid()) {
             callback("Provided converterfile not valid. (" + path.basename(this.restDataSourceOpts.converterFile) + ")");
             return;
+        }
+        if (!!this.restDataSourceOpts.logFile) {
+            fs.createFile(this.restDataSourceOpts.logFile, function (err) {
+                if (!err) {
+                    Winston.info('Log Rest data to ' + _this.restDataSourceOpts.logFile);
+                    _this.enableLogging = true;
+                }
+                else {
+                    Winston.warn('Error creating log ' + _this.restDataSourceOpts.logFile);
+                    _this.enableLogging = false;
+                }
+            });
         }
         var urlDataParams = this.restDataSourceOpts.urlParams;
         urlDataParams['url'] = this.restDataSourceOpts.url;
@@ -77,14 +97,55 @@ var RestDataSource = (function () {
         this.converter.getData(request, dataParameters, { apiManager: this.apiManager, fs: fs }, function (result) {
             Winston.info('RestDataSource received ' + result.length || 0 + ' features');
             var featureCollection = GeoJSONHelper.GeoJSONFactory.Create(result);
+            _this.filterOldEntries(featureCollection);
             if (!_this.features || Object.keys(_this.features).length === 0) {
                 _this.initFeatures(featureCollection, Date.now());
             }
             else {
                 _this.findFeatureDiff(featureCollection, Date.now());
             }
+            if (_this.enableLogging) {
+                var toWrite = 'Time: ' + (new Date()).toISOString() + '\n';
+                toWrite += JSON.stringify(result, null, 2) + '\n';
+                fs.appendFile(_this.restDataSourceOpts.logFile, toWrite, 'utf8', function (err) {
+                    if (!err) {
+                        Winston.debug('Logged REST datasource result');
+                    }
+                    else {
+                        Winston.warn('Error while logging REST datasource result: ' + err);
+                    }
+                });
+            }
         });
         setTimeout(function () { _this.startRestPolling(dataParameters); }, this.restDataSourceOpts.pollIntervalSeconds * 1000);
+    };
+    RestDataSource.prototype.filterOldEntries = function (fcoll) {
+        if (!fcoll || !fcoll.features || fcoll.features.length === 0)
+            return;
+        console.log("Before filtering: " + fcoll.features.length);
+        var dProp = this.restDataSourceOpts.dateProperty;
+        var tProp = this.restDataSourceOpts.timeProperty;
+        var dFormat = this.restDataSourceOpts.dateFormat;
+        var tFormat = this.restDataSourceOpts.timeFormat;
+        var age = this.restDataSourceOpts.maxFeatureAgeMinutes;
+        fcoll.features = fcoll.features.filter(function (f) {
+            if (f.properties.hasOwnProperty(dProp) && f.properties.hasOwnProperty(dProp)) {
+                var time = f.properties[tProp].toString();
+                if (time.length === 5)
+                    time = '0' + time;
+                var propDate = moment(''.concat(f.properties[dProp], time), ''.concat(dFormat, tFormat));
+                var now = moment();
+                if (Math.abs(now.diff(propDate, 'minutes', true)) > age) {
+                    // console.log("Remove feature: " + propDate.toISOString());
+                    return false;
+                }
+                else {
+                    f.properties['ParsedDate'] = propDate.toDate().getTime();
+                }
+            }
+            return true;
+        });
+        console.log("After filtering: " + fcoll.features.length);
     };
     RestDataSource.prototype.initFeatures = function (fCollection, updateTime) {
         var _this = this;

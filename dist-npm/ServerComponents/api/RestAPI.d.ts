@@ -16,4 +16,5 @@ export declare class RestAPI extends BaseConnector.BaseConnector {
     constructor(server: express.Express, baseUrl?: string);
     init(layerManager: ApiManager.ApiManager, options: any, callback: Function): void;
     private getUrl(feedUrl, req, res);
+    private cloneWithoutUnderscore(v);
 }

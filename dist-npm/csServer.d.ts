@@ -4,6 +4,10 @@ export declare class csServerOptions {
     port: number;
     swagger: boolean;
     connectors: Object;
+    /** If true (default), use CORRS. Optionally, specify the supported methods in corsSupportedMethods. */
+    corrsEnabled: boolean;
+    /** Comma separated string with CORRS messages, e.g. POST, PATCH, GET (default), OPTIONS, DELETE, PUT */
+    corrsSupportedMethods: string;
 }
 export declare class csServer {
     dir: string;

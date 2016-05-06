@@ -1,7 +1,7 @@
 import express = require('express');
 import IApiServiceManager = require('../api/IApiServiceManager');
-import IStore = require("../import/IStore");
-import IProjectRepositoryService = require("./IProjectRepositoryService");
+import IStore = require('../import/IStore');
+import IProjectRepositoryService = require('./IProjectRepositoryService');
 import ConfigurationService = require('../configuration/ConfigurationService');
 export declare class ProjectRepositoryService implements IProjectRepositoryService {
     private store;

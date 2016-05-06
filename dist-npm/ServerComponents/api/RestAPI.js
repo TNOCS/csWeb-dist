@@ -18,19 +18,19 @@ var request = require('request');
 var RestAPI = (function (_super) {
     __extends(RestAPI, _super);
     function RestAPI(server, baseUrl) {
-        if (baseUrl === void 0) { baseUrl = "/api"; }
+        if (baseUrl === void 0) { baseUrl = '/api'; }
         _super.call(this);
         this.server = server;
         this.baseUrl = baseUrl;
         this.isInterface = true;
-        this.resourceUrl = baseUrl + "/resources/";
-        this.layersUrl = baseUrl + "/layers/";
-        this.searchUrl = baseUrl + "/search/";
-        this.filesUrl = baseUrl + "/files/";
-        this.keysUrl = baseUrl + "/keys/";
-        this.projectsUrl = baseUrl + "/projects/";
-        this.proxyUrl = baseUrl + "/proxy";
-        this.tilesUrl = baseUrl + "/tiles/";
+        this.resourceUrl = baseUrl + '/resources/';
+        this.layersUrl = baseUrl + '/layers/';
+        this.searchUrl = baseUrl + '/search/';
+        this.filesUrl = baseUrl + '/files/';
+        this.keysUrl = baseUrl + '/keys/';
+        this.projectsUrl = baseUrl + '/projects/';
+        this.proxyUrl = baseUrl + '/proxy';
+        this.tilesUrl = baseUrl + '/tiles/';
     }
     RestAPI.prototype.init = function (layerManager, options, callback) {
         var _this = this;
@@ -40,19 +40,35 @@ var RestAPI = (function (_super) {
         this.server.use(cors());
         // get all resource types
         this.server.get(this.resourceUrl, function (req, res) {
-            res.send(JSON.stringify(_this.manager.resources));
+            res.send(JSON.stringify(_this.cloneWithoutUnderscore(_this.manager.resources)));
         });
-        // add a new resource type file
+        /** add a new resource type file, returns an error if it already exists */
         this.server.post(this.resourceUrl, function (req, res) {
             var resource = new ResourceFile();
             resource = req.body;
-            _this.manager.addResource(resource, { source: 'rest' }, function (result) {
+            _this.manager.addResource(resource, false, { source: 'rest' }, function (result) {
+                res.sendStatus(result.result);
+            });
+        });
+        /** update/add a resource type file, overwrites if it already exists */
+        this.server.put(this.resourceUrl, function (req, res) {
+            var resource = new ResourceFile();
+            resource = req.body;
+            _this.manager.addResource(resource, true, { source: 'rest' }, function (result) {
                 res.sendStatus(result.result);
             });
         });
         // get an existing resource type file
-        this.server.get(this.resourceUrl + ":resourceId", function (req, res) {
-            res.send(JSON.stringify(_this.manager.getResource(req.params.resourceId.toLowerCase())));
+        this.server.get(this.resourceUrl + ':resourceId', function (req, res) {
+            _this.manager.getResource(req.params.resourceId, { source: 'rest' }, function (result) {
+                if (result.result === ApiResult.OK) {
+                    res.send(_this.cloneWithoutUnderscore(result.resource));
+                }
+                else {
+                    res.sendStatus(result.result);
+                }
+            });
+            //res.send(JSON.stringify(this.manager.getResource(req.params.resourceId.toLowerCase())));
         });
         // get all available public layers
         this.server.get(this.layersUrl, function (req, res) {
@@ -101,13 +117,13 @@ var RestAPI = (function (_super) {
             });
         });
         //adds a layer to a project
-        this.server.post(this.projectsUrl + ":projectId/group/:groupId/layer/:layerId", function (req, res) {
+        this.server.post(this.projectsUrl + ':projectId/group/:groupId/layer/:layerId', function (req, res) {
             _this.manager.addLayerToProject(req.params.projectId, req.params.groupId, req.params.layerId, { source: 'rest' }, function (result) {
                 res.sendStatus(result.result);
             });
         });
         //removes a layer from a project
-        this.server.delete(this.projectsUrl + ":projectId/group/:groupId/layer/:layerId", function (req, res) {
+        this.server.delete(this.projectsUrl + ':projectId/group/:groupId/layer/:layerId', function (req, res) {
             _this.manager.removeLayerFromProject(req.params.projectId, req.params.groupId, req.params.layerId, { source: 'rest' }, function (result) {
                 res.sendStatus(result.result);
             });
@@ -167,6 +183,19 @@ var RestAPI = (function (_super) {
                 res.sendStatus(result.result);
             });
         });
+        /** creates a new layer, returns an error if it already exists */
+        this.server.post(this.layersUrl + ':layerId', function (req, res) {
+            req.layerId = req.params.layerId;
+            if (_this.manager.layers.hasOwnProperty(req.layerId)) {
+                res.sendStatus(ApiResult.LayerAlreadyExists);
+            }
+            else {
+                _this.manager.addUpdateLayer(req.body, { source: 'rest' }, function (result) {
+                    //todo: check error
+                    res.sendStatus(result.result);
+                });
+            }
+        });
         // gets the entire layer, which is stored as a single collection
         // TODO: what to do when this gets really big? Offer a promise?
         this.server.delete(this.layersUrl + ':layerId', function (req, res) {
@@ -177,14 +206,14 @@ var RestAPI = (function (_super) {
         });
         //------ feature API paths, in CRUD order
         //adds a feature
-        this.server.post(this.layersUrl + ":layerId/feature", function (req, res) {
+        this.server.post(this.layersUrl + ':layerId/feature', function (req, res) {
             _this.manager.addFeature(req.params.layerId, req.body, { source: 'rest' }, function (result) {
                 //todo: check error
                 res.send(result);
             });
         });
         //returns a feature
-        this.server.get(this.layersUrl + ":layerId/feature/:featureId", function (req, res) {
+        this.server.get(this.layersUrl + ':layerId/feature/:featureId', function (req, res) {
             _this.manager.getFeature(req.params.layerId, req.params.featureId, { source: 'rest' }, function (result) {
                 //todo: check error
                 res.sendStatus(result.result);
@@ -192,7 +221,7 @@ var RestAPI = (function (_super) {
         });
         // updates a feature corresponding to a query on ID (should be one)
         // Takes a feature as input in the body of the PUT request
-        this.server.put(this.layersUrl + ":layerId/feature/:featureId", function (req, res) {
+        this.server.put(this.layersUrl + ':layerId/feature/:featureId', function (req, res) {
             var feature = new Feature();
             feature = req.body;
             _this.manager.updateFeature(req.params.layerId, feature, { source: 'rest' }, function (result) {
@@ -203,13 +232,13 @@ var RestAPI = (function (_super) {
         // for some reason (TS?) express doesn't work with del as http verb
         // unlike the JS version, which simply uses del as a keyword.
         // deletes a feature
-        this.server.delete(this.layersUrl + ":layerId/feature/:featureId", function (req, res) {
+        this.server.delete(this.layersUrl + ':layerId/feature/:featureId', function (req, res) {
             _this.manager.deleteFeature(req.params.layerId, req.params.featureId, { source: 'rest' }, function (result) {
                 //todo: check error
                 res.send(result);
             });
         });
-        this.server.get(this.searchUrl + ":keyword", function (req, res) {
+        this.server.get(this.searchUrl + ':keyword', function (req, res) {
             _this.manager.searchLayers(req.params.keyword, [], { source: 'rest' }, function (result) {
                 //todo: check error
                 res.send(result);
@@ -217,29 +246,29 @@ var RestAPI = (function (_super) {
         });
         // LOGS
         // addLog
-        this.server.put(this.layersUrl + ":layerId/:featureId/log", function (req, res) {
+        this.server.put(this.layersUrl + ':layerId/:featureId/log', function (req, res) {
             _this.manager.addLog(req.params.layerId, req.params.featureId, req.body.prop, req.body, { source: 'rest' }, function (result) {
                 //todo: check error
-                console.log("received log");
+                console.log('received log');
                 res.send(result);
             });
         });
         //getLog (path doesnt make sense)
-        this.server.get(this.layersUrl + ":layerId/:featureId/log", function (req, res) {
+        this.server.get(this.layersUrl + ':layerId/:featureId/log', function (req, res) {
             _this.manager.getLog(req.params.layerId, req.params.featureId, { source: 'rest' }, function (result) {
                 //todo: check error
                 res.send(result);
             });
         });
         //deleteLog
-        this.server.delete(this.layersUrl + ":layerId/:featureId/log", function (req, res) {
+        this.server.delete(this.layersUrl + ':layerId/:featureId/log', function (req, res) {
             _this.manager.deleteLog(req.params.layerId, req.params.featureId, req.body.ts, req.body.prop, { source: 'rest' }, function (result) {
                 //todo: check error
                 res.send(result);
             });
         });
         // updates all features corresponding to query on ID (should be one)
-        this.server.put(this.layersUrl + ":layerId/:featureId/logs", function (req, res) {
+        this.server.put(this.layersUrl + ':layerId/:featureId/logs', function (req, res) {
             var logs;
             logs = req.body;
             _this.manager.updateLogs(req.params.layerId, req.params.featureId, logs, { source: 'rest' }, function (result) {
@@ -251,7 +280,7 @@ var RestAPI = (function (_super) {
         // We chose to work with GET and params here for ease of accessibility
         // (majority of web APIs implement similar constructions)
         // gets all points in a rectangular shape.
-        this.server.get(this.layersUrl + ":layerId/bbox", function (req, res) {
+        this.server.get(this.layersUrl + ':layerId/bbox', function (req, res) {
             var southWest = [Number(req.query.swlng), Number(req.query.swlat)];
             var northEast = [Number(req.query.nelng), Number(req.query.nelat)];
             _this.manager.getBBox(req.params.layerId, southWest, northEast, { source: 'rest' }, function (result) {
@@ -260,9 +289,9 @@ var RestAPI = (function (_super) {
             });
         });
         // fetches all points in a spherical method
-        this.server.get(this.layersUrl + ":layerId/getsphere", function (req, res) {
+        this.server.get(this.layersUrl + ':layerId/getsphere', function (req, res) {
             _this.manager.getSphere(req.params.layerId, Number(req.query.maxDistance), Number(req.query.lng), Number(req.query.lat), { source: 'rest' }, function (result) {
-                // this.server.post(this.sensorsUrl + ":sensorId", (req: express.Request, res: express.Response) => {
+                // this.server.post(this.sensorsUrl + ':sensorId', (req: express.Request, res: express.Response) => {
                 //     this.manager.addSensor(req.body, (result: CallbackResult) => { res.send(result) });
                 // });
                 //todo: check error
@@ -270,7 +299,7 @@ var RestAPI = (function (_super) {
             });
         });
         //works with post - so we can receive a GeoJSON as input
-        this.server.post(this.layersUrl + ":layerId/getwithinpolygon", function (req, res) {
+        this.server.post(this.layersUrl + ':layerId/getwithinpolygon', function (req, res) {
             var feature = req.body;
             // this.server.get(this.sensorsUrl, (req: express.Request, res: express.Response) => {
             //     this.manager.getSensors((result: CallbackResult) => { res.send(result) });
@@ -281,7 +310,7 @@ var RestAPI = (function (_super) {
             });
         });
         //update a key
-        this.server.post(this.keysUrl + ":keyId", function (req, res) {
+        this.server.post(this.keysUrl + ':keyId', function (req, res) {
             _this.manager.updateKey(req.params.keyId, req.body, { source: 'rest' }, function (result) {
                 //todo: check error
                 res.send(result);
@@ -295,18 +324,18 @@ var RestAPI = (function (_super) {
             });
         });
         //get a key
-        this.server.get(this.keysUrl + ":keyId", function (req, res) {
+        this.server.get(this.keysUrl + ':keyId', function (req, res) {
             _this.manager.getKey(req.params.keyId, { source: 'rest' }, function (result) {
                 res.send(result.key);
             });
         });
         //add file
-        this.server.post(this.filesUrl + ":folderId/:fileName", function (req, res) {
+        this.server.post(this.filesUrl + ':folderId/:fileName', function (req, res) {
             if (!req.body.hasOwnProperty('base64')) {
                 Winston.error('Error receiving base64 encoded image: post the data as JSON, with the base64 property set to the base64 encoded string!');
                 return;
             }
-            _this.manager.addFile(req.body["base64"], req.params.folderId, req.params.fileName, { source: 'rest' }, function (result) {
+            _this.manager.addFile(req.body['base64'], req.params.folderId, req.params.fileName, { source: 'rest' }, function (result) {
                 //todo: check error
                 res.send(result);
             });
@@ -333,7 +362,7 @@ var RestAPI = (function (_super) {
             return str;
         };
         request(feedUrl, options, function (error, response, xml) {
-            if (!error && response.statusCode == 200) {
+            if (!error && response.statusCode === 200) {
                 res.send(xml);
             }
             else {
@@ -341,6 +370,26 @@ var RestAPI = (function (_super) {
                 res.end();
             }
         });
+    };
+    RestAPI.prototype.cloneWithoutUnderscore = function (v) {
+        var _this = this;
+        if (typeof v !== 'object')
+            return v;
+        if (v instanceof Array) {
+            var a = [];
+            v.forEach(function (i) {
+                a.push(_this.cloneWithoutUnderscore(i));
+            });
+            return a;
+        }
+        else {
+            var c = {};
+            for (var k in v) {
+                if (k[0] !== '_')
+                    c[k] = this.cloneWithoutUnderscore(v[k]);
+            }
+            return c;
+        }
     };
     return RestAPI;
 }(BaseConnector.BaseConnector));

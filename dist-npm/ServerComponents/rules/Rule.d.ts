@@ -35,7 +35,7 @@ export interface IRule {
     /** Set of actions that will be executed when */
     actions?: [[string | number | boolean]];
     /** Evaluate the rule and execute all actions, is applicable. */
-    process?: (worldState: WorldState, service: RuleEngine.IRuleEngineService) => void;
+    process?: (worldState: WorldState.WorldState, service: RuleEngine.IRuleEngineService) => void;
 }
 /**
  * Simple rule, consisting of a condition and an action.
@@ -65,7 +65,7 @@ export declare class Rule implements IRule {
     /** Create a new rule. */
     constructor(rule: IRule, activationTime?: Date);
     /** Evaluate the rule and execute all actions, is applicable. */
-    process(worldState: WorldState, service: RuleEngine.IRuleEngineService): void;
+    process(worldState: WorldState.WorldState, service: RuleEngine.IRuleEngineService): void;
     /** Evaluate the conditions and check whether all of them are true (AND). */
     private evaluateConditions(worldState);
     private showWarning(condition);

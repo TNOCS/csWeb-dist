@@ -42,6 +42,7 @@ export declare class CallbackResult {
     groups: string[];
     feature: Feature;
     features: Feature[];
+    resource: ResourceFile;
     keys: {
         [keyId: string]: Key;
     };
@@ -103,6 +104,8 @@ export interface IConnector {
     allGroups(projectId: string, meta: ApiMeta, callback: Function): any;
     /** Add a resource type file to the store. */
     addResource(reource: ResourceFile, meta: ApiMeta, callback: Function): any;
+    /** Get a resource file  */
+    getResource(resourceId: string, meta: ApiMeta, callback: Function): any;
     /** Add a file to the store, e.g. an icon or other media. */
     addFile(base64: string, folder: string, file: string, meta: ApiMeta, callback: Function): any;
     /** Get a specific key */
@@ -283,10 +286,11 @@ export declare class ResourceFile implements StorageObject {
     featureTypes: {
         [key: string]: FeatureType;
     };
-    propertyTypes: {
+    propertyTypeData: {
         [key: string]: PropertyType;
     };
     id: string;
+    title: string;
     storage: string;
 }
 /**
@@ -383,8 +387,8 @@ export declare class ApiManager extends events.EventEmitter {
     /**
      * Update/add a resource and save it to file
      */
-    addResource(resource: ResourceFile, meta: ApiMeta, callback: Function): void;
-    getResource(id: string): ResourceFile;
+    addResource(resource: ResourceFile, replace: boolean, meta: ApiMeta, callback: Function): void;
+    getResource(id: string, meta: ApiMeta, callback: Function): void;
     addLayerToProject(projectId: string, groupId: string, layerId: string, meta: ApiMeta, callback: Function): void;
     removeLayerFromProject(projectId: string, groupId: string, layerId: string, meta: ApiMeta, callback: Function): void;
     allGroups(projectId: string, meta: ApiMeta, callback: Function): void;

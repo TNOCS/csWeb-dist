@@ -27,6 +27,8 @@ export declare class FileStorage extends BaseConnector.BaseConnector {
         [key: string]: ResourceFile;
     };
     layersPath: string;
+    backupPath: string;
+    layersBackupPath: string;
     keysPath: string;
     blobPath: string;
     iconPath: string;
@@ -46,6 +48,7 @@ export declare class FileStorage extends BaseConnector.BaseConnector {
     saveLayerDelay: (layer: ApiManager.Layer) => void;
     private getProjectFilename(projectId);
     private getLayerFilename(layerId);
+    private getLayerBackupFilename(layerId);
     private getKeyFilename(keyId);
     private getResourceFilename(re);
     private saveKeyFile(key);
@@ -90,6 +93,8 @@ export declare class FileStorage extends BaseConnector.BaseConnector {
     /** Add a file: images go to the iconPath folder, others to the blob folder */
     addFile(base64: string, folder: string, file: string, meta: ApiMeta, callback: Function): void;
     addResource(res: ResourceFile, meta: ApiMeta, callback: Function): void;
+    /** Get a resource file  */
+    getResource(resourceId: string, meta: ApiMeta, callback: Function): void;
     addKey(key: Key, meta: ApiMeta, callback: Function): void;
     getKey(keyId: string, meta: ApiMeta, callback: Function): void;
     updateKey(keyId: string, value: Object, meta: ApiMeta, callback: Function): void;

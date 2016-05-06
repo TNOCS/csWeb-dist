@@ -44,8 +44,8 @@ var ProjectRepositoryService = (function () {
          */
         server.post(this.resourceTypeUrl + '/:id', function (req, res) {
             var id = req.params.id;
-            if (!_this.endsWith(id, ".json"))
-                id += ".json";
+            if (!_this.endsWith(id, '.json'))
+                id += '.json';
             var resourceType = req.body;
             console.log(resourceType);
             res.send(_this.create(id, resourceType));
