@@ -28,7 +28,7 @@ var csServer = (function () {
         this.httpServer = require('http').Server(this.server);
         this.cm = new csweb.ConnectionManager(this.httpServer);
         this.messageBus = new csweb.MessageBusService();
-        this.config = new csweb.ConfigurationService('./configuration.json');
+        this.config = new csweb.ConfigurationService(path.join(this.dir, 'configuration.json'));
         // all environments 
         this.server.set('port', this.options.port);
         this.server.use(favicon(this.dir + '/public/favicon.ico'));
