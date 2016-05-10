@@ -9,21 +9,25 @@ var path = require('path');
 /** A factory class to create new map layers based on input, e.g. from Excel */
 var MapLayerFactory = (function () {
     // constructor(private bag: LocalBag, private messageBus: MessageBus.MessageBusService) {
-    function MapLayerFactory(bag, messageBus, apiManager) {
+    function MapLayerFactory(bag, messageBus, apiManager, workingDir) {
+        if (workingDir === void 0) { workingDir = ''; }
         this.bag = bag;
         this.messageBus = messageBus;
+        this.workingDir = workingDir;
         if (bag != null) {
             bag.init();
         }
         var fileList = [];
-        fs.readdir('public/data/templates', function (err, files) {
+        var templateFolder = path.join(workingDir, 'public', 'data', 'templates');
+        fs.readdir(templateFolder, function (err, files) {
             if (err) {
-                console.log('Error while looking for templates');
+                console.log('Error while looking for templates in ' + templateFolder);
             }
             else {
                 files.forEach(function (f) {
-                    fileList[f.replace(/\.[^/.]+$/, '')] = ('public/data/templates/' + f); // Filter extension from key and store in dictionary
+                    fileList[f.replace(/\.[^/.]+$/, '')] = path.join(templateFolder, f); // Filter extension from key and store in dictionary
                 });
+                console.log("Loaded " + files.length + " templates from " + templateFolder + ".");
             }
         });
         this.templateFiles = fileList;

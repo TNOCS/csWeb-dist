@@ -77,10 +77,11 @@ export interface IBagSearchRequest {
 export declare class MapLayerFactory {
     private bag;
     private messageBus;
+    private workingDir;
     templateFiles: IProperty[];
     featuresNotFound: any;
     apiManager: Api.ApiManager;
-    constructor(bag: BagDatabase.BagDatabase, messageBus: MessageBus.MessageBusService, apiManager: Api.ApiManager);
+    constructor(bag: BagDatabase.BagDatabase, messageBus: MessageBus.MessageBusService, apiManager: Api.ApiManager, workingDir?: string);
     process(req: express.Request, res: express.Response): void;
     private splitJson(data);
     sendIconThroughApiManager(b64: string, path: string): void;
