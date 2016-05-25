@@ -358,6 +358,7 @@ var csComp;
             Feature.serialize = function (f) {
                 var res = {};
                 res.id = f.id;
+                res.layerId = f.layerId;
                 res.type = f.type;
                 res.geometry = f.geometry;
                 res.properties = f.properties;
@@ -2120,10 +2121,16 @@ var csComp;
                     return { type: 'Point', coordinates: [0, 0] };
                 if (arr[0] instanceof Array) {
                     if (arr[0][0] instanceof Array) {
-                        arr = arr[0][0];
-                    }
-                    else {
-                        arr = arr[0];
+                        if (arr[0][0][0] instanceof Array) {
+                            var all = [];
+                            arr.forEach(function (part) {
+                                all = all.concat(part[0]);
+                            });
+                            arr = all;
+                        }
+                        else {
+                            arr = arr[0];
+                        }
                     }
                 }
                 // http://stackoverflow.com/questions/22796520/finding-the-center-of-leaflet-polygon
@@ -2583,6 +2590,52 @@ var csComp;
             }
         }
         Helpers.saveData = saveData;
+        /**
+         * Export image to the file system.
+         */
+        function saveImage(data, filename, fileType) {
+            fileType = fileType.replace('.', '');
+            filename = filename.replace('.' + fileType, '') + '.' + fileType; // if the filename already contains a type, first remove it before adding it.
+            if (navigator.msSaveBlob) {
+                // IE 10+
+                var link = document.createElement('a');
+                link.addEventListener('click', function (event) {
+                    var byteCharacters = atob(data.split(',').pop());
+                    var byteArrays = [];
+                    var sliceSize = 512;
+                    for (var offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+                        var slice = byteCharacters.slice(offset, offset + sliceSize);
+                        var byteNumbers = new Array(slice.length);
+                        for (var i = 0; i < slice.length; i++) {
+                            byteNumbers[i] = slice.charCodeAt(i);
+                        }
+                        var byteArray = new Uint8Array(byteNumbers);
+                        byteArrays.push(byteArray);
+                    }
+                    var blob = new Blob(byteArrays, { 'type': 'image/' + fileType + ';' });
+                    navigator.msSaveBlob(blob, filename);
+                }, false);
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+            else if (!csComp.Helpers.supportsDataUri()) {
+                // Older versions of IE: show the data in a new window
+                var popup = window.open('', fileType, '');
+                popup.document.body.innerHTML = '<pre>' + data + '</pre>';
+            }
+            else {
+                // Support for browsers that support the data uri.
+                var a = document.createElement('a');
+                document.body.appendChild(a);
+                a.href = encodeURI(data);
+                a.target = '_blank';
+                a.download = filename;
+                a.click();
+                document.body.removeChild(a);
+            }
+        }
+        Helpers.saveImage = saveImage;
         /** Returns the next character. */
         function nextChar(c) {
             return String.fromCharCode(c.charCodeAt(0) + 1);
@@ -2845,6 +2898,9 @@ var csComp;
                 case 'number':
                     if (!$.isNumeric(text)) {
                         displayValue = text;
+                    }
+                    else if (isNaN(text)) {
+                        displayValue = '';
                     }
                     else if (!pt.stringFormat) {
                         displayValue = text.toString();
@@ -4422,8 +4478,11 @@ var Translations;
         English.locale = {
             CANCEL_BTN: 'Cancel',
             OK_BTN: 'OK',
+            CLOSE: 'Close',
             FROM: 'from',
             TO: 'to',
+            ZOOM_IN: 'Zoom in',
+            ZOOM_OUT: 'Zoom out',
             ZOOM_LEVEL_LOW: 'Zoom level too low',
             ZOOM_IN_FOR_CONTOURS: 'Zoom in to show contours',
             NAVIGATE: {
@@ -4617,209 +4676,17 @@ var Translations;
 //# sourceMappingURL=locale-en.js.map
 var Translations;
 (function (Translations) {
-    var French = (function () {
-        function French() {
-        }
-        French.locale = {
-            "CANCEL_BTN": "Annuler",
-            "OK_BTN": "D'accord",
-            "FROM": "de",
-            "TO": "à",
-            "NAVIGATE": "Début",
-            "CREATE_SCATTER": "Créer scatter avec",
-            "EXPAND_ALL": "Développer tout",
-            "COLLAPSE_ALL": "Réduire tout",
-            "SELECT_ALL": "Sélectionner tout",
-            "DESELECT_ALL": "Tout déselectionner",
-            "CHOOSE_DROPDOWN": "Choisir...",
-            "ENABLE_LOCATION_FILTER": "Activez le filtre de localisation",
-            "DISABLE_LOCATION_FILTER": "filtre de localisation Désactiver",
-            "SELECT_A_FEATURE": "Sélectionnez une fonction",
-            "SELECT_FEATURE_FOR_WIDGET": "S'il vous plaît sélectionner une fonction pour afficher le widget.",
-            "SELECT_FEATURE_FOR_STYLE": "S'il vous plaît sélectionner une fonction à avant de définir le style.",
-            "SELECT_LAYER_GROUP": "Sélectionner les couches",
-            "SELECT_CATEGORY": "Choisir une catégorie",
-            "SELECT_PROPERTIES": "Sélectionnez Propriétés",
-            "NO_RELATIONS_FOUND": "Aucune relation ne peuvent être affichés pour la fonction sélectionnée. ",
-            "BASESTYLES": "Couches de base",
-            "MAP": "Cartes",
-            "MAP_LABEL": "Carte",
-            "TABLE_LABEL": "Table",
-            "LAYERS": "Couches",
-            "DIRECTORY": "couches disponibles",
-            "CREATELAYER": "Créer un nouveau calque",
-            "ADDFEATURES": "Ajouter des éléments",
-            "ADDTYPE": "Ajouter nouveau type",
-            "DONE": "terminé",
-            "FILTERS": "Filtres",
-            "FILTER_INFO": "À l'heure actuelle, aucun filtre ont été sélectionnés. ",
-            "STYLES": "modes",
-            "STYLE_INFO": "À l'heure actuelle, aucun style a été sélectionné. ",
-            "FEATURES": "Caractéristiques",
-            "LEGEND": "Légende",
-            "SEARCH": "Chercher",
-            "HIDE_PANEL": "Cachez ce panneau",
-            "EDIT_INDICATORS": "Modifier les indicateurs",
-            "RELATED_FEATURES": "Afficher les caractéristiques liées",
-            "FEATURE_INFO": "Affiche des informations sur la fonction sélectionnée",
-            "MAP_FEATURES": "caractéristiques de la carte",
-            "NEARBY_FEATURES": "caractéristiques à proximité",
-            "TOGGLE_MENU": "Menu Basculer la visibilité",
-            "DASHBOARD_SELECTION": "sélection de tableau de bord",
-            "SETTINGS": "Paramètres",
-            "SPEEDS_GOOGLEMAPS": "couleurs de vitesse Google Maps",
-            "VERWARMINGSSYSTEEM": "Système de chauffage",
-            "PERCENTAGES_V1": "pourcentages v1",
-            "ORANGE_RED": "rouge-orange",
-            "WHITE_RED": "blanc rouge",
-            "RED_WHITE": "rouge blanc",
-            "RED_WHITE_BLUE": "rouge - blanc - bleu",
-            "GREEN_RED": "vert rouge",
-            "RED_GREEN": "rouge vert",
-            "BLUE_RED": "bleu rouge",
-            "RED_BLUE": "rouge Bleu",
-            "WHITE_BLUE": "blanc bleu",
-            "BLUE_WHITE": "bleu blanc",
-            "WHITE_GREEN": "blanc - vert",
-            "GREEN_WHITE": "vert - blanc",
-            "WHITE_ORANGE": "blanc - orange,",
-            "ORANGE_WHITE": "d'orange - blanc",
-            "SAVE": "enregistrer",
-            "CONFIG": "config",
-            "EDIT": "modifier",
-            "APPLY": "appliquer",
-            "REMOVE": "retirer",
-            "STATS": {
-                "COUNT_TOOLTIP": "Décompte des éléments sélectionnés",
-                "COUNT": "#",
-                "MAX_TOOLTIP": "Maximum d'éléments sélectionnés",
-                "MEAN_TOOLTIP": "Moyenne des éléments sélectionnés",
-                "SUM_TOOLTIP": "Somme des éléments sélectionnés",
-                "MIN_TOOLTIP": "Minimum d'éléments sélectionnés",
-                "MAX": "max",
-                "MIN": "min",
-                "SUM": "Î £",
-                "MEAN": ", mu"
-            },
-            "UTILS": {
-                "STATS": "Voir les statistiques de l'immobilier",
-                "STYLE": "Utilisez cette propriété que le style",
-                "CONFIG": "Configurer la propriété",
-                "FILTER": "Utilisez cette propriété comme filtre",
-                "CHART": "Voir la propriété dans le temps"
-            },
-            "EXPERTMODE": {
-                "ADMIN": "Administrateur",
-                "INTERMEDIATE": "Intermédiaire",
-                "BEGINNER": "Novice",
-                "EXPERT": "Expert",
-                "EXPLANATION": "Sélectionnez votre expertise afin de débloquer plus de fonctionnalités."
-            },
-            "LAYER_SERVICE": {
-                "RELOAD_PROJECT_MSG": "Après le passage de la langue, nous avons besoin de recharger toutes les données cartographiques. ",
-                "RELOAD_PROJECT_TITLE": "Les données sont rechargées"
-            },
-            "HEATMAP": {
-                "DISTANCE_MAX_VALUE": "[La distance Idéal]",
-                "TOTAL_RESULT": "résultat combiné",
-                "ADD_HEATMAP": "Ajouter un nouveau heatmap.",
-                "MIN_MAX_ZOOM": "Min max. ",
-                "RESOLUTION": "Résolution",
-                "INFO_EXPERT": "À l'heure actuelle, pas de couches de carte sont chargées qui contiennent un heatmap. ",
-                "TITLE_TAG": "Titre",
-                "DELETE_HEATMAP": "Supprimer le heatmap.",
-                "NAME": "heatmaps",
-                "SCALE_MAX_TITLE": "[Max. ",
-                "EXPORT_HEATMAP": "Export de la heatmap.",
-                "SHOW_FEATURE_MSG": "Sélectionnez une fonction sur la carte pour voir le heatmap.",
-                "EDITOR_TITLE": "Heatmap Editor",
-                "INFO": "À l'heure actuelle, pas de couches de carte sont chargées qui contiennent un heatmap. ",
-                "LINEAR_ASC_DESC": "augmenter linéairement, puis diminution de la fonction.",
-                "DESCRIPTION": "<H4> Heatmap </ h4> <p style = `text-align: left; margin-left: 5px;`> Heatmap met en évidence les zones sur la carte qui remplissent plusieurs critères sélectionnés.",
-                "INTENSITY_SCALE": "échelle d'intensité",
-                "DELETE_MSG": "Supprimer `{0}`",
-                "MAIN_FEATURE": "Sélectionnez la fonction principale",
-                "PROPERTIES": "Sélectionnez les propriétés",
-                "EDIT_HEATMAP": "Modifiez le heatmap.",
-                "DELETE_MSG2": "Êtes-vous sûr?",
-                "SCALE_MIN_TITLE": "[Min. ",
-                "LOST_INTEREST_VALUE": "[Distance de l'intérêt perdu]",
-                "TITLE": "Titre... *",
-                "AT_LOCATION_VALUE": "[Poids à l'emplacement]"
-            },
-            "MCA": {
-                "SIGMOID": "Tangentiellement fonction croissante entre min et max",
-                "EDIT_MCA": "Modifiez le MCA.",
-                "TOTAL_RESULT": "résultat combiné",
-                "INCLUDE_RANK": "Afficher le rang?",
-                "GAUSSIAN": "Distribution normale fonction entre min et max croissante.",
-                "LINEAR": "fonction entre min et max augmenter linéairement.",
-                "MAIN_FEATURE": "Sélectionnez la fonction principale",
-                "PROPERTIES": "Sélectionnez les propriétés",
-                "CATEGORY_MSG": "[Catégorie...]",
-                "INFO_EXPERT": "À l'heure actuelle, pas de couches de carte sont chargées qui contiennent une analyse multi-critères. ",
-                "RANK_TITLE": "[Rank titre ...]",
-                "HAS_RANK": "Inclure rang?",
-                "DELETE_MSG": "Supprimer `{0}`",
-                "SHOW_FEATURE_MSG": "Sélectionnez une fonction sur la carte pour voir les effets de l'analyse multi-critères (MCA).",
-                "MIN_VALUE": "[Minimum (ï¼-2Ïƒ)]",
-                "HAS_CATEGORY": "A catégorie?",
-                "EDITOR_TITLE": "MCA Editor",
-                "SCALE_MIN_TITLE": "[Min. ",
-                "DESCRIPTION": "<H4> analyse multicritères </ h4> <p style = `text-align: left; margin-left: 5px;`> MCA, est une méthode qui combine plusieurs propriétés d'une entité sur la carte dans une nouvelle propriété. ",
-                "TOGGLE_SPARKLINE": "Afficher ou masquer les graphiques à barres et la fonction de notation.",
-                "MAX_VALUE": "[Maximum (ï¼ 2Ïƒ)]",
-                "TITLE": "Titre... *",
-                "MIN_CUTOFF_VALUE": "[Ignorer quand dessous de cette valeur]",
-                "SCALE_MAX_TITLE": "[Max. ",
-                "INFO": "À l'heure actuelle, pas de couches de carte sont chargées qui contiennent une analyse multi-critères. ",
-                "DELETE_MCA": "Supprimer le MCA.",
-                "MAX_CUTOFF_VALUE": "[Ignorer quand dessus de cette valeur]",
-                "DELETE_MSG2": "Êtes-vous sûr?",
-                "ADD_MCA": "Ajouter un nouveau MCA.",
-                "NAME": "Analyse multi-critères (MCA)",
-                "SET_STYLE": "Set de style"
-            },
-            "PROJECTSETTINGS": {
-                "DESCRIPTION": "Paramètres",
-                "TITLE": "Paramètres du projet"
-            },
-            "CHOOSE_CATEGORY": "Choisir la catégorie ...",
-            "SHOW5": "Afficher 5 articles",
-            "SHOW10": "Afficher 10 articles",
-            "SHOW15": "Afficher 15 articles",
-            "SHOW20": "Afficher 20 articles",
-            "SHOW25": "Afficher 25 articles",
-            "SHOW30": "Afficher les 30 articles",
-            "SHOW35": "Afficher 35 articles",
-            "SHOW40": "Afficher 40 articles",
-            "RISK_DIAGRAM_FOR": "Risque-diagramme pour une",
-            "SAVE_FEATURE_DEPENDENCIES": "Enregistrer les dépendances à la fonction sélectionnée uniquement",
-            "SAVE_FEATURETYPE_DEPENDENCIES": "Enregistrer les dépendances à toutes les fonctionnalités de ce type",
-            "SAVE_MARVEL": "sauvegarder",
-            "SAVE_EVERY_MARVEL": "Enregistrer tous les",
-            "MARVEL_WATER_LEVEL": "Le niveau d'eau [m]",
-            "MARVEL_UPS_DURATION": "durée UPS [minutes]",
-            "MARVEL_FEATURE_DEP": "Dépend de",
-            "STATE": "Etat",
-            "EVENT_INFO": "Afficher une liste des événements",
-            "CLEAR_EVENTS": "Effacer le journal des événements"
-        };
-        return French;
-    }());
-    Translations.French = French;
-})(Translations || (Translations = {}));
-//# sourceMappingURL=locale-fr.js.map
-var Translations;
-(function (Translations) {
     var Dutch = (function () {
         function Dutch() {
         }
         Dutch.locale = {
             CANCEL_BTN: 'Annuleren',
             OK_BTN: 'OK',
+            CLOSE: 'Sluit',
             FROM: 'van',
             TO: 'tot',
+            ZOOM_IN: 'Inzoomen',
+            ZOOM_OUT: 'Uitzoomen',
             ZOOM_LEVEL_LOW: 'Zoom niveau te laag',
             ZOOM_IN_FOR_CONTOURS: 'Zoom in om de contouren te tonen',
             NAVIGATE: {
@@ -8360,795 +8227,6 @@ var FilterList;
     FilterList.FilterListCtrl = FilterListCtrl;
 })(FilterList || (FilterList = {}));
 //# sourceMappingURL=FilterListCtrl.js.map
-var IdvEdit;
-(function (IdvEdit) {
-    /**
-      * Config
-      */
-    var moduleName = 'csComp';
-    try {
-        IdvEdit.myModule = angular.module(moduleName);
-    }
-    catch (err) {
-        // named module does not exist, so create one
-        IdvEdit.myModule = angular.module(moduleName, []);
-    }
-    var IdvEditCtrl = (function () {
-        // dependencies are injected via AngularJS $injector
-        // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
-        function IdvEditCtrl($scope, $mapService, $layerService, $messageBusService) {
-            this.$scope = $scope;
-            this.$mapService = $mapService;
-            this.$layerService = $layerService;
-            this.$messageBusService = $messageBusService;
-            this.scope = $scope;
-            $scope.vm = this;
-            this.scan = $scope.$parent.data;
-            console.log(this);
-        }
-        IdvEditCtrl.prototype.toggleChart = function (chart) {
-            chart.enabled = !chart.enabled;
-        };
-        IdvEditCtrl.prototype.update = function () {
-            this.scan.updateCharts();
-        };
-        IdvEditCtrl.prototype.reset = function () {
-            alert('reset');
-        };
-        IdvEditCtrl.$inject = [
-            '$scope',
-            'mapService',
-            'layerService',
-            'messageBusService',
-        ];
-        return IdvEditCtrl;
-    }());
-    IdvEdit.IdvEditCtrl = IdvEditCtrl;
-    /**
-    * Directive to display the available map layers.
-    */
-    IdvEdit.myModule.directive('idvedit', [
-        '$window', '$compile',
-        function ($window, $compile) {
-            return {
-                terminal: true,
-                restrict: 'E',
-                scope: {},
-                templateUrl: 'directives/IdvHelper/IdvEdit.tpl.html',
-                link: function (scope, element, attrs) {
-                    // Deal with resizing the element list
-                },
-                replace: false,
-                transclude: false,
-                controller: IdvEditCtrl
-            };
-        }
-    ]);
-})(IdvEdit || (IdvEdit = {}));
-//# sourceMappingURL=IdvEdit.js.map
-var Idv;
-(function (Idv_1) {
-    var Idv = (function () {
-        function Idv() {
-            this.defaultWidth = 180;
-        }
-        Idv.prototype.reduceAddSum = function (properties) {
-            return function (p, v) {
-                ++p.count;
-                properties.forEach(function (pr) {
-                    var t = parseFloat(v[pr]);
-                    if (t > p.max)
-                        p.max = t;
-                    p[pr] += t;
-                });
-                return p;
-            };
-        };
-        Idv.prototype.reduceRemoveSum = function (properties) {
-            return function (p, v) {
-                --p.count;
-                properties.forEach(function (pr) {
-                    var t = parseFloat(v[pr]);
-                    if (t > p.max)
-                        p.max = t;
-                    p[pr] -= t;
-                });
-                //p.avg = p.sum / p.count;
-                return p;
-            };
-        };
-        Idv.prototype.reduceInitSum = function (properties) {
-            var r = {};
-            properties.forEach(function (pr) {
-                r[pr] = 0;
-            });
-            return r;
-        };
-        Idv.prototype.reduceAddAvg = function (attr) {
-            return function (p, v) {
-                ++p.count;
-                var t = parseFloat(v[attr]);
-                if (t > p.max)
-                    p.max = t;
-                p.sum += t;
-                p.avg = p.sum / p.count;
-                return p;
-            };
-        };
-        Idv.prototype.reduceRemoveAvg = function (attr) {
-            return function (p, v) {
-                --p.count;
-                p.sum -= parseFloat(v[attr]);
-                p.avg = p.sum / p.count;
-                return p;
-            };
-        };
-        Idv.prototype.reduceInitAvg = function () {
-            return { count: 0, sum: 0, avg: 0, max: 0 };
-        };
-        Idv.prototype.stop = function () {
-            this.ndx = null;
-            // this.config.charts.forEach(c=>{
-            //     if (c.dimension) c.dimension.remove();
-            //     if (c.group) c.group.remove();
-            // });
-        };
-        Idv.prototype.updateCharts = function () {
-            var _this = this;
-            if (this.gridster) {
-                $("#" + this.config.containerId).empty();
-                this.gridster.destroy();
-            }
-            $(".chart-title").css("visibility", "visible");
-            function getTops(source_group, count) {
-                return {
-                    all: function () {
-                        return source_group.top(count);
-                    }
-                };
-            }
-            var elastic = true;
-            this.gridster = $("#" + this.config.containerId).gridster({
-                widget_margins: [5, 5],
-                widget_base_dimensions: [this.defaultWidth - 20, 125],
-                min_cols: 6,
-                resize: {
-                    enabled: false
-                },
-                autogrow_cols: true,
-                draggable: {
-                    handle: 'header'
-                }
-            }).data('gridster');
-            this.ndx = crossfilter(this.data);
-            if (this.config.charts) {
-                this.config.charts.forEach(function (c) {
-                    _this.addChart(c);
-                });
-            }
-            dc.renderAll();
-            this.triggerFilter(this.config.charts[0]);
-            if (this.scope.$root.$$phase !== '$apply' && this.scope.$root.$$phase !== '$digest') {
-                this.scope.$apply();
-            }
-        };
-        Idv.prototype.loadDataSource = function (done) {
-            done();
-        };
-        Idv.prototype.resize = function () {
-            $("#g-parent").css("height", $(window).height() - 100);
-            $("#g-parent").css("width", $(window).width() - 100);
-        };
-        Idv.prototype.loadData = function (prepare, done) {
-            var _this = this;
-            var store = 'records3';
-            async.series([
-                // get enums
-                function (cb) {
-                    if (typeof _this.config.config !== 'undefined') {
-                        d3.json(_this.config.config, function (error, result) {
-                            if (!error)
-                                _this.enums = result.Enums;
-                            cb();
-                        });
-                    }
-                    else {
-                        cb();
-                    }
-                },
-                // get data
-                function (cb) {
-                    _this.state = "Laden data";
-                    if (!window.indexedDB) {
-                        window.alert("Deze browser is verouderd. Hierdoor zal de informatie trager laden");
-                    }
-                    else {
-                        if (_this.config.localStorage) {
-                            var request = window.indexedDB.open(_this.config.data, 9);
-                            request.onerror = (function (e) {
-                                window.indexedDB.deleteDatabase(_this.config.data);
-                            });
-                            request.onsuccess = (function (e) {
-                                var db = event.target.result;
-                                //if (!db.objectStoreNames.contains(store)) var objStore = db.createObjectStore(store, { autoIncrement : true });
-                                if (db.objectStoreNames.contains(store)) {
-                                    var experiments = [];
-                                    async.series([function (cb) {
-                                            db.transaction(store, 'readonly').objectStore(store).openCursor().onsuccess = function (d) {
-                                                var r = d.target.result;
-                                                if (r) {
-                                                    var v = r.value;
-                                                    v.data.forEach(function (d) { return experiments.push(d); });
-                                                    //r.advance(1);                                        
-                                                    r.continue();
-                                                }
-                                                else {
-                                                    cb();
-                                                }
-                                            };
-                                        },
-                                        function (cb) {
-                                            if (experiments.length > 0) {
-                                                _this.parseData(experiments, prepare, done);
-                                                cb();
-                                            }
-                                            else {
-                                                _this.state = "Verversen data";
-                                                d3.csv(_this.config.data, function (error, experiments) {
-                                                    _this.state = "Opslaan data";
-                                                    var s = db.transaction(store, "readwrite").objectStore(store);
-                                                    var l = [];
-                                                    var id = 0;
-                                                    experiments.forEach(function (e) {
-                                                        l.push(e);
-                                                        if (l.length > 100000) {
-                                                            s.add({ id: id, data: l });
-                                                            l = [];
-                                                            id += 1;
-                                                        }
-                                                    });
-                                                    _this.parseData(experiments, prepare, done);
-                                                    cb();
-                                                });
-                                            }
-                                        }], function (done) {
-                                        cb();
-                                    });
-                                }
-                                else {
-                                    db.close();
-                                }
-                            });
-                            request.onupgradeneeded = (function (e) {
-                                var db = event.target.result;
-                                var objStore = db.createObjectStore(store, { keyPath: "id" });
-                            });
-                        }
-                        else {
-                            d3.csv(_this.config.data, function (error, experiments) {
-                                _this.parseData(experiments, prepare, done);
-                                cb();
-                            });
-                        }
-                    }
-                }], function (done) {
-            });
-        };
-        Idv.prototype.initCharts = function (scope, layerService, prepare, done) {
-            var _this = this;
-            this.layerService = layerService;
-            this.scope = scope;
-            this.state = "Laden configuratie";
-            this.resize();
-            if (this.config.refreshTimer) {
-                setInterval(function () {
-                    _this.loadData(prepare, done);
-                }, (this.config.refreshTimer));
-            }
-            this.loadData(prepare, done);
-            $(window).resize(function () {
-                _this.resize();
-            });
-        };
-        Idv.prototype.parseData = function (data, prepare, done) {
-            this.state = "Verwerken data";
-            if (this.scope.$$phase !== '$apply' && this.scope.$$phase !== '$digest') {
-                this.scope.$apply();
-            }
-            this.data = data;
-            this.DataLoaded = true;
-            prepare(this.enums, data);
-            this.updateCharts();
-            done();
-        };
-        Idv.prototype.reset = function (id) {
-            var cc = _.findWhere(this.config.charts, { id: id });
-            if (!_.isUndefined(cc)) {
-                cc.chart.filterAll();
-                dc.renderAll();
-            }
-        };
-        Idv.prototype.resetAll = function () {
-            this.config.charts.forEach(function (c) {
-                if (!_.isUndefined(c.chart))
-                    c.chart.filterAll();
-            });
-            dc.renderAll();
-        };
-        Idv.prototype.hasFilter = function (id) {
-            return true;
-        };
-        Idv.prototype.addSearchWidget = function (config) {
-            var _this = this;
-            this.createGridsterItem(config);
-            config.dimension = this.ndx.dimension(function (d) {
-                if (d.hasOwnProperty(config.property)) {
-                    return d[config.property];
-                }
-                else
-                    return null;
-            });
-            var searchHtml = "<input class='searchbutton' id='#" + config.id + "'></input><div id='data-count'><span class='filter-count'></span> geselecteerd van de <span class='total-count'></span> " + config.record + "</div>";
-            $("#" + config.elementId).html(searchHtml);
-            $(".searchbutton").keyup(function (e) {
-                var id = e.target.id.replace('#', '');
-                var filterString = e.target.value;
-                if (_.isUndefined(filterString))
-                    return;
-                var chart = _.findWhere(_this.config.charts, { id: id });
-                if (!_.isUndefined(chart)) {
-                    chart.dimension.filterFunction(function (d) {
-                        if (d != null && typeof d.toLowerCase === 'function')
-                            return (d.toLowerCase().indexOf(filterString.toLowerCase()) > -1);
-                        return false;
-                    });
-                    chart.dimension.top(Infinity);
-                    dc.redrawAll();
-                }
-                _this.triggerFilter(config);
-            });
-            var all = this.ndx.groupAll();
-            dc.dataCount("#data-count").dimension(this.ndx).group(all); // set group to ndx.groupAll()  
-        };
-        Idv.prototype.addSumCompare = function (config) {
-            this.createGridsterItem(config);
-            var updateChart = function (values) {
-                try {
-                    var vgspec = {
-                        'width': 200,
-                        'height': 200,
-                        'data': [
-                            {
-                                'name': 'table',
-                                'values': values,
-                                'transform': [{ 'type': 'pie', 'field': 'value' }]
-                            }
-                        ],
-                        'scales': [
-                            {
-                                'name': 'r',
-                                'type': 'sqrt',
-                                'domain': { 'data': 'table', 'field': 'value' },
-                                'range': [20, 100]
-                            },
-                            {
-                                "name": "color",
-                                "type": "ordinal",
-                                "domain": { "data": "table", "field": "position" },
-                                "range": "category20"
-                            }
-                        ],
-                        'marks': [
-                            {
-                                'type': 'arc',
-                                'from': { 'data': 'table' },
-                                'properties': {
-                                    'enter': {
-                                        'x': { 'field': { 'group': 'width' }, 'mult': 0.5 },
-                                        'y': { 'field': { 'group': 'height' }, 'mult': 0.5 },
-                                        'startAngle': { 'field': 'layout_start' },
-                                        'endAngle': { 'field': 'layout_end' },
-                                        'innerRadius': { 'value': 20 },
-                                        'outerRadius': { 'scale': 'r', 'field': 'value' },
-                                        'stroke': { 'value': '#fff' }
-                                    },
-                                    'update': { 'fill': { "scale": "color", "field": "position" } },
-                                    'hover': { 'fill': { 'value': 'pink' } }
-                                }
-                            },
-                            {
-                                'type': 'text',
-                                'from': { 'data': 'table' },
-                                'properties': {
-                                    'enter': {
-                                        'x': { 'field': { 'group': 'width' }, 'mult': 0.5 },
-                                        'y': { 'field': { 'group': 'height' }, 'mult': 0.5 },
-                                        'radius': { 'scale': 'r', 'field': 'value', 'offset': 8 },
-                                        'theta': { 'field': 'layout_mid' },
-                                        'fill': { 'value': '#000' },
-                                        'align': { 'value': 'center' },
-                                        'baseline': { 'value': 'middle' },
-                                        'text': { 'field': 'title' }
-                                    }
-                                }
-                            },
-                            {
-                                'type': 'text',
-                                'from': { 'data': 'table' },
-                                'properties': {
-                                    'enter': {
-                                        'x': { 'field': { 'group': 'width' }, 'mult': 0.5 },
-                                        'y': { 'field': { 'group': 'height' }, 'mult': 0.5, 'offset': -10 },
-                                        'radius': { 'scale': 'r', 'field': 'value', 'offset': 8 },
-                                        'theta': { 'field': 'layout_mid' },
-                                        'fill': { 'value': '#000' },
-                                        'align': { 'value': 'center' },
-                                        'baseline': { 'value': 'middle' },
-                                        'text': { 'field': 'value' }
-                                    }
-                                }
-                            }
-                        ]
-                    };
-                    //parse(vgspec);
-                    if (vgspec)
-                        var res = vg.embed("#" + config.elementId, vgspec, function (view, vega_spec) {
-                            config._view = view;
-                            $("#" + config.elementId).css("margin-left", "30px");
-                            //$('.vega-actions').css("display","none");
-                            // Callback receiving the View instance and parsed Vega spec...
-                            // The View resides under the '#vis' element
-                        });
-                }
-                catch (e) {
-                }
-            };
-            updateChart([]);
-            config.filtered = function (result) {
-                var res = {};
-                config.properties.forEach(function (p) { return res[p] = 0; });
-                result.forEach(function (i) {
-                    config.properties.forEach(function (p) { if (i.hasOwnProperty(p))
-                        res[p] += Math.round(+i[p]); });
-                });
-                var values = [];
-                var pos = 0;
-                for (var i in res) {
-                    if (res[i] > 0)
-                        values.push({ title: i, value: res[i], position: pos });
-                    pos += 1;
-                }
-                updateChart(values);
-            };
-        };
-        Idv.prototype.addLayerLink = function (config) {
-            var _this = this;
-            config.dimension = this.ndx.dimension(function (d) { return d[config.property]; });
-            config.group = config.dimension.group().reduceCount();
-            config.filtered = function (result) {
-                if (!_.isUndefined(config.layer)) {
-                    var l = _this.layerService.findLayer(config.layer);
-                    if (!_.isUndefined(l) && l.enabled) {
-                        var mapping = {};
-                        l.data.features.forEach(function (f) {
-                            if (f.properties.hasOwnProperty(config.featureProperty))
-                                mapping[f.properties[config.featureProperty]] = f;
-                            delete f.properties[config.featureTargetProperty];
-                        });
-                        var res = config.group.all();
-                        res.forEach(function (r) {
-                            if (mapping.hasOwnProperty(r.key)) {
-                                var f = mapping[r.key];
-                                f.properties[config.featureTargetProperty] = r.value;
-                            }
-                        });
-                        _this.layerService.updateLayerFeatures(l);
-                        l.group.styles.forEach(function (s) {
-                            _this.layerService.removeStyle(s);
-                        });
-                        _this.layerService.setStyleForProperty(l, config.featureTargetProperty);
-                    }
-                }
-                console.log('do filter with result');
-            };
-        };
-        Idv.prototype.addChartItem = function (config) {
-            var _this = this;
-            this.createGridsterItem(config);
-            if (!config.stat)
-                config.stat = "count";
-            switch (config.stat) {
-                case "sum":
-                    config.dimension = this.ndx.dimension(function (d) { return d[config.property]; });
-                    config.group = config.dimension.group().reduceSum(function (d) {
-                        return { totaal_mensen_auto: +d[config.property] };
-                    });
-                    switch (config.type) {
-                        case "pie":
-                            config.dimension = this.ndx.dimension(function (d) { return d; });
-                            config.group = config.dimension.group().reduce(this.reduceAddSum(config.properties), this.reduceRemoveSum(config.properties), this.reduceInitSum(config.properties));
-                            break;
-                    }
-                    break;
-                case "average":
-                    switch (config.type) {
-                        case "row":
-                            config.dimension = this.ndx.dimension(function (d) { return d[config.property]; });
-                            config.group = config.dimension.group().reduce(this.reduceAddAvg(config.secondProperty), this.reduceRemoveAvg(config.secondProperty), this.reduceInitAvg);
-                            break;
-                        case "line":
-                        case "bar":
-                            config.dimension = this.ndx.dimension(function (d) { return d[config.time]; });
-                            config.group = config.dimension.group().reduce(this.reduceAddAvg(config.property), this.reduceRemoveAvg(config.property), this.reduceInitAvg);
-                        case "time":
-                            config.dimension = this.ndx.dimension(function (d) { return d[config.time]; });
-                            config.group = config.dimension.group().reduce(this.reduceAddAvg(config.property), this.reduceRemoveAvg(config.property), this.reduceInitAvg);
-                            break;
-                    }
-                    break;
-                case "pie":
-                    config.dimension = config.dimension;
-                    config.group = config.group;
-                    break;
-                case "scatter":
-                    config.dimension = this.ndx.dimension(function (d) {
-                        var r = +d[config.property];
-                        return r;
-                    });
-                    config.group = config.dimension.group();
-                    break;
-                case "time":
-                    config.dimension = this.ndx.dimension(function (d) { return d[config.time]; });
-                    break;
-                case "group":
-                    if (!config.bins)
-                        config.bins = 20;
-                    var n_bins = config.bins;
-                    var xExtent = d3.extent(this.data, function (d) { return parseFloat(d[config.property]); });
-                    var binWidth = (xExtent[1] - xExtent[0]) / n_bins;
-                    config.dimension = this.ndx.dimension(function (d) {
-                        var c = Math.floor(parseFloat(d[config.property]) / binWidth) * binWidth;
-                        return c;
-                    });
-                    config.group = config.dimension.group().reduceCount();
-                    break;
-                case "count":
-                    config.dimension = this.ndx.dimension(function (d) { return d[config.property]; });
-                    config.group = config.dimension.group().reduceCount();
-                    break;
-            }
-            var width = (config.width * this.defaultWidth) - 25;
-            var height = (config.height * 125) - 25;
-            switch (config.type) {
-                case "table":
-                    var c = [];
-                    config.columns.forEach(function (ci) {
-                        c.push({ label: ci.title, format: function (d) {
-                                if (ci.hasOwnProperty("type") && ci["type"] === "number")
-                                    return d3.round(d[ci.property], 1);
-                                return d[ci.property];
-                            }
-                        });
-                    });
-                    config.chart = dc.dataTable("#" + config.elementId);
-                    config.chart
-                        .width(width)
-                        .height(height)
-                        .dimension(config.dimension)
-                        .group(function (d) {
-                        var date = d[config.time];
-                        return "";
-                    })
-                        .size(1000)
-                        .columns(c);
-                    break;
-                case "time":
-                    config.chart = dc.lineChart("#" + config.elementId);
-                    config.chart
-                        .width(width)
-                        .height(height)
-                        .x(d3.time.scale().domain([new Date(2011, 0, 1), new Date(2016, 11, 31)]))
-                        .elasticX(true)
-                        .elasticY(true)
-                        .mouseZoomable(true)
-                        .renderHorizontalGridLines(true)
-                        .brushOn(true)
-                        .dimension(config.dimension)
-                        .group(function (d) {
-                        //var format = d3.format('02d');
-                        return d[config.time];
-                    })
-                        .renderHorizontalGridLines(true)
-                        .on('renderlet', function (chart) {
-                        chart.selectAll('rect').on("click", function (d) {
-                            // console.log("click!", d);
-                        });
-                    });
-                    break;
-                case "line":
-                    config.chart = dc.lineChart("#" + config.elementId);
-                    config.chart
-                        .width(width)
-                        .height(height)
-                        .x(d3.scale.linear())
-                        .elasticX(true)
-                        .elasticY(true)
-                        .renderHorizontalGridLines(false)
-                        .dimension(config.dimension)
-                        .group(config.group)
-                        .mouseZoomable(true)
-                        .on('renderlet', function (chart) {
-                        chart.selectAll('rect').on("click", function (d) {
-                            // console.log("click!", d);
-                        });
-                    });
-                    break;
-                case "pie":
-                    config.chart = dc.pieChart("#" + config.elementId);
-                    config.chart
-                        .width(width)
-                        .height(height)
-                        .slicesCap(10)
-                        .innerRadius(10)
-                        .dimension(config.dimension)
-                        .group(config.group);
-                    break;
-                case "bar":
-                    config.chart = dc.barChart("#" + config.elementId);
-                    config.chart
-                        .width(width)
-                        .height(height)
-                        .x(d3.scale.linear())
-                        .centerBar(true)
-                        .xUnits(function () { return 20; })
-                        .elasticX(true)
-                        .elasticY(true)
-                        .renderHorizontalGridLines(true)
-                        .dimension(config.dimension)
-                        .group(config.group);
-                    break;
-                case "stackedbar":
-                    config.chart = dc.barChart("#" + config.elementId);
-                    config.chart
-                        .width(width)
-                        .height(height)
-                        .x(d3.scale.linear())
-                        .centerBar(false)
-                        .xUnits(function () { return 20; })
-                        .elasticX(true)
-                        .elasticY(true)
-                        .renderHorizontalGridLines(true)
-                        .dimension(config.dimension)
-                        .group(config.group);
-                    break;
-                case "scatter":
-                    config.chart = dc.scatterPlot("#" + config.elementId);
-                    config.chart
-                        .width(width)
-                        .height(height)
-                        .symbolSize(3)
-                        .x(d3.scale.linear())
-                        .y(d3.scale.linear())
-                        .elasticX(true)
-                        .elasticY(true)
-                        .dimension(config.dimension)
-                        .group(config.group);
-                    break;
-                case "row":
-                    config.chart = dc.rowChart("#" + config.elementId);
-                    config.chart
-                        .width(width)
-                        .height(height)
-                        .gap(1)
-                        .elasticX(true)
-                        .dimension(config.dimension)
-                        .group(config.group)
-                        .xAxis().ticks(4);
-                    if (!config.ordering)
-                        config.ordering = "value";
-                    switch (config.ordering) {
-                        case "days":
-                            config.chart.ordering(function (d) {
-                                return Idv.days.indexOf(d.key);
-                            });
-                            break;
-                        case "months":
-                            config.chart.ordering(function (d) {
-                                return Idv.months.indexOf(d.key);
-                            });
-                            break;
-                        case "value":
-                            config.chart.ordering(function (d) {
-                                return -d.value;
-                            });
-                            break;
-                    }
-                    if (config.cap)
-                        config.chart.cap(config.cap);
-                    break;
-            }
-            if (!_.isUndefined(config.xaxis)) {
-                config.chart.xAxisLabel(config.xaxis);
-            }
-            if (!_.isUndefined(config.yaxis)) {
-                config.chart.yAxisLabel(config.yaxis);
-            }
-            config.chart.on("filtered", function (chart, filter) {
-                _this.triggerFilter(config);
-            });
-            if (config.stat === "average") {
-                config.chart.valueAccessor(function (d) {
-                    return d.value.avg;
-                });
-            }
-            console.log("Add chart " + config.title);
-        };
-        Idv.prototype.triggerFilter = function (config) {
-            var res = config.dimension.top(Infinity);
-            this.config.charts.forEach(function (c) {
-                if (!_.isUndefined(c.filtered) && _.isFunction(c.filtered)) {
-                    c.filtered(res);
-                }
-                //this.addChart(c)
-            });
-        };
-        Idv.prototype.createGridsterItem = function (config) {
-            var _this = this;
-            var html = "<li style='padding:4px'><header class='chart-title'><div class='fa fa-ellipsis-v dropdown-toggle' data-toggle='dropdown'  style='float:right;cursor:pointer' type='button'></div>";
-            html += "<ul class='dropdown-menu pull-right'><li class='dropdown-item'><a ng-click=\"resetFilter('" + config.id + "')\"'>reset filter</a></li><li class='dropdown-item'><a ng-click=\"resetAll()\">reset all filters</a></li><li class='dropdown-item'><a ng-click=\"disableFilter('" + config.id + "')\">disable filter</a></li>";
-            html += "</ul>" + config.title + "</header><div id='" + config.elementId + "' ></li>";
-            this.scope.resetFilter = function (id) {
-                _this.reset(id);
-            };
-            this.scope.resetAll = function () {
-                _this.resetAll();
-            };
-            this.scope.disableFilter = function (id) {
-                var c = _.findWhere(_this.config.charts, { id: id });
-                if (!_.isUndefined(c)) {
-                    c.enabled = false;
-                    _this.updateCharts();
-                }
-            };
-            var w = this.layerService.$compile(html)(this.scope);
-            this.gridster.add_widget(w, config.width, config.height); //"<li><header class='chart-title'><div class='fa fa-times' style='float:right' ng-click='vm.reset()'></div>" + config.title + "</header><div id='" + config.elementId + "'></li>",config.width,config.height);
-        };
-        Idv.prototype.addChart = function (config) {
-            if (typeof config.enabled === 'undefined')
-                config.enabled = true;
-            if (!config.enabled)
-                return;
-            if (!config.id)
-                config.id = csComp.Helpers.getGuid();
-            if (!config.containerId)
-                config.containerId = this.config.containerId;
-            config.elementId = "ddchart-" + config.id;
-            if (!config.title)
-                config.title = config.property;
-            if (!config.type)
-                config.type = "row";
-            switch (config.type) {
-                case "search":
-                    this.addSearchWidget(config);
-                    break;
-                case "layer":
-                    this.addLayerLink(config);
-                    break;
-                case "sumcompare":
-                    this.addSumCompare(config);
-                    break;
-                default:
-                    this.addChartItem(config);
-                    break;
-            }
-        };
-        Idv.days = ["zondag", "maandag", "dinsdag", "woensdag", "donderdag", "vrijdag", "zaterdag"];
-        Idv.months = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "okt", "nov", "dec"];
-        return Idv;
-    }());
-    Idv_1.Idv = Idv;
-})(Idv || (Idv = {}));
-//# sourceMappingURL=IdvHelper.js.map
 var Heatmap;
 (function (Heatmap) {
     'use strict';
@@ -10117,6 +9195,795 @@ var Heatmap;
     Heatmap.IdealityMeasure = IdealityMeasure;
 })(Heatmap || (Heatmap = {}));
 //# sourceMappingURL=IdealityMeasure.js.map
+var IdvEdit;
+(function (IdvEdit) {
+    /**
+      * Config
+      */
+    var moduleName = 'csComp';
+    try {
+        IdvEdit.myModule = angular.module(moduleName);
+    }
+    catch (err) {
+        // named module does not exist, so create one
+        IdvEdit.myModule = angular.module(moduleName, []);
+    }
+    var IdvEditCtrl = (function () {
+        // dependencies are injected via AngularJS $injector
+        // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
+        function IdvEditCtrl($scope, $mapService, $layerService, $messageBusService) {
+            this.$scope = $scope;
+            this.$mapService = $mapService;
+            this.$layerService = $layerService;
+            this.$messageBusService = $messageBusService;
+            this.scope = $scope;
+            $scope.vm = this;
+            this.scan = $scope.$parent.data;
+            console.log(this);
+        }
+        IdvEditCtrl.prototype.toggleChart = function (chart) {
+            chart.enabled = !chart.enabled;
+        };
+        IdvEditCtrl.prototype.update = function () {
+            this.scan.updateCharts();
+        };
+        IdvEditCtrl.prototype.reset = function () {
+            alert('reset');
+        };
+        IdvEditCtrl.$inject = [
+            '$scope',
+            'mapService',
+            'layerService',
+            'messageBusService',
+        ];
+        return IdvEditCtrl;
+    }());
+    IdvEdit.IdvEditCtrl = IdvEditCtrl;
+    /**
+    * Directive to display the available map layers.
+    */
+    IdvEdit.myModule.directive('idvedit', [
+        '$window', '$compile',
+        function ($window, $compile) {
+            return {
+                terminal: true,
+                restrict: 'E',
+                scope: {},
+                templateUrl: 'directives/IdvHelper/IdvEdit.tpl.html',
+                link: function (scope, element, attrs) {
+                    // Deal with resizing the element list
+                },
+                replace: false,
+                transclude: false,
+                controller: IdvEditCtrl
+            };
+        }
+    ]);
+})(IdvEdit || (IdvEdit = {}));
+//# sourceMappingURL=IdvEdit.js.map
+var Idv;
+(function (Idv_1) {
+    var Idv = (function () {
+        function Idv() {
+            this.defaultWidth = 180;
+        }
+        Idv.prototype.reduceAddSum = function (properties) {
+            return function (p, v) {
+                ++p.count;
+                properties.forEach(function (pr) {
+                    var t = parseFloat(v[pr]);
+                    if (t > p.max)
+                        p.max = t;
+                    p[pr] += t;
+                });
+                return p;
+            };
+        };
+        Idv.prototype.reduceRemoveSum = function (properties) {
+            return function (p, v) {
+                --p.count;
+                properties.forEach(function (pr) {
+                    var t = parseFloat(v[pr]);
+                    if (t > p.max)
+                        p.max = t;
+                    p[pr] -= t;
+                });
+                //p.avg = p.sum / p.count;
+                return p;
+            };
+        };
+        Idv.prototype.reduceInitSum = function (properties) {
+            var r = {};
+            properties.forEach(function (pr) {
+                r[pr] = 0;
+            });
+            return r;
+        };
+        Idv.prototype.reduceAddAvg = function (attr) {
+            return function (p, v) {
+                ++p.count;
+                var t = parseFloat(v[attr]);
+                if (t > p.max)
+                    p.max = t;
+                p.sum += t;
+                p.avg = p.sum / p.count;
+                return p;
+            };
+        };
+        Idv.prototype.reduceRemoveAvg = function (attr) {
+            return function (p, v) {
+                --p.count;
+                p.sum -= parseFloat(v[attr]);
+                p.avg = p.sum / p.count;
+                return p;
+            };
+        };
+        Idv.prototype.reduceInitAvg = function () {
+            return { count: 0, sum: 0, avg: 0, max: 0 };
+        };
+        Idv.prototype.stop = function () {
+            this.ndx = null;
+            // this.config.charts.forEach(c=>{
+            //     if (c.dimension) c.dimension.remove();
+            //     if (c.group) c.group.remove();
+            // });
+        };
+        Idv.prototype.updateCharts = function () {
+            var _this = this;
+            if (this.gridster) {
+                $("#" + this.config.containerId).empty();
+                this.gridster.destroy();
+            }
+            $(".chart-title").css("visibility", "visible");
+            function getTops(source_group, count) {
+                return {
+                    all: function () {
+                        return source_group.top(count);
+                    }
+                };
+            }
+            var elastic = true;
+            this.gridster = $("#" + this.config.containerId).gridster({
+                widget_margins: [5, 5],
+                widget_base_dimensions: [this.defaultWidth - 20, 125],
+                min_cols: 6,
+                resize: {
+                    enabled: false
+                },
+                autogrow_cols: true,
+                draggable: {
+                    handle: 'header'
+                }
+            }).data('gridster');
+            this.ndx = crossfilter(this.data);
+            if (this.config.charts) {
+                this.config.charts.forEach(function (c) {
+                    _this.addChart(c);
+                });
+            }
+            dc.renderAll();
+            this.triggerFilter(this.config.charts[0]);
+            if (this.scope.$root.$$phase !== '$apply' && this.scope.$root.$$phase !== '$digest') {
+                this.scope.$apply();
+            }
+        };
+        Idv.prototype.loadDataSource = function (done) {
+            done();
+        };
+        Idv.prototype.resize = function () {
+            $("#g-parent").css("height", $(window).height() - 100);
+            $("#g-parent").css("width", $(window).width() - 100);
+        };
+        Idv.prototype.loadData = function (prepare, done) {
+            var _this = this;
+            var store = 'records3';
+            async.series([
+                // get enums
+                function (cb) {
+                    if (typeof _this.config.config !== 'undefined') {
+                        d3.json(_this.config.config, function (error, result) {
+                            if (!error)
+                                _this.enums = result.Enums;
+                            cb();
+                        });
+                    }
+                    else {
+                        cb();
+                    }
+                },
+                // get data
+                function (cb) {
+                    _this.state = "Laden data";
+                    if (!window.indexedDB) {
+                        window.alert("Deze browser is verouderd. Hierdoor zal de informatie trager laden");
+                    }
+                    else {
+                        if (_this.config.localStorage) {
+                            var request = window.indexedDB.open(_this.config.data, 9);
+                            request.onerror = (function (e) {
+                                window.indexedDB.deleteDatabase(_this.config.data);
+                            });
+                            request.onsuccess = (function (e) {
+                                var db = event.target.result;
+                                //if (!db.objectStoreNames.contains(store)) var objStore = db.createObjectStore(store, { autoIncrement : true });
+                                if (db.objectStoreNames.contains(store)) {
+                                    var experiments = [];
+                                    async.series([function (cb) {
+                                            db.transaction(store, 'readonly').objectStore(store).openCursor().onsuccess = function (d) {
+                                                var r = d.target.result;
+                                                if (r) {
+                                                    var v = r.value;
+                                                    v.data.forEach(function (d) { return experiments.push(d); });
+                                                    //r.advance(1);                                        
+                                                    r.continue();
+                                                }
+                                                else {
+                                                    cb();
+                                                }
+                                            };
+                                        },
+                                        function (cb) {
+                                            if (experiments.length > 0) {
+                                                _this.parseData(experiments, prepare, done);
+                                                cb();
+                                            }
+                                            else {
+                                                _this.state = "Verversen data";
+                                                d3.csv(_this.config.data, function (error, experiments) {
+                                                    _this.state = "Opslaan data";
+                                                    var s = db.transaction(store, "readwrite").objectStore(store);
+                                                    var l = [];
+                                                    var id = 0;
+                                                    experiments.forEach(function (e) {
+                                                        l.push(e);
+                                                        if (l.length > 100000) {
+                                                            s.add({ id: id, data: l });
+                                                            l = [];
+                                                            id += 1;
+                                                        }
+                                                    });
+                                                    _this.parseData(experiments, prepare, done);
+                                                    cb();
+                                                });
+                                            }
+                                        }], function (done) {
+                                        cb();
+                                    });
+                                }
+                                else {
+                                    db.close();
+                                }
+                            });
+                            request.onupgradeneeded = (function (e) {
+                                var db = event.target.result;
+                                var objStore = db.createObjectStore(store, { keyPath: "id" });
+                            });
+                        }
+                        else {
+                            d3.csv(_this.config.data, function (error, experiments) {
+                                _this.parseData(experiments, prepare, done);
+                                cb();
+                            });
+                        }
+                    }
+                }], function (done) {
+            });
+        };
+        Idv.prototype.initCharts = function (scope, layerService, prepare, done) {
+            var _this = this;
+            this.layerService = layerService;
+            this.scope = scope;
+            this.state = "Laden configuratie";
+            this.resize();
+            if (this.config.refreshTimer) {
+                setInterval(function () {
+                    _this.loadData(prepare, done);
+                }, (this.config.refreshTimer));
+            }
+            this.loadData(prepare, done);
+            $(window).resize(function () {
+                _this.resize();
+            });
+        };
+        Idv.prototype.parseData = function (data, prepare, done) {
+            this.state = "Verwerken data";
+            if (this.scope.$$phase !== '$apply' && this.scope.$$phase !== '$digest') {
+                this.scope.$apply();
+            }
+            this.data = data;
+            this.DataLoaded = true;
+            prepare(this.enums, data);
+            this.updateCharts();
+            done();
+        };
+        Idv.prototype.reset = function (id) {
+            var cc = _.findWhere(this.config.charts, { id: id });
+            if (!_.isUndefined(cc)) {
+                cc.chart.filterAll();
+                dc.renderAll();
+            }
+        };
+        Idv.prototype.resetAll = function () {
+            this.config.charts.forEach(function (c) {
+                if (!_.isUndefined(c.chart))
+                    c.chart.filterAll();
+            });
+            dc.renderAll();
+        };
+        Idv.prototype.hasFilter = function (id) {
+            return true;
+        };
+        Idv.prototype.addSearchWidget = function (config) {
+            var _this = this;
+            this.createGridsterItem(config);
+            config.dimension = this.ndx.dimension(function (d) {
+                if (d.hasOwnProperty(config.property)) {
+                    return d[config.property];
+                }
+                else
+                    return null;
+            });
+            var searchHtml = "<input class='searchbutton' id='#" + config.id + "'></input><div id='data-count'><span class='filter-count'></span> geselecteerd van de <span class='total-count'></span> " + config.record + "</div>";
+            $("#" + config.elementId).html(searchHtml);
+            $(".searchbutton").keyup(function (e) {
+                var id = e.target.id.replace('#', '');
+                var filterString = e.target.value;
+                if (_.isUndefined(filterString))
+                    return;
+                var chart = _.findWhere(_this.config.charts, { id: id });
+                if (!_.isUndefined(chart)) {
+                    chart.dimension.filterFunction(function (d) {
+                        if (d != null && typeof d.toLowerCase === 'function')
+                            return (d.toLowerCase().indexOf(filterString.toLowerCase()) > -1);
+                        return false;
+                    });
+                    chart.dimension.top(Infinity);
+                    dc.redrawAll();
+                }
+                _this.triggerFilter(config);
+            });
+            var all = this.ndx.groupAll();
+            dc.dataCount("#data-count").dimension(this.ndx).group(all); // set group to ndx.groupAll()  
+        };
+        Idv.prototype.addSumCompare = function (config) {
+            this.createGridsterItem(config);
+            var updateChart = function (values) {
+                try {
+                    var vgspec = {
+                        'width': 200,
+                        'height': 200,
+                        'data': [
+                            {
+                                'name': 'table',
+                                'values': values,
+                                'transform': [{ 'type': 'pie', 'field': 'value' }]
+                            }
+                        ],
+                        'scales': [
+                            {
+                                'name': 'r',
+                                'type': 'sqrt',
+                                'domain': { 'data': 'table', 'field': 'value' },
+                                'range': [20, 100]
+                            },
+                            {
+                                "name": "color",
+                                "type": "ordinal",
+                                "domain": { "data": "table", "field": "position" },
+                                "range": "category20"
+                            }
+                        ],
+                        'marks': [
+                            {
+                                'type': 'arc',
+                                'from': { 'data': 'table' },
+                                'properties': {
+                                    'enter': {
+                                        'x': { 'field': { 'group': 'width' }, 'mult': 0.5 },
+                                        'y': { 'field': { 'group': 'height' }, 'mult': 0.5 },
+                                        'startAngle': { 'field': 'layout_start' },
+                                        'endAngle': { 'field': 'layout_end' },
+                                        'innerRadius': { 'value': 20 },
+                                        'outerRadius': { 'scale': 'r', 'field': 'value' },
+                                        'stroke': { 'value': '#fff' }
+                                    },
+                                    'update': { 'fill': { "scale": "color", "field": "position" } },
+                                    'hover': { 'fill': { 'value': 'pink' } }
+                                }
+                            },
+                            {
+                                'type': 'text',
+                                'from': { 'data': 'table' },
+                                'properties': {
+                                    'enter': {
+                                        'x': { 'field': { 'group': 'width' }, 'mult': 0.5 },
+                                        'y': { 'field': { 'group': 'height' }, 'mult': 0.5 },
+                                        'radius': { 'scale': 'r', 'field': 'value', 'offset': 8 },
+                                        'theta': { 'field': 'layout_mid' },
+                                        'fill': { 'value': '#000' },
+                                        'align': { 'value': 'center' },
+                                        'baseline': { 'value': 'middle' },
+                                        'text': { 'field': 'title' }
+                                    }
+                                }
+                            },
+                            {
+                                'type': 'text',
+                                'from': { 'data': 'table' },
+                                'properties': {
+                                    'enter': {
+                                        'x': { 'field': { 'group': 'width' }, 'mult': 0.5 },
+                                        'y': { 'field': { 'group': 'height' }, 'mult': 0.5, 'offset': -10 },
+                                        'radius': { 'scale': 'r', 'field': 'value', 'offset': 8 },
+                                        'theta': { 'field': 'layout_mid' },
+                                        'fill': { 'value': '#000' },
+                                        'align': { 'value': 'center' },
+                                        'baseline': { 'value': 'middle' },
+                                        'text': { 'field': 'value' }
+                                    }
+                                }
+                            }
+                        ]
+                    };
+                    //parse(vgspec);
+                    if (vgspec)
+                        var res = vg.embed("#" + config.elementId, vgspec, function (view, vega_spec) {
+                            config._view = view;
+                            $("#" + config.elementId).css("margin-left", "30px");
+                            //$('.vega-actions').css("display","none");
+                            // Callback receiving the View instance and parsed Vega spec...
+                            // The View resides under the '#vis' element
+                        });
+                }
+                catch (e) {
+                }
+            };
+            updateChart([]);
+            config.filtered = function (result) {
+                var res = {};
+                config.properties.forEach(function (p) { return res[p] = 0; });
+                result.forEach(function (i) {
+                    config.properties.forEach(function (p) { if (i.hasOwnProperty(p))
+                        res[p] += Math.round(+i[p]); });
+                });
+                var values = [];
+                var pos = 0;
+                for (var i in res) {
+                    if (res[i] > 0)
+                        values.push({ title: i, value: res[i], position: pos });
+                    pos += 1;
+                }
+                updateChart(values);
+            };
+        };
+        Idv.prototype.addLayerLink = function (config) {
+            var _this = this;
+            config.dimension = this.ndx.dimension(function (d) { return d[config.property]; });
+            config.group = config.dimension.group().reduceCount();
+            config.filtered = function (result) {
+                if (!_.isUndefined(config.layer)) {
+                    var l = _this.layerService.findLayer(config.layer);
+                    if (!_.isUndefined(l) && l.enabled) {
+                        var mapping = {};
+                        l.data.features.forEach(function (f) {
+                            if (f.properties.hasOwnProperty(config.featureProperty))
+                                mapping[f.properties[config.featureProperty]] = f;
+                            delete f.properties[config.featureTargetProperty];
+                        });
+                        var res = config.group.all();
+                        res.forEach(function (r) {
+                            if (mapping.hasOwnProperty(r.key)) {
+                                var f = mapping[r.key];
+                                f.properties[config.featureTargetProperty] = r.value;
+                            }
+                        });
+                        _this.layerService.updateLayerFeatures(l);
+                        l.group.styles.forEach(function (s) {
+                            _this.layerService.removeStyle(s);
+                        });
+                        _this.layerService.setStyleForProperty(l, config.featureTargetProperty);
+                    }
+                }
+                console.log('do filter with result');
+            };
+        };
+        Idv.prototype.addChartItem = function (config) {
+            var _this = this;
+            this.createGridsterItem(config);
+            if (!config.stat)
+                config.stat = "count";
+            switch (config.stat) {
+                case "sum":
+                    config.dimension = this.ndx.dimension(function (d) { return d[config.property]; });
+                    config.group = config.dimension.group().reduceSum(function (d) {
+                        return { totaal_mensen_auto: +d[config.property] };
+                    });
+                    switch (config.type) {
+                        case "pie":
+                            config.dimension = this.ndx.dimension(function (d) { return d; });
+                            config.group = config.dimension.group().reduce(this.reduceAddSum(config.properties), this.reduceRemoveSum(config.properties), this.reduceInitSum(config.properties));
+                            break;
+                    }
+                    break;
+                case "average":
+                    switch (config.type) {
+                        case "row":
+                            config.dimension = this.ndx.dimension(function (d) { return d[config.property]; });
+                            config.group = config.dimension.group().reduce(this.reduceAddAvg(config.secondProperty), this.reduceRemoveAvg(config.secondProperty), this.reduceInitAvg);
+                            break;
+                        case "line":
+                        case "bar":
+                            config.dimension = this.ndx.dimension(function (d) { return d[config.time]; });
+                            config.group = config.dimension.group().reduce(this.reduceAddAvg(config.property), this.reduceRemoveAvg(config.property), this.reduceInitAvg);
+                        case "time":
+                            config.dimension = this.ndx.dimension(function (d) { return d[config.time]; });
+                            config.group = config.dimension.group().reduce(this.reduceAddAvg(config.property), this.reduceRemoveAvg(config.property), this.reduceInitAvg);
+                            break;
+                    }
+                    break;
+                case "pie":
+                    config.dimension = config.dimension;
+                    config.group = config.group;
+                    break;
+                case "scatter":
+                    config.dimension = this.ndx.dimension(function (d) {
+                        var r = +d[config.property];
+                        return r;
+                    });
+                    config.group = config.dimension.group();
+                    break;
+                case "time":
+                    config.dimension = this.ndx.dimension(function (d) { return d[config.time]; });
+                    break;
+                case "group":
+                    if (!config.bins)
+                        config.bins = 20;
+                    var n_bins = config.bins;
+                    var xExtent = d3.extent(this.data, function (d) { return parseFloat(d[config.property]); });
+                    var binWidth = (xExtent[1] - xExtent[0]) / n_bins;
+                    config.dimension = this.ndx.dimension(function (d) {
+                        var c = Math.floor(parseFloat(d[config.property]) / binWidth) * binWidth;
+                        return c;
+                    });
+                    config.group = config.dimension.group().reduceCount();
+                    break;
+                case "count":
+                    config.dimension = this.ndx.dimension(function (d) { return d[config.property]; });
+                    config.group = config.dimension.group().reduceCount();
+                    break;
+            }
+            var width = (config.width * this.defaultWidth) - 25;
+            var height = (config.height * 125) - 25;
+            switch (config.type) {
+                case "table":
+                    var c = [];
+                    config.columns.forEach(function (ci) {
+                        c.push({ label: ci.title, format: function (d) {
+                                if (ci.hasOwnProperty("type") && ci["type"] === "number")
+                                    return d3.round(d[ci.property], 1);
+                                return d[ci.property];
+                            }
+                        });
+                    });
+                    config.chart = dc.dataTable("#" + config.elementId);
+                    config.chart
+                        .width(width)
+                        .height(height)
+                        .dimension(config.dimension)
+                        .group(function (d) {
+                        var date = d[config.time];
+                        return "";
+                    })
+                        .size(1000)
+                        .columns(c);
+                    break;
+                case "time":
+                    config.chart = dc.lineChart("#" + config.elementId);
+                    config.chart
+                        .width(width)
+                        .height(height)
+                        .x(d3.time.scale().domain([new Date(2011, 0, 1), new Date(2016, 11, 31)]))
+                        .elasticX(true)
+                        .elasticY(true)
+                        .mouseZoomable(true)
+                        .renderHorizontalGridLines(true)
+                        .brushOn(true)
+                        .dimension(config.dimension)
+                        .group(function (d) {
+                        //var format = d3.format('02d');
+                        return d[config.time];
+                    })
+                        .renderHorizontalGridLines(true)
+                        .on('renderlet', function (chart) {
+                        chart.selectAll('rect').on("click", function (d) {
+                            // console.log("click!", d);
+                        });
+                    });
+                    break;
+                case "line":
+                    config.chart = dc.lineChart("#" + config.elementId);
+                    config.chart
+                        .width(width)
+                        .height(height)
+                        .x(d3.scale.linear())
+                        .elasticX(true)
+                        .elasticY(true)
+                        .renderHorizontalGridLines(false)
+                        .dimension(config.dimension)
+                        .group(config.group)
+                        .mouseZoomable(true)
+                        .on('renderlet', function (chart) {
+                        chart.selectAll('rect').on("click", function (d) {
+                            // console.log("click!", d);
+                        });
+                    });
+                    break;
+                case "pie":
+                    config.chart = dc.pieChart("#" + config.elementId);
+                    config.chart
+                        .width(width)
+                        .height(height)
+                        .slicesCap(10)
+                        .innerRadius(10)
+                        .dimension(config.dimension)
+                        .group(config.group);
+                    break;
+                case "bar":
+                    config.chart = dc.barChart("#" + config.elementId);
+                    config.chart
+                        .width(width)
+                        .height(height)
+                        .x(d3.scale.linear())
+                        .centerBar(true)
+                        .xUnits(function () { return 20; })
+                        .elasticX(true)
+                        .elasticY(true)
+                        .renderHorizontalGridLines(true)
+                        .dimension(config.dimension)
+                        .group(config.group);
+                    break;
+                case "stackedbar":
+                    config.chart = dc.barChart("#" + config.elementId);
+                    config.chart
+                        .width(width)
+                        .height(height)
+                        .x(d3.scale.linear())
+                        .centerBar(false)
+                        .xUnits(function () { return 20; })
+                        .elasticX(true)
+                        .elasticY(true)
+                        .renderHorizontalGridLines(true)
+                        .dimension(config.dimension)
+                        .group(config.group);
+                    break;
+                case "scatter":
+                    config.chart = dc.scatterPlot("#" + config.elementId);
+                    config.chart
+                        .width(width)
+                        .height(height)
+                        .symbolSize(3)
+                        .x(d3.scale.linear())
+                        .y(d3.scale.linear())
+                        .elasticX(true)
+                        .elasticY(true)
+                        .dimension(config.dimension)
+                        .group(config.group);
+                    break;
+                case "row":
+                    config.chart = dc.rowChart("#" + config.elementId);
+                    config.chart
+                        .width(width)
+                        .height(height)
+                        .gap(1)
+                        .elasticX(true)
+                        .dimension(config.dimension)
+                        .group(config.group)
+                        .xAxis().ticks(4);
+                    if (!config.ordering)
+                        config.ordering = "value";
+                    switch (config.ordering) {
+                        case "days":
+                            config.chart.ordering(function (d) {
+                                return Idv.days.indexOf(d.key);
+                            });
+                            break;
+                        case "months":
+                            config.chart.ordering(function (d) {
+                                return Idv.months.indexOf(d.key);
+                            });
+                            break;
+                        case "value":
+                            config.chart.ordering(function (d) {
+                                return -d.value;
+                            });
+                            break;
+                    }
+                    if (config.cap)
+                        config.chart.cap(config.cap);
+                    break;
+            }
+            if (!_.isUndefined(config.xaxis)) {
+                config.chart.xAxisLabel(config.xaxis);
+            }
+            if (!_.isUndefined(config.yaxis)) {
+                config.chart.yAxisLabel(config.yaxis);
+            }
+            config.chart.on("filtered", function (chart, filter) {
+                _this.triggerFilter(config);
+            });
+            if (config.stat === "average") {
+                config.chart.valueAccessor(function (d) {
+                    return d.value.avg;
+                });
+            }
+            console.log("Add chart " + config.title);
+        };
+        Idv.prototype.triggerFilter = function (config) {
+            var res = config.dimension.top(Infinity);
+            this.config.charts.forEach(function (c) {
+                if (!_.isUndefined(c.filtered) && _.isFunction(c.filtered)) {
+                    c.filtered(res);
+                }
+                //this.addChart(c)
+            });
+        };
+        Idv.prototype.createGridsterItem = function (config) {
+            var _this = this;
+            var html = "<li style='padding:4px'><header class='chart-title'><div class='fa fa-ellipsis-v dropdown-toggle' data-toggle='dropdown'  style='float:right;cursor:pointer' type='button'></div>";
+            html += "<ul class='dropdown-menu pull-right'><li class='dropdown-item'><a ng-click=\"resetFilter('" + config.id + "')\"'>reset filter</a></li><li class='dropdown-item'><a ng-click=\"resetAll()\">reset all filters</a></li><li class='dropdown-item'><a ng-click=\"disableFilter('" + config.id + "')\">disable filter</a></li>";
+            html += "</ul>" + config.title + "</header><div id='" + config.elementId + "' ></li>";
+            this.scope.resetFilter = function (id) {
+                _this.reset(id);
+            };
+            this.scope.resetAll = function () {
+                _this.resetAll();
+            };
+            this.scope.disableFilter = function (id) {
+                var c = _.findWhere(_this.config.charts, { id: id });
+                if (!_.isUndefined(c)) {
+                    c.enabled = false;
+                    _this.updateCharts();
+                }
+            };
+            var w = this.layerService.$compile(html)(this.scope);
+            this.gridster.add_widget(w, config.width, config.height); //"<li><header class='chart-title'><div class='fa fa-times' style='float:right' ng-click='vm.reset()'></div>" + config.title + "</header><div id='" + config.elementId + "'></li>",config.width,config.height);
+        };
+        Idv.prototype.addChart = function (config) {
+            if (typeof config.enabled === 'undefined')
+                config.enabled = true;
+            if (!config.enabled)
+                return;
+            if (!config.id)
+                config.id = csComp.Helpers.getGuid();
+            if (!config.containerId)
+                config.containerId = this.config.containerId;
+            config.elementId = "ddchart-" + config.id;
+            if (!config.title)
+                config.title = config.property;
+            if (!config.type)
+                config.type = "row";
+            switch (config.type) {
+                case "search":
+                    this.addSearchWidget(config);
+                    break;
+                case "layer":
+                    this.addLayerLink(config);
+                    break;
+                case "sumcompare":
+                    this.addSumCompare(config);
+                    break;
+                default:
+                    this.addChartItem(config);
+                    break;
+            }
+        };
+        Idv.days = ["zondag", "maandag", "dinsdag", "woensdag", "donderdag", "vrijdag", "zaterdag"];
+        Idv.months = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "okt", "nov", "dec"];
+        return Idv;
+    }());
+    Idv_1.Idv = Idv;
+})(Idv || (Idv = {}));
+//# sourceMappingURL=IdvHelper.js.map
 var KanbanBoard;
 (function (KanbanBoard) {
     /**
@@ -11493,6 +11360,7 @@ var Legend;
             $scope.vm = this;
             var par = $scope.$parent;
             this.widget = (par.widget);
+            this.parentWidget = $('#' + this.widget.elementId).parent();
             //console.log(JSON.stringify(this.widget.data));
             //$scope.title = this.widget.title;
             //$scope.timestamp = '19:45';
@@ -11501,6 +11369,7 @@ var Legend;
             //$scope.s1 = $scope.data.propertyTypeKey;
             if (this.widget && this.widget.data && this.widget.data.hasOwnProperty('propertyTypeKey'))
                 var ptd = this.$layerService.propertyTypeData[$scope.data.propertyTypeKey];
+            $scope.activeStyleProperty = ptd;
             //if (ptd) $scope.s2 = ptd.title;
             //$scope.s3 = 'passcount=' + this.passcount.toString();
             // if ($scope.data.mode = 'lastSelectedStyle') {
@@ -11528,17 +11397,22 @@ var Legend;
                     }
                 }
                 if (!this.subscribeHandle) {
-                    this.subscribeHandle = this.$messageBus.subscribe("updatelegend", function (title, ptdataKey) {
+                    this.subscribeHandle = this.$messageBus.subscribe("updatelegend", function (title, data) {
                         switch (title) {
                             case 'removelegend':
                                 _this.$messageBus.unsubscribe(_this.subscribeHandle);
                                 break;
+                            case 'hidelegend':
+                                _this.parentWidget.hide();
+                                break;
                             default:
+                                _this.parentWidget.show();
                                 if (ptd && ptd.legend) {
                                     $scope.legend = ptd.legend;
+                                    $scope.activeStyleProperty = ptd;
                                 }
                                 if ($scope.data.mode = 'lastSelectedStyle') {
-                                    $scope.legend = _this.createLegend();
+                                    $scope.legend = _this.createLegend(data);
                                     if ($scope.$parent.hasOwnProperty('widget')) {
                                         if (!$scope.legend.hasOwnProperty('legendEntries')) {
                                             $scope.$parent.widget['enabled'] = false;
@@ -11567,19 +11441,27 @@ var Legend;
                 }
             }
         }
-        LegendCtrl.prototype.createLegend = function () {
+        LegendCtrl.prototype.createLegend = function (activeStyle) {
+            var _this = this;
+            if (activeStyle === void 0) { activeStyle = null; }
             var leg = new csComp.Services.Legend();
-            var activeStyle;
-            this.$layerService.project.groups.forEach(function (g) {
-                g.styles.forEach(function (gs) {
-                    if (gs.enabled) {
-                        activeStyle = gs;
-                    }
+            if (!activeStyle) {
+                this.$layerService.project.groups.forEach(function (g) {
+                    g.styles.forEach(function (gs) {
+                        if (gs.enabled) {
+                            activeStyle = gs;
+                            _this.$scope.activeStyleGroup = g;
+                        }
+                    });
                 });
-            });
+            }
+            else {
+                this.$scope.activeStyleGroup = activeStyle.group;
+            }
             if (!activeStyle)
                 return leg;
             var ptd = this.$layerService.propertyTypeData[activeStyle.property];
+            this.$scope.activeStyleProperty = ptd;
             if (!ptd)
                 return leg;
             if (ptd.legend)
@@ -11635,6 +11517,38 @@ var Legend;
                 style['border-bottom'] = '1px solid black';
             }
             return style;
+        };
+        LegendCtrl.prototype.toggleFilter = function (legend, le) {
+            var _this = this;
+            if (!legend || !le)
+                return;
+            var projGroup = this.$scope.activeStyleGroup;
+            var property = this.$scope.activeStyleProperty;
+            if (!projGroup || !property)
+                return;
+            //Check if filter already exists. If so, remove it.
+            var exists = projGroup.filters.some(function (f) {
+                if (f.property === property.label) {
+                    _this.$layerService.removeFilter(f);
+                    return true;
+                }
+            });
+            if (!exists) {
+                var gf = new csComp.Services.GroupFilter();
+                gf.property = property.label; //prop.split('#').pop();
+                gf.id = 'buttonwidget_filter';
+                gf.group = projGroup;
+                gf.filterType = 'row';
+                gf.title = property.title;
+                gf.rangex = [le.interval.min, le.interval.max];
+                gf.filterLabel = le.label;
+                console.log('Setting filter');
+                this.$layerService.rebuildFilters(projGroup);
+                projGroup.filters = projGroup.filters.filter(function (f) { return f.id !== gf.id; });
+                this.$layerService.setFilter(gf, projGroup);
+                this.$layerService.visual.leftPanelVisible = true;
+                $('#filter-tab').click();
+            }
         };
         // $inject annotation
         // It provides $injector with information about dependencies to be injected into constructor
@@ -12017,115 +11931,6 @@ var MapElement;
     MapElement.MapElementCtrl = MapElementCtrl;
 })(MapElement || (MapElement = {}));
 //# sourceMappingURL=MapElementCtrl.js.map
-var Mobile;
-(function (Mobile) {
-    /**
-      * Config
-      */
-    var moduleName = 'csComp';
-    try {
-        Mobile.myModule = angular.module(moduleName);
-    }
-    catch (err) {
-        // named module does not exist, so create one
-        Mobile.myModule = angular.module(moduleName, []);
-    }
-    /**
-      * Directive to display the available map layers.
-      */
-    Mobile.myModule.directive('mobile', [
-        '$window', '$compile',
-        function ($window, $compile) {
-            return {
-                terminal: true,
-                restrict: 'E',
-                scope: {},
-                templateUrl: 'directives/Mobile/Mobile.tpl.html',
-                link: function (scope, element, attrs) {
-                    // Deal with resizing the element list
-                    scope.onResizeFunction = function () {
-                        var filterHeight = 50;
-                        var paginationCtrlHeight = 100;
-                        var itemHeight = 60;
-                        //scope.windowHeight          = $window.innerHeight;
-                        //scope.windowWidth           = $window.innerWidth;
-                        scope.numberOfItems = Math.floor(($window.innerHeight - filterHeight - paginationCtrlHeight) / itemHeight);
-                    };
-                    // Call to the function when the page is first loaded
-                    scope.onResizeFunction();
-                    angular.element($window).bind('resize', function () {
-                        scope.onResizeFunction();
-                        scope.$apply();
-                    });
-                },
-                replace: false,
-                transclude: false,
-                controller: Mobile.MobileCtrl
-            };
-        }
-    ]);
-})(Mobile || (Mobile = {}));
-//# sourceMappingURL=Mobile.js.map
-var Mobile;
-(function (Mobile) {
-    var MobileCtrl = (function () {
-        // dependencies are injected via AngularJS $injector
-        // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
-        function MobileCtrl($scope, $layerService, $messageBus, localStorageService, geoService) {
-            var _this = this;
-            this.$scope = $scope;
-            this.$layerService = $layerService;
-            this.$messageBus = $messageBus;
-            this.localStorageService = localStorageService;
-            this.geoService = geoService;
-            $scope.vm = this;
-            this.$messageBus.subscribe('project', function (a, p) {
-                if (a === 'loaded') {
-                    _this.availableLayers = [];
-                    p.groups.forEach((function (g) {
-                        g.layers.forEach(function (l) {
-                            if (l.tags && l.tags.indexOf('mobile') >= 0)
-                                _this.availableLayers.push(l);
-                        });
-                    }));
-                    // find mobile layer
-                    console.log('available layers');
-                    console.log(_this.availableLayers);
-                }
-            });
-            $messageBus.subscribe("geo", function (action, loc) {
-                switch (action) {
-                    case "pos":
-                        var f = new csComp.Services.Feature();
-                        //f.layerId = layer.id;
-                        f.geometry = {
-                            type: 'Point', coordinates: []
-                        };
-                        f.geometry.coordinates = [loc.coords.longitude, loc.coords.latitude];
-                        f.properties = { "Name": "test" };
-                        //layer.data.features.push(f);
-                        //this.$layerService.initFeature(f, layer);
-                        _this.$layerService.activeMapRenderer.addFeature(f);
-                        _this.$layerService.saveFeature(f);
-                        break;
-                }
-            });
-            this.geoService.start({});
-        }
-        // $inject annotation.
-        // It provides $injector with information about dependencies to be injected into constructor
-        // it is better to have it close to the constructor, because the parameters must match in count and type.
-        // See http://docs.angularjs.org/guide/di
-        MobileCtrl.$inject = [
-            '$scope',
-            'layerService',
-            'messageBusService', 'localStorageService', 'geoService'
-        ];
-        return MobileCtrl;
-    }());
-    Mobile.MobileCtrl = MobileCtrl;
-})(Mobile || (Mobile = {}));
-//# sourceMappingURL=MobileCtrl.js.map
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -13472,6 +13277,115 @@ var Mca;
     Mca.McaEditorCtrl = McaEditorCtrl;
 })(Mca || (Mca = {}));
 //# sourceMappingURL=McaEditorCtrl.js.map
+var Mobile;
+(function (Mobile) {
+    /**
+      * Config
+      */
+    var moduleName = 'csComp';
+    try {
+        Mobile.myModule = angular.module(moduleName);
+    }
+    catch (err) {
+        // named module does not exist, so create one
+        Mobile.myModule = angular.module(moduleName, []);
+    }
+    /**
+      * Directive to display the available map layers.
+      */
+    Mobile.myModule.directive('mobile', [
+        '$window', '$compile',
+        function ($window, $compile) {
+            return {
+                terminal: true,
+                restrict: 'E',
+                scope: {},
+                templateUrl: 'directives/Mobile/Mobile.tpl.html',
+                link: function (scope, element, attrs) {
+                    // Deal with resizing the element list
+                    scope.onResizeFunction = function () {
+                        var filterHeight = 50;
+                        var paginationCtrlHeight = 100;
+                        var itemHeight = 60;
+                        //scope.windowHeight          = $window.innerHeight;
+                        //scope.windowWidth           = $window.innerWidth;
+                        scope.numberOfItems = Math.floor(($window.innerHeight - filterHeight - paginationCtrlHeight) / itemHeight);
+                    };
+                    // Call to the function when the page is first loaded
+                    scope.onResizeFunction();
+                    angular.element($window).bind('resize', function () {
+                        scope.onResizeFunction();
+                        scope.$apply();
+                    });
+                },
+                replace: false,
+                transclude: false,
+                controller: Mobile.MobileCtrl
+            };
+        }
+    ]);
+})(Mobile || (Mobile = {}));
+//# sourceMappingURL=Mobile.js.map
+var Mobile;
+(function (Mobile) {
+    var MobileCtrl = (function () {
+        // dependencies are injected via AngularJS $injector
+        // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
+        function MobileCtrl($scope, $layerService, $messageBus, localStorageService, geoService) {
+            var _this = this;
+            this.$scope = $scope;
+            this.$layerService = $layerService;
+            this.$messageBus = $messageBus;
+            this.localStorageService = localStorageService;
+            this.geoService = geoService;
+            $scope.vm = this;
+            this.$messageBus.subscribe('project', function (a, p) {
+                if (a === 'loaded') {
+                    _this.availableLayers = [];
+                    p.groups.forEach((function (g) {
+                        g.layers.forEach(function (l) {
+                            if (l.tags && l.tags.indexOf('mobile') >= 0)
+                                _this.availableLayers.push(l);
+                        });
+                    }));
+                    // find mobile layer
+                    console.log('available layers');
+                    console.log(_this.availableLayers);
+                }
+            });
+            $messageBus.subscribe("geo", function (action, loc) {
+                switch (action) {
+                    case "pos":
+                        var f = new csComp.Services.Feature();
+                        //f.layerId = layer.id;
+                        f.geometry = {
+                            type: 'Point', coordinates: []
+                        };
+                        f.geometry.coordinates = [loc.coords.longitude, loc.coords.latitude];
+                        f.properties = { "Name": "test" };
+                        //layer.data.features.push(f);
+                        //this.$layerService.initFeature(f, layer);
+                        _this.$layerService.activeMapRenderer.addFeature(f);
+                        _this.$layerService.saveFeature(f);
+                        break;
+                }
+            });
+            this.geoService.start({});
+        }
+        // $inject annotation.
+        // It provides $injector with information about dependencies to be injected into constructor
+        // it is better to have it close to the constructor, because the parameters must match in count and type.
+        // See http://docs.angularjs.org/guide/di
+        MobileCtrl.$inject = [
+            '$scope',
+            'layerService',
+            'messageBusService', 'localStorageService', 'geoService'
+        ];
+        return MobileCtrl;
+    }());
+    Mobile.MobileCtrl = MobileCtrl;
+})(Mobile || (Mobile = {}));
+//# sourceMappingURL=MobileCtrl.js.map
 var Navigate;
 (function (Navigate) {
     /**
@@ -13560,13 +13474,18 @@ var Navigate;
                 }
             });
             this.$messageBus.subscribe('search', function (title, search) {
-                _this.searchResults = [];
                 switch (title) {
                     case 'update':
+                        _this.searchResults = [];
                         _this.doSearch(search.query);
                         break;
                     case 'reset':
+                        _this.searchResults = [];
+                        _this.$dashboardService._search.isActive = false;
                         _this.clearSearchLayer();
+                        break;
+                    case 'selectFirstResult':
+                        _this.selectFirstResult();
                         break;
                 }
             });
@@ -13690,6 +13609,11 @@ var Navigate;
                 this.$messageBus.publish('map', 'setextent', bbox);
             }
         };
+        NavigateCtrl.prototype.selectFirstResult = function () {
+            if (this.searchResults && this.searchResults.length > 0) {
+                this.selectSearchResult(this.searchResults[0]);
+            }
+        };
         NavigateCtrl.prototype.selectSearchResult = function (item) {
             if (item.click)
                 item.click(item);
@@ -13700,11 +13624,16 @@ var Navigate;
                 if (!as.search)
                     return;
                 as.search({ query: search, results: _this.searchResults }, function (error, result) {
-                    _this.searchResults = _this.searchResults.filter(function (sr) { return sr.service !== as.id; });
-                    _this.searchResults = _this.searchResults.concat(result).sort(function (a, b) { return ((b.score - a.score) || -1); });
-                    _this.updateSearchLayer();
-                    if (_this.$scope.$root.$$phase !== '$apply' && _this.$scope.$root.$$phase !== '$digest') {
-                        _this.$scope.$apply();
+                    if (_this.$dashboardService._search.isActive) {
+                        _this.searchResults = _this.searchResults.filter(function (sr) { return sr.service !== as.id; });
+                        _this.searchResults = _this.searchResults.concat(result).sort(function (a, b) { return ((b.score - a.score) || -1); });
+                        _this.updateSearchLayer();
+                        if (_this.$scope.$root.$$phase !== '$apply' && _this.$scope.$root.$$phase !== '$digest') {
+                            _this.$scope.$apply();
+                        }
+                    }
+                    else {
+                        console.log('Ignoring old results');
                     }
                 });
             });
@@ -15495,56 +15424,6 @@ var Timeline;
     Timeline.TimelineCtrl = TimelineCtrl;
 })(Timeline || (Timeline = {}));
 //# sourceMappingURL=TimelineCtrl.js.map
-var Voting;
-(function (Voting) {
-    /**
-      * Config
-      */
-    var moduleName = 'csComp';
-    try {
-        Voting.myModule = angular.module(moduleName);
-    }
-    catch (err) {
-        // named module does not exist, so create one
-        Voting.myModule = angular.module(moduleName, []);
-    }
-    /**
-      * Directive to display an MCA control.
-      */
-    Voting.myModule.directive('voting', ['$timeout', function ($timeout) {
-            return {
-                restrict: 'EA',
-                require: '^ngModel',
-                scope: {
-                    min: '=',
-                    max: '=',
-                    ngModel: '=',
-                    ngChange: '&'
-                },
-                template: '<div style="line-height: 12px; vertical-align: top; margin: 0; background: rgba(0, 0, 0, 0.1); border-radius: 6px; padding: 4px 6px;">' +
-                    '<a href="" data-ng-click="decrement()" data-ng-disabled="ngModel <= min" style="float: left;"><i class="fa" data-ng-class="{true: \'fa-minus-square\', false: \'fa-minus-square-o\'}[ngModel > min]"></i></a>' +
-                    '<span style="float: left; width:28px; text-align: center;">{{ngModel}}</span>' +
-                    '<a href="" data-ng-click="increment()" data-ng-disabled="ngModel >= max"><i class="fa" data-ng-class="{true: \'fa-plus-square\' , false: \'fa-plus-square-o\' }[ngModel < max]"></i></a>' +
-                    '</div>',
-                link: function ($scope) {
-                    $scope.increment = function () {
-                        if ($scope.ngModel >= $scope.max)
-                            return;
-                        $scope.ngModel++;
-                        $timeout($scope.ngChange, 0);
-                    };
-                    $scope.decrement = function () {
-                        if ($scope.ngModel <= $scope.min)
-                            return;
-                        $scope.ngModel--;
-                        $timeout($scope.ngChange, 0);
-                    };
-                }
-            };
-        }
-    ]);
-})(Voting || (Voting = {}));
-//# sourceMappingURL=Voting.js.map
 var TripPlanner;
 (function (TripPlanner) {
     /**
@@ -15676,6 +15555,56 @@ var TripPlanner;
     TripPlanner.TripPlannerCtrl = TripPlannerCtrl;
 })(TripPlanner || (TripPlanner = {}));
 //# sourceMappingURL=TripPlannerCtrl.js.map
+var Voting;
+(function (Voting) {
+    /**
+      * Config
+      */
+    var moduleName = 'csComp';
+    try {
+        Voting.myModule = angular.module(moduleName);
+    }
+    catch (err) {
+        // named module does not exist, so create one
+        Voting.myModule = angular.module(moduleName, []);
+    }
+    /**
+      * Directive to display an MCA control.
+      */
+    Voting.myModule.directive('voting', ['$timeout', function ($timeout) {
+            return {
+                restrict: 'EA',
+                require: '^ngModel',
+                scope: {
+                    min: '=',
+                    max: '=',
+                    ngModel: '=',
+                    ngChange: '&'
+                },
+                template: '<div style="line-height: 12px; vertical-align: top; margin: 0; background: rgba(0, 0, 0, 0.1); border-radius: 6px; padding: 4px 6px;">' +
+                    '<a href="" data-ng-click="decrement()" data-ng-disabled="ngModel <= min" style="float: left;"><i class="fa" data-ng-class="{true: \'fa-minus-square\', false: \'fa-minus-square-o\'}[ngModel > min]"></i></a>' +
+                    '<span style="float: left; width:28px; text-align: center;">{{ngModel}}</span>' +
+                    '<a href="" data-ng-click="increment()" data-ng-disabled="ngModel >= max"><i class="fa" data-ng-class="{true: \'fa-plus-square\' , false: \'fa-plus-square-o\' }[ngModel < max]"></i></a>' +
+                    '</div>',
+                link: function ($scope) {
+                    $scope.increment = function () {
+                        if ($scope.ngModel >= $scope.max)
+                            return;
+                        $scope.ngModel++;
+                        $timeout($scope.ngChange, 0);
+                    };
+                    $scope.decrement = function () {
+                        if ($scope.ngModel <= $scope.min)
+                            return;
+                        $scope.ngModel--;
+                        $timeout($scope.ngChange, 0);
+                    };
+                }
+            };
+        }
+    ]);
+})(Voting || (Voting = {}));
+//# sourceMappingURL=Voting.js.map
 //# sourceMappingURL=AuthenticationService.js.map
 var csComp;
 (function (csComp) {
@@ -16263,6 +16192,10 @@ var csComp;
                     _this.layerService.visual.leftPanelVisible = true;
                     $('#style-tab').click();
                 };
+                this.actions['show filter tab'] = function () {
+                    _this.layerService.visual.leftPanelVisible = true;
+                    $('#filter-tab').click();
+                };
                 this.actions['activate timerange'] = function () {
                     console.log('Activate timerange action called');
                     _this.layerService.project.timeLine.start = new Date().getTime() - 1000 * 60 * 60 * 2;
@@ -16323,6 +16256,11 @@ var csComp;
                     console.log('Center map action called');
                     // Move map such that selected feature in the center of the map
                     _this.layerService.centerFeatureOnMap(_this.layerService.selectedFeatures);
+                };
+                this.actions['reload project'] = function (options) {
+                    console.log('Reload project action called');
+                    _this.layerService.openProject(_this.layerService.projectUrl);
+                    _this.layerService.checkViewBounds();
                 };
             };
             /** Call an action by name (lowercase), optionally providing it with additional parameters like group, layer or property id. */
@@ -17454,6 +17392,79 @@ var csComp;
     })(Services = csComp.Services || (csComp.Services = {}));
 })(csComp || (csComp = {}));
 //# sourceMappingURL=geolocation.js.map
+var CISAction;
+(function (CISAction_1) {
+    var CISAction = (function () {
+        function CISAction() {
+            this.id = 'CISAction';
+        }
+        CISAction.prototype.stop = function () { };
+        CISAction.prototype.addFeature = function (feature) { };
+        CISAction.prototype.removeFeature = function (feature) { };
+        CISAction.prototype.selectFeature = function (feature) { };
+        CISAction.prototype.addLayer = function (layer) { };
+        CISAction.prototype.removeLayer = function (layer) { };
+        CISAction.prototype.getFeatureActions = function (feature) {
+            if (!feature)
+                return [];
+            var sendCISMessageOption = {
+                title: 'Send CIS message'
+            };
+            sendCISMessageOption.callback = this.sendCISMessage;
+            return [sendCISMessageOption];
+        };
+        CISAction.prototype.getFeatureHoverActions = function (feature) {
+            return [];
+        };
+        CISAction.prototype.deselectFeature = function (feature) { };
+        CISAction.prototype.updateFeature = function (feuture) { };
+        CISAction.prototype.getLayerActions = function (layer) {
+            return [];
+        };
+        CISAction.prototype.sendCISMessage = function (feature, layerService) {
+            var fType = layerService.getFeatureType(feature);
+            var url = fType['cisUrl'] || '/cis/notify';
+            console.log('Send CIS message');
+            var cisMessage = JSON.parse(JSON.stringify(CISAction.createDefaultCISMessage()));
+            console.log(url);
+            $.ajax({
+                contentType: 'application/json',
+                data: JSON.stringify(cisMessage),
+                url: url,
+                dataType: 'json',
+                crossDomain: true,
+                type: 'POST',
+                success: function (data, status, jqxhr) {
+                    console.log('Sent CIS successfully');
+                },
+                error: function (err) {
+                    console.log('Error sending CIS');
+                }
+            });
+        };
+        CISAction.createDefaultCISMessage = function () {
+            var deParams = {
+                id: 'csweb' + csComp.Helpers.getGuid(),
+                senderId: 'someone@csweb',
+                dateTimeSent: (new Date().toISOString()),
+                kind: 'Report',
+                status: 'Excercise'
+            };
+            var cisMessage = {
+                msgType: "CAP",
+                msg: "csWeb-testmessage",
+                deParameters: deParams
+            };
+            return cisMessage;
+        };
+        CISAction.prototype.init = function (layerService) {
+            this.notifyUrl = '/cis/notify';
+            console.log("Init CISActionService with notify on " + this.notifyUrl);
+        };
+        return CISAction;
+    }());
+    CISAction_1.CISAction = CISAction;
+})(CISAction || (CISAction = {}));
 //# sourceMappingURL=CISAction.js.map
 var ContourAction;
 (function (ContourAction) {
@@ -17877,6 +17888,8 @@ var csComp;
                             click: function () {
                                 _this.layerService.$mapService.zoomTo(f);
                                 _this.layerService.selectFeature(f);
+                                _this.layerService.$messageBusService.publish('search', 'reset');
+                                _this.layerService.visual.leftPanelVisible = false;
                             }
                         };
                         //if (f.fType && f.fType.name!=='default') res.description += ' (' + f.fType.name + ')';
@@ -18447,7 +18460,6 @@ var csComp;
                     return;
                 layer.isLoading = true;
                 this.$messageBusService.publish('layer', 'loading', layer);
-                var disableLayers = [];
                 async.series([
                     function (callback) {
                         // check if in this group only one layer can be active
@@ -18455,7 +18467,8 @@ var csComp;
                         if (layer.group.oneLayerActive) {
                             layer.group.layers.forEach(function (l) {
                                 if (l.id !== layer.id && l.enabled) {
-                                    disableLayers.push(l);
+                                    _this.removeLayer(l);
+                                    l.enabled = false;
                                 }
                             });
                         }
@@ -18513,14 +18526,6 @@ var csComp;
                         }, data);
                         if (layer.timeAware)
                             _this.$messageBusService.publish('timeline', 'updateFeatures');
-                        callback(null, null);
-                    },
-                    function (callback) {
-                        // now remove the layers that need to be disabled
-                        disableLayers.forEach(function (l) {
-                            _this.removeLayer(l);
-                            l.enabled = false;
-                        });
                         callback(null, null);
                     }
                 ]);
@@ -18877,9 +18882,11 @@ var csComp;
                     center = f.geometry.coordinates;
                 }
                 else {
-                    center = csComp.Helpers.GeoExtensions.getCentroid(f.geometry.coordinates);
+                    center = csComp.Helpers.GeoExtensions.getCentroid(f.geometry.coordinates).coordinates;
                 }
-                this.map.getMap().panTo(new L.LatLng(center.coordinates[1], center.coordinates[0]));
+                if (!center || center.length < 2)
+                    return;
+                this.map.getMap().panTo(new L.LatLng(center[1], center[0]));
             };
             LayerService.prototype.editFeature = function (feature, select) {
                 if (select === void 0) { select = true; }
@@ -19187,6 +19194,15 @@ var csComp;
                     s.action = LayerUpdateAction.deleteFeature;
                     s.item = feature.id;
                     this.$messageBusService.serverSendMessageAction('layer', s);
+                }
+                if (feature.isSelected) {
+                    this.lastSelectedFeature = null;
+                    this.selectedFeatures.some(function (f, ind, arr) {
+                        if (f.id === feature.id) {
+                            arr.splice(ind, 1);
+                            return true;
+                        }
+                    });
                 }
             };
             /**
@@ -20645,6 +20661,11 @@ var csComp;
                         loaded();
                 }
             };
+            LayerService.prototype.enableLayer = function (layer, loaded) {
+                layer.enabled = true;
+                this.addLayer(layer, function () { if (loaded)
+                    loaded(); });
+            };
             LayerService.prototype.removeGroup = function (group) {
                 var _this = this;
                 if (group.layers) {
@@ -21469,6 +21490,12 @@ var csComp;
                 catch (e) {
                     console.log('error zooming to feature');
                 }
+            };
+            MapService.prototype.zoomIn = function () {
+                this.map.zoomIn();
+            };
+            MapService.prototype.zoomOut = function () {
+                this.map.zoomOut();
             };
             //private getCentroid(arr) {
             //    return arr.reduce((x, y) => [x[0] + y[0] / arr.length, x[1] + y[1] / arr.length], [0, 0]);
@@ -22529,7 +22556,14 @@ var Search;
             $scope.vm = this;
             $scope.$watch('vm.query', _.throttle(function (search) {
                 _this.$dashboardService.search = { query: search };
-            }, 500));
+            }, 700, { leading: false }));
+            this.$messageBusService.subscribe('search', function (title, search) {
+                switch (title) {
+                    case 'reset':
+                        _this.closeSearch();
+                        break;
+                }
+            });
         }
         SearchCtrl.prototype.startSearch = function () {
             if (this.$scope.sv) {
@@ -22537,6 +22571,16 @@ var Search;
                     $('#searchInput').focus();
                 }, 100);
             }
+        };
+        SearchCtrl.prototype.closeSearch = function () {
+            var _this = this;
+            this.$timeout(function () {
+                $('#searchInput').val('');
+                _this.$scope.sv = false;
+            }, 0);
+        };
+        SearchCtrl.prototype.selectFirst = function () {
+            this.$messageBusService.publish('search', 'selectFirstResult');
         };
         //public dashboard: csComp.Services.Dashboard;
         // $inject annotation.
@@ -23059,325 +23103,6 @@ var GroupEdit;
     GroupEdit.GroupEditCtrl = GroupEditCtrl;
 })(GroupEdit || (GroupEdit = {}));
 //# sourceMappingURL=GroupEditCtrl.js.map
-var PropertyTypes;
-(function (PropertyTypes) {
-    /**
-      * Config
-      */
-    var moduleName = 'csComp';
-    try {
-        PropertyTypes.myModule = angular.module(moduleName);
-    }
-    catch (err) {
-        // named module does not exist, so create one
-        PropertyTypes.myModule = angular.module(moduleName, []);
-    }
-    /**
-      * Directive to display a feature's properties in a panel.
-      *
-      * @seealso          : http://www.youtube.com/watch?v=gjJ5vLRK8R8&list=UUGD_0i6L48hucTiiyhb5QzQ
-      * @seealso          : http://plnkr.co/edit/HyBP9d?p=preview
-      */
-    PropertyTypes.myModule.directive('propertytypes', ['$compile',
-        function ($compile) {
-            return {
-                terminal: false,
-                restrict: 'E',
-                scope: {},
-                templateUrl: 'directives/Editors/PropertyTypeEditor/PropertyTypes.tpl.html',
-                replace: true,
-                transclude: true,
-                controller: PropertyTypes.PropertyTypesCtrl
-            };
-        }
-    ])
-        .directive('ngEnter', function () {
-        return function (scope, element, attrs) {
-            element.bind("keydown keypress", function (event) {
-                if (event.which === 13) {
-                    scope.$apply(function () {
-                        scope.$eval(attrs.ngEnter);
-                    });
-                    event.preventDefault();
-                }
-            });
-        };
-    });
-})(PropertyTypes || (PropertyTypes = {}));
-//# sourceMappingURL=PropertyTypes.js.map
-var PropertyTypes;
-(function (PropertyTypes) {
-    var PropertyTypesCtrl = (function () {
-        // dependencies are injected via AngularJS $injector
-        // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
-        function PropertyTypesCtrl($scope, $layerService, $messageBusService) {
-            var _this = this;
-            this.$scope = $scope;
-            this.$layerService = $layerService;
-            this.$messageBusService = $messageBusService;
-            this.editModeMessageReceived = function (title) {
-                switch (title) {
-                    case "enable":
-                        _this.$messageBusService.publish('sidebar', 'showEdit');
-                        _this.$scope.vm = _this;
-                        _this.$scope.propertyTypes = _this.$layerService.project.propertyTypeData;
-                        break;
-                    case 'disable':
-                        _this.$messageBusService.publish('sidebar', 'hideEdit');
-                        break;
-                    default:
-                }
-                // NOTE EV: You need to call apply only when an event is received outside the angular scope.
-                // However, make sure you are not calling this inside an angular apply cycle, as it will generate an error.
-                if (_this.$scope.$root.$$phase !== '$apply' && _this.$scope.$root.$$phase !== '$digest') {
-                    _this.$scope.$apply();
-                }
-            };
-            /**
-             * Callback function
-             * @see {http://stackoverflow.com/questions/12756423/is-there-an-alias-for-this-in-typescript}
-             * @see {http://stackoverflow.com/questions/20627138/typescript-this-scoping-issue-when-called-in-jquery-callback}
-             * @todo {notice the strange syntax using a fat arrow =>, which is to preserve the this reference in a callback!}
-             */
-            this.sidebarMessageReceived = function (title) {
-                //console.log("sidebarMessageReceived");
-                switch (title) {
-                    case "toggle":
-                        _this.$scope.showMenu = !_this.$scope.showMenu;
-                        break;
-                    case "show":
-                        _this.$scope.showMenu = true;
-                        break;
-                    case "showEdit":
-                        _this.$scope.showMenuEdit = true;
-                        break;
-                    case "hide":
-                        _this.$scope.showMenu = false;
-                        break;
-                    case "hideEdit":
-                        _this.$scope.showMenuEdit = false;
-                        break;
-                    default:
-                }
-                // NOTE EV: You need to call apply only when an event is received outside the angular scope.
-                // However, make sure you are not calling this inside an angular apply cycle, as it will generate an error.
-                if (_this.$scope.$root.$$phase != '$apply' && _this.$scope.$root.$$phase != '$digest') {
-                    _this.$scope.$apply();
-                }
-            };
-            console.log('prop editor');
-            this.$scope.vm = this;
-            this.$scope.showMenu = false;
-            this.$scope.showMenuEdit = false;
-            if (this.$scope.$root.$$phase != '$apply' && this.$scope.$root.$$phase != '$digest') {
-                this.$scope.$apply();
-            }
-            this.$messageBusService.subscribe("editmode", this.editModeMessageReceived);
-            this.$messageBusService.subscribe("sidebar", this.sidebarMessageReceived);
-            /**
-             * Get all sections from the available PropertyTypes
-             */
-            $scope.getSections = function () {
-                var propertyTypeData = _this.selectedResource.propertyTypeData;
-                var newSections = new Array();
-                for (var indexData in propertyTypeData) {
-                    var add = true;
-                    if (propertyTypeData[indexData].section != undefined) {
-                        if (newSections.length == 0) {
-                            newSections.push(propertyTypeData[indexData].section);
-                        }
-                        for (var indexNew in newSections) {
-                            if (propertyTypeData[indexData].section == newSections[indexNew]) {
-                                add = false;
-                            }
-                        }
-                        if (add) {
-                            newSections.push(propertyTypeData[indexData].section);
-                        }
-                    }
-                }
-                $scope.sections = newSections;
-            };
-            /**
-             * Add a new section to sections array
-             */
-            $scope.addSection = function (name) {
-                var sections = $scope.sections;
-                var add = true;
-                for (var index in sections) {
-                    if (name == sections[index]) {
-                        add = false;
-                    }
-                }
-                if (add) {
-                    $scope.sections.push(name);
-                }
-            };
-            /**
-             * Create an array with all the PropertyTypes for a features (or all features if no feature is selected)
-             */
-            $scope.filterProperty = function (selectedData) {
-                var allPropertyTypes = _this.selectedResource.propertyTypeData;
-                var propertyTypes = new Array();
-                if (selectedData == undefined) {
-                    // All property types are selected
-                    for (var index in allPropertyTypes) {
-                        propertyTypes.push(allPropertyTypes[index]);
-                    }
-                    $scope.propertyTypes = propertyTypes;
-                }
-                else {
-                    // Property types of a feature is selected
-                    var selectedPropertyTypes;
-                    if (selectedData.propertyTypeKeys !== undefined) {
-                        selectedPropertyTypes = selectedData.propertyTypeKeys.split(';');
-                    }
-                    for (var indexSelected in selectedPropertyTypes) {
-                        for (var indexAll in allPropertyTypes) {
-                            if (allPropertyTypes.hasOwnProperty(indexAll)) {
-                                if (selectedPropertyTypes[indexSelected] == allPropertyTypes[indexAll].label) {
-                                    propertyTypes.push(allPropertyTypes[indexAll]);
-                                }
-                            }
-                        }
-                    }
-                    $scope.propertyTypes = propertyTypes;
-                }
-            };
-        }
-        //** select a typesResource collection from the dropdown */
-        PropertyTypesCtrl.prototype.selectResource = function () {
-            if (this.$layerService.typesResources.hasOwnProperty(this.selectedResourceUrl)) {
-                this.selectedResource = this.$layerService.typesResources[this.selectedResourceUrl];
-            }
-        };
-        // $inject annotation.
-        // It provides $injector with information about dependencies to be in  jected into constructor
-        // it is better to have it close to the constructor, because the parameters must match in count and type.
-        // See http://docs.angularjs.org/guide/di
-        PropertyTypesCtrl.$inject = [
-            '$scope',
-            'layerService',
-            'messageBusService'
-        ];
-        return PropertyTypesCtrl;
-    }());
-    PropertyTypes.PropertyTypesCtrl = PropertyTypesCtrl;
-})(PropertyTypes || (PropertyTypes = {}));
-//# sourceMappingURL=PropertyTypesCtrl.js.map
-var LayerEdit;
-(function (LayerEdit) {
-    /**
-      * Config
-      */
-    var moduleName = 'csComp';
-    try {
-        LayerEdit.myModule = angular.module(moduleName);
-    }
-    catch (err) {
-        // named module does not exist, so create one
-        LayerEdit.myModule = angular.module(moduleName, []);
-    }
-    /**
-      * Directive to display a feature's properties in a panel.
-      *
-      * @seealso          : http://www.youtube.com/watch?v=gjJ5vLRK8R8&list=UUGD_0i6L48hucTiiyhb5QzQ
-      * @seealso          : http://plnkr.co/edit/HyBP9d?p=preview
-      */
-    LayerEdit.myModule.directive('layeredit', ['$compile',
-        function ($compile) {
-            return {
-                terminal: true,
-                restrict: 'E',
-                scope: {},
-                templateUrl: 'directives/Editors/LayerEditor/LayerEdit.tpl.html',
-                replace: false,
-                transclude: true,
-                controller: LayerEdit.LayerEditCtrl
-            };
-        }
-    ]);
-})(LayerEdit || (LayerEdit = {}));
-//# sourceMappingURL=LayerEdit.js.map
-var LayerEdit;
-(function (LayerEdit) {
-    var LayerEditCtrl = (function () {
-        // dependencies are injected via AngularJS $injector
-        // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
-        function LayerEditCtrl($scope, $http, $mapService, $layerService, $messageBusService, $dashboardService) {
-            this.$scope = $scope;
-            this.$http = $http;
-            this.$mapService = $mapService;
-            this.$layerService = $layerService;
-            this.$messageBusService = $messageBusService;
-            this.$dashboardService = $dashboardService;
-            this.scope = $scope;
-            $scope.vm = this;
-            this.layer = $scope.$parent["data"];
-            this.getTypes();
-            var ft = {};
-        }
-        LayerEditCtrl.prototype.addLayer = function () {
-        };
-        LayerEditCtrl.prototype.removeLayer = function () {
-            this.$layerService.removeLayer(this.layer, true);
-        };
-        LayerEditCtrl.prototype.addFeatureType = function () {
-            var _this = this;
-            if (this.layer.typeUrl) {
-                this.$layerService.loadTypeResources(this.layer.typeUrl, this.layer.dynamicResource || false, function () {
-                    if (_this.$layerService.typesResources.hasOwnProperty(_this.layer.typeUrl)) {
-                        var r = _this.$layerService.typesResources[_this.layer.typeUrl];
-                        var ft = {};
-                        var id = _this.layer.typeUrl + "#" + _this.layer.defaultFeatureType;
-                        ft.id = _this.layer.defaultFeatureType;
-                        ft.name = ft.id;
-                        ft.style = csComp.Helpers.getDefaultFeatureStyle(null);
-                        if (!r.featureTypes.hasOwnProperty(id)) {
-                            var ft = {};
-                            ft.id = _this.layer.defaultFeatureType;
-                            ft.name = ft.id;
-                            // EV already called before.
-                            //ft.style = csComp.Helpers.getDefaultFeatureStyle();
-                            //if (ft.name.toLowerCase().startsWith("http://")) id = ft.name;
-                            //if (csComp.Helpers.startsWith(name.toLowerCase(), "http://")) return name;
-                            _this.$layerService._featureTypes[id] = ft;
-                            r.featureTypes[ft.id] = ft;
-                        }
-                    }
-                });
-            }
-        };
-        LayerEditCtrl.prototype.getTypes = function () {
-            var _this = this;
-            console.log('its me babe');
-            this.$http.get(this.layer.typeUrl)
-                .success(function (response) {
-                setTimeout(function () {
-                    _this.availabeTypes = response.featureTypes;
-                    console.log(_this.availabeTypes);
-                }, 0);
-            })
-                .error(function () { console.log('LayerEditCtl: error with $http'); });
-        };
-        ;
-        // $inject annotation.
-        // It provides $injector with information about dependencies to be injected into constructor
-        // it is better to have it close to the constructor, because the parameters must match in count and type.
-        // See http://docs.angularjs.org/guide/di
-        LayerEditCtrl.$inject = [
-            '$scope',
-            '$http',
-            'mapService',
-            'layerService',
-            'messageBusService',
-            'dashboardService'
-        ];
-        return LayerEditCtrl;
-    }());
-    LayerEdit.LayerEditCtrl = LayerEditCtrl;
-})(LayerEdit || (LayerEdit = {}));
-//# sourceMappingURL=LayerEditCtrl.js.map
 var LayerEditor;
 (function (LayerEditor) {
     /**
@@ -23682,6 +23407,212 @@ var LayerSettings;
     LayerSettings.LayerSettingsCtrl = LayerSettingsCtrl;
 })(LayerSettings || (LayerSettings = {}));
 //# sourceMappingURL=LayerSettingsCtrl.js.map
+var PropertyTypes;
+(function (PropertyTypes) {
+    /**
+      * Config
+      */
+    var moduleName = 'csComp';
+    try {
+        PropertyTypes.myModule = angular.module(moduleName);
+    }
+    catch (err) {
+        // named module does not exist, so create one
+        PropertyTypes.myModule = angular.module(moduleName, []);
+    }
+    /**
+      * Directive to display a feature's properties in a panel.
+      *
+      * @seealso          : http://www.youtube.com/watch?v=gjJ5vLRK8R8&list=UUGD_0i6L48hucTiiyhb5QzQ
+      * @seealso          : http://plnkr.co/edit/HyBP9d?p=preview
+      */
+    PropertyTypes.myModule.directive('propertytypes', ['$compile',
+        function ($compile) {
+            return {
+                terminal: false,
+                restrict: 'E',
+                scope: {},
+                templateUrl: 'directives/Editors/PropertyTypeEditor/PropertyTypes.tpl.html',
+                replace: true,
+                transclude: true,
+                controller: PropertyTypes.PropertyTypesCtrl
+            };
+        }
+    ])
+        .directive('ngEnter', function () {
+        return function (scope, element, attrs) {
+            element.bind("keydown keypress", function (event) {
+                if (event.which === 13) {
+                    scope.$apply(function () {
+                        scope.$eval(attrs.ngEnter);
+                    });
+                    event.preventDefault();
+                }
+            });
+        };
+    });
+})(PropertyTypes || (PropertyTypes = {}));
+//# sourceMappingURL=PropertyTypes.js.map
+var PropertyTypes;
+(function (PropertyTypes) {
+    var PropertyTypesCtrl = (function () {
+        // dependencies are injected via AngularJS $injector
+        // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
+        function PropertyTypesCtrl($scope, $layerService, $messageBusService) {
+            var _this = this;
+            this.$scope = $scope;
+            this.$layerService = $layerService;
+            this.$messageBusService = $messageBusService;
+            this.editModeMessageReceived = function (title) {
+                switch (title) {
+                    case "enable":
+                        _this.$messageBusService.publish('sidebar', 'showEdit');
+                        _this.$scope.vm = _this;
+                        _this.$scope.propertyTypes = _this.$layerService.project.propertyTypeData;
+                        break;
+                    case 'disable':
+                        _this.$messageBusService.publish('sidebar', 'hideEdit');
+                        break;
+                    default:
+                }
+                // NOTE EV: You need to call apply only when an event is received outside the angular scope.
+                // However, make sure you are not calling this inside an angular apply cycle, as it will generate an error.
+                if (_this.$scope.$root.$$phase !== '$apply' && _this.$scope.$root.$$phase !== '$digest') {
+                    _this.$scope.$apply();
+                }
+            };
+            /**
+             * Callback function
+             * @see {http://stackoverflow.com/questions/12756423/is-there-an-alias-for-this-in-typescript}
+             * @see {http://stackoverflow.com/questions/20627138/typescript-this-scoping-issue-when-called-in-jquery-callback}
+             * @todo {notice the strange syntax using a fat arrow =>, which is to preserve the this reference in a callback!}
+             */
+            this.sidebarMessageReceived = function (title) {
+                //console.log("sidebarMessageReceived");
+                switch (title) {
+                    case "toggle":
+                        _this.$scope.showMenu = !_this.$scope.showMenu;
+                        break;
+                    case "show":
+                        _this.$scope.showMenu = true;
+                        break;
+                    case "showEdit":
+                        _this.$scope.showMenuEdit = true;
+                        break;
+                    case "hide":
+                        _this.$scope.showMenu = false;
+                        break;
+                    case "hideEdit":
+                        _this.$scope.showMenuEdit = false;
+                        break;
+                    default:
+                }
+                // NOTE EV: You need to call apply only when an event is received outside the angular scope.
+                // However, make sure you are not calling this inside an angular apply cycle, as it will generate an error.
+                if (_this.$scope.$root.$$phase != '$apply' && _this.$scope.$root.$$phase != '$digest') {
+                    _this.$scope.$apply();
+                }
+            };
+            console.log('prop editor');
+            this.$scope.vm = this;
+            this.$scope.showMenu = false;
+            this.$scope.showMenuEdit = false;
+            if (this.$scope.$root.$$phase != '$apply' && this.$scope.$root.$$phase != '$digest') {
+                this.$scope.$apply();
+            }
+            this.$messageBusService.subscribe("editmode", this.editModeMessageReceived);
+            this.$messageBusService.subscribe("sidebar", this.sidebarMessageReceived);
+            /**
+             * Get all sections from the available PropertyTypes
+             */
+            $scope.getSections = function () {
+                var propertyTypeData = _this.selectedResource.propertyTypeData;
+                var newSections = new Array();
+                for (var indexData in propertyTypeData) {
+                    var add = true;
+                    if (propertyTypeData[indexData].section != undefined) {
+                        if (newSections.length == 0) {
+                            newSections.push(propertyTypeData[indexData].section);
+                        }
+                        for (var indexNew in newSections) {
+                            if (propertyTypeData[indexData].section == newSections[indexNew]) {
+                                add = false;
+                            }
+                        }
+                        if (add) {
+                            newSections.push(propertyTypeData[indexData].section);
+                        }
+                    }
+                }
+                $scope.sections = newSections;
+            };
+            /**
+             * Add a new section to sections array
+             */
+            $scope.addSection = function (name) {
+                var sections = $scope.sections;
+                var add = true;
+                for (var index in sections) {
+                    if (name == sections[index]) {
+                        add = false;
+                    }
+                }
+                if (add) {
+                    $scope.sections.push(name);
+                }
+            };
+            /**
+             * Create an array with all the PropertyTypes for a features (or all features if no feature is selected)
+             */
+            $scope.filterProperty = function (selectedData) {
+                var allPropertyTypes = _this.selectedResource.propertyTypeData;
+                var propertyTypes = new Array();
+                if (selectedData == undefined) {
+                    // All property types are selected
+                    for (var index in allPropertyTypes) {
+                        propertyTypes.push(allPropertyTypes[index]);
+                    }
+                    $scope.propertyTypes = propertyTypes;
+                }
+                else {
+                    // Property types of a feature is selected
+                    var selectedPropertyTypes;
+                    if (selectedData.propertyTypeKeys !== undefined) {
+                        selectedPropertyTypes = selectedData.propertyTypeKeys.split(';');
+                    }
+                    for (var indexSelected in selectedPropertyTypes) {
+                        for (var indexAll in allPropertyTypes) {
+                            if (allPropertyTypes.hasOwnProperty(indexAll)) {
+                                if (selectedPropertyTypes[indexSelected] == allPropertyTypes[indexAll].label) {
+                                    propertyTypes.push(allPropertyTypes[indexAll]);
+                                }
+                            }
+                        }
+                    }
+                    $scope.propertyTypes = propertyTypes;
+                }
+            };
+        }
+        //** select a typesResource collection from the dropdown */
+        PropertyTypesCtrl.prototype.selectResource = function () {
+            if (this.$layerService.typesResources.hasOwnProperty(this.selectedResourceUrl)) {
+                this.selectedResource = this.$layerService.typesResources[this.selectedResourceUrl];
+            }
+        };
+        // $inject annotation.
+        // It provides $injector with information about dependencies to be in  jected into constructor
+        // it is better to have it close to the constructor, because the parameters must match in count and type.
+        // See http://docs.angularjs.org/guide/di
+        PropertyTypesCtrl.$inject = [
+            '$scope',
+            'layerService',
+            'messageBusService'
+        ];
+        return PropertyTypesCtrl;
+    }());
+    PropertyTypes.PropertyTypesCtrl = PropertyTypesCtrl;
+})(PropertyTypes || (PropertyTypes = {}));
+//# sourceMappingURL=PropertyTypesCtrl.js.map
 var Agenda;
 (function (Agenda) {
     /** Config */
@@ -24129,52 +24060,44 @@ var ButtonWidget;
                     zoomLevel: b.zoomLevel
                 });
             });
-            // switch (b.action) {
-            //     case 'Activate TimeRange':
-            //         console.log('time range');
-            //         this.layerService.project.timeLine.start = new Date().getTime() - 1000 * 60 * 60 * 2;
-            //         this.layerService.project.timeLine.end = new Date().getTime() + 1000 * 60 * 60 * 2;
-            //         this.layerService.project.timeLine.focus = new Date().getTime();
-            //         break;
-            //     case 'Activate Layer':
-            //         var pl = this.layerService.findLayer(b.layer);
-            //         if (typeof pl !== 'undefined') {
-            //             this.layerService.toggleLayer(pl);
-            //         }
-            //         break;
-            //     case 'Activate Style':
-            //         var group = this.layerService.findGroupById(b.group);
-            //         if (typeof group !== 'undefined') {
-            //             var propType = this.layerService.findPropertyTypeById(b.property);
-            //             if (typeof propType !== 'undefined') {
-            //                 this.layerService.setGroupStyle(group, propType);
-            //             }
-            //         }
-            //         break;
-            //     case 'Activate Baselayer':
-            //         var layer: csComp.Services.BaseLayer = this.layerService.$mapService.getBaselayer(b.layer);
-            //         this.layerService.activeMapRenderer.changeBaseLayer(layer);
-            //         this.layerService.$mapService.changeBaseLayer(b.layer);
-            //         break;
-            // }
+            // In case we're in toggleMode, increase the index counter
+            if (this.$scope.data.toggleMode) {
+                this.$timeout(function () {
+                    _this.$scope.activeIndex++;
+                    if (_this.$scope.activeIndex >= _this.$scope.buttons.length)
+                        _this.$scope.activeIndex = 0;
+                }, 0);
+            }
         };
-        ButtonWidgetCtrl.prototype.createFilter = function (le, group, prop) {
+        ButtonWidgetCtrl.prototype.toggleFilter = function (le, group, prop) {
+            var _this = this;
             if (!le)
                 return;
             var projGroup = this.layerService.findGroupById(group);
             var property = this.layerService.findPropertyTypeById(prop);
-            var gf = new csComp.Services.GroupFilter();
-            gf.property = prop.split('#').pop();
-            gf.id = 'buttonwidget_filter';
-            gf.group = projGroup;
-            gf.filterType = 'row';
-            gf.title = property.title;
-            gf.rangex = [le.interval.min, le.interval.max];
-            gf.filterLabel = le.label;
-            console.log('Setting filter');
-            this.layerService.rebuildFilters(projGroup);
-            projGroup.filters = projGroup.filters.filter(function (f) { return f.id !== gf.id; });
-            this.layerService.setFilter(gf, projGroup);
+            //Check if filter already exists. If so, remove it.
+            var exists = projGroup.filters.some(function (f) {
+                if (f.property === property.label) {
+                    _this.layerService.removeFilter(f);
+                    return true;
+                }
+            });
+            if (!exists) {
+                var gf = new csComp.Services.GroupFilter();
+                gf.property = prop.split('#').pop();
+                gf.id = 'buttonwidget_filter';
+                gf.group = projGroup;
+                gf.filterType = 'row';
+                gf.title = property.title;
+                gf.rangex = [le.interval.min, le.interval.max];
+                gf.filterLabel = le.label;
+                console.log('Setting filter');
+                this.layerService.rebuildFilters(projGroup);
+                projGroup.filters = projGroup.filters.filter(function (f) { return f.id !== gf.id; });
+                this.layerService.setFilter(gf, projGroup);
+                this.layerService.visual.leftPanelVisible = true;
+                $('#filter-tab').click();
+            }
         };
         ButtonWidgetCtrl.$inject = [
             '$scope',
@@ -25263,10 +25186,21 @@ var Filters;
             });
             filter.dimension = dcDim;
             var dcGroup = dcDim.group();
-            this.dcChart.width(315)
-                .height(210)
+            // If a legend is present, add a group for each entry, such that it is shown in the filter even when there are no such features in the group (yet).
+            if (pt.legend) {
+                var allEntries = [];
+                _.each(pt.legend.legendEntries, function (le) { allEntries.push(le.label); });
+                var fakeNdx = crossfilter(allEntries);
+                var fakeDim = fakeNdx.dimension(function (d) {
+                    return d;
+                });
+                var fakeGroup = fakeDim.group();
+            }
+            var ensuredGroup = (fakeGroup ? this.ensureAllBins(dcGroup, fakeGroup) : null);
+            this.dcChart.width(380)
+                .height(285)
                 .dimension(dcDim)
-                .group(dcGroup)
+                .group(ensuredGroup || dcGroup)
                 .title(function (d) {
                 return d.key;
             })
@@ -25300,6 +25234,36 @@ var Filters;
             this.updateRange();
             dc.renderAll();
         };
+        RowFilterCtrl.prototype.ensureAllBins = function (source_group, fake_group) {
+            var bins = fake_group.all().slice(0);
+            return {
+                all: function () {
+                    var result = source_group.all().slice(0); // copy original results (we mustn't modify them)
+                    var found = {};
+                    result.forEach(function (d) {
+                        found[d.key] = true;
+                    });
+                    bins.forEach(function (d) {
+                        if (!found[d.key])
+                            result.push({ key: d.key, value: 0 });
+                    });
+                    return result;
+                },
+                top: function (n) {
+                    var result = source_group.all().slice(0); // copy original results (we mustn't modify them)
+                    var found = {};
+                    result.forEach(function (d) {
+                        found[d.key] = true;
+                    });
+                    bins.forEach(function (d) {
+                        if (!found[d.key])
+                            result.push({ key: d.key, value: 0 });
+                    });
+                    return result.slice(0, n);
+                }
+            };
+        };
+        ;
         RowFilterCtrl.prototype.updateFilter = function () {
             var _this = this;
             setTimeout(function () {
@@ -28616,110 +28580,6 @@ var csComp;
 (function (csComp) {
     var Services;
     (function (Services) {
-        var OnlineSearchActions = (function (_super) {
-            __extends(OnlineSearchActions, _super);
-            /**
-             * @param  {string} searchUrl: route to the search api
-             */
-            function OnlineSearchActions($http, searchUrl) {
-                _super.call(this);
-                this.$http = $http;
-                this.isReady = true;
-                this.id = 'OnlineSearchActions';
-                this.searchUrl = searchUrl;
-            }
-            OnlineSearchActions.prototype.search = function (query, result) {
-                var _this = this;
-                var r = [];
-                this.getHits(query.query, 15, function (searchResults) {
-                    searchResults.forEach(function (sr) {
-                        r.push({
-                            title: sr.title,
-                            description: sr.description,
-                            icon: 'bower_components/csweb/dist-bower/images/large-marker.png',
-                            service: _this.id,
-                            location: JSON.parse(sr.location),
-                            score: 0.99,
-                            click: function () { return _this.onSelect(sr); }
-                        });
-                    });
-                    result(null, r);
-                });
-            };
-            /**
-             * Get the features based on the entered text.
-             */
-            OnlineSearchActions.prototype.getHits = function (text, resultCount, cb) {
-                if (resultCount === void 0) { resultCount = 15; }
-                if (!this.isReady || text === null || text.length < 2) {
-                    cb([]);
-                    return;
-                }
-                var searchWords = text.toLowerCase().split(' ');
-                var sqlSearch = searchWords.join(' & ');
-                var searchObject = { query: sqlSearch, nrItems: resultCount };
-                var searchResults = [];
-                $.ajax({
-                    type: 'POST',
-                    url: this.searchUrl,
-                    data: JSON.stringify(searchObject),
-                    contentType: 'application/json',
-                    dataType: 'json',
-                    statusCode: {
-                        200: function (data) {
-                            console.log('Received online search result');
-                            if (data.hasOwnProperty('result')) {
-                                searchResults = data.result;
-                            }
-                            cb(searchResults);
-                        },
-                        404: function (data) {
-                            console.log('Could not get online search result');
-                            cb(searchResults);
-                        }
-                    },
-                    error: function () {
-                        console.log('Error getting online search results');
-                        cb(searchResults);
-                    }
-                });
-            };
-            OnlineSearchActions.prototype.init = function (layerService) {
-                _super.prototype.init.call(this, layerService);
-            };
-            OnlineSearchActions.prototype.onSelect = function (selectedItem) {
-                var geoLoc;
-                if (typeof selectedItem.location === 'string') {
-                    try {
-                        geoLoc = JSON.parse(selectedItem.location);
-                    }
-                    catch (error) {
-                        console.log(error);
-                    }
-                }
-                if (geoLoc && geoLoc.hasOwnProperty('coordinates')) {
-                    this.layerService.$mapService.zoomToLocation(new L.LatLng(geoLoc.coordinates[1], geoLoc.coordinates[0]), 19);
-                }
-            };
-            OnlineSearchActions.prototype.selectFeatureById = function (layerId, featureIndex) {
-            };
-            OnlineSearchActions.prototype.selectFeature = function (feature) {
-            };
-            return OnlineSearchActions;
-        })(Services.BasicActionService);
-        Services.OnlineSearchActions = OnlineSearchActions;
-    })(Services = csComp.Services || (csComp.Services = {}));
-})(csComp || (csComp = {}));
-//# sourceMappingURL=BagSearchAction.js.map
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
-var csComp;
-(function (csComp) {
-    var Services;
-    (function (Services) {
         var BingSearchAction = (function (_super) {
             __extends(BingSearchAction, _super);
             /**
@@ -29119,8 +28979,7 @@ var csComp;
                     cb([]);
                     return;
                 }
-                var searchWords = text.toLowerCase().split(' ');
-                var sqlSearch = searchWords.join(' & ');
+                var sqlSearch = text.toLowerCase();
                 var searchObject = { query: sqlSearch, nrItems: resultCount };
                 var searchResults = [];
                 $.ajax({
@@ -29174,6 +29033,8 @@ var csComp;
                             break;
                     }
                 }
+                this.layerService.visual.leftPanelVisible = false;
+                this.layerService.$messageBusService.publish('search', 'reset');
             };
             OnlineSearchActions.prototype.selectFeatureById = function (layerId, featureIndex) {
             };
@@ -29347,7 +29208,11 @@ var csComp;
             };
             /** zoom to boundaries of layer */
             DatabaseSource.prototype.fitMap = function (layer) {
+                if (!layer.data.features || layer.data.features.length === 0)
+                    return;
                 var b = csComp.Helpers.GeoExtensions.getBoundingBox(layer.data);
+                if (b.xMax == 180 || b.yMax == 90)
+                    return;
                 this.service.$messageBusService.publish('map', 'setextent', b);
             };
             DatabaseSource.prototype.layerMenuOptions = function (layer) {
@@ -29367,34 +29232,58 @@ var csComp;
                         layer.renderType = 'geojson';
                         layer.isLoading = true;
                         var minZoom;
+                        var searchProperty;
+                        var useFeatureBounds;
                         if (layer.dataSourceParameters && layer.dataSourceParameters.hasOwnProperty('minZoom')) {
                             minZoom = layer.dataSourceParameters['minZoom'];
                         }
                         else {
                             minZoom = 15;
                         }
+                        if (layer.dataSourceParameters && layer.dataSourceParameters.hasOwnProperty('searchProperty')) {
+                            searchProperty = layer.dataSourceParameters['searchProperty'];
+                        }
+                        if (layer.dataSourceParameters && layer.dataSourceParameters.hasOwnProperty('useFeatureBounds')) {
+                            useFeatureBounds = layer.dataSourceParameters['useFeatureBounds'];
+                        }
                         var corners;
-                        if (_this.service.$mapService.map.getZoom() < minZoom) {
+                        if (_this.service.$mapService.map.getZoom() < minZoom && typeof searchProperty === 'undefined' && !useFeatureBounds) {
                             _this.service.$messageBusService.notifyWithTranslation('ZOOM_LEVEL_LOW', 'ZOOM_IN_FOR_CONTOURS', csComp.Services.NotifyLocation.TopRight, csComp.Services.NotifyType.Info, 1500);
                             // initialize empty layer and return
                             _this.initLayer(layer, callback);
                             return;
                         }
                         else {
-                            // When the zoomlevel is valid:
-                            corners = _this.service.$mapService.map.getBounds();
-                            var coords = [[
-                                    [corners.getSouthWest().lng, corners.getSouthWest().lat],
-                                    [corners.getNorthWest().lng, corners.getNorthWest().lat],
-                                    [corners.getNorthEast().lng, corners.getNorthEast().lat],
-                                    [corners.getSouthEast().lng, corners.getSouthEast().lat],
-                                    [corners.getSouthWest().lng, corners.getSouthWest().lat]]];
-                            var bounds = JSON.stringify({ type: 'Polygon', coordinates: coords, crs: { type: 'name', properties: { 'name': 'EPSG:4326' } } });
-                            // get data from BAG
-                            var bagRequestData = {
-                                bounds: bounds,
-                                layer: Services.ProjectLayer.serializeableData(layer)
-                            };
+                            var bagRequestData;
+                            if (typeof searchProperty !== 'undefined') {
+                                bagRequestData = {
+                                    searchProp: searchProperty,
+                                    layer: Services.ProjectLayer.serializeableData(layer)
+                                };
+                            }
+                            else if (useFeatureBounds === true) {
+                                var coordinates = layer.dataSourceParameters['coordinates'] || [[[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]]];
+                                bagRequestData = {
+                                    bounds: JSON.stringify({ type: 'Polygon', coordinates: coordinates, crs: { type: 'name', properties: { 'name': 'EPSG:4326' } } }),
+                                    layer: Services.ProjectLayer.serializeableData(layer)
+                                };
+                            }
+                            else {
+                                // When the zoomlevel is valid:
+                                corners = _this.service.$mapService.map.getBounds();
+                                var coords = [[
+                                        [corners.getSouthWest().lng, corners.getSouthWest().lat],
+                                        [corners.getNorthWest().lng, corners.getNorthWest().lat],
+                                        [corners.getNorthEast().lng, corners.getNorthEast().lat],
+                                        [corners.getSouthEast().lng, corners.getSouthEast().lat],
+                                        [corners.getSouthWest().lng, corners.getSouthWest().lat]]];
+                                var bounds = JSON.stringify({ type: 'Polygon', coordinates: coords, crs: { type: 'name', properties: { 'name': 'EPSG:4326' } } });
+                                // get data from BAG
+                                bagRequestData = {
+                                    bounds: bounds,
+                                    layer: Services.ProjectLayer.serializeableData(layer)
+                                };
+                            }
                             $.ajax({
                                 type: 'POST',
                                 url: layer.url,
@@ -29441,7 +29330,9 @@ var csComp;
                 if (projLayer.typeUrl && projLayer.defaultFeatureType) {
                     var featureTypeName = projLayer.typeUrl + '#' + projLayer.defaultFeatureType;
                     var fType = this.service.getFeatureTypeById(featureTypeName);
-                    this.service.evaluateLayerExpressions(projLayer, { featureTypeName: fType });
+                    var fTypes = {};
+                    fTypes[featureTypeName] = fType;
+                    this.service.evaluateLayerExpressions(projLayer, fTypes);
                     if (fType._propertyTypeData && fType._propertyTypeData.length > 0) {
                         fType._propertyTypeData.forEach(function (pt) {
                             csComp.Helpers.updateSection(projLayer, pt);
@@ -29449,6 +29340,7 @@ var csComp;
                     }
                 }
                 projLayer.isLoading = false;
+                this.service.$messageBusService.publish('layer', 'activated', layer);
                 if (this.service.$rootScope.$root.$$phase !== '$apply' && this.service.$rootScope.$root.$$phase !== '$digest') {
                     this.service.$rootScope.$apply();
                 }
@@ -30985,127 +30877,6 @@ var csComp;
     })(Services = csComp.Services || (csComp.Services = {}));
 })(csComp || (csComp = {}));
 //# sourceMappingURL=KmlDataSource.js.map
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
-var csComp;
-(function (csComp) {
-    var Services;
-    (function (Services) {
-        var MapboxVectorTileSource = (function (_super) {
-            __extends(MapboxVectorTileSource, _super);
-            function MapboxVectorTileSource(service, $http) {
-                _super.call(this, service, $http);
-                this.service = service;
-                this.title = 'mapboxvectortile';
-                this.requiresLayer = false;
-                this.tileCount = -1;
-                /** Store obtained results in the cache, */
-                this.cache = {};
-                /** The urls that are cached (in order to keep the cache from only growing). */
-                this.cachedUrls = [];
-            }
-            MapboxVectorTileSource.prototype.addLayer = function (layer, callback) {
-                var _this = this;
-                layer.renderType = 'mvtlayer';
-                // Open a layer URL
-                layer.isLoading = true;
-                layer.data = {};
-                layer.data.features = [];
-                var zoom = this.service.$mapService.map.getZoom();
-                var slippyTiles = csComp.Helpers.GeoExtensions.slippyMapTiles(zoom, this.service.$mapService.map.getBounds());
-                this.tileCount = slippyTiles.width * slippyTiles.height;
-                for (var x = slippyTiles.left; x <= slippyTiles.right; x++) {
-                    for (var y = slippyTiles.top; y <= slippyTiles.bottom; y++) {
-                        var url = layer.url.replace('{z}/{x}/{y}', zoom + "/" + x + "/" + y);
-                        if (this.cache.hasOwnProperty(url)) {
-                            this.addFeatures(layer, this.cache[url], true);
-                            this.checkIfFinished(layer, callback);
-                            continue;
-                        }
-                        this.$http.get(url)
-                            .then(function (result) {
-                            var data;
-                            if (result.data.hasOwnProperty('objects')) {
-                                if (!result.data.objects.hasOwnProperty('vectile')) {
-                                    // Multiple groups are returned: set the group name as featureTypeId
-                                    for (var group in result.data.objects) {
-                                        result.data.objects[group].geometries.forEach(function (f) {
-                                            f.properties.featureTypeId = group;
-                                        });
-                                    }
-                                }
-                                data = csComp.Helpers.GeoExtensions.convertTopoToGeoJson(result.data);
-                            }
-                            else {
-                                data = result.data;
-                            }
-                            _this.addToCache(result.config.url, data);
-                            _this.addFeatures(layer, data);
-                            _this.checkIfFinished(layer, callback);
-                        }, function (e) {
-                            console.log('VectorTileSource error: ' + e);
-                            _this.checkIfFinished(layer, callback);
-                        });
-                    }
-                }
-            };
-            /**
-             * Add a received object to the cache, and, if full, delete an old entry.
-             */
-            MapboxVectorTileSource.prototype.addToCache = function (url, data) {
-                this.cache[url] = data;
-                this.cachedUrls.push(url);
-                if (this.cachedUrls.length < Services.VectorTileSource.CACHE_SIZE)
-                    return;
-                var oldUrl = this.cachedUrls.pop();
-                delete this.cache[oldUrl];
-            };
-            MapboxVectorTileSource.prototype.checkIfFinished = function (layer, callback) {
-                this.tileCount--;
-                if (this.tileCount <= 0) {
-                    layer.isLoading = false;
-                    callback(layer);
-                }
-            };
-            MapboxVectorTileSource.prototype.addFeatures = function (layer, data, fromCache) {
-                if (fromCache === void 0) { fromCache = false; }
-                // if (data.hasOwnProperty('features')) {
-                //     var geojson = <IGeoJsonFile>data;
-                //     geojson.features.forEach(f => {
-                //         if (fromCache) f._isInitialized = false;
-                //         layer.data.features.push(f);
-                //         this.service.initFeature(f, layer, false, false);
-                //     });
-                // } else {
-                //     var col: IGeoJsonCollection = <IGeoJsonCollection>data;
-                //     for (var key in col) {
-                //         if (!col.hasOwnProperty(key)) continue;
-                //         col[key].features.forEach(f => {
-                //             if (fromCache) f._isInitialized = false;
-                //             f.properties['featureTypeId'] = key;
-                //             layer.data.features.push(f);
-                //             this.service.initFeature(f, layer, false, false);
-                //         });
-                //     }
-                // }
-            };
-            MapboxVectorTileSource.prototype.removeLayer = function (layer) {
-                var projLayer = this.service.findLayer(layer.id);
-                if (projLayer)
-                    projLayer.enabled = false;
-                layer.data.features = {};
-                //alert('remove layer');
-            };
-            MapboxVectorTileSource.CACHE_SIZE = 99;
-            return MapboxVectorTileSource;
-        }(Services.GeoJsonSource));
-        Services.MapboxVectorTileSource = MapboxVectorTileSource;
-    })(Services = csComp.Services || (csComp.Services = {}));
-})(csComp || (csComp = {}));
-//# sourceMappingURL=MapboxVectorTileSource.js.map
 /* Terminator.js -- Overlay day/night region on a Leaflet map
  * Source: https://github.com/joergdietrich/Leaflet.Terminator/blob/master/L.Terminator.js
  * See also: http://joergdietrich.github.io/Leaflet.Terminator/
@@ -32087,90 +31858,6 @@ var csComp;
 (function (csComp) {
     var Services;
     (function (Services) {
-        var MVTLayerRenderer = (function () {
-            function MVTLayerRenderer() {
-            }
-            MVTLayerRenderer.render = function (service, layer) {
-                var layers = layer.url.split('|');
-                var layerUrl = layers[0];
-                var mvtSource = new L.TileLayer.MVTSource({
-                    url: "bagbuurt/{z}/{x}/{y}.json",
-                    debug: true,
-                    clickableLayers: [],
-                    getIDForLayerFeature: function (feature) {
-                        return feature.properties.id;
-                    },
-                    style: function (feature) {
-                        var style = {};
-                        var type = feature.type;
-                        switch (type) {
-                            case 1:
-                                style.color = 'rgba(49,79,79,1)';
-                                style.radius = 5;
-                                style.selected = {
-                                    color: 'rgba(255,255,0,0.5)',
-                                    radius: 6
-                                };
-                                break;
-                            case 2:
-                                style.color = 'rgba(161,217,155,0.8)';
-                                style.size = 3;
-                                style.selected = {
-                                    color: 'rgba(255,25,0,0.5)',
-                                    size: 4
-                                };
-                                break;
-                            case 3:
-                                style.color = fillColor;
-                                style.outline = {
-                                    color: strokeColor,
-                                    size: 1
-                                };
-                                style.selected = {
-                                    color: 'rgba(255,140,0,0.3)',
-                                    outline: {
-                                        color: 'rgba(255,140,0,1)',
-                                        size: 2
-                                    }
-                                };
-                                break;
-                        }
-                        return style;
-                    }
-                });
-                //Globals that we can change later.
-                var fillColor = 'rgba(149,139,255,0.4)';
-                var strokeColor = 'rgb(20,20,20)';
-                //Add layer
-                layer.mapLayer = new L.LayerGroup();
-                mvtSource.setOpacity(layer.opacity / 100);
-                service.map.map.addLayer(layer.mapLayer);
-                layer.mapLayer.addLayer(mvtSource);
-                mvtSource.on('loading', function (event) {
-                    layer.isLoading = true;
-                    service.$rootScope.$apply();
-                    if (service.$rootScope.$$phase !== '$apply' && service.$rootScope.$$phase !== '$digest') {
-                        service.$rootScope.$apply();
-                    }
-                });
-                mvtSource.on('load', function (event) {
-                    layer.isLoading = false;
-                    if (service.$rootScope.$$phase !== '$apply' && service.$rootScope.$$phase !== '$digest') {
-                        service.$rootScope.$apply();
-                    }
-                });
-                layer.isLoading = true;
-            };
-            return MVTLayerRenderer;
-        }());
-        Services.MVTLayerRenderer = MVTLayerRenderer;
-    })(Services = csComp.Services || (csComp.Services = {}));
-})(csComp || (csComp = {}));
-//# sourceMappingURL=mvtLayerRenderer.js.map
-var csComp;
-(function (csComp) {
-    var Services;
-    (function (Services) {
         var TileLayerRenderer = (function () {
             function TileLayerRenderer() {
             }
@@ -32259,67 +31946,6 @@ var csComp;
     })(Services = csComp.Services || (csComp.Services = {}));
 })(csComp || (csComp = {}));
 //# sourceMappingURL=tileLayerRenderer.js.map
-var csComp;
-(function (csComp) {
-    var Services;
-    (function (Services) {
-        var VectorTileRenderer = (function () {
-            function VectorTileRenderer() {
-            }
-            VectorTileRenderer.render = function (service, layer) {
-                var gridParams = layer.dataSourceParameters;
-                var overlay = L.canvasOverlay(VectorTileRenderer.drawFunction, layer, {
-                    features: layer.data.features,
-                    opacity: (layer.opacity) ? (+layer.opacity) / 100 : 0.3
-                });
-                layer.mapLayer = new L.LayerGroup();
-                service.map.map.addLayer(layer.mapLayer);
-                layer.mapLayer.addLayer(overlay);
-            };
-            VectorTileRenderer.drawFunction = function (overlay, layer, settings) {
-                var map = this._map;
-                var opt = settings.options;
-                var features = opt.features;
-                if (!features)
-                    return;
-                var extent = 4096;
-                var pad = 0;
-                var ctx = settings.canvas.getContext('2d');
-                ctx.clearRect(0, 0, settings.canvas.width, settings.canvas.height);
-                ctx.strokeStyle = 'red';
-                ctx.fillStyle = 'rgba(255,255,0,0.1)';
-                for (var i = 0; i < features.length; i++) {
-                    var feature = features[i], type = feature.type;
-                    ctx.beginPath();
-                    for (var j = 0; j < feature.geometry.length; j++) {
-                        var geom = feature.geometry[j];
-                        if (type === 1) {
-                            ctx.arc(geom[0], geom[1], 2, 0, 2 * Math.PI, false);
-                            continue;
-                        }
-                        for (var k = 0; k < geom.length; k++) {
-                            var p = geom[k];
-                            var x = p[0] / extent * 256;
-                            var y = p[1] / extent * 256;
-                            if (k) {
-                                ctx.lineTo(x + pad, y + pad);
-                            }
-                            else {
-                                ctx.moveTo(x + pad, y + pad);
-                            }
-                        }
-                    }
-                    if (type === 3 || type === 1)
-                        ctx.fill('evenodd');
-                    ctx.stroke();
-                }
-            };
-            return VectorTileRenderer;
-        }());
-        Services.VectorTileRenderer = VectorTileRenderer;
-    })(Services = csComp.Services || (csComp.Services = {}));
-})(csComp || (csComp = {}));
-//# sourceMappingURL=vectorTileRenderer.js.map
 var csComp;
 (function (csComp) {
     var Services;
