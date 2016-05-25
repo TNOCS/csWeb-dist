@@ -32,8 +32,9 @@ export declare class BagDatabase {
      */
     private formatHouseNumberAddition(input);
     searchAddress(query: string, limit: number, callback: (searchResults) => void): void;
-    lookupBagArea(bounds: string, callback: (areas: Location[]) => void): void;
-    lookupBagBuurt(bounds: string, callback: (areas: Location[]) => void): void;
+    searchGemeente(query: string, limit: number, callback: (searchResults) => void): void;
+    lookupBagArea(bounds: string, isArea: boolean, callback: (areas: Location[]) => void): void;
+    lookupBagBuurt(bounds: string, isArea: boolean, callback: (areas: Location[]) => void): void;
     /**
      * Lookup the address from the BAG.
      */

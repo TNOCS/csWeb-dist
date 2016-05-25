@@ -208,6 +208,7 @@ var MapLayerFactory = (function () {
         var start = new Date().getTime();
         var template = req.body;
         var bounds = template.bounds;
+        var bu_code = template.searchProp;
         var layer = template.layer;
         var getPointFeatures = false;
         if (layer.dataSourceParameters && layer.dataSourceParameters.hasOwnProperty('getPointFeatures')) {
@@ -216,7 +217,7 @@ var MapLayerFactory = (function () {
         layer.data = {};
         layer.data.features = [];
         layer.type = 'database';
-        this.bag.lookupBagArea(bounds, function (areas) {
+        this.bag.lookupBagArea(bounds || bu_code, layer.refreshBBOX, function (areas) {
             if (!areas || !areas.length || areas.length === 0) {
                 res.status(404).send({});
             }
@@ -258,7 +259,7 @@ var MapLayerFactory = (function () {
         var template = req.body;
         var query = template.query;
         var nrItems = template.nrItems;
-        this.bag.searchAddress(query, nrItems, function (results) {
+        this.bag.searchGemeente(query, nrItems, function (results) {
             if (!results || !results.length || results.length === 0) {
                 res.status(200).send({});
             }
@@ -284,11 +285,12 @@ var MapLayerFactory = (function () {
         var start = new Date().getTime();
         var template = req.body;
         var bounds = template.bounds;
+        var gm_code = template.searchProp;
         var layer = template.layer;
         layer.data = {};
         layer.data.features = [];
         layer.type = 'database';
-        this.bag.lookupBagBuurt(bounds, function (areas) {
+        this.bag.lookupBagBuurt(bounds || gm_code, layer.refreshBBOX, function (areas) {
             if (!areas || !areas.length || areas.length === 0) {
                 res.status(404).send({});
             }
@@ -588,7 +590,7 @@ var MapLayerFactory = (function () {
         properties.forEach(function (p, index) {
             var foundFeature = false;
             fts.some(function (f) {
-                if (f.properties[templateKey] === p[par1]) {
+                if (f.properties[templateKey] == p[par1]) {
                     console.log(p[par1]);
                     if (inclTemplProps) {
                         for (var key in f.properties) {

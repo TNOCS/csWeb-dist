@@ -66,7 +66,8 @@ export interface ILayerTemplate {
     iconBase64?: string;
 }
 export interface IBagContourRequest {
-    bounds: string;
+    bounds?: string;
+    searchProp?: string;
     layer: any;
 }
 export interface IBagSearchRequest {
