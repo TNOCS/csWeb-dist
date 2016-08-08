@@ -337,8 +337,8 @@ var MapLayerFactory = (function () {
             name: featureTypeName,
             style: {
                 iconUri: ld.iconUri,
-                iconWidth: ld.iconSize,
-                iconHeight: ld.iconSize,
+                iconWidth: +ld.iconSize,
+                iconHeight: +ld.iconSize,
                 drawingMode: ld.drawingMode,
                 stroke: ld.strokeWidth > 0,
                 strokeWidth: (typeof ld.strokeWidth !== 'undefined') ? ld.strokeWidth : 3,

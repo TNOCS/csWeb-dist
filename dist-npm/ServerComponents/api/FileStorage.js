@@ -222,7 +222,7 @@ var FileStorage = (function (_super) {
     };
     FileStorage.prototype.saveResourceFile = function (res) {
         var fn = this.getResourceFilename(res);
-        fs.outputFile(fn, JSON.stringify(res), function (error) {
+        fs.outputFile(fn, JSON.stringify(res, null, 2), function (error) {
             if (error) {
                 Winston.error('filestore: error writing resourcefile : ' + fn);
             }
