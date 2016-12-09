@@ -9,8 +9,8 @@ export declare class ApiServiceManager implements IApiServiceManager {
     private dataUrl;
     private apiServices;
     constructor(server: express.Express, config: ConfigurationService.ConfigurationService);
-    BaseUrl: string;
-    DataUrl: string;
+    readonly BaseUrl: string;
+    readonly DataUrl: string;
     /**
      * Add a service, initialize it, and return the service GUID.
      */

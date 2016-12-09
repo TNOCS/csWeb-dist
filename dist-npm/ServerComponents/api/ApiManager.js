@@ -220,6 +220,7 @@ var ApiManager = (function (_super) {
         this.saveLayersDelay = _.debounce(function (layer) {
             _this.saveLayerConfig();
         }, 1000);
+        this.setMaxListeners(25);
         this.namespace = namespace;
         this.name = name;
         if (this.options.server) {
@@ -258,26 +259,29 @@ var ApiManager = (function (_super) {
     ApiManager.prototype.loadLayerConfig = function (cb) {
         var _this = this;
         Winston.debug('manager: loading layer config');
-        try {
-            this.layersFile = path.join(this.rootPath, 'layers.json');
-            fs.readFile(this.layersFile, 'utf8', function (err, data) {
-                if (!err && data) {
-                    Winston.info('manager: layer config loaded');
-                    try {
-                        _this.layers = JSON.parse(data);
-                    }
-                    catch (e) {
-                        Winston.error('manager: error loading project config');
-                    }
+        this.layersFile = path.join(this.rootPath, 'layers.json');
+        fs.stat(this.layersFile, function (err, stats) {
+            // Create file if it doesn't exist
+            if (err && err.code === 'ENOENT') {
+                fs.writeFileSync(_this.layersFile, '{}');
+                Winston.info("Create layers.json file " + _this.layersFile);
+            }
+            fs.readFile(_this.layersFile, 'utf8', function (err, data) {
+                if (err) {
+                    Winston.error('manager: layers config loading failed: ' + err.message);
                 }
                 else {
-                    _this.layers = {};
+                    try {
+                        _this.layers = JSON.parse(data);
+                        Winston.info('manager: layers config loaded');
+                    }
+                    catch (e) {
+                        Winston.error('manager: error loading layers config');
+                    }
                 }
                 cb();
             });
-        }
-        catch (e) {
-        }
+        });
     };
     /**
      * Open project config file
@@ -286,20 +290,27 @@ var ApiManager = (function (_super) {
         var _this = this;
         Winston.debug('manager: loading project config');
         this.projectsFile = path.join(this.rootPath, 'projects.json');
-        fs.readFile(this.projectsFile, 'utf8', function (err, data) {
-            if (err) {
-                Winston.error('manager: project config loading failed: ' + err.message);
+        fs.stat(this.projectsFile, function (err, stats) {
+            // Create file if it doesn't exist            
+            if (err && err.code === 'ENOENT') {
+                fs.writeFileSync(_this.projectsFile, '{}');
+                Winston.info("Create projects.json file " + _this.projectsFile);
             }
-            else {
-                try {
-                    _this.projects = JSON.parse(data);
-                    Winston.info('manager: project config loaded');
+            fs.readFile(_this.projectsFile, 'utf8', function (err, data) {
+                if (err) {
+                    Winston.error('manager: project config loading failed: ' + err.message);
                 }
-                catch (e) {
-                    Winston.error('manager: error loading project config');
+                else {
+                    try {
+                        _this.projects = JSON.parse(data);
+                        Winston.info('manager: project config loaded');
+                    }
+                    catch (e) {
+                        Winston.error('manager: error loading project config');
+                    }
                 }
-            }
-            cb();
+                cb();
+            });
         });
     };
     /**
@@ -515,6 +526,9 @@ var ApiManager = (function (_super) {
                 if (group.id === pg.id && group.clusterLevel) {
                     pg['clusterLevel'] = group.clusterLevel;
                 }
+                if (group.id === pg.id && group.hasOwnProperty('clustering')) {
+                    pg['clustering'] = group.clustering;
+                }
                 return (group.id === pg.id);
             });
             callback({ result: ApiResult.GroupAlreadyExists, error: 'Group exists' });
@@ -680,7 +694,7 @@ var ApiManager = (function (_super) {
      */
     ApiManager.prototype.findStorageForLayerId = function (layerId) {
         var layer = this.findLayer(layerId);
-        Winston.info('Find layer ' + JSON.stringify(layer));
+        // Winston.info('Find layer ' + JSON.stringify(layer));
         return this.findStorage(layer);
     };
     /**
@@ -731,7 +745,7 @@ var ApiManager = (function (_super) {
             description: group.description ? group.description : '',
             title: group.title ? group.title : group.id,
             clusterLevel: group.clusterLevel ? group.clusterLevel : 19,
-            clustering: true,
+            clustering: group.clustering || false,
             layers: group.layers ? _.map(group.layers, function (l) { return _this.getLayerDefinition(l); }) : []
         };
         return g;
@@ -755,6 +769,8 @@ var ApiManager = (function (_super) {
             defaultFeatureType: layer.defaultFeatureType,
             defaultLegendProperty: layer.defaultLegendProperty,
             typeUrl: layer.typeUrl,
+            quickRefresh: layer.quickRefresh,
+            confirmUpdate: layer.confirmUpdate,
             opacity: layer.opacity ? layer.opacity : 75,
             type: layer.type,
             // We are returning a definition, so remove the data
@@ -878,7 +894,7 @@ var ApiManager = (function (_super) {
                 var s = _this.findStorage(layer);
                 if (s && s.id !== meta.source) {
                     s.updateLayer(layer, meta, function (r, CallbackResult) {
-                        Winston.warn('updating layer finished');
+                        Winston.debug('updating layer finished');
                     });
                 }
                 callback({ result: ApiResult.OK });

@@ -54,6 +54,7 @@ export declare class BaseConnector implements ApiManager.IConnector {
     /** Delete key */
     deleteKey(keyId: string, meta: ApiMeta, callback: Function): void;
     init(layerManager: ApiManager.ApiManager, options: any, callback: Function): void;
+    exit(callback: Function): void;
     /**
      * Subscribe to certain keys.
      * @method subscribeKey

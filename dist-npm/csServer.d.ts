@@ -1,4 +1,4 @@
-import express = require('express');
+import * as core from 'express-serve-static-core';
 import csweb = require('./index');
 export declare class csServerOptions {
     port: number;
@@ -12,7 +12,7 @@ export declare class csServerOptions {
 export declare class csServer {
     dir: string;
     options: csServerOptions;
-    server: express.Express;
+    server: core.Express;
     cm: csweb.ConnectionManager;
     messageBus: csweb.MessageBusService;
     httpServer: any;
@@ -20,4 +20,5 @@ export declare class csServer {
     api: csweb.ApiManager;
     constructor(dir: string, options?: csServerOptions);
     start(started: Function): void;
+    private gracefulShutdown();
 }

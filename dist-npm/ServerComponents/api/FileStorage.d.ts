@@ -13,6 +13,7 @@ export interface Media {
 }
 export declare class FileStorage extends BaseConnector.BaseConnector {
     rootpath: string;
+    private ignoreInitial;
     manager: ApiManager.ApiManager;
     layers: {
         [key: string]: Layer;
@@ -35,7 +36,8 @@ export declare class FileStorage extends BaseConnector.BaseConnector {
     projectsPath: string;
     staticProjectsPath: string;
     resourcesPath: string;
-    constructor(rootpath: string, watch?: boolean);
+    private layerDebounceFunctions;
+    constructor(rootpath: string, watch?: boolean, ignoreInitial?: boolean);
     watchLayersFolder(): void;
     private getDirectories(srcpath);
     watchProjectsFolder(): void;
@@ -45,7 +47,7 @@ export declare class FileStorage extends BaseConnector.BaseConnector {
     saveProjectDelay: (project: ApiManager.Project) => void;
     saveResourcesDelay: (res: ApiManager.ResourceFile) => void;
     saveKeyDelay: (key: ApiManager.Key) => void;
-    saveLayerDelay: (layer: ApiManager.Layer) => void;
+    private saveLayerDelay(layer);
     private getProjectFilename(projectId);
     private getLayerFilename(layerId);
     private getLayerBackupFilename(layerId);

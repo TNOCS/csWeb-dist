@@ -43,5 +43,5 @@ export declare class BagDatabase {
     /**
      * Lookup the address from the BAG.
      */
-    lookupAddress(req: express.Request, res: express.Response): express.Response;
+    lookupAddress(req: express.Request, res: express.Response): void;
 }

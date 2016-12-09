@@ -91,6 +91,9 @@ var BaseConnector = (function () {
     //TODO: Move connection set-up params from static to parameterized.
     BaseConnector.prototype.init = function (layerManager, options, callback) {
     };
+    BaseConnector.prototype.exit = function (callback) {
+        callback();
+    };
     /**
      * Subscribe to certain keys.
      * @method subscribeKey

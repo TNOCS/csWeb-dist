@@ -75,6 +75,7 @@ export interface IConnector {
     /** If true (default), the manager will send a copy to the source (receiving) connector */
     receiveCopy: boolean;
     init(layerManager: ApiManager, options: any, callback: Function): any;
+    exit(callback: Function): any;
     initLayer(layer: ILayer, meta?: ApiMeta): any;
     initProject(project: Project, meta?: ApiMeta): any;
     addLayer(layer: ILayer, meta: ApiMeta, callback: Function): any;
@@ -197,6 +198,8 @@ export interface ILayer extends StorageObject {
     timestamps?: number[];
     [key: string]: any;
     hasSensorData?: boolean;
+    quickRefresh?: boolean;
+    confirmUpdate?: boolean;
 }
 /**
  * Geojson Layer definition

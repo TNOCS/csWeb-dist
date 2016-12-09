@@ -8,6 +8,7 @@ function __export(m) {
 __export(require('./ServerComponents/api/ApiManager'));
 __export(require('./ServerComponents/api/RestAPI'));
 __export(require('./ServerComponents/api/SocketIOAPI'));
+__export(require('./ServerComponents/api/KafkaAPI'));
 __export(require('./ServerComponents/api/FileStorage'));
 __export(require('./ServerComponents/api/ImbAPI'));
 __export(require('./ServerComponents/api/AuthAPI'));

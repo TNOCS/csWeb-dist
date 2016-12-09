@@ -1,5 +1,3 @@
-/// <reference path="../crossfilter/crossfilter.d.ts" />
-/// <reference path="../leaflet/leaflet.d.ts" />
 declare module csComp.Services {
     class Widget {
         content: Function;
@@ -313,7 +311,7 @@ declare module csComp.Services {
         index: number;
         layerId: string;
         layer: csComp.Services.ProjectLayer;
-        type?: string;
+        type: string;
         fType?: IFeatureType;
         geometry: IGeoJsonGeometry;
         properties?: IProperty;
@@ -433,6 +431,7 @@ declare module csComp.Services {
         section?: string;
         stringFormat?: string;
         visibleInCallOut?: boolean;
+        visibleInTooltip?: boolean;
         canEdit?: boolean;
         /** If set to false, don't show the statistical information (for numbers) */
         canShowStats?: boolean;
@@ -486,6 +485,8 @@ declare module csComp.Services {
     interface IFeatureTypeStyle {
         /** Default value is Name, i.e. the feature.properties.Name contains the title/name of the feature. */
         nameLabel?: string;
+        /** String format for the tooltip title (e.g. "Province {0}" */
+        tooltipStringFormat?: string;
         /** Default marker type, e.g. default is a circle, other types include pin and bubble */
         marker?: string;
         /** The background fill color */
@@ -728,13 +729,14 @@ declare module csComp.Services {
     }
     class LegendEntry {
         label: string;
-        interval: {
+        interval?: {
             min: number;
             max: number;
         };
-        value: number;
-        stringValue: string;
+        value?: number;
+        stringValue?: string;
         color: string;
+        sortKey?: string;
     }
 }
 
@@ -867,6 +869,10 @@ declare module csComp.Services {
         cacheKey?: string;
         /** handle for receiving server events */
         serverHandle?: MessageBusHandle;
+        /** Whether layer can be quickly updated instead of completely rerendered */
+        quickRefresh: boolean;
+        /** Whether a confirmation message should be shown before applying a layerUpdate */
+        confirmUpdate?: boolean;
         parentFeature: IFeature;
         /** list of tags describing this layer */
         tags?: string;
@@ -995,6 +1001,8 @@ declare module csComp.Services {
         serverHandle: MessageBusHandle;
         /** Whether layer can be quickly updated instead of completely rerendered */
         quickRefresh: boolean;
+        /** Whether a confirmation message should be shown before applying a layerUpdate */
+        confirmUpdate?: boolean;
         _lastSelectedFeature: IFeature;
         /** link to a parent feature, e.g. city layer references to a parent provence */
         parentFeature: IFeature;
@@ -1082,6 +1090,8 @@ declare module csComp.Services {
         cesium_url?: string;
         cesium_tileUrl?: string;
         cesium_maptype?: string;
+        tms?: boolean;
+        noWrap?: boolean;
     }
     class BaseLayer implements IBaseLayer {
         id: string;
@@ -1112,6 +1122,9 @@ declare module csComp.Services {
         cesium_maptype: string;
         /** Height tiles */
         cesium_tileUrl: string;
+        /** is this a tms base layer */
+        tms: boolean;
+        noWrap?: boolean;
     }
 }
 
@@ -1322,6 +1335,7 @@ declare module csComp.Services {
         expertMode: Expertise;
         markers: {};
         eventTab: boolean;
+        hideLayerActions: boolean;
         /**
          * default interface language
          * @type {string}
@@ -1495,7 +1509,7 @@ declare module csComp.Helpers {
          * @param contourLevel - Contour level for line.
          */
         private drawContour(startX, startY, endX, endY, contourLevel, k);
-        contourList: IContourList;
+        readonly contourList: IContourList;
     }
     interface IContour extends Array<{
         x: number;
@@ -1743,6 +1757,16 @@ declare module csComp.Helpers {
         stdDev: number;
     };
     function average(data: number[]): number;
+    /**
+     * Generates the title for the feature tooltip. A string format can be
+     * defined in the featureType parameter 'tooltipStringFormat'.
+     * E.g. tooltipStringFormat: "Province {0}"
+     *
+     * @export
+     * @param {IFeature} feature
+     * @returns {string} Formatted title
+     */
+    function getFeatureTooltipTitle(feature: IFeature): string;
     function getFeatureTitle(feature: IFeature): string;
     function featureTitle(type: csComp.Services.IFeatureType, feature: IFeature): string;
     /**
@@ -1899,6 +1923,10 @@ declare module csComp.Helpers {
      */
     function getColorFromStringValue(v: string, gs: csComp.Services.GroupStyle): string;
     function getImageUri(ft: csComp.Services.IFeatureType): string;
+    function getColorAndOpacityFromRgbaString(v: string): {
+        color: string;
+        opacity: number;
+    };
     function getColorFromStringLegend(v: string, l: csComp.Services.Legend, defaultcolor?: string): string;
     function getColorFromLegend(v: any, l: csComp.Services.Legend, defaultcolor?: string): any;
     function getColor(v: number, gs: csComp.Services.GroupStyle): any;
@@ -2048,12 +2076,6 @@ declare module LayersDirective {
 
 declare module Translations {
     class English {
-        static locale: ng.translate.ITranslationTable;
-    }
-}
-
-declare module Translations {
-    class French {
         static locale: ng.translate.ITranslationTable;
     }
 }
@@ -2630,6 +2652,8 @@ declare module FeatureProps {
         editFeature(): void;
         setFilter(item: CallOutProperty, $event: ng.IAngularEvent): void;
         toTrusted(html: string): string;
+        toSemanticLink(value: string): string;
+        activateSemanticLink(value: string): void;
         openLayer(property: FeatureProps.CallOutProperty): void;
         /**
          * Callback function
@@ -2667,30 +2691,6 @@ declare module FeatureProps {
         }): void;
         getFormattedDate(fp: any, pt: IPropertyType): string;
         private setDropdownTitle();
-    }
-}
-
-declare module FilterList {
-    /**
-      * Module
-      */
-    var myModule: any;
-}
-
-declare module FilterList {
-    interface IFilterListScope extends ng.IScope {
-        vm: FilterListCtrl;
-    }
-    class FilterListCtrl {
-        private $scope;
-        private $layerService;
-        private $messageBus;
-        private scope;
-        noFilters: boolean;
-        locationFilterActive: boolean;
-        static $inject: string[];
-        constructor($scope: IFilterListScope, $layerService: csComp.Services.LayerService, $messageBus: csComp.Services.MessageBusService);
-        private setLocationFilter(group);
     }
 }
 
@@ -2751,6 +2751,30 @@ declare module FeatureRelations {
          */
         private sidebarMessageReceived;
         private featureMessageReceived;
+    }
+}
+
+declare module FilterList {
+    /**
+      * Module
+      */
+    var myModule: any;
+}
+
+declare module FilterList {
+    interface IFilterListScope extends ng.IScope {
+        vm: FilterListCtrl;
+    }
+    class FilterListCtrl {
+        private $scope;
+        private $layerService;
+        private $messageBus;
+        private scope;
+        noFilters: boolean;
+        locationFilterActive: boolean;
+        static $inject: string[];
+        constructor($scope: IFilterListScope, $layerService: csComp.Services.LayerService, $messageBus: csComp.Services.MessageBusService);
+        private setLocationFilter(group);
     }
 }
 
@@ -2862,7 +2886,7 @@ declare module Heatmap {
          * @type {string}
          */
         propertyTitle?: string;
-        propertyLabel: string;
+        propertyLabel?: string;
         /**
          * When we are using an options property type, such as buildingFunction, we need
          * to indicate the particular option that we will evaluate.
@@ -3007,7 +3031,7 @@ declare module Heatmap {
         i: number;
         j: number;
         intensity: number;
-        contributor: string;
+        contributor?: string;
         AddLocation(i: any, j: any, contributor: any): IHeatspot;
     }
     /**
@@ -3055,7 +3079,7 @@ declare module Heatmap {
         title: string;
         type: ScoringFunctionType;
         scores: string;
-        cssClass: string;
+        readonly cssClass: string;
         constructor(scoringFunctionType?: ScoringFunctionType);
     }
     class ScoringFunctions {
@@ -3067,6 +3091,127 @@ declare module Heatmap {
         lostInterestDistance: number;
         constructor(idealDistance?: number, atLocation?: number, lostInterestDistance?: number);
         computeIdealityAtDistance(distance: number): number;
+    }
+}
+
+declare module IdvEdit {
+    interface IIdvEditScope extends ng.IScope {
+        vm: IdvEditCtrl;
+    }
+    /**
+      * Module
+      */
+    var myModule: any;
+    class IdvEditCtrl {
+        private $scope;
+        private $mapService;
+        private $layerService;
+        private $messageBusService;
+        private scope;
+        DataLoaded: boolean;
+        eta: any;
+        incomming: any;
+        _initialized: boolean;
+        scan: Idv.Idv;
+        static $inject: string[];
+        constructor($scope: IIdvEditScope, $mapService: csComp.Services.MapService, $layerService: csComp.Services.LayerService, $messageBusService: csComp.Services.MessageBusService);
+        toggleChart(chart: Idv.ChartConfig): void;
+        update(): void;
+        reset(): void;
+        export(): void;
+    }
+}
+
+declare module Idv {
+    interface ChartConfig {
+        id?: string;
+        enabled?: boolean;
+        elementId?: string;
+        containerId?: string;
+        title?: string;
+        bins?: number;
+        type?: string;
+        property?: string;
+        properties?: string[];
+        secondProperty?: string;
+        dimension?: any;
+        columns?: string[];
+        group?: any;
+        stat?: string;
+        width?: number;
+        height?: number;
+        chart?: any;
+        cap?: number;
+        time?: string;
+        ordering?: string;
+        propertyTitle?: string;
+        secondPropertyTitle?: string;
+        record?: string;
+        layer?: string;
+        featureProperty?: string;
+        featureTargetProperty?: string;
+        filtered?: Function;
+        _view: any;
+        xaxis?: string;
+        yaxis?: string;
+        marginLeft?: number;
+    }
+    interface ScanConfig {
+        title?: string;
+        containerId?: string;
+        config?: string;
+        data?: string;
+        localStorage?: boolean;
+        refreshTimer?: number;
+        charts?: ChartConfig[];
+    }
+    class Idv {
+        static days_nl: string[];
+        static days_en: string[];
+        static months: string[];
+        config: ScanConfig;
+        ndx: CrossFilter.CrossFilter<any>;
+        gridster: any;
+        data: any;
+        state: string;
+        layerService: csComp.Services.LayerService;
+        storage: ng.localStorage.ILocalStorageService;
+        defaultWidth: number;
+        DataLoaded: boolean;
+        private scope;
+        reduceAddSum(properties: string[]): (p: any, v: any) => any;
+        reduceRemoveSum(properties: string[]): (p: any, v: any) => any;
+        reduceInitSum(properties: string[]): {};
+        reduceAddAvg(attr: any): (p: any, v: any) => any;
+        reduceRemoveAvg(attr: any): (p: any, v: any) => any;
+        reduceInitAvg(): {
+            count: number;
+            sum: number;
+            avg: number;
+            max: number;
+        };
+        stop(): void;
+        updateCharts(): void;
+        enums: {
+            [key: string]: string[];
+        };
+        loadDataSource(done: Function): void;
+        private resize();
+        loadData(prepare: any, done: any): void;
+        initCharts(scope: ng.IScope, layerService: csComp.Services.LayerService, prepare: any, done: any): void;
+        parseData(data: any, prepare: any, done: any): void;
+        reset(id: any): void;
+        resetAll(): void;
+        savePng(title: string, elementId: string): void;
+        exportCsv(): void;
+        hasFilter(id: any): boolean;
+        private addSearchWidget(config);
+        addSumCompare(config: Idv.ChartConfig): void;
+        addLayerLink(config: Idv.ChartConfig): void;
+        private addChartItem(config);
+        private triggerFilter(config);
+        private createGridsterItem(config);
+        addChart(config: Idv.ChartConfig): void;
     }
 }
 
@@ -3406,127 +3551,6 @@ declare module Legend {
     }
 }
 
-declare module IdvEdit {
-    interface IIdvEditScope extends ng.IScope {
-        vm: IdvEditCtrl;
-    }
-    /**
-      * Module
-      */
-    var myModule: any;
-    class IdvEditCtrl {
-        private $scope;
-        private $mapService;
-        private $layerService;
-        private $messageBusService;
-        private scope;
-        DataLoaded: boolean;
-        eta: any;
-        incomming: any;
-        _initialized: boolean;
-        scan: Idv.Idv;
-        static $inject: string[];
-        constructor($scope: IIdvEditScope, $mapService: csComp.Services.MapService, $layerService: csComp.Services.LayerService, $messageBusService: csComp.Services.MessageBusService);
-        toggleChart(chart: Idv.ChartConfig): void;
-        update(): void;
-        reset(): void;
-        export(): void;
-    }
-}
-
-declare module Idv {
-    interface ChartConfig {
-        id?: string;
-        enabled?: boolean;
-        elementId?: string;
-        containerId?: string;
-        title?: string;
-        bins?: number;
-        type?: string;
-        property?: string;
-        properties?: string[];
-        secondProperty?: string;
-        dimension?: any;
-        columns?: string[];
-        group?: any;
-        stat?: string;
-        width?: number;
-        height?: number;
-        chart?: any;
-        cap?: number;
-        time?: string;
-        ordering?: string;
-        propertyTitle?: string;
-        secondPropertyTitle?: string;
-        record?: string;
-        layer?: string;
-        featureProperty?: string;
-        featureTargetProperty?: string;
-        filtered?: Function;
-        _view: any;
-        xaxis?: string;
-        yaxis?: string;
-        marginLeft?: number;
-    }
-    interface ScanConfig {
-        title?: string;
-        containerId?: string;
-        config?: string;
-        data?: string;
-        localStorage?: boolean;
-        refreshTimer?: number;
-        charts?: ChartConfig[];
-    }
-    class Idv {
-        static days_nl: string[];
-        static days_en: string[];
-        static months: string[];
-        config: ScanConfig;
-        ndx: CrossFilter.CrossFilter<any>;
-        gridster: any;
-        data: any;
-        state: string;
-        layerService: csComp.Services.LayerService;
-        storage: ng.localStorage.ILocalStorageService;
-        defaultWidth: number;
-        DataLoaded: boolean;
-        private scope;
-        reduceAddSum(properties: string[]): (p: any, v: any) => any;
-        reduceRemoveSum(properties: string[]): (p: any, v: any) => any;
-        reduceInitSum(properties: string[]): {};
-        reduceAddAvg(attr: any): (p: any, v: any) => any;
-        reduceRemoveAvg(attr: any): (p: any, v: any) => any;
-        reduceInitAvg(): {
-            count: number;
-            sum: number;
-            avg: number;
-            max: number;
-        };
-        stop(): void;
-        updateCharts(): void;
-        enums: {
-            [key: string]: string[];
-        };
-        loadDataSource(done: Function): void;
-        private resize();
-        loadData(prepare: any, done: any): void;
-        initCharts(scope: ng.IScope, layerService: csComp.Services.LayerService, prepare: any, done: any): void;
-        parseData(data: any, prepare: any, done: any): void;
-        reset(id: any): void;
-        resetAll(): void;
-        savePng(title: string, elementId: string): void;
-        exportCsv(): void;
-        hasFilter(id: any): boolean;
-        private addSearchWidget(config);
-        addSumCompare(config: Idv.ChartConfig): void;
-        addLayerLink(config: Idv.ChartConfig): void;
-        private addChartItem(config);
-        private triggerFilter(config);
-        private createGridsterItem(config);
-        addChart(config: Idv.ChartConfig): void;
-    }
-}
-
 declare module LegendList {
     /**
       * Module
@@ -3620,30 +3644,6 @@ declare module MapElement {
     }
 }
 
-declare module Mobile {
-    /**
-      * Module
-      */
-    var myModule: any;
-}
-
-declare module Mobile {
-    interface IMobileScope extends ng.IScope {
-        vm: MobileCtrl;
-    }
-    class MobileCtrl {
-        private $scope;
-        private $layerService;
-        private $messageBus;
-        private localStorageService;
-        private geoService;
-        private scope;
-        private availableLayers;
-        static $inject: string[];
-        constructor($scope: IMobileScope, $layerService: csComp.Services.LayerService, $messageBus: csComp.Services.MessageBusService, localStorageService: ng.localStorage.ILocalStorageService, geoService: csComp.Services.GeoService);
-    }
-}
-
 declare module Mca.Models {
     import IFeature = csComp.Services.IFeature;
     enum ScoringFunctionType {
@@ -3662,7 +3662,7 @@ declare module Mca.Models {
         title: string;
         type: ScoringFunctionType;
         scores: string;
-        cssClass: string;
+        readonly cssClass: string;
         constructor(scoringFunctionType?: ScoringFunctionType);
         /**
          * Create a score based on the type, in which x in [0,10] and y in [0.1].
@@ -3698,6 +3698,8 @@ declare module Mca.Models {
         isPlaUpdated: boolean;
         /** Piece-wise linear approximation must be scaled:x' = ax+b, where a=100/(8r) and b=-100(min+0.1r)/(8r) and r=max-min */
         isPlaScaled: boolean;
+        /** Scale PLA using property statistics (min & max) :x' = ax+b, where a=r/10 and b=min and r=max-min */
+        mapToMinMax: boolean;
         minValue: number;
         maxValue: number;
         minCutoffValue: number;
@@ -3734,7 +3736,9 @@ declare module Mca.Models {
         featureIds: string[];
         scaleMaxValue: number;
         scaleMinValue: number;
-        rankLabel: string;
+        legend?: csComp.Services.Legend;
+        calculationMode: McaCalculationMode;
+        readonly rankLabel: string;
         constructor(mca?: Models.Mca);
         deserialize(input: Mca): Mca;
         /**
@@ -3755,6 +3759,20 @@ declare module Mca {
 }
 
 declare module Mca {
+    /**
+     * Defines the features that should be used to calculate the MCA. Default, all features of the selected featureType are used.
+     * Multiple modes can be enabled/disabled by adding their values (e.g. 7 to enable all modes).
+     * If the mode SelectedFeatures is enabled, only the selected features will be used to calculate the MCA.
+     * If the mode is FilteredFeatures is enabled, only the features in the filterResult will be used to calculate the MCA.
+     *
+     * @export
+     * @enum {number}
+     */
+    enum McaCalculationMode {
+        AllFeatures = 1,
+        SelectedFeatures = 2,
+        FilteredFeatures = 4,
+    }
     import IFeature = csComp.Services.IFeature;
     interface IMcaScope extends ng.IScope {
         vm: McaCtrl;
@@ -3826,8 +3844,10 @@ declare module Mca {
          * Return the first MCA having an id equal to the mcaId parameter.
          */
         findMcaById(mcaId: string): Models.Mca;
+        private getLegend(mca);
         private static createPropertyType(mca);
         private static createRankPropertyType(mca);
+        private static defaultLegend();
     }
 }
 
@@ -3882,151 +3902,27 @@ declare module Mca {
     }
 }
 
-declare module OfflineSearch {
+declare module Mobile {
     /**
       * Module
       */
     var myModule: any;
 }
 
-declare module OfflineSearch {
-    interface IProjectLocation {
-        title: string;
-        url: string;
+declare module Mobile {
+    interface IMobileScope extends ng.IScope {
+        vm: MobileCtrl;
     }
-    /**
-     * The name of the property you include in generating the offline search result.
-     */
-    interface IPropertyType {
-        /**
-         * Name of the property
-         * @type {string}
-         */
-        name: string;
-        /**
-         * The title of the property.
-         * @type {string}
-         */
-        title: string;
-        /**
-         * Language information for localisation.
-         * @type {f.ILanguageData}
-         */
-        languages?: csComp.Services.ILanguageData;
-    }
-    /**
-     * Specify the offline search options.
-     */
-    interface IOfflineSearchOptions {
-        /**
-         * Words you wish to exclude from the index.
-         * @type {string[]}
-         */
-        stopWords: string[];
-        /**
-         * The property types that you wish to use for generating the index.
-         * @type {osr.PropertyType}
-         */
-        propertyTypes: IPropertyType[];
-    }
-    class Layer {
-        groupTitle: string;
-        index: number;
-        id: string;
-        title: string;
-        path: string;
-        type: string;
-        /**
-         * Names of all the features.
-         * @type {string[]}
-         */
-        featureNames: string[];
-        constructor(groupTitle: string, index: number, id: string, title: string, path: string, type: string);
-    }
-    /**
-     * An index entry that contains a search result.
-     */
-    class Entry {
-        private v;
-        constructor(layerIndexOrArray: Array<number> | number, featureIndex?: number, propertyIndex?: number);
-        layerIndex: number;
-        featureIndex: number;
-        /**
-         * This function is called when serializing the Entry object to JSON, which is
-         * much less verbose than the default JSON. In the constructor, I've used a
-         * Union type to deserialize it again.
-         */
-        toJSON(): number[];
-    }
-    class KeywordIndex {
-        [key: string]: Entry[];
-    }
-    class OfflineSearchResult {
-        project: IProjectLocation;
-        options: IOfflineSearchOptions;
-        layers: Layer[];
-        keywordIndex: KeywordIndex;
-        constructor(project: IProjectLocation, options: IOfflineSearchOptions);
-    }
-}
-
-declare module OfflineSearch {
-    interface IOfflineSearchScope extends ng.IScope {
-        vm: OfflineSearchCtrl;
-    }
-    interface ILookupResult {
-        title?: string;
-        score: number;
-        key: string;
-        entries: Entry[];
-    }
-    class OfflineSearchResultViewModel {
-        title: string;
-        layerTitle: string;
-        groupTitle: string;
-        entry: Entry;
-        firstInGroup: boolean;
-        constructor(title: string, layerTitle: string, groupTitle: string, entry: Entry);
-        toString(): string;
-        fullTitle: string;
-    }
-    class OfflineSearchCtrl {
+    class MobileCtrl {
         private $scope;
-        private $http;
         private $layerService;
-        private $mapService;
         private $messageBus;
-        private offlineSearchResult;
-        searchText: string;
-        isReady: boolean;
+        private localStorageService;
+        private geoService;
+        private scope;
+        private availableLayers;
         static $inject: string[];
-        constructor($scope: IOfflineSearchScope, $http: ng.IHttpService, $layerService: csComp.Services.LayerService, $mapService: csComp.Services.MapService, $messageBus: csComp.Services.MessageBusService);
-        /**
-         * Load the offline search results (json file).
-         */
-        private loadSearchResults(url);
-        /**
-         * Get the locations based on the entered text.
-         */
-        getLocation(text: string, resultCount?: number): OfflineSearchResultViewModel[];
-        /**
-         * Merge the resuls of two keyword lookups by checking whether different entries refer
-         * to the same layer and feature.
-         * @result1 {ILookupResult[]}
-         * @result2 {ILookupResult[]}
-         */
-        private mergeResults(result1, result2);
-        /**
-         * Do a fuzzy keyword comparison between the entered text and the list of keywords,
-         * and return a subset.
-         * @text: {string}
-         */
-        private getKeywordHits(text);
-        /**
-         * When an item is selected, optionally open the layer and jump to the selected feature.
-         */
-        onSelect(selectedItem: OfflineSearchResultViewModel): void;
-        private selectFeature(layerId, featureIndex);
+        constructor($scope: IMobileScope, $layerService: csComp.Services.LayerService, $messageBus: csComp.Services.MessageBusService, localStorageService: ng.localStorage.ILocalStorageService, geoService: csComp.Services.GeoService);
     }
 }
 
@@ -4107,6 +4003,154 @@ declare module Search {
     }
 }
 
+declare module OfflineSearch {
+    /**
+      * Module
+      */
+    var myModule: any;
+}
+
+declare module OfflineSearch {
+    interface IProjectLocation {
+        title: string;
+        url: string;
+    }
+    /**
+     * The name of the property you include in generating the offline search result.
+     */
+    interface IPropertyType {
+        /**
+         * Name of the property
+         * @type {string}
+         */
+        name: string;
+        /**
+         * The title of the property.
+         * @type {string}
+         */
+        title: string;
+        /**
+         * Language information for localisation.
+         * @type {f.ILanguageData}
+         */
+        languages?: csComp.Services.ILanguageData;
+    }
+    /**
+     * Specify the offline search options.
+     */
+    interface IOfflineSearchOptions {
+        /**
+         * Words you wish to exclude from the index.
+         * @type {string[]}
+         */
+        stopWords: string[];
+        /**
+         * The property types that you wish to use for generating the index.
+         * @type {osr.PropertyType}
+         */
+        propertyTypes: IPropertyType[];
+    }
+    class Layer {
+        groupTitle: string;
+        index: number;
+        id: string;
+        title: string;
+        path: string;
+        type: string;
+        /**
+         * Names of all the features.
+         * @type {string[]}
+         */
+        featureNames: string[];
+        constructor(groupTitle: string, index: number, id: string, title: string, path: string, type: string);
+    }
+    /**
+     * An index entry that contains a search result.
+     */
+    class Entry {
+        private v;
+        constructor(layerIndexOrArray: Array<number> | number, featureIndex?: number, propertyIndex?: number);
+        readonly layerIndex: number;
+        readonly featureIndex: number;
+        /**
+         * This function is called when serializing the Entry object to JSON, which is
+         * much less verbose than the default JSON. In the constructor, I've used a
+         * Union type to deserialize it again.
+         */
+        toJSON(): number[];
+    }
+    class KeywordIndex {
+        [key: string]: Entry[];
+    }
+    class OfflineSearchResult {
+        project: IProjectLocation;
+        options: IOfflineSearchOptions;
+        layers: Layer[];
+        keywordIndex: KeywordIndex;
+        constructor(project: IProjectLocation, options: IOfflineSearchOptions);
+    }
+}
+
+declare module OfflineSearch {
+    interface IOfflineSearchScope extends ng.IScope {
+        vm: OfflineSearchCtrl;
+    }
+    interface ILookupResult {
+        title?: string;
+        score: number;
+        key: string;
+        entries: Entry[];
+    }
+    class OfflineSearchResultViewModel {
+        title: string;
+        layerTitle: string;
+        groupTitle: string;
+        entry: Entry;
+        firstInGroup: boolean;
+        constructor(title: string, layerTitle: string, groupTitle: string, entry: Entry);
+        toString(): string;
+        readonly fullTitle: string;
+    }
+    class OfflineSearchCtrl {
+        private $scope;
+        private $http;
+        private $layerService;
+        private $mapService;
+        private $messageBus;
+        private offlineSearchResult;
+        searchText: string;
+        isReady: boolean;
+        static $inject: string[];
+        constructor($scope: IOfflineSearchScope, $http: ng.IHttpService, $layerService: csComp.Services.LayerService, $mapService: csComp.Services.MapService, $messageBus: csComp.Services.MessageBusService);
+        /**
+         * Load the offline search results (json file).
+         */
+        private loadSearchResults(url);
+        /**
+         * Get the locations based on the entered text.
+         */
+        getLocation(text: string, resultCount?: number): OfflineSearchResultViewModel[];
+        /**
+         * Merge the resuls of two keyword lookups by checking whether different entries refer
+         * to the same layer and feature.
+         * @result1 {ILookupResult[]}
+         * @result2 {ILookupResult[]}
+         */
+        private mergeResults(result1, result2);
+        /**
+         * Do a fuzzy keyword comparison between the entered text and the list of keywords,
+         * and return a subset.
+         * @text: {string}
+         */
+        private getKeywordHits(text);
+        /**
+         * When an item is selected, optionally open the layer and jump to the selected feature.
+         */
+        onSelect(selectedItem: OfflineSearchResultViewModel): void;
+        private selectFeature(layerId, featureIndex);
+    }
+}
+
 declare module ProfileHeader {
     interface IProfileHeaderScope extends ng.IScope {
         vm: ProfileHeaderCtrl;
@@ -4180,13 +4224,6 @@ declare module ProjectHeaderSelection {
     }
 }
 
-declare module Helpers.Resize {
-    /**
-      * Module
-      */
-    var myModule: any;
-}
-
 declare module ProjectSettings {
     /**
       * Module
@@ -4213,11 +4250,19 @@ declare module ProjectSettings {
         toggleTouchMode(): void;
         toggleRenderer(): void;
         toggleShowLocation(): void;
+        clearLocalStorage(): void;
         toggleAdminMode(): void;
         saveSettings(): void;
         updateProject(): void;
         private updateProjectReady(data);
     }
+}
+
+declare module Helpers.Resize {
+    /**
+      * Module
+      */
+    var myModule: any;
 }
 
 declare module ShowModal {
@@ -4471,9 +4516,6 @@ declare module Voting {
       * Module
       */
     var myModule: any;
-}
-
-declare module Authentication {
 }
 
 declare module csComp.Services {
@@ -4850,7 +4892,6 @@ declare module csComp.Services {
     var myModule: any;
 }
 
-
 declare module ContourAction {
     import IFeature = csComp.Services.IFeature;
     import IActionOption = csComp.Services.IActionOption;
@@ -5004,7 +5045,7 @@ declare module csComp.Services {
         service: LayerService;
         addLayer(layer: ProjectLayer, callback: Function, data: Object): any;
         removeLayer(layer: ProjectLayer): void;
-        refreshLayer(layer: ProjectLayer): void;
+        refreshLayer(layer: ProjectLayer, oldLayer?: ProjectLayer): void;
         fitMap?(layer: ProjectLayer): void;
         fitTimeline?(layer: ProjectLayer): void;
         requiresLayer: boolean;
@@ -5050,6 +5091,8 @@ declare module csComp.Services {
         directoryHandle: MessageBusHandle;
         /** true if no filters are active */
         noFilters: boolean;
+        /** uses RD projection */
+        isRD: boolean;
         /** indicator true for mobile devices */
         isMobile: boolean;
         currentLocale: string;
@@ -5152,6 +5195,7 @@ declare module csComp.Services {
         private deselectFeature(feature);
         /** Called when a feature is selected. */
         selectFeature(feature: IFeature, multi?: boolean, force?: boolean): void;
+        getSelectedFeatures(): IFeature[];
         private lookupLog(logs, timestamp);
         updateLog(f: IFeature): void;
         updateFeature(feature: IFeature): void;
@@ -5468,27 +5512,6 @@ declare module RelationAction {
 }
 
 declare module csComp.Services {
-    class ProfileService {
-        private $localStorageService;
-        private $timeout;
-        private $messageBusService;
-        loggedIn: boolean;
-        validate: Function;
-        logout: Function;
-        isValidating: boolean;
-        static $inject: string[];
-        startLogin(): void;
-        validateUser(userName: any, userPassword: any): void;
-        logoutUser(): void;
-        constructor($localStorageService: ng.localStorage.ILocalStorageService, $timeout: ng.ITimeoutService, $messageBusService: csComp.Services.MessageBusService);
-    }
-    /**
-      * Module
-      */
-    var myModule: any;
-}
-
-declare module csComp.Services {
     class MapService {
         private $localStorageService;
         private $timeout;
@@ -5524,9 +5547,9 @@ declare module csComp.Services {
          * - when the mode is set in the project.json file, take that value.
          */
         private initExpertMode();
-        isExpert: boolean;
-        isIntermediate: boolean;
-        isAdminExpert: boolean;
+        readonly isExpert: boolean;
+        readonly isIntermediate: boolean;
+        readonly isAdminExpert: boolean;
         getBaselayer(layer: string): BaseLayer;
         changeBaseLayer(layer: string): void;
         invalidate(): void;
@@ -5549,6 +5572,27 @@ declare module csComp.Services {
         initDraw(layerService: csComp.Services.LayerService): void;
         /** start drawing line/polygon */
         startDraw(layer: csComp.Services.ProjectLayer, featureType: csComp.Services.IFeatureType): void;
+    }
+    /**
+      * Module
+      */
+    var myModule: any;
+}
+
+declare module csComp.Services {
+    class ProfileService {
+        private $localStorageService;
+        private $timeout;
+        private $messageBusService;
+        loggedIn: boolean;
+        validate: Function;
+        logout: Function;
+        isValidating: boolean;
+        static $inject: string[];
+        startLogin(): void;
+        validateUser(userName: any, userPassword: any): void;
+        logoutUser(): void;
+        constructor($localStorageService: ng.localStorage.ILocalStorageService, $timeout: ng.ITimeoutService, $messageBusService: csComp.Services.MessageBusService);
     }
     /**
       * Module
@@ -5619,6 +5663,7 @@ declare module Dashboard {
         isReady(widget: csComp.Services.IWidget): void;
         private checkLegend(d);
         updateDashboard(): void;
+        private updateWidgetsThrottled(widgets, cb, count?);
     }
 }
 
@@ -5887,38 +5932,6 @@ declare module GroupEdit {
         removeGroup(): void;
         toggleClustering(): void;
         updateOws(): void;
-    }
-}
-
-declare module LayerEdit {
-    /**
-      * Module
-      */
-    var myModule: any;
-}
-
-declare module LayerEdit {
-    interface ILayerEditScope extends ng.IScope {
-        vm: LayerEditCtrl;
-    }
-    class LayerEditCtrl {
-        private $scope;
-        private $http;
-        private $mapService;
-        private $layerService;
-        private $messageBusService;
-        private $dashboardService;
-        private scope;
-        layer: csComp.Services.ProjectLayer;
-        availabeTypes: {
-            (key: string): csComp.Services.IFeatureType;
-        };
-        static $inject: string[];
-        constructor($scope: ILayerEditScope, $http: ng.IHttpService, $mapService: csComp.Services.MapService, $layerService: csComp.Services.LayerService, $messageBusService: csComp.Services.MessageBusService, $dashboardService: csComp.Services.DashboardService);
-        addLayer(): void;
-        removeLayer(): void;
-        addFeatureType(): void;
-        getTypes(): void;
     }
 }
 
@@ -6288,6 +6301,72 @@ declare module ChartsWidget {
         initChart(): void;
         updateChart(): void;
         startChart(): void;
+    }
+}
+
+declare module CompareWidget {
+    /**
+      * Module
+      */
+    var myModule: any;
+}
+
+declare module CompareWidget {
+    import IFeature = csComp.Services.IFeature;
+    interface ICompareWidgetScope extends ng.IScope {
+        vm: CompareWidgetCtrl;
+        showMenu: boolean;
+        featureTypeTitle: string;
+        title: string;
+        icon: string;
+        selectedFeatures: IFeature[];
+        data: ICompareWidgetData;
+    }
+    interface ICompareWidgetData {
+        numbersOnly: boolean;
+    }
+    class CompareWidgetCtrl {
+        private $scope;
+        private $location;
+        private $timeout;
+        private $sce;
+        private $mapService;
+        private $layerService;
+        private $messageBusService;
+        private $translate;
+        private scope;
+        private widget;
+        private parentWidget;
+        layer: csComp.Services.ProjectLayer;
+        private featureTitles;
+        private propertyTitles;
+        private tableEntries;
+        mBusHandles: csComp.Services.MessageBusHandle[];
+        static $inject: string[];
+        constructor($scope: ICompareWidgetScope, $location: ng.ILocationService, $timeout: ng.ITimeoutService, $sce: ng.ISCEService, $mapService: csComp.Services.MapService, $layerService: csComp.Services.LayerService, $messageBusService: csComp.Services.MessageBusService, $translate: ng.translate.ITranslateService);
+        stop(): void;
+        private updateTable();
+        private hideWidget();
+        private showWidget();
+        private getAllFeatureTitles(fts);
+        /**
+         *
+         * Return all table entries to list in the comparetable
+         *
+         * @private
+         * @param {IFeature[]} fts
+         * @returns {{ [key: string]: string[] }}
+         *
+         * @memberOf CompareWidgetCtrl
+         */
+        private getAllTableEntries(fts);
+        /**
+         * Callback function
+         * @see {http://stackoverflow.com/questions/12756423/is-there-an-alias-for-this-in-typescript}
+         * @see {http://stackoverflow.com/questions/20627138/typescript-this-scoping-issue-when-called-in-jquery-callback}
+         * @todo {notice the strange syntax using a fat arrow =>, which is to preserve the this reference in a callback!}
+         */
+        private sidebarMessageReceived;
     }
 }
 
@@ -7163,8 +7242,10 @@ declare module MCAWidget {
         private parentWidget;
         private mcaScope;
         selectedMCA: string;
+        mBusHandles: csComp.Services.MessageBusHandle[];
         static $inject: string[];
         constructor($scope: IMCAWidgetScope, $timeout: ng.ITimeoutService, $controller: ng.IControllerService, $layerService: csComp.Services.LayerService, $messageBus: csComp.Services.MessageBusService, $mapService: csComp.Services.MapService);
+        stop(): void;
         private activateLayer(layer);
         private getMcaScope();
         private setMcaAsStyle(mcaId);
@@ -7398,13 +7479,13 @@ declare module Presentation {
         private activePresentation;
         private updateActiveSlide();
         private selectSlide(index);
-        private isFirstSlide;
-        private isLastSlide;
+        private readonly isFirstSlide;
+        private readonly isLastSlide;
         private isActiveSlide(index);
         private nextSlide();
         private previousSlide();
-        private isFirstPresentation;
-        private isLastPresentation;
+        private readonly isFirstPresentation;
+        private readonly isLastPresentation;
         private nextPresentation();
         private previousPresentation();
         private toggleEdit();
@@ -7413,54 +7494,6 @@ declare module Presentation {
         private deleteSlide();
         private saveLocation();
         private save();
-    }
-}
-
-declare module RangeWidget {
-    /**
-      * Module
-      */
-    var myModule: any;
-}
-
-declare module RangeWidget {
-    class RangeWidgetData {
-        title: string;
-        groupId: string;
-        propId: string;
-    }
-    interface IRangeWidgetScope extends ng.IScope {
-        vm: RangeWidgetCtrl;
-        data: RangeWidgetData;
-        style: csComp.Services.GroupStyle;
-        filter: csComp.Services.GroupFilter;
-        minimized: boolean;
-        selectedFeature: csComp.Services.IFeature;
-    }
-    class RangeWidgetCtrl {
-        private $scope;
-        private $timeout;
-        private $translate;
-        private $layerService;
-        private $messageBus;
-        private $mapService;
-        private scope;
-        private widget;
-        private parentWidget;
-        private mBusHandles;
-        private filterDim;
-        private filterGroup;
-        private filterValue;
-        private group;
-        static $inject: string[];
-        constructor($scope: IRangeWidgetScope, $timeout: ng.ITimeoutService, $translate: ng.translate.ITranslateService, $layerService: csComp.Services.LayerService, $messageBus: csComp.Services.MessageBusService, $mapService: csComp.Services.MapService);
-        private minimize();
-        private canClose();
-        private close();
-        stop(): void;
-        private selectFeature(feature);
-        private createFilter(groupId);
-        private applyFilter();
     }
 }
 
@@ -7705,38 +7738,6 @@ declare module TableWidget {
 }
 
 declare module csComp.Services {
-    import IFeature = csComp.Services.IFeature;
-    /** The online search results should be an array of objects implementing this interface. */
-    interface IOnlineSearchResult {
-        title: string;
-        description: string;
-        /** Location should be a stringified IGeoJsonGeometry object of the location that should be zoomed to */
-        location: string;
-        /** Score of the search result ranging between [0...1] */
-        score: number;
-    }
-    class OnlineSearchActions extends BasicActionService {
-        private $http;
-        private searchUrl;
-        private isReady;
-        id: string;
-        /**
-         * @param  {string} searchUrl: route to the search api
-         */
-        constructor($http: angular.IHttpService, searchUrl: string);
-        search(query: ISearchQuery, result: SearchResultHandler): void;
-        /**
-         * Get the features based on the entered text.
-         */
-        private getHits(text, resultCount, cb);
-        init(layerService: csComp.Services.LayerService): void;
-        onSelect(selectedItem: IOnlineSearchResult): void;
-        private selectFeatureById(layerId, featureIndex);
-        selectFeature(feature: IFeature): void;
-    }
-}
-
-declare module csComp.Services {
     /**
      * Describes the returned BING search result:
      * https://msdn.microsoft.com/en-us/library/ff701726.aspx
@@ -7938,8 +7939,8 @@ declare module csComp.Services {
     class Entry {
         private v;
         constructor(layerIndexOrArray: Array<number> | number, featureIndex?: number, propertyIndex?: number);
-        layerIndex: number;
-        featureIndex: number;
+        readonly layerIndex: number;
+        readonly featureIndex: number;
     }
     class OfflineSearchResult {
         title: string;
@@ -7950,7 +7951,7 @@ declare module csComp.Services {
         firstInGroup: boolean;
         constructor(title: string, layerTitle: string, groupTitle: string, entry: Entry, score: number);
         toString(): string;
-        fullTitle: string;
+        readonly fullTitle: string;
     }
     class OfflineSearchActions extends BasicActionService {
         private $http;
@@ -8151,6 +8152,89 @@ declare module csComp.Services {
     }
 }
 
+declare module L {
+    interface IUserDrawSettings {
+        /** Canvas element for drawing */
+        canvas: HTMLCanvasElement;
+        /** Bounds of the map in WGS84 */
+        bounds: L.Bounds;
+        /** Size of the map in pixels in x and y direction */
+        size: {
+            x: number;
+            y: number;
+        };
+        /** Zoom scale, e.g. 0.0026 */
+        zoomScale: number;
+        /** Zoom level, e.g. 12 */
+        zoom: number;
+        options: {
+            data: number[][];
+            noDataValue: number;
+            topLeftLat: number;
+            topLeftLon: number;
+            deltaLat: number;
+            deltaLon: number;
+            /** The minimum data value: below (<) this value, the cell is not drawn */
+            min?: number;
+            /** The maximum data value: above (>) this value, the cell is not drawn */
+            max?: number;
+            /** A value between 0 (transparent) and 1 (opaque) */
+            opacity?: number;
+            /** Define the color used to draw grid cells having the minimum value. */
+            minColor: string;
+            /** Define the color used to draw grid cells having the minimum value. */
+            maxColor: string;
+            /** Defines the contour levels of the grid layer */
+            levels: number[];
+            /** When true, forces a recalculatiion */
+            areColorsUpdated: boolean;
+            legend?: {
+                val: number;
+                color: string;
+            }[];
+            [key: string]: any;
+        };
+    }
+    function canvasOverlay(userDrawFunc: (overlay: any, layer: csComp.Services.IProjectLayer, settings: IUserDrawSettings) => void, layer: csComp.Services.IProjectLayer, options: Object): any;
+}
+
+declare module csComp.Services {
+    class GeojsonRenderer {
+        static render(service: LayerService, layer: ProjectLayer, mapRenderer: IMapRenderer): void;
+        static remove(service: LayerService, layer: ProjectLayer): void;
+    }
+}
+
+declare module csComp.Services {
+    class GridLayerRenderer {
+        static render(service: LayerService, layer: ProjectLayer): void;
+        static drawFunction(overlay: any, layer: ProjectLayer, settings: L.IUserDrawSettings): void;
+    }
+}
+
+declare module csComp.Services {
+    class HeatmapRenderer {
+        static render(service: LayerService, layer: ProjectLayer, mapRenderer: LeafletRenderer): void;
+    }
+}
+
+declare module csComp.Services {
+    class TileLayerRenderer {
+        static render(service: LayerService, layer: ProjectLayer): void;
+        /**
+         * Add a UTF Grid Layer to the tilelayer.
+         */
+        static addUtfGrid(service: LayerService, layer: ProjectLayer, utfGridLayerUrl: string): void;
+    }
+}
+
+declare module csComp.Services {
+    class WmsRenderer {
+        static getUrl(layer: ProjectLayer, date: Date): string;
+        static render(service: LayerService, layer: ProjectLayer): void;
+    }
+}
+
 declare module csComp.Services {
     class DatabaseSource implements ILayerSource {
         service: LayerService;
@@ -8179,7 +8263,9 @@ declare module csComp.Services {
         requiresLayer: boolean;
         $http: ng.IHttpService;
         constructor(service: LayerService, $http: ng.IHttpService, $storage: ng.localStorage.ILocalStorageService);
-        refreshLayer(layer: ProjectLayer): void;
+        refreshLayer(layer: ProjectLayer, newLayer?: any): void;
+        private findFeatureDiff(layer, newLayer);
+        private isFeatureUpdated(f, old);
         addLayer(layer: ProjectLayer, callback: (layer: ProjectLayer) => void, data?: any): void;
         /** zoom to boundaries of layer */
         fitMap(layer: ProjectLayer): void;
@@ -8346,6 +8432,7 @@ declare module csComp.Services {
         gridParams: IGridDataSourceParameters;
         constructor(service: csComp.Services.LayerService, $http: ng.IHttpService, $storage: ng.localStorage.ILocalStorageService);
         addLayer(layer: csComp.Services.ProjectLayer, callback: (layer: csComp.Services.ProjectLayer) => void): void;
+        processData(layer: ProjectLayer, result: string, callback: Function): void;
         /**
          * Convert the ESRI ASCII GRID header to grid parameters.
          *
@@ -8454,32 +8541,6 @@ declare module csComp.Services {
     }
 }
 
-declare module csComp.Services {
-    class MapboxVectorTileSource extends GeoJsonSource implements ILayerSource {
-        service: LayerService;
-        static CACHE_SIZE: number;
-        title: string;
-        layer: ProjectLayer;
-        requiresLayer: boolean;
-        tileCount: number;
-        /** Store obtained results in the cache, */
-        cache: {
-            [key: string]: IGeoJsonFile | IGeoJsonCollection;
-        };
-        /** The urls that are cached (in order to keep the cache from only growing). */
-        cachedUrls: string[];
-        constructor(service: LayerService, $http: ng.IHttpService);
-        addLayer(layer: ProjectLayer, callback: (layer: ProjectLayer) => void): void;
-        /**
-         * Add a received object to the cache, and, if full, delete an old entry.
-         */
-        private addToCache(url, data);
-        private checkIfFinished(layer, callback);
-        addFeatures(layer: ProjectLayer, data: IGeoJsonFile | IGeoJsonCollection, fromCache?: boolean): void;
-        removeLayer(layer: ProjectLayer): void;
-    }
-}
-
 declare module L {
     class Terminator extends L.Polygon {
         constructor(options?: Object);
@@ -8571,102 +8632,6 @@ declare module csComp.Services {
         addLayer(layer: ProjectLayer, callback: Function, data?: any): void;
         updateTime(layer: ProjectLayer, date: Date): void;
         removeLayer(layer: ProjectLayer): void;
-    }
-}
-
-declare module L {
-    interface IUserDrawSettings {
-        /** Canvas element for drawing */
-        canvas: HTMLCanvasElement;
-        /** Bounds of the map in WGS84 */
-        bounds: L.Bounds;
-        /** Size of the map in pixels in x and y direction */
-        size: {
-            x: number;
-            y: number;
-        };
-        /** Zoom scale, e.g. 0.0026 */
-        zoomScale: number;
-        /** Zoom level, e.g. 12 */
-        zoom: number;
-        options: {
-            data: number[][];
-            noDataValue: number;
-            topLeftLat: number;
-            topLeftLon: number;
-            deltaLat: number;
-            deltaLon: number;
-            /** The minimum data value: below (<) this value, the cell is not drawn */
-            min?: number;
-            /** The maximum data value: above (>) this value, the cell is not drawn */
-            max?: number;
-            /** A value between 0 (transparent) and 1 (opaque) */
-            opacity?: number;
-            /** Define the color used to draw grid cells having the minimum value. */
-            minColor: string;
-            /** Define the color used to draw grid cells having the minimum value. */
-            maxColor: string;
-            /** Defines the contour levels of the grid layer */
-            levels: number[];
-            /** When true, forces a recalculatiion */
-            areColorsUpdated: boolean;
-            legend?: {
-                val: number;
-                color: string;
-            }[];
-            [key: string]: any;
-        };
-    }
-    function canvasOverlay(userDrawFunc: (overlay: any, layer: csComp.Services.IProjectLayer, settings: IUserDrawSettings) => void, layer: csComp.Services.IProjectLayer, options: Object): any;
-}
-
-declare module csComp.Services {
-    class GeojsonRenderer {
-        static render(service: LayerService, layer: ProjectLayer, mapRenderer: IMapRenderer): void;
-        static remove(service: LayerService, layer: ProjectLayer): void;
-    }
-}
-
-declare module csComp.Services {
-    class GridLayerRenderer {
-        static render(service: LayerService, layer: ProjectLayer): void;
-        static drawFunction(overlay: any, layer: ProjectLayer, settings: L.IUserDrawSettings): void;
-    }
-}
-
-declare module csComp.Services {
-    class HeatmapRenderer {
-        static render(service: LayerService, layer: ProjectLayer, mapRenderer: LeafletRenderer): void;
-    }
-}
-
-declare module csComp.Services {
-    class MVTLayerRenderer {
-        static render(service: LayerService, layer: ProjectLayer): void;
-    }
-}
-
-declare module csComp.Services {
-    class TileLayerRenderer {
-        static render(service: LayerService, layer: ProjectLayer): void;
-        /**
-         * Add a UTF Grid Layer to the tilelayer.
-         */
-        static addUtfGrid(service: LayerService, layer: ProjectLayer, utfGridLayerUrl: string): void;
-    }
-}
-
-declare module csComp.Services {
-    class VectorTileRenderer {
-        static render(service: LayerService, layer: ProjectLayer): void;
-        static drawFunction(overlay: any, layer: ProjectLayer, settings: L.IUserDrawSettings): void;
-    }
-}
-
-declare module csComp.Services {
-    class WmsRenderer {
-        static getUrl(layer: ProjectLayer, date: Date): string;
-        static render(service: LayerService, layer: ProjectLayer): void;
     }
 }
 
@@ -8780,9 +8745,9 @@ declare module csComp.Services {
          * @param  {string} property: selected property
          * @param  {IPropertyType} meta: meta info added to the group or style filter
          * @param  {string} title: title of the entry
-         * @param  {boolean} isFilter: is true, if we need to add a filter icon, otherwise a style icon will be applied
+         * @param  {string} faLabel: the fa-icon to use. Default a style icon will be applied.
          */
-        private addEntryToTooltip(content, feature, property, meta, title, isFilter);
+        private addEntryToTooltip(content, feature, property, meta, title, faLabel?);
         generateTooltipContent(e: L.LeafletMouseEvent, group: ProjectGroup): {
             content: string;
             widthInPixels: number;

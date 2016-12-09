@@ -82,7 +82,7 @@ export declare class Conrec {
      * @param contourLevel - Contour level for line.
      */
     private drawContour(startX, startY, endX, endY, contourLevel, k);
-    contourList: IContourList;
+    readonly contourList: IContourList;
 }
 export interface IContour extends Array<{
     x: number;

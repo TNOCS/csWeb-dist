@@ -17,15 +17,18 @@ var helpers = require('../helpers/Utils');
 var sift = require('sift');
 var FileStorage = (function (_super) {
     __extends(FileStorage, _super);
-    function FileStorage(rootpath, watch) {
+    function FileStorage(rootpath, watch, ignoreInitial) {
         var _this = this;
         if (watch === void 0) { watch = true; }
+        if (ignoreInitial === void 0) { ignoreInitial = false; }
         _super.call(this);
         this.rootpath = rootpath;
+        this.ignoreInitial = ignoreInitial;
         this.layers = {};
         this.projects = {};
         this.keys = {};
         this.resources = {};
+        this.layerDebounceFunctions = {};
         this.saveProjectDelay = _.debounce(function (project) {
             _this.saveProjectFile(project);
         }, 5000);
@@ -35,9 +38,6 @@ var FileStorage = (function (_super) {
         this.saveKeyDelay = _.debounce(function (key) {
             _this.saveKeyFile(key);
         }, 5000);
-        this.saveLayerDelay = _.debounce(function (layer) {
-            _this.saveLayerFile(layer);
-        }, 2000);
         this.receiveCopy = false;
         this.backupPath = path.join(rootpath, 'backup/');
         this.keysPath = path.join(rootpath, 'keys/');
@@ -77,10 +77,10 @@ var FileStorage = (function (_super) {
             fs.mkdirSync(path.join(this.layersPath, 'backup'));
         }
         setTimeout(function () {
-            var watcher = chokidar.watch(_this.layersPath, { ignoreInitial: false, ignored: /[\/\\]\./, persistent: true });
+            var watcher = chokidar.watch(_this.layersPath, { ignoreInitial: _this.ignoreInitial, ignored: /[\/\\]\./, persistent: true });
             watcher.on('all', (function (action, path) {
                 if (action == "add") {
-                    Winston.info('filestore: new file found : ' + path);
+                    Winston.debug('filestore: new file found : ' + path);
                     _this.openLayerFile(path);
                 }
                 if (action == "unlink") {
@@ -103,7 +103,7 @@ var FileStorage = (function (_super) {
             fs.mkdirSync(this.projectsPath);
         }
         setTimeout(function () {
-            var watcher = chokidar.watch(_this.projectsPath, { ignoreInitial: false, depth: 0, ignored: /[\/\\]\./, persistent: true });
+            var watcher = chokidar.watch(_this.projectsPath, { ignoreInitial: _this.ignoreInitial, depth: 0, ignored: /[\/\\]\./, persistent: true });
             watcher.on('all', (function (action, path) {
                 if (action == "add") {
                     Winston.info('filestore: new project found : ' + path);
@@ -150,7 +150,7 @@ var FileStorage = (function (_super) {
             fs.mkdirSync(this.keysPath);
         }
         setTimeout(function () {
-            var watcher = chokidar.watch(_this.keysPath, { ignoreInitial: false, ignored: /[\/\\]\./, persistent: true });
+            var watcher = chokidar.watch(_this.keysPath, { ignoreInitial: _this.ignoreInitial, ignored: /[\/\\]\./, persistent: true });
             watcher.on('all', (function (action, path) {
                 if (!fs.statSync(path).isDirectory()) {
                     if (action == "add") {
@@ -173,7 +173,7 @@ var FileStorage = (function (_super) {
             fs.mkdirSync(this.resourcesPath);
         }
         setTimeout(function () {
-            var watcher = chokidar.watch(_this.resourcesPath, { ignoreInitial: false, ignored: /[\/\\]\./, persistent: true });
+            var watcher = chokidar.watch(_this.resourcesPath, { ignoreInitial: _this.ignoreInitial, ignored: /[\/\\]\./, persistent: true });
             watcher.on('all', (function (action, path) {
                 if (action == "add") {
                     Winston.info('filestore: new file found : ' + path);
@@ -186,6 +186,19 @@ var FileStorage = (function (_super) {
                 }
             }));
         }, 1000);
+    };
+    // Create a debounce function for each layer
+    FileStorage.prototype.saveLayerDelay = function (layer) {
+        var _this = this;
+        if (!layer || !layer.id) {
+            Winston.error("saveLayerDelay: Layer id not found");
+        }
+        if (!this.layerDebounceFunctions.hasOwnProperty(layer.id)) {
+            this.layerDebounceFunctions[layer.id] = _.debounce(function (layer) {
+                _this.saveLayerFile(layer);
+            }, 1000);
+        }
+        this.layerDebounceFunctions[layer.id].call(this, layer);
     };
     FileStorage.prototype.getProjectFilename = function (projectId) {
         return path.join(this.projectsPath, projectId + '.json');
@@ -222,14 +235,16 @@ var FileStorage = (function (_super) {
     };
     FileStorage.prototype.saveResourceFile = function (res) {
         var fn = this.getResourceFilename(res);
-        fs.outputFile(fn, JSON.stringify(res, null, 2), function (error) {
-            if (error) {
-                Winston.error('filestore: error writing resourcefile : ' + fn);
-            }
-            else {
-                Winston.info('filestore: file saved : ' + fn);
-            }
-        });
+        if (res && !_.isEmpty(res)) {
+            fs.outputFile(fn, JSON.stringify(res, null, 2), function (error) {
+                if (error) {
+                    Winston.error('filestore: error writing resourcefile : ' + fn);
+                }
+                else {
+                    Winston.info('filestore: file saved : ' + fn);
+                }
+            });
+        }
     };
     /** Save project file to disk */
     FileStorage.prototype.saveProjectFile = function (project) {
@@ -324,7 +339,7 @@ var FileStorage = (function (_super) {
                         layer = JSON.parse(data);
                     }
                     catch (e) {
-                        Winston.warn("Error parsing file: " + fileName + ". Skipped");
+                        Winston.warn("Error parsing file: " + fileName + ". Skipped. (Data length: " + ((data) ? data.length : 0) + ")");
                         return;
                     }
                     layer.storage = _this.id;
@@ -334,8 +349,8 @@ var FileStorage = (function (_super) {
                     layer.storage = _this.id;
                     //layer.type = "geojson";
                     layer.url = "/api/layers/" + id;
-                    Winston.info('storage ' + layer.storage);
-                    _this.manager.addUpdateLayer(layer, {}, function () { });
+                    (layer.storage) ? Winston.debug('storage ' + layer.storage) : Winston.warn("No storage found for " + layer);
+                    _this.manager && _this.manager.addUpdateLayer(layer, {}, function () { });
                 }
             });
         }
@@ -348,7 +363,7 @@ var FileStorage = (function (_super) {
         Winston.info('filestore: openfile ' + id);
         if (!this.keys.hasOwnProperty(id)) {
             fs.readFile(fileName, "utf8", function (err, data) {
-                if (!err) {
+                if (!err && data && data.indexOf('{') >= 0) {
                     var key = JSON.parse(data);
                     key.storage = _this.id;
                     key.id = id;
@@ -370,7 +385,7 @@ var FileStorage = (function (_super) {
                     res._localFile = fileName;
                     res.id = id;
                     _this.resources[id] = res;
-                    _this.manager.addResource(res, false, { source: _this.id }, function () { });
+                    _this.manager && _this.manager.addResource(res, false, { source: _this.id }, function () { });
                     _this.saveResourceFile(res);
                 }
             });
@@ -403,7 +418,7 @@ var FileStorage = (function (_super) {
                     if (typeof isDynamic !== 'undefined')
                         project.isDynamic = isDynamic;
                     project.url = "/api/projects/" + id;
-                    _this.manager.updateProject(project, {}, function () { });
+                    _this.manager && _this.manager.updateProject(project, {}, function () { });
                 }
             }
             else if (err) {

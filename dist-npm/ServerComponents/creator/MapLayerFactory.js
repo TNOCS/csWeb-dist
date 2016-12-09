@@ -19,15 +19,22 @@ var MapLayerFactory = (function () {
         }
         var fileList = [];
         var templateFolder = path.join(workingDir, 'public', 'data', 'templates');
-        fs.readdir(templateFolder, function (err, files) {
+        fs.access(templateFolder, fs.F_OK, function (err) {
             if (err) {
-                console.log('Error while looking for templates in ' + templateFolder);
+                console.log("Template-folder \"" + templateFolder + "\" not found");
             }
             else {
-                files.forEach(function (f) {
-                    fileList[f.replace(/\.[^/.]+$/, '')] = path.join(templateFolder, f); // Filter extension from key and store in dictionary
+                fs.readdir(templateFolder, function (err, files) {
+                    if (err) {
+                        console.log('Error while looking for templates in ' + templateFolder);
+                    }
+                    else {
+                        files.forEach(function (f) {
+                            fileList[f.replace(/\.[^/.]+$/, '')] = path.join(templateFolder, f); // Filter extension from key and store in dictionary
+                        });
+                        console.log("Loaded " + files.length + " templates from " + templateFolder + ".");
+                    }
                 });
-                console.log("Loaded " + files.length + " templates from " + templateFolder + ".");
             }
         });
         this.templateFiles = fileList;
@@ -60,7 +67,7 @@ var MapLayerFactory = (function () {
                 featureType: layerId,
                 opacity: ld.opacity,
                 clusterLevel: ld.clusterLevel,
-                useClustering: ld.useClustering,
+                clustering: ld.useClustering,
                 group: ld.group,
                 geojson: geojson,
                 enabled: ld.isEnabled,
