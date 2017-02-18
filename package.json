@@ -34,10 +34,16 @@
     "underscore": "^1.8.3",
     "which": "^1.2.4",
     "winston": "^2.2.0",
-    "xml2js": "^0.4.16"
-  }, 
+    "xml2js": "^0.4.16",
+    "snyk": "^1.25.0"
+  },
   "bugs": {
     "url": "https://github.com/TNOCS/csWeb/issues"
   },
-  "homepage": "https://github.com/TNOCS/csWeb"
+  "homepage": "https://github.com/TNOCS/csWeb",
+  "scripts": {
+    "snyk-protect": "snyk protect",
+    "prepublish": "npm run snyk-protect"
+  },
+  "snyk": true
 }
