@@ -1,5 +1,5 @@
 "use strict";
-var request = require('request');
+var request = require("request");
 /* Multiple storage engine supported, e.g. file system, mongo  */
 var ProxyService = (function () {
     function ProxyService() {

@@ -1,10 +1,12 @@
 "use strict";
-var sqlite3 = require('sqlite3');
+Object.defineProperty(exports, "__esModule", { value: true });
+var sqlite3 = require("sqlite3");
 /**
  * Export a connection to the BAG database.
  */
 var LocalBag = (function () {
     function LocalBag(path) {
+        this.name = 'LocalBag';
         this.connectionString = path; //process.env.DATABASE_URL || config["bagConnectionString"];
         console.log('Opening db ' + this.connectionString);
         this.db = new sqlite3.Database(this.connectionString, sqlite3.OPEN_READONLY, function (err) {
@@ -18,6 +20,20 @@ var LocalBag = (function () {
         //console.log("Poolsize: " + pg.defaults.poolSize);
         // console.log("BAG connection: " + this.connectionString);
     }
+    LocalBag.prototype.init = function () { };
+    ;
+    LocalBag.prototype.searchAddress = function (query, limit, callback) {
+        if (limit === void 0) { limit = 15; }
+        console.log('Not implemented');
+        callback(null);
+        return;
+    };
+    LocalBag.prototype.searchGemeente = function (query, limit, callback) {
+        if (limit === void 0) { limit = 15; }
+        console.log('Not implemented');
+        callback(null);
+        return;
+    };
     /**
      * Format the zip code so spaces are removed and the letters are all capitals.
      */
@@ -107,8 +123,13 @@ var LocalBag = (function () {
         }
         return null;
     };
-    LocalBag.prototype.lookupBagArea = function (bounds, callback) {
+    LocalBag.prototype.lookupBagArea = function (bounds, isArea, callback) {
         console.log('Function not implemented');
+        callback(null);
+    };
+    LocalBag.prototype.lookupBagBuurt = function (bounds, isArea, callback) {
+        console.log('Function not implemented');
+        callback(null);
     };
     /**
      * Lookup the address from the BAG.

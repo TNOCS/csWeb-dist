@@ -1,6 +1,7 @@
 "use strict";
-var fs = require('fs');
-var path = require('path');
+Object.defineProperty(exports, "__esModule", { value: true });
+var fs = require("fs");
+var path = require("path");
 var chokidar = require('chokidar');
 var DynamicProject = (function () {
     function DynamicProject(folder, id, service, messageBus) {
@@ -86,6 +87,7 @@ var DynamicProject = (function () {
                         _this.project.id = _this.project.title;
                     if (!_this.project.groups)
                         _this.project.groups = [];
+                    //console.log('ProjectID: ' + this.project.id);
                 }
                 catch (e) {
                     console.log('Error (' + f + '): ' + e);

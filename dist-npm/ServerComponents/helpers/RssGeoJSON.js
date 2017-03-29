@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * Template for describing an RSS item, that contains coordinates, as GeoJSON.
  */

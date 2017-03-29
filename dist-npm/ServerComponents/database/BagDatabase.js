@@ -1,11 +1,13 @@
 "use strict";
-var IBagOptions = require('../database/IBagOptions');
+Object.defineProperty(exports, "__esModule", { value: true });
+var IBagOptions = require("../database/IBagOptions");
 /**
  * Export a connection to the BAG database.
  */
 var BagDatabase = (function () {
     function BagDatabase(config) {
         this.isInitialized = false;
+        this.name = 'BagDatabase';
         this.connectionString = process.env.DATABASE_URL || config["bagConnectionString"];
     }
     BagDatabase.prototype.init = function () {

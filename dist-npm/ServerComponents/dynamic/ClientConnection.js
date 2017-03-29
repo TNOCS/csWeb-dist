@@ -1,6 +1,7 @@
 "use strict";
-var io = require('socket.io');
-var Winston = require('winston');
+Object.defineProperty(exports, "__esModule", { value: true });
+var io = require("socket.io");
+var Winston = require("winston");
 //GetDataSource: Function;
 var MsgSubscription = (function () {
     function MsgSubscription() {
@@ -56,14 +57,15 @@ exports.KeyUpdate = KeyUpdate;
 /**
  * List of available action for sending/receiving project actions over socket.io channel
  */
+var ProjectUpdateAction;
 (function (ProjectUpdateAction) {
     ProjectUpdateAction[ProjectUpdateAction["updateProject"] = 0] = "updateProject";
     ProjectUpdateAction[ProjectUpdateAction["deleteProject"] = 1] = "deleteProject";
-})(exports.ProjectUpdateAction || (exports.ProjectUpdateAction = {}));
-var ProjectUpdateAction = exports.ProjectUpdateAction;
+})(ProjectUpdateAction = exports.ProjectUpdateAction || (exports.ProjectUpdateAction = {}));
 /**
  * List of available action for sending/receiving layer actions over socket.io channel
  */
+var LayerUpdateAction;
 (function (LayerUpdateAction) {
     LayerUpdateAction[LayerUpdateAction["updateFeature"] = 0] = "updateFeature";
     LayerUpdateAction[LayerUpdateAction["updateLog"] = 1] = "updateLog";
@@ -71,16 +73,15 @@ var ProjectUpdateAction = exports.ProjectUpdateAction;
     LayerUpdateAction[LayerUpdateAction["updateLayer"] = 3] = "updateLayer";
     LayerUpdateAction[LayerUpdateAction["deleteLayer"] = 4] = "deleteLayer";
     LayerUpdateAction[LayerUpdateAction["addUpdateFeatureBatch"] = 5] = "addUpdateFeatureBatch";
-})(exports.LayerUpdateAction || (exports.LayerUpdateAction = {}));
-var LayerUpdateAction = exports.LayerUpdateAction;
+})(LayerUpdateAction = exports.LayerUpdateAction || (exports.LayerUpdateAction = {}));
 /**
  * List of available action for sending/receiving key actions over socket.io channel
  */
+var KeyUpdateAction;
 (function (KeyUpdateAction) {
     KeyUpdateAction[KeyUpdateAction["updateKey"] = 0] = "updateKey";
     KeyUpdateAction[KeyUpdateAction["deleteKey"] = 1] = "deleteKey"; // onlyused in imb api for now..
-})(exports.KeyUpdateAction || (exports.KeyUpdateAction = {}));
-var KeyUpdateAction = exports.KeyUpdateAction;
+})(KeyUpdateAction = exports.KeyUpdateAction || (exports.KeyUpdateAction = {}));
 var ClientMessage = (function () {
     function ClientMessage(action, data) {
         this.action = action;

@@ -1,4 +1,6 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var InputDataType;
 (function (InputDataType) {
     InputDataType[InputDataType["file"] = 0] = "file";
     InputDataType[InputDataType["url"] = 1] = "url";
@@ -7,15 +9,14 @@
     InputDataType[InputDataType["shape"] = 4] = "shape";
     InputDataType[InputDataType["geojson"] = 5] = "geojson";
     InputDataType[InputDataType["zip"] = 6] = "zip";
-})(exports.InputDataType || (exports.InputDataType = {}));
-var InputDataType = exports.InputDataType;
+})(InputDataType = exports.InputDataType || (exports.InputDataType = {}));
+var OutputDataType;
 (function (OutputDataType) {
     OutputDataType[OutputDataType["file"] = 0] = "file";
     OutputDataType[OutputDataType["geojson"] = 1] = "geojson";
     OutputDataType[OutputDataType["mongo"] = 2] = "mongo";
     OutputDataType[OutputDataType["pg"] = 3] = "pg";
-})(exports.OutputDataType || (exports.OutputDataType = {}));
-var OutputDataType = exports.OutputDataType;
+})(OutputDataType = exports.OutputDataType || (exports.OutputDataType = {}));
 // import s = require('stream');
 // class t {
 //     constructor() {

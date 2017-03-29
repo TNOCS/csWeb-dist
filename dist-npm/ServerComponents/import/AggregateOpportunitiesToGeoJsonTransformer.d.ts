@@ -1,4 +1,5 @@
-import transform = require("./ITransform");
+/// <reference types="node" />
+import transform = require('./ITransform');
 declare class AggregateOpportunitiesToGeoJsonTransformer implements transform.ITransform {
     title: string;
     id: string;

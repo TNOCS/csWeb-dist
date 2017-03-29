@@ -1,19 +1,19 @@
 "use strict";
 var Utils = require("../helpers/Utils");
-var stream = require('stream');
-var turf = require("turf");
+var stream = require("stream");
+var turf = require('turf');
 var FieldSplitTransformer = (function () {
     function FieldSplitTransformer(title) {
         this.title = title;
-        this.type = "FieldSplitTransformer";
+        this.type = 'FieldSplitTransformer';
         this.id = Utils.newGuid();
         //this.description = description;
     }
     FieldSplitTransformer.prototype.initialize = function (opt, callback) {
         /*console.log(JSON.stringify(opt,null,4));*/
-        var keyPropertyParameter = opt.parameters.filter(function (p) { return p.type.title == "keyProperty"; })[0];
+        var keyPropertyParameter = opt.parameters.filter(function (p) { return p.type.title === 'keyProperty'; })[0];
         if (!keyPropertyParameter) {
-            callback("keyProperty missing");
+            callback('keyProperty missing');
             return;
         }
         this.keyProperty = keyPropertyParameter.value;
@@ -24,7 +24,7 @@ var FieldSplitTransformer = (function () {
         var t = new stream.Transform();
         /*stream.Transform.call(t);*/
         var accumulator = {};
-        t.setEncoding("utf8");
+        t.setEncoding('utf8');
         var index = 0;
         t._transform = function (chunk, encoding, done) {
             /*var startTs = new Date();*/
@@ -49,7 +49,7 @@ var FieldSplitTransformer = (function () {
                     /*console.log(key);*/
                     var group = accumulator[key];
                     var groupGeoJson = {
-                        type: "FeatureCollection",
+                        type: 'FeatureCollection',
                         features: group
                     };
                     t.push(JSON.stringify(groupGeoJson));

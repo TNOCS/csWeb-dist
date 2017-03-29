@@ -1,5 +1,6 @@
 "use strict";
-var fs = require('fs');
+Object.defineProperty(exports, "__esModule", { value: true });
+var fs = require("fs");
 /**
  * Service that contains default configuration options.
  * Is based on csComp.Helpers.Dictionary.
@@ -12,8 +13,14 @@ var ConfigurationService = (function () {
         this.configurationFile = configurationFile;
         if (!configurationFile)
             return;
-        var data = fs.readFileSync(configurationFile, 'utf8');
-        var content = JSON.parse(data);
+        var content;
+        if (typeof configurationFile === 'string') {
+            var data = fs.readFileSync(configurationFile, 'utf8');
+            content = JSON.parse(data);
+        }
+        else {
+            content = configurationFile;
+        }
         for (var key in content) {
             if (content.hasOwnProperty(key)) {
                 var value = content[key];
@@ -70,9 +77,9 @@ var ConfigurationService = (function () {
     ConfigurationService.prototype.toLookup = function () {
         return this;
     };
-    ConfigurationService.theKeys = [];
-    ConfigurationService.theValues = [];
     return ConfigurationService;
 }());
+ConfigurationService.theKeys = [];
+ConfigurationService.theValues = [];
 exports.ConfigurationService = ConfigurationService;
 //# sourceMappingURL=ConfigurationService.js.map

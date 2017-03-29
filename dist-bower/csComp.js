@@ -128,6 +128,7 @@ var csComp;
                 this.showBackgroundImage = false;
                 /** don't show hamburger menu for this dashboard */
                 this.hideleftPanelToggle = false;
+                this.showNavbar = true;
                 this.showDateSelector = true;
                 this.widgets = [];
             }
@@ -151,6 +152,7 @@ var csComp;
                     showLegend: d.showLegend,
                     showRightmenu: d.showRightmenu,
                     showBackgroundImage: d.showBackgroundImage,
+                    showNavbar: d.showNavbar,
                     background: d.background,
                     backgroundimage: d.backgroundimage,
                     visiblelayers: d.visiblelayers,
@@ -297,6 +299,7 @@ var csComp;
                     type: d.type,
                     title: d.title,
                     sensors: {}
+                    //sensors: csComp.Helpers.serialize<DataSource>(d.sensors, SensorSet.serializeableData)
                 };
                 //for (var ss in d.sensors) res.sensors[ss] = d.sensors[ss].serialize();
                 return res;
@@ -313,7 +316,8 @@ var csComp;
                 var _this = this;
                 if (ds.url != null) {
                     $http.get(ds.url)
-                        .success(function (temp) {
+                        .then(function (res) {
+                        var temp = res.data;
                         if (temp != null) {
                             ds.id = temp.id;
                             if (!ds.hasOwnProperty('sensors')) {
@@ -330,7 +334,7 @@ var csComp;
                             callback();
                         }
                     })
-                        .error(function () { console.log('Error on Data source -- do something ?'); });
+                        .catch(function () { console.log('Error on Data source -- do something ?'); });
                 }
             };
             return DataSource;
@@ -384,6 +388,7 @@ var csComp;
             return Feature;
         }());
         Services.Feature = Feature;
+        var DrawingModeType;
         (function (DrawingModeType) {
             DrawingModeType[DrawingModeType["None"] = 0] = "None";
             DrawingModeType[DrawingModeType["Image"] = 1] = "Image";
@@ -396,8 +401,7 @@ var csComp;
             DrawingModeType[DrawingModeType["Polyline"] = 8] = "Polyline";
             DrawingModeType[DrawingModeType["Polygon"] = 9] = "Polygon";
             DrawingModeType[DrawingModeType["MultiPolygon"] = 10] = "MultiPolygon";
-        })(Services.DrawingModeType || (Services.DrawingModeType = {}));
-        var DrawingModeType = Services.DrawingModeType;
+        })(DrawingModeType = Services.DrawingModeType || (Services.DrawingModeType = {}));
         //export enum propertyTypeType {
         //    Text,
         //    TextArea,
@@ -414,6 +418,7 @@ var csComp;
         //    DateTime,
         //    Mediafolder
         //}
+        var featureFilterType;
         (function (featureFilterType) {
             /** Turn filtering off */
             featureFilterType[featureFilterType["none"] = 0] = "none";
@@ -421,21 +426,25 @@ var csComp;
             featureFilterType[featureFilterType["bar"] = 1] = "bar";
             /** Default for text */
             featureFilterType[featureFilterType["text"] = 2] = "text";
-        })(Services.featureFilterType || (Services.featureFilterType = {}));
-        var featureFilterType = Services.featureFilterType;
+        })(featureFilterType = Services.featureFilterType || (Services.featureFilterType = {}));
+        var LayerActivationTypes;
         (function (LayerActivationTypes) {
             LayerActivationTypes[LayerActivationTypes["manual"] = 0] = "manual";
             LayerActivationTypes[LayerActivationTypes["automatic"] = 1] = "automatic";
-        })(Services.LayerActivationTypes || (Services.LayerActivationTypes = {}));
-        var LayerActivationTypes = Services.LayerActivationTypes;
+        })(LayerActivationTypes = Services.LayerActivationTypes || (Services.LayerActivationTypes = {}));
     })(Services = csComp.Services || (csComp.Services = {}));
 })(csComp || (csComp = {}));
 //# sourceMappingURL=feature.js.map
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var csComp;
 (function (csComp) {
     var Services;
@@ -443,7 +452,7 @@ var csComp;
         var Feed = (function (_super) {
             __extends(Feed, _super);
             function Feed() {
-                _super.apply(this, arguments);
+                return _super !== null && _super.apply(this, arguments) || this;
             }
             return Feed;
         }(Services.Feature));
@@ -455,11 +464,11 @@ var csComp;
 (function (csComp) {
     var Services;
     (function (Services) {
+        var LayerType;
         (function (LayerType) {
             LayerType[LayerType["GeoJson"] = 0] = "GeoJson";
             LayerType[LayerType["Kml"] = 1] = "Kml";
-        })(Services.LayerType || (Services.LayerType = {}));
-        var LayerType = Services.LayerType;
+        })(LayerType = Services.LayerType || (Services.LayerType = {}));
         /** a project group contains a list of layers that can be grouped together.
          * Filters, styles can clustering is always defined on the group level.
          * If a filter is selected (e.g. show only the features within a certain property range)
@@ -513,8 +522,7 @@ var csComp;
                 }
                 $injector.invoke(function ($http) {
                     $http.get(_this.owsurl)
-                        .success(function (xml) { _this.parseXML(xml); })
-                        .error(function (xml, status) {
+                        .then(function (res) { _this.parseXML(res.data); }, function (xml, status) {
                         console.log('Unable to load OWSurl: ' + _this.owsurl);
                         console.log('          HTTP status: ' + status);
                     });
@@ -535,11 +543,11 @@ var csComp;
                         // TODO: should be using layerService.initLayer(theGroup, layer);
                         // But I don't know how to 'inject' layerService :(
                         var layer = theGroup.buildLayer(baseurl, title, layerName);
-                        if (featureType != '') {
+                        if (featureType !== '') {
                             layer.defaultFeatureType = featureType;
                             layer.typeUrl = 'data/resourceTypes/resources.json';
                         }
-                        if (resourceURL != '') {
+                        if (resourceURL !== '') {
                             layer.typeUrl = resourceURL;
                         }
                         theGroup.layers.push(layer);
@@ -711,7 +719,8 @@ var csComp;
                     fitToMap: pl.fitToMap,
                     minZoom: pl.minZoom,
                     maxZoom: pl.maxZoom,
-                    localStorage: pl.localStorage
+                    localStorage: pl.localStorage,
+                    geometryTypeId: pl.geometryTypeId
                 };
             };
             return ProjectLayer;
@@ -757,22 +766,32 @@ var csComp;
         /**
         * Expert level for determining what options to show to the user.
         */
+        var Expertise;
         (function (Expertise) {
             Expertise[Expertise["Beginner"] = 1] = "Beginner";
             Expertise[Expertise["Intermediate"] = 2] = "Intermediate";
             Expertise[Expertise["Expert"] = 3] = "Expert";
             Expertise[Expertise["Admin"] = 4] = "Admin";
-        })(Services.Expertise || (Services.Expertise = {}));
-        var Expertise = Services.Expertise;
+        })(Expertise = Services.Expertise || (Services.Expertise = {}));
         var VisualState = (function () {
             function VisualState() {
                 this.leftPanelVisible = false;
                 this.rightPanelVisible = false;
                 this.dashboardVisible = true;
+                this.navbarVisible = true;
                 this.mapVisible = true;
                 this.mapWidth = '100%';
                 this.alignMapRight = false; // Default align map left
                 this.timelineVisible = true;
+                // For debugging purposes, I've added below functionality so I can set breakpoints on the setter.
+                // get rightPanelVisible(): boolean {
+                //     console.log(`Right panel visible (get): ${this._rightPanelVisible}`);
+                //     return this._rightPanelVisible;
+                // }
+                // set rightPanelVisible(isVisible: boolean) {
+                //     this._rightPanelVisible = isVisible;
+                //     console.log(`Right panel visible (set): ${this._rightPanelVisible}`);
+                // }
             }
             return VisualState;
         }());
@@ -876,12 +895,12 @@ var csComp;
             return SolutionProject;
         }());
         Services.SolutionProject = SolutionProject;
+        var authMethods;
         (function (authMethods) {
             authMethods[authMethods["none"] = 0] = "none";
             authMethods[authMethods["local"] = 1] = "local";
             authMethods[authMethods["custom"] = 2] = "custom";
-        })(Services.authMethods || (Services.authMethods = {}));
-        var authMethods = Services.authMethods;
+        })(authMethods = Services.authMethods || (Services.authMethods = {}));
         /** project configuration. */
         var Project = (function () {
             function Project() {
@@ -953,8 +972,11 @@ var csComp;
                     groups: csComp.Helpers.serialize(project.groups, Services.ProjectGroup.serializeableData, true),
                     layerDirectory: project.layerDirectory,
                     eventTab: project.eventTab,
+                    legendTab: project.legendTab,
                     searchProviders: project.searchProviders,
-                    hideLayerActions: project.hideLayerActions
+                    hideLayerActions: project.hideLayerActions,
+                    attributions: project.attributions,
+                    disableDrop: project.disableDrop
                 };
             };
             Project.prototype.deserialize = function (input) {
@@ -1745,6 +1767,22 @@ var esriJsonConverter;
              * GeoJSON to ESRI Rest Converter
              ************************************************/
             this.gCon = {};
+            /*
+                if (typeof define === 'function') {
+                    var module = {
+                        esriConverter: esriConverter,
+                        geoJsonConverter: geoJsonConverter
+                    };
+        
+                    define([], function() {
+        
+                        return module;
+        
+                    });
+                } else {
+                    root.esriConverter = esriConverter;
+                    root.geoJsonConverter = geoJsonConverter;
+                }*/
         }
         /*determine if polygon ring coordinates are clockwise. clockwise signifies outer ring, counter-clockwise an inner ring
           or hole. this logic was found at http://stackoverflow.com/questions/1165647/how-to-determine-if-a-list-of-polygon-
@@ -1815,6 +1853,7 @@ var esriJsonConverter;
                 }
                 gcGeom = (coordinates && geomType) ? { type: geomType, coordinates: coordinates } : null;
                 return gcGeom;
+                //gcGeom.coordinates = coordinates;
             }
             return gcGeom;
         };
@@ -2542,9 +2581,9 @@ var csComp;
                     height: height
                 };
             };
-            GeoExtensions.Rad2Deg = Math.PI / 180;
             return GeoExtensions;
         }());
+        GeoExtensions.Rad2Deg = Math.PI / 180;
         Helpers.GeoExtensions = GeoExtensions;
     })(Helpers = csComp.Helpers || (csComp.Helpers = {}));
 })(csComp || (csComp = {}));
@@ -2773,6 +2812,19 @@ var csComp;
             return avg;
         }
         Helpers.average = average;
+        function quartiles(data) {
+            if (!data || !_.isArray(data))
+                return null;
+            var sorted = data.sort(function (a, b) { return +a - +b; });
+            var q1 = d3.quantile(sorted, 0.25);
+            var median = d3.quantile(sorted, 0.50);
+            var q3 = d3.quantile(sorted, 0.75);
+            if (q3 < q1) {
+                throw Error("Third quartile cannot be smaller than first quartile (Q1: " + q1 + ", Q3: " + q3 + ", median: " + median + ")");
+            }
+            return { q1: q1, median: median, q3: q3 };
+        }
+        Helpers.quartiles = quartiles;
         /**
          * Generates the title for the feature tooltip. A string format can be
          * defined in the featureType parameter 'tooltipStringFormat'.
@@ -2784,7 +2836,7 @@ var csComp;
          */
         function getFeatureTooltipTitle(feature) {
             if (!feature.fType || !feature.fType.style || !feature.fType.style.tooltipStringFormat)
-                return featureTitle(null, feature);
+                return featureTitle(feature.fType, feature);
             var sf = feature.fType.style.tooltipStringFormat;
             var title = featureTitle(feature.fType, feature);
             return String.format(sf, title);
@@ -2807,7 +2859,7 @@ var csComp;
                     title = feature.properties['naam'];
                 }
             }
-            else if (type != null && type.style != null && type.style.nameLabel) {
+            if (title === '' && type != null && type.style != null && type.style.nameLabel) {
                 title = feature.properties[type.style.nameLabel];
             }
             if (!csComp.StringExt.isNullOrEmpty(title) && !$.isNumeric(title))
@@ -2912,6 +2964,7 @@ var csComp;
                 if (!feature.properties.hasOwnProperty(key))
                     continue;
                 res.push(getPropertyType(feature, key));
+                //}
             }
             return res;
         }
@@ -2934,6 +2987,11 @@ var csComp;
                 type._propertyTypeData.forEach(function (pt) {
                     _this.updateSection(feature.layer, pt);
                 });
+                // type.propertyTypeKeys.split(',').forEach((key) => {
+                //     if (resource.propertyTypeData.hasOwnProperty(key)) {
+                //         updateSection(feature.layer, resource.propertyTypeData[key]);
+                //     }
+                // })
             }
             else {
                 for (var key in feature.properties) {
@@ -3009,6 +3067,52 @@ var csComp;
         }
         Helpers.createDefaultType = createDefaultType;
         /**
+         * Create a legend with discrete intervals based on the provided input arguments. Creates n-1 intervals for n input arguments.
+         * E.g. providing 1m, 2m and 3m will result in the entries: 1m-2m and 2m-3m.
+         * @export
+         * @param {string} description Description/title of the legend
+         * @param {IKeyVal[]} legendEntries Key/value object of the legend interval values, e.g. {"1m": 1, "2m": 2, "3m": 3}.
+         * @param {string} [id] Id of the legend
+         * @param {string[]} [colors] string of color values used for the legend (optional)
+         * @returns {csComp.Services.Legend}
+         */
+        function createDiscreteLegend(description, legendEntries, id, colors) {
+            var _this = this;
+            var leg = new csComp.Services.Legend();
+            leg.id = id || this.getGuid();
+            leg.description = description || 'Legend';
+            leg.legendKind = 'discrete';
+            leg.legendEntries = [];
+            if (!_.isArray(legendEntries) || _.size(legendEntries) < 2)
+                return leg;
+            var entryColors = chroma.scale(colors || ['green', 'yellow', 'red']).mode('lab').colors(_.size(legendEntries) - 1);
+            legendEntries.forEach(function (keyValObj, i, allObjects) {
+                if (i === 0)
+                    return;
+                var prevKeyValObj = allObjects[i - 1];
+                var le = _this.createLegendEntry(keyValObj.key + " - " + prevKeyValObj.key, entryColors[i - 1], keyValObj.val, prevKeyValObj.val, String.fromCharCode(65 + i));
+                leg.legendEntries.push(le);
+            });
+            leg.legendEntries = leg.legendEntries.sort(function (a, b) { return a.interval.min - b.interval.min; });
+            return leg;
+        }
+        Helpers.createDiscreteLegend = createDiscreteLegend;
+        function createLegendEntry(label, color, min, max, sortKey) {
+            var le = {
+                interval: {
+                    max: max,
+                    min: min
+                },
+                label: label,
+                color: color,
+            };
+            if (sortKey) {
+                le.sortKey = sortKey;
+            }
+            return le;
+        }
+        Helpers.createLegendEntry = createLegendEntry;
+        /**
          * Convert a property value to a display value using the property info.
          */
         function convertPropertyInfo(pt, text) {
@@ -3025,7 +3129,7 @@ var csComp;
                     break;
                 case 'number':
                     if (!$.isNumeric(text)) {
-                        if (typeof text === 'string' && $.isNumeric(text.replace(',', '.'))) {
+                        if (typeof text === 'string' && pt.stringFormat && $.isNumeric(text.replace(',', '.'))) {
                             // E.g. "9,876E-02" is not recognized as numeric, but "9.876E-02" is.
                             displayValue = String.format(pt.stringFormat, parseFloat(text.replace(',', '.')));
                         }
@@ -3292,7 +3396,7 @@ var csComp;
                 case 'Line':
                     break;
                 case 'Polygon':
-                    html = '<img src="images/bom.png"></img>';
+                    html = "<img src=\"" + (iconUri || 'images/bom.png') + "\"></img>";
                     break;
                 case 'Point':
                     // TODO refactor to object
@@ -3386,11 +3490,16 @@ var csComp;
     })(Helpers = csComp.Helpers || (csComp.Helpers = {}));
 })(csComp || (csComp = {}));
 //# sourceMappingURL=Helpers.js.map
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var csComp;
 (function (csComp) {
     var Helpers;
@@ -3404,7 +3513,7 @@ var csComp;
         var AsterPieData = (function (_super) {
             __extends(AsterPieData, _super);
             function AsterPieData() {
-                _super.apply(this, arguments);
+                return _super !== null && _super.apply(this, arguments) || this;
             }
             return AsterPieData;
         }(PieData));
@@ -3805,9 +3914,9 @@ var csComp;
                 if (svgElement)
                     svgElement.remove();
             };
-            Plot.pieColors = ["#fff7ec", "#fee8c8", "#fdd49e", "#fdbb84", "#fc8d59", "#ef6548", "#d7301f", "#b30000", "#7f0000"];
             return Plot;
         }());
+        Plot.pieColors = ["#fff7ec", "#fee8c8", "#fdd49e", "#fdbb84", "#fc8d59", "#ef6548", "#d7301f", "#b30000", "#7f0000"];
         Helpers.Plot = Plot;
     })(Helpers = csComp.Helpers || (csComp.Helpers = {}));
 })(csComp || (csComp = {}));
@@ -4041,6 +4150,8 @@ var csComp;
                     i++;
                 }
                 return defaultcolor;
+                //}
+                //return defaultcolor;
             }
             return v;
         }
@@ -4097,6 +4208,12 @@ var csComp;
         function getColorFromLegend(v, l, defaultcolor) {
             if (defaultcolor === void 0) { defaultcolor = '#000000'; }
             var n = l.legendEntries.length;
+            if (l.defaultLabel) {
+                var defaultLE = _.find(l.legendEntries, function (le) { return le.label === l.defaultLabel; });
+                if (defaultLE && defaultLE.color) {
+                    defaultcolor = defaultLE.color;
+                }
+            }
             if (n === 0)
                 return (defaultcolor);
             if (l.legendKind.toLowerCase() === 'discretestrings') {
@@ -4110,9 +4227,10 @@ var csComp;
                 }
                 return defaultcolor;
             }
-            var e1 = l.legendEntries[0]; // first
-            var e2 = l.legendEntries[n - 1]; // last
             if (l.legendKind.toLowerCase() === 'interpolated') {
+                var entries = _.sortBy(l.legendEntries, function (le) { return le.value; });
+                var e1 = _.first(entries); // minimum value
+                var e2 = _.last(entries); // maximum value
                 // interpolate between two colors
                 if (v < e1.value)
                     return e1.color;
@@ -4120,8 +4238,8 @@ var csComp;
                     return e2.color;
                 var i = 0;
                 while (i < n - 1) {
-                    e1 = l.legendEntries[i];
-                    e2 = l.legendEntries[i + 1];
+                    e1 = entries[i];
+                    e2 = entries[i + 1];
                     if ((v >= e1.value) && (v <= e2.value)) {
                         var bezInterpolator = chroma.bezier([e1.color, e2.color]);
                         var r = bezInterpolator((v - e1.value) / (e2.value - e1.value)).hex();
@@ -4132,6 +4250,9 @@ var csComp;
                 return (defaultcolor);
             }
             if (l.legendKind.toLowerCase() === 'discrete') {
+                var entries = _.sortBy(l.legendEntries, function (le) { return (le.interval ? le.interval.min : Infinity); });
+                var e1 = _.first(entries); // minimum value
+                var e2 = _.last(entries); // maximum value
                 if (e1.interval && e2.interval && typeof e1.interval.min !== 'undefined' && typeof e2.interval.max !== 'undefined') {
                     if (v < e1.interval.min)
                         return e1.color;
@@ -4140,10 +4261,9 @@ var csComp;
                 }
                 var i = 0;
                 while (i < n) {
-                    var e = l.legendEntries[i];
-                    if (e.value) {
-                        if (v === e.value)
-                            return e.color;
+                    var e = entries[i];
+                    if (e.value && v === e.value) {
+                        return e.color;
                     }
                     else if (e.interval && (v >= e.interval.min) && (v <= e.interval.max)) {
                         return e.color;
@@ -4194,11 +4314,16 @@ var csComp;
     })(Helpers = csComp.Helpers || (csComp.Helpers = {}));
 })(csComp || (csComp = {}));
 //# sourceMappingURL=StyleHelpers.js.map
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var FSM;
 (function (FSM) {
     /**
@@ -4217,7 +4342,7 @@ var FSM;
         Transitions.prototype.to = function () {
             var states = [];
             for (var _i = 0; _i < arguments.length; _i++) {
-                states[_i - 0] = arguments[_i];
+                states[_i] = arguments[_i];
             }
             this.toStates = states;
             return this.fsm.addTransitions(this);
@@ -4257,8 +4382,9 @@ var FSM;
     var TransitionFunctions = (function (_super) {
         __extends(TransitionFunctions, _super);
         function TransitionFunctions(fsm) {
-            _super.call(this);
-            this.fsm = fsm;
+            var _this = _super.call(this) || this;
+            _this.fsm = fsm;
+            return _this;
         }
         TransitionFunctions.prototype.on = function (trigger, callback) {
             var _this = this;
@@ -4371,7 +4497,7 @@ var FSM;
         FiniteStateMachine.prototype.from = function () {
             var states = [];
             for (var _i = 0; _i < arguments.length; _i++) {
-                states[_i - 0] = arguments[_i];
+                states[_i] = arguments[_i];
             }
             var _transition = new Transitions(this);
             _transition.fromStates = states;
@@ -4463,11 +4589,11 @@ var FSM;
 //# sourceMappingURL=typestate.js.map
 var csComp;
 (function (csComp) {
+    var FileType;
     (function (FileType) {
         FileType[FileType["Js"] = 0] = "Js";
         FileType[FileType["Css"] = 1] = "Css";
-    })(csComp.FileType || (csComp.FileType = {}));
-    var FileType = csComp.FileType;
+    })(FileType = csComp.FileType || (csComp.FileType = {}));
     var Utils = (function () {
         function Utils() {
         }
@@ -4514,9 +4640,9 @@ var csComp;
                     break;
             }
         };
-        Utils.loadedFiles = [];
         return Utils;
     }());
+    Utils.loadedFiles = [];
     csComp.Utils = Utils;
 })(csComp || (csComp = {}));
 //# sourceMappingURL=Utils.js.map
@@ -4614,216 +4740,239 @@ var Translations;
     var English = (function () {
         function English() {
         }
-        English.locale = {
-            CANCEL_BTN: 'Cancel',
-            OK_BTN: 'OK',
-            CLOSE: 'Close',
-            FROM: 'from',
-            TO: 'to',
-            ZOOM_IN: 'Zoom in',
-            ZOOM_OUT: 'Zoom out',
-            ZOOM_LEVEL_LOW: 'Zoom level too low',
-            ZOOM_IN_FOR_CONTOURS: 'Zoom in to show contours',
-            NAVIGATE: {
-                TITLE: 'Search results'
-            },
-            CREATE_SCATTER: 'Create scatter with',
-            EXPAND_ALL: 'Expand all',
-            COLLAPSE_ALL: 'Collapse all',
-            SELECT_ALL: 'Select all',
-            DESELECT_ALL: 'Deselect all',
-            CHOOSE_DROPDOWN: 'Choose...',
-            ENABLE_LOCATION_FILTER: 'Enable location filter',
-            DISABLE_LOCATION_FILTER: 'Disable location filter',
-            SELECT_A_FEATURE: 'Select a feature',
-            SELECT_FEATURE_FOR_WIDGET: 'Please select a feature to show the widget.',
-            SELECT_FEATURE_FOR_STYLE: 'Please select a feature to before setting the style.',
-            SELECT_LAYER_GROUP: 'Select Layers',
-            SELECT_CATEGORY: 'Select Category',
-            SELECT_PROPERTIES: 'Select Properties',
-            NO_RELATIONS_FOUND: 'No relations can be shown for the selected feature. Either the zoom level is too low, there are too many features in the view or there are no relations defined.',
-            BASESTYLES: 'Baselayers',
-            MAP: 'Maps',
-            MAP_LABEL: 'Map',
-            TABLE_LABEL: 'Table',
-            LAYERS: 'Layers',
-            DIRECTORY: 'Available layers',
-            CREATELAYER: 'Create new layer',
-            ADDFEATURES: 'Add items',
-            ADDTYPE: 'Add new type',
-            DONE: 'done',
-            FILTERS: 'Filters',
-            FILTER_INFO: 'At the moment, no filters have been selected. In order to add a filter, click on an icon or area on the map, and click on the filter icon (<span class="fa fa-filter"></span>) in the right menu. This will create a filter for the selected property.',
-            STYLES: 'Styles',
-            STYLE_INFO: 'At the moment, no style has been selected. In order to add a style, click on an icon or area on the map, and click on the style icon (<span class="smallStyleIcon"></span>) in the right menu. This will create a filter for the selected property.',
-            FEATURES: 'Features',
-            LEGEND: 'Legend',
-            SEARCH: 'Search',
-            HIDE_PANEL: 'Hide this panel',
-            EDIT_INDICATORS: 'Edit indicators',
-            RELATED_FEATURES: 'Show related features',
-            FEATURE_INFO: 'Show information about the selected feature',
-            MAP_FEATURES: 'Map features',
-            NEARBY_FEATURES: 'Nearby features',
-            TOGGLE_MENU: 'Toggle menu visibility',
-            DASHBOARD_SELECTION: 'Dashboard selection',
-            SETTINGS: 'Settings',
-            SPEEDS_TAOUFIK: 'speed colors Taoufik',
-            SPEEDS_GOOGLEMAPS: 'speed colors Google Maps',
-            VERWARMINGSSYSTEEM: 'Heating system',
-            PERCENTAGES_V1: 'percentages v1',
-            ORANGE_RED: 'orange - red',
-            WHITE_RED: 'white - red',
-            RED_WHITE: 'red - white',
-            RED_WHITE_BLUE: 'red - white - blue',
-            GREEN_RED: 'green - red',
-            RED_GREEN: 'red - green',
-            BLUE_RED: 'blue - red',
-            RED_BLUE: 'red - blue',
-            WHITE_BLUE: 'white - blue',
-            BLUE_WHITE: 'blue - white',
-            WHITE_GREEN: 'white - green',
-            GREEN_WHITE: 'green - white',
-            WHITE_ORANGE: 'white - orange',
-            ORANGE_WHITE: 'orange - white',
-            SAVE: 'save',
-            CONFIG: 'config',
-            EDIT: 'edit',
-            APPLY: 'apply',
-            REMOVE: 'remove',
-            FOCUSTIME: {
-                OUT_OF_RANGE: 'The timerange is out of scope',
-                NOT_AVAILABLE: 'Currently no sensor data available',
-                LOADING: 'Sensor data is being loaded, please wait'
-            },
-            STATS: {
-                COUNT: '#',
-                COUNT_TOOLTIP: 'Count of selected items',
-                MIN: 'min',
-                MIN_TOOLTIP: 'Minimum of selected items',
-                MAX: 'max',
-                MAX_TOOLTIP: 'Maximum of selected items',
-                MEAN: 'µ',
-                MEAN_TOOLTIP: 'Mean of selected items',
-                SUM: 'Σ',
-                SUM_TOOLTIP: 'Sum of selected items'
-            },
-            UTILS: {
-                FILTER: 'Use this property as filter',
-                STYLE: 'Use this property as style',
-                STATS: 'Show property statistics',
-                CHART: 'Show property in time',
-                CONFIG: 'Configure property'
-            },
-            EXPERTMODE: {
-                BEGINNER: 'Novice',
-                INTERMEDIATE: 'Intermediate',
-                EXPERT: 'Expert',
-                ADMIN: 'Admin',
-                EXPLANATION: 'Select your expertise in order to unlock more functionality.'
-            },
-            LAYER_SERVICE: {
-                RELOAD_PROJECT_TITLE: 'Data is reloaded',
-                RELOAD_PROJECT_MSG: 'After switching the language, we need to reload all the map data. Our appologies for the inconvenience.'
-            },
-            HEATMAP: {
-                NAME: 'Heatmaps',
-                DESCRIPTION: '<h4>Heatmap</h4><p  style="text-align: left; margin-left:5px;">Heatmap highlights areas on the map that fulfill multiple selected criteria.',
-                INFO: 'At the moment, no map layers are loaded that contain a heatmap. Open another map layer to use it.',
-                INFO_EXPERT: 'At the moment, no map layers are loaded that contain a heatmap. Open another map layer to use it, or create a new heatmap using the wizard.',
-                SHOW_FEATURE_MSG: 'Select a feature on the map to see the heatmap.',
-                TOTAL_RESULT: 'Combined result',
-                DELETE_MSG: 'Delete "{0}"',
-                DELETE_MSG2: 'Are you sure?',
-                EDITOR_TITLE: 'Heatmap Editor',
-                MAIN_FEATURE: 'Select the main feature',
-                PROPERTIES: 'Select the properties',
-                INTENSITY_SCALE: 'Intensity scale',
-                RESOLUTION: 'Resolution',
-                TITLE: 'Title... *',
-                TITLE_TAG: 'Title',
-                SCALE_MIN_TITLE: '[Min. scale]',
-                SCALE_MAX_TITLE: '[Max. scale]',
-                MIN_MAX_ZOOM: 'Min./Max. zoom',
-                AT_LOCATION_VALUE: '[Weight at location]',
-                DISTANCE_MAX_VALUE: '[Ideal distance]',
-                LOST_INTEREST_VALUE: '[Lost interest distance]',
-                LINEAR_ASC_DESC: 'Linearly increasing, then decreasing function.',
-                ADD_HEATMAP: 'Add a new heatmap.',
-                DELETE_HEATMAP: 'Delete the heatmap.',
-                EDIT_HEATMAP: 'Edit the heatmap.',
-                EXPORT_HEATMAP: 'Export the heatmap.'
-            },
-            MCA: {
-                NAME: 'Multi-Criteria Analysis (MCA)',
-                DESCRIPTION: '<h4>Multi-Criteria Analysis</h4><p  style="text-align: left; margin-left:5px;">MCA, is a method that combines multiple properties of a feature on the map into a new property. It achieves this by:<ol><li>Scaling each property to a range between 0 (no value) and 1 (maximum value).</li><li>Weighing each property relative to the others, where a weight less than 0 indicates you wish to avoid it, 0 is ignored, and a value greater than 0 is prefered.</li></ol> In fact, it is a kind of linear regression.',
-                INFO: 'At the moment, no map layers are loaded that contain a multi-criteria analysis. Open another map layer to see it.',
-                INFO_EXPERT: 'At the moment, no map layers are loaded that contain a multi-criteria analysis. Open another map layer to use it, or create a new MCA using the wizard.',
-                SHOW_FEATURE_MSG: 'Select a feature on the map to see the effects of the Multi-Criteria Analysis (MCA).',
-                TOTAL_RESULT: 'Combined result',
-                DELETE_MSG: 'Delete "{0}"',
-                DELETE_MSG2: 'Are you sure?',
-                HAS_CATEGORY: '  Has category? ',
-                HAS_RANK: '  Include rank? ',
-                EDITOR_TITLE: 'MCA Editor',
-                MAIN_FEATURE: 'Select the main feature',
-                PROPERTIES: 'Select the properties',
-                INCLUDE_RANK: '  Show rank? ',
-                RANK_TITLE: '[Rank title...]',
-                TITLE: 'Title... *',
-                CATEGORY_MSG: '[Category...]',
-                TOGGLE_SPARKLINE: 'Show or hide bar charts and scoring function.',
-                SCALE_MIN_TITLE: '[Min. scale]',
-                SCALE_MAX_TITLE: '[Max. scale]',
-                MIN_VALUE: '[Minimum (\u03BC-2\u03C3)]',
-                MAX_VALUE: '[Maximum (\u03BC+2\u03C3)]',
-                MIN_CUTOFF_VALUE: '[Ignore when below this value]',
-                MAX_CUTOFF_VALUE: '[Ignore when above this value]',
-                LINEAR: 'Linearly increasing function between min and max.',
-                SIGMOID: 'Tangentially increasing function between min and max',
-                GAUSSIAN: 'Normal distribution increasing function between min and max.',
-                ADD_MCA: 'Add a new MCA.',
-                DELETE_MCA: 'Delete the MCA.',
-                EDIT_MCA: 'Edit the MCA.',
-                SET_STYLE: 'Set style'
-            },
-            PROJECTSETTINGS: {
-                TITLE: 'Project Settings',
-                DESCRIPTION: 'Settings'
-            },
-            CHOOSE_CATEGORY: 'Choose category...',
-            SHOW5: 'Show 5 items',
-            SHOW10: 'Show 10 items',
-            SHOW15: 'Show 15 items',
-            SHOW20: 'Show 20 items',
-            SHOW25: 'Show 25 items',
-            SHOW30: 'Show 30 items',
-            SHOW35: 'Show 35 items',
-            SHOW40: 'Show 40 items',
-            RISK_DIAGRAM_FOR: 'Risk-diagram for a ',
-            SAVE_FEATURE_DEPENDENCIES: 'Save dependencies to the selected feature only',
-            SAVE_FEATURETYPE_DEPENDENCIES: 'Save dependencies to all features of this type',
-            SAVE_MARVEL: 'Save ',
-            SAVE_EVERY_MARVEL: 'Save every ',
-            MARVEL_WATER_LEVEL: 'Water level [m]',
-            MARVEL_UPS_DURATION: 'UPS duration [mins]',
-            MARVEL_FEATURE_DEP: 'Depends on',
-            STATE: 'State',
-            EVENT_INFO: 'Show a list of events',
-            CLEAR_EVENTS: 'Clear event log',
-            SEARCH_PLACEHOLDER: 'Municipality, address, ...',
-            SAVE_AS_IMAGE: 'Save as image',
-            SAVE_AS_PDF: 'Save as PDF',
-            ROW_CHART_HELP: 'Click one or multiple rows to apply a filter for the selected property.',
-            CONVERT: 'Convert',
-            VIEW_PROJECT: 'View your project',
-            PASTE_HERE: 'Paste your data here',
-            OPTION: 'Option {{number}}',
-            PASSWORD: 'Password',
-            COMPARE_TAB: 'Compare'
-        };
         return English;
     }());
+    English.locale = {
+        CANCEL_BTN: 'Cancel',
+        OK_BTN: 'OK',
+        CLOSE: 'Close',
+        FROM: 'from',
+        TO: 'to',
+        PREVIOUS: 'Previous',
+        NEXT: 'Next',
+        ZOOM_IN: 'Zoom in',
+        ZOOM_OUT: 'Zoom out',
+        ZOOM_LEVEL_LOW: 'Zoom level too low',
+        ZOOM_IN_FOR_CONTOURS: 'Zoom in to show contours',
+        NAVIGATE: {
+            TITLE: 'Search results'
+        },
+        CREATE_SCATTER: 'Create scatter with',
+        EXPAND_ALL: 'Expand all',
+        COLLAPSE_ALL: 'Collapse all',
+        SELECT_ALL: 'Select all',
+        DESELECT_ALL: 'Deselect all',
+        CHOOSE_DROPDOWN: 'Choose...',
+        ENABLE_LOCATION_FILTER: 'Enable location filter',
+        DISABLE_LOCATION_FILTER: 'Disable location filter',
+        SELECT_A_FEATURE: 'Select a feature',
+        SELECT_FEATURE_FOR_WIDGET: 'Please select a feature to show the widget.',
+        SELECT_FEATURE_FOR_STYLE: 'Please select a feature to before setting the style.',
+        SELECT_LAYER_GROUP: 'Select Layers',
+        SELECT_CATEGORY: 'Select Category',
+        SELECT_PROPERTIES: 'Select Properties',
+        NO_RELATIONS_FOUND: 'No relations can be shown for the selected feature. Either the zoom level is too low, there are too many features in the view or there are no relations defined.',
+        BASESTYLES: 'Baselayers',
+        MAP: 'Maps',
+        MAP_LABEL: 'Map',
+        TABLE_LABEL: 'Table',
+        LAYERS: 'Layers',
+        DIRECTORY: 'Available layers',
+        CREATELAYER: 'Create new layer',
+        ADDFEATURES: 'Add items',
+        ADDTYPE: 'Add new type',
+        DONE: 'done',
+        FILTERS: 'Filters',
+        FILTER_INFO: 'At the moment, no filters have been selected. In order to add a filter, click on an icon or area on the map, and click on the filter icon (<span class="fa fa-filter"></span>) in the right menu. This will create a filter for the selected property.',
+        STYLES: 'Styles',
+        STYLE_INFO: 'At the moment, no style has been selected. In order to add a style, click on an icon or area on the map, and click on the style icon (<span class="smallStyleIcon"></span>) in the right menu. This will create a filter for the selected property.',
+        FEATURES: 'Features',
+        LEGEND: 'Legend',
+        SEARCH: 'Search',
+        HIDE_PANEL: 'Hide this panel',
+        EDIT_INDICATORS: 'Edit indicators',
+        RELATED_FEATURES: 'Show related features',
+        FEATURE_INFO: 'Show information about the selected feature',
+        MAP_FEATURES: 'Map features',
+        NEARBY_FEATURES: 'Nearby features',
+        TOGGLE_MENU: 'Toggle menu visibility',
+        DASHBOARD_SELECTION: 'Dashboard selection',
+        SETTINGS: 'Settings',
+        SPEEDS_TAOUFIK: 'speed colors Taoufik',
+        SPEEDS_GOOGLEMAPS: 'speed colors Google Maps',
+        VERWARMINGSSYSTEEM: 'Heating system',
+        PERCENTAGES_V1: 'percentages v1',
+        ORANGE_RED: 'orange - red',
+        WHITE_RED: 'white - red',
+        RED_WHITE: 'red - white',
+        RED_WHITE_BLUE: 'red - white - blue',
+        GREEN_RED: 'green - red',
+        RED_GREEN: 'red - green',
+        BLUE_RED: 'blue - red',
+        RED_BLUE: 'red - blue',
+        WHITE_BLUE: 'white - blue',
+        BLUE_WHITE: 'blue - white',
+        WHITE_GREEN: 'white - green',
+        GREEN_WHITE: 'green - white',
+        WHITE_ORANGE: 'white - orange',
+        ORANGE_WHITE: 'orange - white',
+        SAVE: 'save',
+        CONFIG: 'config',
+        EDIT: 'edit',
+        APPLY: 'apply',
+        REMOVE: 'remove',
+        FOCUSTIME: {
+            OUT_OF_RANGE: 'The timerange is out of scope',
+            NOT_AVAILABLE: 'Currently no sensor data available',
+            LOADING: 'Sensor data is being loaded, please wait'
+        },
+        STATS: {
+            COUNT: '#',
+            COUNT_TOOLTIP: 'Count of selected items',
+            MIN: 'min',
+            MIN_TOOLTIP: 'Minimum of selected items',
+            MAX: 'max',
+            MAX_TOOLTIP: 'Maximum of selected items',
+            MEAN: 'µ',
+            MEAN_TOOLTIP: 'Mean of selected items',
+            SUM: 'Σ',
+            SUM_TOOLTIP: 'Sum of selected items'
+        },
+        UTILS: {
+            FILTER: 'Use this property as filter',
+            STYLE: 'Use this property as style',
+            STATS: 'Show property statistics',
+            CHART: 'Show property in time',
+            CONFIG: 'Configure property'
+        },
+        EXPERTMODE: {
+            BEGINNER: 'Novice',
+            INTERMEDIATE: 'Intermediate',
+            EXPERT: 'Expert',
+            ADMIN: 'Admin',
+            EXPLANATION: 'Select your expertise in order to unlock more functionality.'
+        },
+        LAYER_SERVICE: {
+            RELOAD_PROJECT_TITLE: 'Data is reloaded',
+            RELOAD_PROJECT_MSG: 'After switching the language, we need to reload all the map data. Our appologies for the inconvenience.'
+        },
+        HEATMAP: {
+            NAME: 'Heatmaps',
+            DESCRIPTION: '<h4>Heatmap</h4><p  style="text-align: left; margin-left:5px;">Heatmap highlights areas on the map that fulfill multiple selected criteria.',
+            INFO: 'At the moment, no map layers are loaded that contain a heatmap. Open another map layer to use it.',
+            INFO_EXPERT: 'At the moment, no map layers are loaded that contain a heatmap. Open another map layer to use it, or create a new heatmap using the wizard.',
+            SHOW_FEATURE_MSG: 'Select a feature on the map to see the heatmap.',
+            TOTAL_RESULT: 'Combined result',
+            DELETE_MSG: 'Delete "{0}"',
+            DELETE_MSG2: 'Are you sure?',
+            EDITOR_TITLE: 'Heatmap Editor',
+            MAIN_FEATURE: 'Select the main feature',
+            PROPERTIES: 'Select the properties',
+            INTENSITY_SCALE: 'Intensity scale',
+            RESOLUTION: 'Resolution',
+            TITLE: 'Title... *',
+            TITLE_TAG: 'Title',
+            SCALE_MIN_TITLE: '[Min. scale]',
+            SCALE_MAX_TITLE: '[Max. scale]',
+            MIN_MAX_ZOOM: 'Min./Max. zoom',
+            AT_LOCATION_VALUE: '[Weight at location]',
+            DISTANCE_MAX_VALUE: '[Ideal distance]',
+            LOST_INTEREST_VALUE: '[Lost interest distance]',
+            LINEAR_ASC_DESC: 'Linearly increasing, then decreasing function.',
+            ADD_HEATMAP: 'Add a new heatmap.',
+            DELETE_HEATMAP: 'Delete the heatmap.',
+            EDIT_HEATMAP: 'Edit the heatmap.',
+            EXPORT_HEATMAP: 'Export the heatmap.'
+        },
+        MCA: {
+            NAME: 'Multi-Criteria Analysis (MCA)',
+            DESCRIPTION: '<h4>Multi-Criteria Analysis</h4><p  style="text-align: left; margin-left:5px;">MCA, is a method that combines multiple properties of a feature on the map into a new property. It achieves this by:<ol><li>Scaling each property to a range between 0 (no value) and 1 (maximum value).</li><li>Weighing each property relative to the others, where a weight less than 0 indicates you wish to avoid it, 0 is ignored, and a value greater than 0 is prefered.</li></ol> In fact, it is a kind of linear regression.',
+            INFO: 'At the moment, no map layers are loaded that contain a multi-criteria analysis. Open another map layer to see it.',
+            INFO_EXPERT: 'At the moment, no map layers are loaded that contain a multi-criteria analysis. Open another map layer to use it, or create a new MCA using the wizard.',
+            SHOW_FEATURE_MSG: 'Select a feature on the map to see the effects of the Multi-Criteria Analysis (MCA).',
+            TOTAL_RESULT: 'Combined result',
+            DELETE_MSG: 'Delete "{0}"',
+            DELETE_MSG2: 'Are you sure?',
+            HAS_CATEGORY: '  Has category? ',
+            HAS_RANK: '  Include rank? ',
+            EDITOR_TITLE: 'MCA Editor',
+            MAIN_FEATURE: 'Select the main feature',
+            PROPERTIES: 'Select the properties',
+            INCLUDE_RANK: '  Show rank? ',
+            RANK_TITLE: '[Rank title...]',
+            TITLE: 'Title... *',
+            CATEGORY_MSG: '[Category...]',
+            TOGGLE_SPARKLINE: 'Show or hide bar charts and scoring function.',
+            SCALE_MIN_TITLE: '[Min. scale]',
+            SCALE_MAX_TITLE: '[Max. scale]',
+            MIN_VALUE: '[Minimum (\u03BC-2\u03C3)]',
+            MAX_VALUE: '[Maximum (\u03BC+2\u03C3)]',
+            MIN_CUTOFF_VALUE: '[Ignore when below this value]',
+            MAX_CUTOFF_VALUE: '[Ignore when above this value]',
+            LINEAR: 'Linearly increasing function between min and max.',
+            SIGMOID: 'Tangentially increasing function between min and max',
+            GAUSSIAN: 'Normal distribution increasing function between min and max.',
+            ADD_MCA: 'Add a new MCA.',
+            DELETE_MCA: 'Delete the MCA.',
+            EDIT_MCA: 'Edit the MCA.',
+            SET_STYLE: 'Set style'
+        },
+        PROJECTSETTINGS: {
+            TITLE: 'Project Settings',
+            DESCRIPTION: 'Settings'
+        },
+        CHOOSE_CATEGORY: 'Choose category...',
+        SHOW5: 'Show 5 items',
+        SHOW10: 'Show 10 items',
+        SHOW15: 'Show 15 items',
+        SHOW20: 'Show 20 items',
+        SHOW25: 'Show 25 items',
+        SHOW30: 'Show 30 items',
+        SHOW35: 'Show 35 items',
+        SHOW40: 'Show 40 items',
+        RISK_DIAGRAM_FOR: 'Risk-diagram for a ',
+        SAVE_FEATURE_DEPENDENCIES: 'Save dependencies to the selected feature only',
+        SAVE_FEATURETYPE_DEPENDENCIES: 'Save dependencies to all features of this type',
+        SAVE_MARVEL: 'Save ',
+        SAVE_EVERY_MARVEL: 'Save every ',
+        MARVEL_WATER_LEVEL: 'Water level [m]',
+        MARVEL_UPS_DURATION: 'UPS duration [mins]',
+        MARVEL_FEATURE_DEP: 'Depends on',
+        STATE: 'State',
+        EVENT_INFO: 'Show a list of events',
+        CLEAR_EVENTS: 'Clear event log',
+        SEARCH_PLACEHOLDER: 'Municipality, address, ...',
+        SAVE_AS_IMAGE: 'Save as image',
+        SAVE_AS_PDF: 'Save as PDF',
+        ROW_CHART_HELP: 'Click one or multiple rows to apply a filter for the selected property.',
+        CONVERT: 'Convert',
+        VIEW_PROJECT: 'View your project',
+        PASTE_HERE: 'Paste your data here',
+        DROP_HERE: 'Drop your data here',
+        OPTION: 'Option {{number}}',
+        PASSWORD: 'Password',
+        COMPARE_TAB: 'Compare',
+        STRINGFORMAT: 'Number format',
+        ADD: 'Add',
+        NEW: 'New',
+        SECTION: 'Section',
+        GROUP: 'Group',
+        LAYER_TITLE: 'Layer title',
+        LAYER_SETTINGS: 'Layer settings',
+        LAYER_SETTINGS_HELP: 'Change the settings of your map layer, like its title and the group it belongs to.',
+        PROPERTY_SETTINGS: 'Data properties',
+        PROPERTY_DESCRIPTION: 'Property description',
+        PROPERTY_TYPE: 'Property type',
+        PROPERTY_TITLE: 'Property title',
+        VISIBLE_IN_CALLOUT: 'Show property in menu',
+        DESCRIPTION: 'Description',
+        TYPE: 'Type',
+        TITLE: 'Title',
+        NAME: 'Name',
+        EMAIL: 'E-mail',
+        YES: 'Yes',
+        NO: 'No'
+    };
     Translations.English = English;
 })(Translations || (Translations = {}));
 //# sourceMappingURL=locale-en.js.map
@@ -4832,216 +4981,239 @@ var Translations;
     var Dutch = (function () {
         function Dutch() {
         }
-        Dutch.locale = {
-            CANCEL_BTN: 'Annuleren',
-            OK_BTN: 'OK',
-            CLOSE: 'Sluit',
-            FROM: 'van',
-            TO: 'tot',
-            ZOOM_IN: 'Inzoomen',
-            ZOOM_OUT: 'Uitzoomen',
-            ZOOM_LEVEL_LOW: 'Zoom niveau te laag',
-            ZOOM_IN_FOR_CONTOURS: 'Zoom in om de contouren te tonen',
-            NAVIGATE: {
-                TITLE: 'Zoekresultaten'
-            },
-            REMOVE: 'Verwijder',
-            CREATE_SCATTER: 'Creeer spreidingsdiagram',
-            EXPAND_ALL: 'Alles uitklappen',
-            COLLAPSE_ALL: 'Alles inklappen',
-            SELECT_ALL: 'Selecteer alles',
-            DESELECT_ALL: 'Deselecteer alles',
-            ENABLE_LOCATION_FILTER: 'Activeer locatiefilter',
-            SELECT_A_FEATURE: 'Selecteer een feature',
-            DISABLE_LOCATION_FILTER: 'Deactiveer locatiefilter',
-            SELECT_FEATURE_FOR_WIDGET: 'Selecteer een gebied om de widget te tonen.',
-            SELECT_FEATURE_FOR_STYLE: 'Selecteer eerst een gebied, dan pas kan de stijl geactiveerd worden.',
-            SELECT_LAYER_GROUP: 'Selecteer lagen',
-            SELECT_CATEGORY: 'Selecteer categorie',
-            SELECT_PROPERTIES: 'Selecteer eigenschappen',
-            NO_RELATIONS_FOUND: 'Geen relaties voor het geselecteerde item gevonden. Ofwel het zoomniveau is te laag, er zijn teveel items zichtbaar of er zijn geen relaties gedefiniëerd.',
-            CHOOSE_DROPDOWN: 'Kies...',
-            BASESTYLES: 'Basiskaarten',
-            MAP: 'Kaarten',
-            MAP_LABEL: 'Kaart',
-            TABLE_LABEL: 'Tabel',
-            LAYERS: 'Kaartlagen',
-            DIRECTORY: 'Beschikbare lagen',
-            CREATELAYER: 'Nieuwe laag maken',
-            ADDFEATURES: 'Objecten toevoegen',
-            ADDTYPE: 'Nieuwe type toevoegen',
-            FILTERS: 'Filters',
-            FILTER_INFO: 'Momenteel zijn er geen filters geselecteerd. Klik op een icoon of gebied op de kaart, en klik op het filter icoontje (<span class="fa fa-filter"></span>) in het rechter menu om een filter toe te voegen. Dan wordt er een filter aangemaakt voor de geselecteerde eigenschap.',
-            STYLES: 'Stijlen',
-            STYLE_INFO: 'Momenteel zijn er geen stijlen geselecteerd. Klik op een icoon of gebied op de kaart, en klik op het stijl icoontje (<span class="smallStyleIcon"></span>) in het rechter menu om een stijl toe te voegen. Dan wordt er een stijl aangemaakt voor de geselecteerde eigenschap.',
-            FEATURES: 'Features',
-            LEGEND: 'Legenda',
-            SEARCH: 'Zoeken',
-            HIDE_PANEL: 'Verberg dit paneel',
-            EDIT_INDICATORS: 'Wijzig indicatoren',
-            RELATED_FEATURES: 'Toon gerelateerde features',
-            FEATURE_INFO: 'Toon informatie over de geselecteerde feature',
-            MAP_FEATURES: 'Kaartfeatures',
-            NEARBY_FEATURES: 'Dichtbijgelegen features',
-            DASHBOARD_SELECTION: 'Dashboardselectie',
-            SETTINGS: 'Instellingen',
-            TOGGLE_MENU: 'Wissel de zichtbaarheid van het menu',
-            SPEEDS_TAOUFIK: 'snelheden legenda Taoufik',
-            SPEEDS_GOOGLEMAPS: 'snelheden legenda Google Maps',
-            VERWARMINGSSYSTEEM: 'Verwarmingssysteem',
-            PERCENTAGES_V1: 'percentages v1',
-            ORANGE_RED: 'oranje - rood',
-            WHITE_RED: 'wit - rood',
-            RED_WHITE_BLUE: 'rood - wit - blauw',
-            RED_WHITE: 'rood - wit',
-            GREEN_RED: 'groen - rood',
-            RED_GREEN: 'rood - groen',
-            BLUE_RED: 'blauw - rood',
-            RED_BLUE: 'rood - blauw',
-            WHITE_BLUE: 'wit - blauw',
-            BLUE_WHITE: 'wit - groen',
-            WHITE_GREEN: 'wit - groen',
-            GREEN_WHITE: 'groen - wit',
-            WHITE_ORANGE: 'wit - oranje',
-            ORANGE_WHITE: 'oranje - wit',
-            SAVE: 'opslaan',
-            APPLY: 'toepassen',
-            DONE: 'klaar',
-            CONFIG: 'config',
-            EDIT: 'aanpassen',
-            FOCUSTIME: {
-                OUT_OF_RANGE: 'De tijdscope is te groot. Gebruik de tijdbalk om deze te verkleinen',
-                NOT_AVAILABLE: 'Momenteel is er geen sensor data beschikbaar',
-                LOADING: 'Sensor data wordt geladen, even geduld'
-            },
-            STATS: {
-                COUNT: '#',
-                COUNT_TOOLTIP: 'Aantal geselecteerde items',
-                MIN: 'min',
-                MIN_TOOLTIP: 'Minimum van geselecteerde items',
-                MAX: 'max',
-                MAX_TOOLTIP: 'Maximum van geselecteerde items',
-                MEAN: 'µ',
-                MEAN_TOOLTIP: 'Gemiddelde van geselecteerde items',
-                SUM: 'Σ',
-                SUM_TOOLTIP: 'Som van geselecteerde items'
-            },
-            UTILS: {
-                FILTER: 'Gebruik dit kenmerk als filter',
-                STYLE: 'Gebruik dit kenmerk als stijl',
-                STATS: 'Toon de statistieken van dit kenmerk',
-                CHART: 'Toon het verloop van dit kenmerk in de tijd',
-                CONFIG: 'Configureer dit kenmerk'
-            },
-            EXPERTMODE: {
-                BEGINNER: 'Beginner',
-                INTERMEDIATE: 'Gevorderd',
-                EXPERT: 'Expert',
-                ADMIN: 'Admin',
-                EXPLANATION: 'Selecteer uw expertise om meer functionaliteit te kunnen gebruiken.'
-            },
-            LAYER_SERVICE: {
-                RELOAD_PROJECT_TITLE: 'Data wordt opnieuw geladen',
-                RELOAD_PROJECT_MSG: 'Na het wisselen van de taal moet de kaartdata opnieuw ingelezen worden. Excuses voor het ongemak.'
-            },
-            HEATMAP: {
-                NAME: 'Heatmaps',
-                DESCRIPTION: '<h4>Toelichting heatmap</h4><div style="text-align: left; margin-left:5px;"><p>Heatmap laat gebieden op de kaart oplichten die voldoen aan bepaalde criteria.',
-                INFO: 'Momenteel zijn er geen kaartlagen geopend die heatmaps bevatten.',
-                INFO_EXPERT: 'Momenteel zijn er geen kaartlagen geopend die heatmaps bevatten. Open een kaartlaag en maak een nieuwe heatmap aan met behulp van de wizard.',
-                SHOW_FEATURE_MSG: 'Selecteer een feature op de kaart om de heatmap resultaten in detail te bekijken.',
-                TOTAL_RESULT: 'Gecombineerd resultaat',
-                DELETE_MSG: 'Verwijder "{0}"',
-                DELETE_MSG2: 'Weet u het zeker?',
-                EDITOR_TITLE: 'Heatmap Editor',
-                MAIN_FEATURE: 'Selecteer het type feature',
-                PROPERTIES: 'Selecteer de eigenschappen',
-                RESOLUTION: 'Resolutie',
-                INTENSITY_SCALE: 'Intensiteitsschaal',
-                TITLE: 'Titel... *',
-                TITLE_TAG: 'Titel',
-                TOGGLE_SPARKLINE: 'Toon of verberg de histogram en score functie.',
-                SCALE_MIN_TITLE: '[Schaal max]',
-                SCALE_MAX_TITLE: '[Schaal min]',
-                MIN_MAX_ZOOM: 'Min./Max. zoom',
-                AT_LOCATION_VALUE: '[Waarde op locatie]',
-                DISTANCE_MAX_VALUE: '[Ideale afstand]',
-                LOST_INTEREST_VALUE: '[Negeer vanaf afstand]',
-                LINEAR_ASC_DESC: 'Linear toenemende, dan afnemende functie.',
-                ADD_HEATMAP: 'Maak een nieuwe heatmap.',
-                DELETE_HEATMAP: 'Verwijder de heatmap.',
-                EDIT_HEATMAP: 'Bewerk de heatmap.',
-                EXPORT_HEATMAP: 'Exporteer de heatmap.'
-            },
-            MCA: {
-                NAME: 'Multi-Criteria Analyse (MCA)',
-                DESCRIPTION: '<h4>Toelichting MCA</h4><div style="text-align: left; margin-left:5px;"><p>Multi-Criteria Analysis (MCA) is een methode die verschillende eigenschappen van een locatie of gebied op de kaart combineerd tot een nieuwe eigenschap. Dit gaat als volgt: <ol><li>Schaal iedere eigenschap tussen 0 (geen waarde) en 1 (maximum waarde).</li><li>Weeg iedere eigenschap relatief t.o.v. de andere gekozen eigenschappen, waar een gewicht onder 0 betekent dat je de eigenschap wil vermijden, 0 wordt genegeerd, en een waarde groter dan 0 betekent dat je dit wil bereiken.</li></ol>Met andere woorden, het is een vorm van lineare regressie.</p></div>',
-                INFO: 'Momenteel zijn er geen kaartlagen geopend die multi-criteria analyses bevatten. Open hiervoor een andere kaartlaag.',
-                INFO_EXPERT: 'Momenteel zijn er geen kaartlagen geopend die multi-criteria analyses bevatten. Open een kaartlaag en maak een nieuwe MCA aan met behulp van de wizard.',
-                SHOW_FEATURE_MSG: 'Selecteer een feature op de kaart om de Multi-Criteria Analyse (MCA) resultaten in detail te bekijken.',
-                TOTAL_RESULT: 'Gecombineerd resultaat',
-                DELETE_MSG: 'Verwijder "{0}"',
-                DELETE_MSG2: 'Weet u het zeker?',
-                HAS_CATEGORY: '  Specificeer categorie? ',
-                EDITOR_TITLE: 'MCA Editor',
-                MAIN_FEATURE: 'Selecteer het type feature',
-                PROPERTIES: 'Selecteer de eigenschappen',
-                INCLUDE_RANK: '  Toon een rangorde? ',
-                RANK_TITLE: '[Titel voor de rangorde]',
-                TITLE: 'Titel... *',
-                CATEGORY_MSG: '[Categorie...]',
-                TOGGLE_SPARKLINE: 'Toon of verberg de histogram en score functie.',
-                SCALE_MIN_TITLE: '[Schaal max]',
-                SCALE_MAX_TITLE: '[Schaal min]',
-                MIN_VALUE: '[Ondergrens (\u03BC-2\u03C3)]',
-                MAX_VALUE: '[Bovengrens (\u03BC+2\u03C3)]',
-                MIN_CUTOFF_VALUE: '[Niet meewegen onder]',
-                MAX_CUTOFF_VALUE: '[Niet meewegen boven]',
-                LINEAR: 'Linear toenemende functie tussen onder- en bovengrens.',
-                SIGMOID: 'Tangentieel toenemende functie tussen onder- en bovengrens.',
-                GAUSSIAN: 'Normale verdeling tussen onder- en bovengrens.',
-                ADD_MCA: 'Maak een nieuwe MCA.',
-                DELETE_MCA: 'Verwijder de MCA.',
-                EDIT_MCA: 'Bewerk de MCA.',
-                SET_STYLE: 'Activeer stijl'
-            },
-            PROJECTSETTINGS: {
-                TITLE: 'Project instellingen',
-                DESCRIPTION: 'Instellingen'
-            },
-            CHOOSE_CATEGORY: 'Kies categorie...',
-            SHOW5: 'Toon 5 regels',
-            SHOW10: 'Toon 10 regels',
-            SHOW15: 'Toon 15 regels',
-            SHOW20: 'Toon 20 regels',
-            SHOW25: 'Toon 25 regels',
-            SHOW30: 'Toon 30 regels',
-            SHOW35: 'Toon 35 regels',
-            SHOW40: 'Toon 40 regels',
-            RISK_DIAGRAM_FOR: 'Risicodiagram voor een ',
-            SAVE_FEATURE_DEPENDENCIES: 'Sla de afhankelijkheden op alléén voor het geselecteerde object',
-            SAVE_FEATURETYPE_DEPENDENCIES: 'Sla de afhankelijkheden op voor alle object van dit type',
-            SAVE_MARVEL: 'Bewaar ',
-            SAVE_EVERY_MARVEL: 'Bewaar ieder ',
-            MARVEL_WATER_LEVEL: 'Waterniveau [m]',
-            MARVEL_UPS_DURATION: 'Noodstroom duur [min]',
-            MARVEL_FEATURE_DEP: 'Afhankelijk van',
-            STATE: 'Status',
-            EVENT_INFO: 'Toon lijst van gebeurtenissen',
-            CLEAR_EVENTS: 'Lijst leegmaken',
-            SEARCH_PLACEHOLDER: 'Gemeente, adres, ...',
-            SAVE_AS_IMAGE: 'Opslaan als afbeelding',
-            SAVE_AS_PDF: 'Opslaan als PDF',
-            ROW_CHART_HELP: 'Klik op één of meerdere rijen om een filter toe te passen voor de geselecteerde eigenschap.',
-            CONVERT: 'Converteer',
-            VIEW_PROJECT: 'Bekijk je project',
-            PASTE_HERE: 'Plak hier uw data',
-            OPTION: 'Optie {{number}}',
-            PASSWORD: 'Wachtwoord',
-            COMPARE_TAB: 'Vergelijk'
-        };
         return Dutch;
     }());
+    Dutch.locale = {
+        CANCEL_BTN: 'Annuleren',
+        OK_BTN: 'OK',
+        CLOSE: 'Sluit',
+        FROM: 'van',
+        TO: 'tot',
+        PREVIOUS: 'Vorige',
+        NEXT: 'Volgende',
+        ZOOM_IN: 'Inzoomen',
+        ZOOM_OUT: 'Uitzoomen',
+        ZOOM_LEVEL_LOW: 'Zoom niveau te laag',
+        ZOOM_IN_FOR_CONTOURS: 'Zoom in om de contouren te tonen',
+        NAVIGATE: {
+            TITLE: 'Zoekresultaten'
+        },
+        REMOVE: 'Verwijder',
+        CREATE_SCATTER: 'Creeer spreidingsdiagram',
+        EXPAND_ALL: 'Alles uitklappen',
+        COLLAPSE_ALL: 'Alles inklappen',
+        SELECT_ALL: 'Selecteer alles',
+        DESELECT_ALL: 'Deselecteer alles',
+        ENABLE_LOCATION_FILTER: 'Activeer locatiefilter',
+        SELECT_A_FEATURE: 'Selecteer een feature',
+        DISABLE_LOCATION_FILTER: 'Deactiveer locatiefilter',
+        SELECT_FEATURE_FOR_WIDGET: 'Selecteer een gebied om de widget te tonen.',
+        SELECT_FEATURE_FOR_STYLE: 'Selecteer eerst een gebied, dan pas kan de stijl geactiveerd worden.',
+        SELECT_LAYER_GROUP: 'Selecteer lagen',
+        SELECT_CATEGORY: 'Selecteer categorie',
+        SELECT_PROPERTIES: 'Selecteer eigenschappen',
+        NO_RELATIONS_FOUND: 'Geen relaties voor het geselecteerde item gevonden. Ofwel het zoomniveau is te laag, er zijn teveel items zichtbaar of er zijn geen relaties gedefiniëerd.',
+        CHOOSE_DROPDOWN: 'Kies...',
+        BASESTYLES: 'Basiskaarten',
+        MAP: 'Kaarten',
+        MAP_LABEL: 'Kaart',
+        TABLE_LABEL: 'Tabel',
+        LAYERS: 'Kaartlagen',
+        DIRECTORY: 'Beschikbare lagen',
+        CREATELAYER: 'Nieuwe laag maken',
+        ADDFEATURES: 'Objecten toevoegen',
+        ADDTYPE: 'Nieuwe type toevoegen',
+        FILTERS: 'Filters',
+        FILTER_INFO: 'Momenteel zijn er geen filters geselecteerd. Klik op een icoon of gebied op de kaart, en klik op het filter icoontje (<span class="fa fa-filter"></span>) in het rechter menu om een filter toe te voegen. Dan wordt er een filter aangemaakt voor de geselecteerde eigenschap.',
+        STYLES: 'Stijlen',
+        STYLE_INFO: 'Momenteel zijn er geen stijlen geselecteerd. Klik op een icoon of gebied op de kaart, en klik op het stijl icoontje (<span class="smallStyleIcon"></span>) in het rechter menu om een stijl toe te voegen. Dan wordt er een stijl aangemaakt voor de geselecteerde eigenschap.',
+        FEATURES: 'Features',
+        LEGEND: 'Legenda',
+        SEARCH: 'Zoeken',
+        HIDE_PANEL: 'Verberg dit paneel',
+        EDIT_INDICATORS: 'Wijzig indicatoren',
+        RELATED_FEATURES: 'Toon gerelateerde features',
+        FEATURE_INFO: 'Toon informatie over de geselecteerde feature',
+        MAP_FEATURES: 'Kaartfeatures',
+        NEARBY_FEATURES: 'Dichtbijgelegen features',
+        DASHBOARD_SELECTION: 'Dashboardselectie',
+        SETTINGS: 'Instellingen',
+        TOGGLE_MENU: 'Wissel de zichtbaarheid van het menu',
+        SPEEDS_TAOUFIK: 'snelheden legenda Taoufik',
+        SPEEDS_GOOGLEMAPS: 'snelheden legenda Google Maps',
+        VERWARMINGSSYSTEEM: 'Verwarmingssysteem',
+        PERCENTAGES_V1: 'percentages v1',
+        ORANGE_RED: 'oranje - rood',
+        WHITE_RED: 'wit - rood',
+        RED_WHITE_BLUE: 'rood - wit - blauw',
+        RED_WHITE: 'rood - wit',
+        GREEN_RED: 'groen - rood',
+        RED_GREEN: 'rood - groen',
+        BLUE_RED: 'blauw - rood',
+        RED_BLUE: 'rood - blauw',
+        WHITE_BLUE: 'wit - blauw',
+        BLUE_WHITE: 'wit - groen',
+        WHITE_GREEN: 'wit - groen',
+        GREEN_WHITE: 'groen - wit',
+        WHITE_ORANGE: 'wit - oranje',
+        ORANGE_WHITE: 'oranje - wit',
+        SAVE: 'opslaan',
+        APPLY: 'toepassen',
+        DONE: 'klaar',
+        CONFIG: 'config',
+        EDIT: 'aanpassen',
+        FOCUSTIME: {
+            OUT_OF_RANGE: 'De tijdscope is te groot. Gebruik de tijdbalk om deze te verkleinen',
+            NOT_AVAILABLE: 'Momenteel is er geen sensor data beschikbaar',
+            LOADING: 'Sensor data wordt geladen, even geduld'
+        },
+        STATS: {
+            COUNT: '#',
+            COUNT_TOOLTIP: 'Aantal geselecteerde items',
+            MIN: 'min',
+            MIN_TOOLTIP: 'Minimum van geselecteerde items',
+            MAX: 'max',
+            MAX_TOOLTIP: 'Maximum van geselecteerde items',
+            MEAN: 'µ',
+            MEAN_TOOLTIP: 'Gemiddelde van geselecteerde items',
+            SUM: 'Σ',
+            SUM_TOOLTIP: 'Som van geselecteerde items'
+        },
+        UTILS: {
+            FILTER: 'Gebruik dit kenmerk als filter',
+            STYLE: 'Gebruik dit kenmerk als stijl',
+            STATS: 'Toon de statistieken van dit kenmerk',
+            CHART: 'Toon het verloop van dit kenmerk in de tijd',
+            CONFIG: 'Configureer dit kenmerk'
+        },
+        EXPERTMODE: {
+            BEGINNER: 'Beginner',
+            INTERMEDIATE: 'Gevorderd',
+            EXPERT: 'Expert',
+            ADMIN: 'Admin',
+            EXPLANATION: 'Selecteer uw expertise om meer functionaliteit te kunnen gebruiken.'
+        },
+        LAYER_SERVICE: {
+            RELOAD_PROJECT_TITLE: 'Data wordt opnieuw geladen',
+            RELOAD_PROJECT_MSG: 'Na het wisselen van de taal moet de kaartdata opnieuw ingelezen worden. Excuses voor het ongemak.'
+        },
+        HEATMAP: {
+            NAME: 'Heatmaps',
+            DESCRIPTION: '<h4>Toelichting heatmap</h4><div style="text-align: left; margin-left:5px;"><p>Heatmap laat gebieden op de kaart oplichten die voldoen aan bepaalde criteria.',
+            INFO: 'Momenteel zijn er geen kaartlagen geopend die heatmaps bevatten.',
+            INFO_EXPERT: 'Momenteel zijn er geen kaartlagen geopend die heatmaps bevatten. Open een kaartlaag en maak een nieuwe heatmap aan met behulp van de wizard.',
+            SHOW_FEATURE_MSG: 'Selecteer een feature op de kaart om de heatmap resultaten in detail te bekijken.',
+            TOTAL_RESULT: 'Gecombineerd resultaat',
+            DELETE_MSG: 'Verwijder "{0}"',
+            DELETE_MSG2: 'Weet u het zeker?',
+            EDITOR_TITLE: 'Heatmap Editor',
+            MAIN_FEATURE: 'Selecteer het type feature',
+            PROPERTIES: 'Selecteer de eigenschappen',
+            RESOLUTION: 'Resolutie',
+            INTENSITY_SCALE: 'Intensiteitsschaal',
+            TITLE: 'Titel... *',
+            TITLE_TAG: 'Titel',
+            TOGGLE_SPARKLINE: 'Toon of verberg de histogram en score functie.',
+            SCALE_MIN_TITLE: '[Schaal max]',
+            SCALE_MAX_TITLE: '[Schaal min]',
+            MIN_MAX_ZOOM: 'Min./Max. zoom',
+            AT_LOCATION_VALUE: '[Waarde op locatie]',
+            DISTANCE_MAX_VALUE: '[Ideale afstand]',
+            LOST_INTEREST_VALUE: '[Negeer vanaf afstand]',
+            LINEAR_ASC_DESC: 'Linear toenemende, dan afnemende functie.',
+            ADD_HEATMAP: 'Maak een nieuwe heatmap.',
+            DELETE_HEATMAP: 'Verwijder de heatmap.',
+            EDIT_HEATMAP: 'Bewerk de heatmap.',
+            EXPORT_HEATMAP: 'Exporteer de heatmap.'
+        },
+        MCA: {
+            NAME: 'Multi-Criteria Analyse (MCA)',
+            DESCRIPTION: '<h4>Toelichting MCA</h4><div style="text-align: left; margin-left:5px;"><p>Multi-Criteria Analysis (MCA) is een methode die verschillende eigenschappen van een locatie of gebied op de kaart combineerd tot een nieuwe eigenschap. Dit gaat als volgt: <ol><li>Schaal iedere eigenschap tussen 0 (geen waarde) en 1 (maximum waarde).</li><li>Weeg iedere eigenschap relatief t.o.v. de andere gekozen eigenschappen, waar een gewicht onder 0 betekent dat je de eigenschap wil vermijden, 0 wordt genegeerd, en een waarde groter dan 0 betekent dat je dit wil bereiken.</li></ol>Met andere woorden, het is een vorm van lineare regressie.</p></div>',
+            INFO: 'Momenteel zijn er geen kaartlagen geopend die multi-criteria analyses bevatten. Open hiervoor een andere kaartlaag.',
+            INFO_EXPERT: 'Momenteel zijn er geen kaartlagen geopend die multi-criteria analyses bevatten. Open een kaartlaag en maak een nieuwe MCA aan met behulp van de wizard.',
+            SHOW_FEATURE_MSG: 'Selecteer een feature op de kaart om de Multi-Criteria Analyse (MCA) resultaten in detail te bekijken.',
+            TOTAL_RESULT: 'Gecombineerd resultaat',
+            DELETE_MSG: 'Verwijder "{0}"',
+            DELETE_MSG2: 'Weet u het zeker?',
+            HAS_CATEGORY: '  Specificeer categorie? ',
+            EDITOR_TITLE: 'MCA Editor',
+            MAIN_FEATURE: 'Selecteer het type feature',
+            PROPERTIES: 'Selecteer de eigenschappen',
+            INCLUDE_RANK: '  Toon een rangorde? ',
+            RANK_TITLE: '[Titel voor de rangorde]',
+            TITLE: 'Titel... *',
+            CATEGORY_MSG: '[Categorie...]',
+            TOGGLE_SPARKLINE: 'Toon of verberg de histogram en score functie.',
+            SCALE_MIN_TITLE: '[Schaal max]',
+            SCALE_MAX_TITLE: '[Schaal min]',
+            MIN_VALUE: '[Ondergrens (\u03BC-2\u03C3)]',
+            MAX_VALUE: '[Bovengrens (\u03BC+2\u03C3)]',
+            MIN_CUTOFF_VALUE: '[Niet meewegen onder]',
+            MAX_CUTOFF_VALUE: '[Niet meewegen boven]',
+            LINEAR: 'Linear toenemende functie tussen onder- en bovengrens.',
+            SIGMOID: 'Tangentieel toenemende functie tussen onder- en bovengrens.',
+            GAUSSIAN: 'Normale verdeling tussen onder- en bovengrens.',
+            ADD_MCA: 'Maak een nieuwe MCA.',
+            DELETE_MCA: 'Verwijder de MCA.',
+            EDIT_MCA: 'Bewerk de MCA.',
+            SET_STYLE: 'Activeer stijl'
+        },
+        PROJECTSETTINGS: {
+            TITLE: 'Project instellingen',
+            DESCRIPTION: 'Instellingen'
+        },
+        CHOOSE_CATEGORY: 'Kies categorie...',
+        SHOW5: 'Toon 5 regels',
+        SHOW10: 'Toon 10 regels',
+        SHOW15: 'Toon 15 regels',
+        SHOW20: 'Toon 20 regels',
+        SHOW25: 'Toon 25 regels',
+        SHOW30: 'Toon 30 regels',
+        SHOW35: 'Toon 35 regels',
+        SHOW40: 'Toon 40 regels',
+        RISK_DIAGRAM_FOR: 'Risicodiagram voor een ',
+        SAVE_FEATURE_DEPENDENCIES: 'Sla de afhankelijkheden op alléén voor het geselecteerde object',
+        SAVE_FEATURETYPE_DEPENDENCIES: 'Sla de afhankelijkheden op voor alle object van dit type',
+        SAVE_MARVEL: 'Bewaar ',
+        SAVE_EVERY_MARVEL: 'Bewaar ieder ',
+        MARVEL_WATER_LEVEL: 'Waterniveau [m]',
+        MARVEL_UPS_DURATION: 'Noodstroom duur [min]',
+        MARVEL_FEATURE_DEP: 'Afhankelijk van',
+        STATE: 'Status',
+        EVENT_INFO: 'Toon lijst van gebeurtenissen',
+        CLEAR_EVENTS: 'Lijst leegmaken',
+        SEARCH_PLACEHOLDER: 'Gemeente, adres, ...',
+        SAVE_AS_IMAGE: 'Opslaan als afbeelding',
+        SAVE_AS_PDF: 'Opslaan als PDF',
+        ROW_CHART_HELP: 'Klik op één of meerdere rijen om een filter toe te passen voor de geselecteerde eigenschap.',
+        CONVERT: 'Converteer',
+        VIEW_PROJECT: 'Bekijk je project',
+        PASTE_HERE: 'Plak hier uw data',
+        DROP_HERE: 'Sleep uw data hier naartoe',
+        OPTION: 'Optie {{number}}',
+        PASSWORD: 'Wachtwoord',
+        COMPARE_TAB: 'Vergelijk',
+        STRINGFORMAT: 'Nummer opmaak',
+        ADD: 'Voeg toe',
+        NEW: 'Nieuw',
+        SECTION: 'Sectie',
+        GROUP: 'Groep',
+        LAYER_TITLE: 'Kaartlaag titel',
+        LAYER_SETTINGS: 'Kaartlaag instellingen',
+        LAYER_SETTINGS_HELP: 'Wijzig hier de instellingen van je kaartlaag, zoals de titel en de groep waartoe de laag behoort.',
+        PROPERTY_SETTINGS: 'Data eigenschappen',
+        PROPERTY_DESCRIPTION: 'Eigenschap beschrijving',
+        PROPERTY_TYPE: 'Eigenschap type',
+        PROPERTY_TITLE: 'Eigenschap titel',
+        VISIBLE_IN_CALLOUT: 'Toon eigenschap in menu',
+        DESCRIPTION: 'Beschrijving',
+        TYPE: 'Type',
+        TITLE: 'Titel',
+        NAME: 'Naam',
+        EMAIL: 'E-mail',
+        YES: 'Ja',
+        NO: 'Nee'
+    };
     Translations.Dutch = Dutch;
 })(Translations || (Translations = {}));
 //# sourceMappingURL=locale-nl.js.map
@@ -5177,6 +5349,7 @@ var Accessibility;
                 layerService.$messageBusService.publish('rightpanel', 'activate', rpt);
             }
             else {
+                //TODO: create a new layer to show route on
             }
         };
         AccessibilityModel.prototype.planRouteFrom = function (feature, layerService) {
@@ -5304,20 +5477,20 @@ var Accessibility;
                 this.$scope.$apply();
             }
         };
-        // $inject annotation.
-        // It provides $injector with information about dependencies to be injected into constructor
-        // it is better to have it close to the constructor, because the parameters must match in count and type.
-        // See http://docs.angularjs.org/guide/di
-        AccessibilityCtrl.$inject = [
-            '$scope',
-            '$http',
-            'mapService',
-            'layerService',
-            'messageBusService',
-            'dashboardService'
-        ];
         return AccessibilityCtrl;
     }());
+    // $inject annotation.
+    // It provides $injector with information about dependencies to be injected into constructor
+    // it is better to have it close to the constructor, because the parameters must match in count and type.
+    // See http://docs.angularjs.org/guide/di
+    AccessibilityCtrl.$inject = [
+        '$scope',
+        '$http',
+        'mapService',
+        'layerService',
+        'messageBusService',
+        'dashboardService'
+    ];
     Accessibility.AccessibilityCtrl = AccessibilityCtrl;
 })(Accessibility || (Accessibility = {}));
 //# sourceMappingURL=AccessibilityCtrl.js.map
@@ -5352,23 +5525,7 @@ var BaseMapList;
                 //        fn(scope);
                 //    };
                 //},
-                link: function (scope, element, attrs) {
-                    // Deal with resizing the element list
-                    scope.onResizeFunction = function () {
-                        var filterHeight = 50;
-                        var paginationCtrlHeight = 100;
-                        var itemHeight = 60;
-                        //scope.windowHeight          = $window.innerHeight;
-                        //scope.windowWidth           = $window.innerWidth;
-                        scope.numberOfItems = Math.floor(($window.innerHeight - filterHeight - paginationCtrlHeight) / itemHeight);
-                    };
-                    // Call to the function when the page is first loaded
-                    scope.onResizeFunction();
-                    angular.element($window).bind('resize', function () {
-                        scope.onResizeFunction();
-                        scope.$apply();
-                    });
-                },
+                link: function (scope, element, attrs) { },
                 replace: true,
                 transclude: true,
                 controller: BaseMapList.BaseMapListCtrl
@@ -5394,18 +5551,18 @@ var BaseMapList;
             this.$layerService.activeMapRenderer.changeBaseLayer(layer);
             this.$layerService.$mapService.changeBaseLayer(key);
         };
-        // $inject annotation.
-        // It provides $injector with information about dependencies to be injected into constructor
-        // it is better to have it close to the constructor, because the parameters must match in count and type.
-        // See http://docs.angularjs.org/guide/di
-        BaseMapListCtrl.$inject = [
-            '$scope',
-            'layerService',
-            'mapService',
-            'messageBusService',
-        ];
         return BaseMapListCtrl;
     }());
+    // $inject annotation.
+    // It provides $injector with information about dependencies to be injected into constructor
+    // it is better to have it close to the constructor, because the parameters must match in count and type.
+    // See http://docs.angularjs.org/guide/di
+    BaseMapListCtrl.$inject = [
+        '$scope',
+        'layerService',
+        'mapService',
+        'messageBusService',
+    ];
     BaseMapList.BaseMapListCtrl = BaseMapListCtrl;
 })(BaseMapList || (BaseMapList = {}));
 //# sourceMappingURL=BaseMapListCtrl.js.map
@@ -5837,7 +5994,8 @@ var Charts;
                     //scope.closed = true;
                 }
             };
-        }]);
+        }
+    ]);
 })(Charts || (Charts = {}));
 //# sourceMappingURL=CircularChart.js.map
 var Charts;
@@ -6465,12 +6623,13 @@ var DataTable;
                 },
                 function (callback) {
                     _this.$http.get(selectedLayer.url).
-                        success(function (data) {
+                        then(function (res) {
+                        var data = res.data;
                         if (selectedLayer.type.toLowerCase() === 'topojson') {
                             data = csComp.Helpers.GeoExtensions.convertTopoToGeoJson(data);
                         }
                         _this.processData(selectedLayer, data, callback);
-                    }).error(function (data, status, headers, config) {
+                    }).catch(function (error) {
                         _this.$messageBusService.notify('ERROR opening ' + selectedLayer.title, 'Could not get the data.');
                         if (selectedLayer && selectedLayer.data && selectedLayer.data.features) {
                             _this.processData(selectedLayer, selectedLayer.data, callback);
@@ -6489,15 +6648,17 @@ var DataTable;
                 data.featureTypes = {};
             if (data.features) {
                 data.features.forEach(function (f) {
-                    if (f.properties.hasOwnProperty('featureTypeId')) {
-                        f.featureTypeName = selectedLayer.typeUrl + '#' + f.properties['featureTypeId'];
-                    }
-                    else if (selectedLayer.defaultFeatureType != null && selectedLayer.defaultFeatureType !== '') {
-                        if (selectedLayer.defaultFeatureType.indexOf('#') > -1) {
-                            f.featureTypeName = selectedLayer.defaultFeatureType;
+                    if (!f.featureTypeName) {
+                        if (f.properties.hasOwnProperty('featureTypeId')) {
+                            f.featureTypeName = selectedLayer.typeUrl + '#' + f.properties['featureTypeId'];
                         }
-                        else {
-                            f.featureTypeName = selectedLayer.typeUrl + '#' + selectedLayer.defaultFeatureType;
+                        else if (selectedLayer.defaultFeatureType != null && selectedLayer.defaultFeatureType !== '') {
+                            if (selectedLayer.defaultFeatureType.indexOf('#') > -1) {
+                                f.featureTypeName = selectedLayer.defaultFeatureType;
+                            }
+                            else {
+                                f.featureTypeName = selectedLayer.typeUrl + '#' + selectedLayer.defaultFeatureType;
+                            }
                         }
                     }
                     if (!(f.featureTypeName in data.featureTypes))
@@ -6827,22 +6988,22 @@ var DataTable;
                 return '';
             }
         };
-        // $inject annotation.
-        // It provides $injector with information about dependencies to be injected into constructor
-        // it is better to have it close to the constructor, because the parameters must match in count and type.
-        // See http://docs.angularjs.org/guide/di
-        DataTableCtrl.$inject = [
-            '$scope',
-            '$http',
-            '$sce',
-            '$translate',
-            '$timeout',
-            'layerService',
-            'localStorageService',
-            'messageBusService'
-        ];
         return DataTableCtrl;
     }());
+    // $inject annotation.
+    // It provides $injector with information about dependencies to be injected into constructor
+    // it is better to have it close to the constructor, because the parameters must match in count and type.
+    // See http://docs.angularjs.org/guide/di
+    DataTableCtrl.$inject = [
+        '$scope',
+        '$http',
+        '$sce',
+        '$translate',
+        '$timeout',
+        'layerService',
+        'localStorageService',
+        'messageBusService'
+    ];
     DataTable.DataTableCtrl = DataTableCtrl;
 })(DataTable || (DataTable = {}));
 //# sourceMappingURL=DataTableCtrl.js.map
@@ -7133,21 +7294,21 @@ var EventTab;
                 this.$mapService.zoomTo(foundFeature, this.$mapService.map.getZoom());
             }
         };
-        // $inject annotation.
-        // It provides $injector with information about dependencies to be injected into constructor
-        // it is better to have it close to the constructor, because the parameters must match in count and type.
-        // See http://docs.angularjs.org/guide/di
-        EventTabCtrl.$inject = [
-            '$scope',
-            '$location',
-            '$sce',
-            'mapService',
-            'layerService',
-            'messageBusService',
-            '$translate'
-        ];
         return EventTabCtrl;
     }());
+    // $inject annotation.
+    // It provides $injector with information about dependencies to be injected into constructor
+    // it is better to have it close to the constructor, because the parameters must match in count and type.
+    // See http://docs.angularjs.org/guide/di
+    EventTabCtrl.$inject = [
+        '$scope',
+        '$location',
+        '$sce',
+        'mapService',
+        'layerService',
+        'messageBusService',
+        '$translate'
+    ];
     EventTab.EventTabCtrl = EventTabCtrl;
 })(EventTab || (EventTab = {}));
 //# sourceMappingURL=EventTabCtrl.js.map
@@ -7200,7 +7361,7 @@ var ExpertMode;
                 //     }
                 //     var html = '<rating ng-model="expertMode" '
                 //         + attributeString
-                //         + 'tooltip-html-unsafe="{{\'EXPERTMODE.EXPLANATION\' | translate}}" tooltip-placement="bottom" tooltip-trigger="mouseenter" tooltip-append-to-body="false"'
+                //         + 'tooltip-html-unsafe="{{\'EXPERTMODE.EXPLANATION\' | translate}}" tooltip-placement="bottom" tooltip-trigger="'mouseenter'" tooltip-append-to-body="false"'
                 //         + 'max="3"></rating>';
                 //     var e = $compile(html)(scope);
                 //     element.replaceWith(e);
@@ -7262,15 +7423,15 @@ var ExpertMode;
         ExpertModeCtrl.prototype.setExpertMode = function (expertMode) {
             this.$messageBus.publish('expertMode', 'newExpertise', expertMode);
         };
-        ExpertModeCtrl.$inject = [
-            '$scope',
-            'localStorageService',
-            'layerService',
-            'mapService',
-            'messageBusService'
-        ];
         return ExpertModeCtrl;
     }());
+    ExpertModeCtrl.$inject = [
+        '$scope',
+        'localStorageService',
+        'layerService',
+        'mapService',
+        'messageBusService'
+    ];
     ExpertMode.ExpertModeCtrl = ExpertModeCtrl;
 })(ExpertMode || (ExpertMode = {}));
 //# sourceMappingURL=ExpertModeCtrl.js.map
@@ -7308,23 +7469,7 @@ var FeatureList;
                 // scope is an Angular scope object.
                 // element is the jqLite - wrapped element that this directive matches.
                 // attrs is a hash object with key - value pairs of normalized attribute names and their corresponding attribute values.
-                link: function (scope, element, attrs) {
-                    // Deal with resizing the element list
-                    scope.onResizeFunction = function () {
-                        var filterHeight = 50;
-                        var paginationCtrlHeight = 100;
-                        var itemHeight = 60;
-                        //scope.windowHeight          = $window.innerHeight;
-                        //scope.windowWidth           = $window.innerWidth;
-                        scope.numberOfItems = Math.floor(($window.innerHeight - filterHeight - paginationCtrlHeight) / itemHeight);
-                    };
-                    // Call to the function when the page is first loaded
-                    scope.onResizeFunction();
-                    angular.element($window).bind('resize', function () {
-                        scope.onResizeFunction();
-                        scope.$apply();
-                    });
-                },
+                link: function (scope, element, attrs) { },
                 replace: true,
                 transclude: true,
                 controller: FeatureList.FeatureListCtrl
@@ -7349,17 +7494,17 @@ var FeatureList;
             $scope.vm = this;
             $scope.numberOfItems = 10; // This is being reset in the directive upon receiving a resize.
         }
-        // $inject annotation.
-        // It provides $injector with information about dependencies to be injected into constructor
-        // it is better to have it close to the constructor, because the parameters must match in count and type.
-        // See http://docs.angularjs.org/guide/di
-        FeatureListCtrl.$inject = [
-            '$scope',
-            'layerService',
-            'mapService'
-        ];
         return FeatureListCtrl;
     }());
+    // $inject annotation.
+    // It provides $injector with information about dependencies to be injected into constructor
+    // it is better to have it close to the constructor, because the parameters must match in count and type.
+    // See http://docs.angularjs.org/guide/di
+    FeatureListCtrl.$inject = [
+        '$scope',
+        'layerService',
+        'mapService'
+    ];
     FeatureList.FeatureListCtrl = FeatureListCtrl;
 })(FeatureList || (FeatureList = {}));
 //# sourceMappingURL=FeatureListCtrl.js.map
@@ -7762,6 +7907,7 @@ var FeatureProps;
                 item.feature.fType.propertyTypeKeys += ';' + key;
                 item.isDraft = false;
                 this.$layerService.propertyTypeData[key] = propType;
+                //alert('saving draft');
             }
             this.$layerService.saveResource(resource);
             this.displayFeature(this.$scope.feature);
@@ -7821,6 +7967,7 @@ var FeatureProps;
         FeaturePropsCtrl.prototype.openLayer = function (property) {
             if (property.feature != null && property.feature.properties.hasOwnProperty(property.propertyType.label)) {
                 var link = property.feature.properties[property.propertyType.label];
+                // alert(link);
             }
         };
         FeaturePropsCtrl.prototype.setCorrelation = function (item, $event) {
@@ -8014,6 +8161,7 @@ var FeatureProps;
             }
             else {
                 return moment(fp).calendar();
+                //format = 'DD MMMM YYYY ';
             }
             if (moment(fp).format(format) === 'Invalid date') {
                 return moment(fp, 'YYYYMMDD').format(format);
@@ -8034,22 +8182,22 @@ var FeatureProps;
                 }
             });
         };
-        // $inject annotation.
-        // It provides $injector with information about dependencies to be injected into constructor
-        // it is better to have it close to the constructor, because the parameters must match in count and type.
-        // See http://docs.angularjs.org/guide/di
-        FeaturePropsCtrl.$inject = [
-            '$scope',
-            '$location',
-            '$sce',
-            'mapService',
-            'layerService',
-            'messageBusService',
-            '$translate',
-            '$compile'
-        ];
         return FeaturePropsCtrl;
     }());
+    // $inject annotation.
+    // It provides $injector with information about dependencies to be injected into constructor
+    // it is better to have it close to the constructor, because the parameters must match in count and type.
+    // See http://docs.angularjs.org/guide/di
+    FeaturePropsCtrl.$inject = [
+        '$scope',
+        '$location',
+        '$sce',
+        'mapService',
+        'layerService',
+        'messageBusService',
+        '$translate',
+        '$compile'
+    ];
     FeatureProps.FeaturePropsCtrl = FeaturePropsCtrl;
 })(FeatureProps || (FeatureProps = {}));
 //# sourceMappingURL=FeaturePropsCtrl.js.map
@@ -8290,6 +8438,9 @@ var FeatureRelations;
                                 if (rl.target.fType.name === f.fType.name)
                                     pt.count += 1;
                             });
+                            //if (!this.$layerService.featureTypes[f.featureTypeName].propertyTypeData[pt.label]) {
+                            //    this.$layerService.featureTypes[f.featureTypeName].propertyTypeData.push(pt);
+                            //}
                         }
                     }
                     if (rg.relations.length > 0)
@@ -8310,21 +8461,21 @@ var FeatureRelations;
         FeatureRelationsCtrl.prototype.getRelations = function () {
             return this.relations;
         };
-        // $inject annotation.
-        // It provides $injector with information about dependencies to be injected into constructor
-        // it is better to have it close to the constructor, because the parameters must match in count and type.
-        // See http://docs.angularjs.org/guide/di
-        FeatureRelationsCtrl.$inject = [
-            '$scope',
-            '$location',
-            '$sce',
-            'mapService',
-            'layerService',
-            'messageBusService',
-            '$translate'
-        ];
         return FeatureRelationsCtrl;
     }());
+    // $inject annotation.
+    // It provides $injector with information about dependencies to be injected into constructor
+    // it is better to have it close to the constructor, because the parameters must match in count and type.
+    // See http://docs.angularjs.org/guide/di
+    FeatureRelationsCtrl.$inject = [
+        '$scope',
+        '$location',
+        '$sce',
+        'mapService',
+        'layerService',
+        'messageBusService',
+        '$translate'
+    ];
     FeatureRelations.FeatureRelationsCtrl = FeatureRelationsCtrl;
 })(FeatureRelations || (FeatureRelations = {}));
 //# sourceMappingURL=FeatureRelationsCtrl.js.map
@@ -8352,23 +8503,7 @@ var FilterList;
                 restrict: 'E',
                 scope: {},
                 templateUrl: 'directives/FilterList/FilterList.tpl.html',
-                link: function (scope, element, attrs) {
-                    // Deal with resizing the element list
-                    scope.onResizeFunction = function () {
-                        var filterHeight = 50;
-                        var paginationCtrlHeight = 100;
-                        var itemHeight = 60;
-                        //scope.windowHeight          = $window.innerHeight;
-                        //scope.windowWidth           = $window.innerWidth;
-                        scope.numberOfItems = Math.floor(($window.innerHeight - filterHeight - paginationCtrlHeight) / itemHeight);
-                    };
-                    // Call to the function when the page is first loaded
-                    scope.onResizeFunction();
-                    angular.element($window).bind('resize', function () {
-                        scope.onResizeFunction();
-                        scope.$apply();
-                    });
-                },
+                link: function (scope, element, attrs) { },
                 replace: false,
                 transclude: false,
                 controller: FilterList.FilterListCtrl
@@ -8413,17 +8548,17 @@ var FilterList;
                 this.$layerService.setLocationFilter(group);
             }
         };
-        // $inject annotation.
-        // It provides $injector with information about dependencies to be injected into constructor
-        // it is better to have it close to the constructor, because the parameters must match in count and type.
-        // See http://docs.angularjs.org/guide/di
-        FilterListCtrl.$inject = [
-            '$scope',
-            'layerService',
-            'messageBusService'
-        ];
         return FilterListCtrl;
     }());
+    // $inject annotation.
+    // It provides $injector with information about dependencies to be injected into constructor
+    // it is better to have it close to the constructor, because the parameters must match in count and type.
+    // See http://docs.angularjs.org/guide/di
+    FilterListCtrl.$inject = [
+        '$scope',
+        'layerService',
+        'messageBusService'
+    ];
     FilterList.FilterListCtrl = FilterListCtrl;
 })(FilterList || (FilterList = {}));
 //# sourceMappingURL=FilterListCtrl.js.map
@@ -8733,6 +8868,27 @@ var Heatmap;
                     return;
                 }
                 else {
+                    //this.heatmapModel.updateWeights();
+                    //this.heatmapModel.calculate(this.$layerService, this.$mapService, this.heatmap);
+                    //this.projLayer.data = this.heatmap.toGeoJSON();
+                    //(<any>(this.projLayer.data)).features.forEach((f) => {
+                    //    this.$layerService.initFeature(f, this.projLayer);
+                    //});
+                    //// Set default style for the heatmap:
+                    //if ((<any>(this.projLayer.data)).features[0]) {
+                    //    var calloutProp = new FeatureProps.CallOutProperty("intensity", "0", "intensity", true, true,(<any>(this.projLayer.data)).features[0], false);
+                    //    var propinfo = new csComp.Services.PropertyInfo();
+                    //    // Tweak the group style info to keep constant min/max color values on panning and zooming.
+                    //    propinfo.count = (<any>(this.projLayer.data)).features.length;
+                    //    propinfo.max = 1;
+                    //    propinfo.min = -1;
+                    //    propinfo.sdMax = propinfo.max;
+                    //    propinfo.sdMin = propinfo.min;
+                    //    propinfo.mean = 0;
+                    //    propinfo.varience = 0.67;
+                    //    propinfo.sd = Math.sqrt(propinfo.varience);
+                    //    this.$layerService.setStyle(calloutProp, false, propinfo); // Set the style
+                    // }
                 }
                 this.$layerService.removeLayer(this.projLayer);
                 this.$layerService.addLayer(this.projLayer);
@@ -8765,18 +8921,18 @@ var Heatmap;
                 this.moveListenerInitialized = true;
             }
         };
-        HeatmapCtrl.$inject = [
-            '$scope',
-            '$uibModal',
-            '$translate',
-            '$timeout',
-            'localStorageService',
-            'layerService',
-            'mapService',
-            'messageBusService'
-        ];
         return HeatmapCtrl;
     }());
+    HeatmapCtrl.$inject = [
+        '$scope',
+        '$uibModal',
+        '$translate',
+        '$timeout',
+        'localStorageService',
+        'layerService',
+        'mapService',
+        'messageBusService'
+    ];
     Heatmap.HeatmapCtrl = HeatmapCtrl;
 })(Heatmap || (Heatmap = {}));
 /* Heatmap layers:
@@ -8845,16 +9001,16 @@ var Heatmap;
             this.showItem = this.showItem == index ? -1 : index;
             console.log("Toggle item");
         };
-        HeatmapEditorCtrl.$inject = [
-            '$scope',
-            '$modalInstance',
-            'layerService',
-            '$translate',
-            'messageBusService',
-            'heatmap'
-        ];
         return HeatmapEditorCtrl;
     }());
+    HeatmapEditorCtrl.$inject = [
+        '$scope',
+        '$modalInstance',
+        'layerService',
+        '$translate',
+        'messageBusService',
+        'heatmap'
+    ];
     Heatmap.HeatmapEditorCtrl = HeatmapEditorCtrl;
 })(Heatmap || (Heatmap = {}));
 //# sourceMappingURL=HeatmapEditorCtrl.js.map
@@ -8930,6 +9086,7 @@ var Heatmap;
                     var intensity = this.idealityMeasure.computeIdealityAtDistance(radius);
                     if (!(i == 0 && j == 0) && intensity != 0) {
                         this.heatspots.push(new Heatmap.Heatspot(i, j, intensity));
+                        //console.log('Add spot at ' + i + ', ' + j + ' with intensity ' + weightedIntensity);
                     }
                 }
             }
@@ -9047,9 +9204,9 @@ var Heatmap;
                 ? this.propertyTitle + '.' + this.title + ' (' + this.featureType.name + ')'
                 : this.title;
         };
-        HeatmapItem.twoPi = Math.PI * 2;
         return HeatmapItem;
     }());
+    HeatmapItem.twoPi = Math.PI * 2;
     Heatmap.HeatmapItem = HeatmapItem;
 })(Heatmap || (Heatmap = {}));
 //# sourceMappingURL=HeatmapItem.js.map
@@ -9217,6 +9374,7 @@ var Heatmap;
                     else {
                         hi.weight = 0;
                     }
+                    //hi.reset();
                 }
             });
         };
@@ -9340,10 +9498,10 @@ var Heatmap;
 //# sourceMappingURL=HeatSpot.js.map
 var Heatmap;
 (function (Heatmap) {
+    var ScoringFunctionType;
     (function (ScoringFunctionType) {
         ScoringFunctionType[ScoringFunctionType["LinearAscendingDescending"] = 0] = "LinearAscendingDescending";
-    })(Heatmap.ScoringFunctionType || (Heatmap.ScoringFunctionType = {}));
-    var ScoringFunctionType = Heatmap.ScoringFunctionType;
+    })(ScoringFunctionType = Heatmap.ScoringFunctionType || (Heatmap.ScoringFunctionType = {}));
     var ScoringFunction = (function () {
         function ScoringFunction(scoringFunctionType) {
             if (typeof scoringFunctionType != 'undefined' && scoringFunctionType != null)
@@ -9433,14 +9591,14 @@ var IdvEdit;
         IdvEditCtrl.prototype.export = function () {
             this.scan.exportCsv();
         };
-        IdvEditCtrl.$inject = [
-            '$scope',
-            'mapService',
-            'layerService',
-            'messageBusService',
-        ];
         return IdvEditCtrl;
     }());
+    IdvEditCtrl.$inject = [
+        '$scope',
+        'mapService',
+        'layerService',
+        'messageBusService',
+    ];
     IdvEdit.IdvEditCtrl = IdvEditCtrl;
     /**
     * Directive to display the available map layers.
@@ -9675,7 +9833,8 @@ var Idv;
                             cb();
                         });
                     }
-                }], function (done) {
+                }
+            ], function (done) {
             });
         };
         Idv.prototype.initCharts = function (scope, layerService, prepare, done) {
@@ -10216,11 +10375,11 @@ var Idv;
                     break;
             }
         };
-        Idv.days_nl = ["zondag", "maandag", "dinsdag", "woensdag", "donderdag", "vrijdag", "zaterdag"];
-        Idv.days_en = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saterday"];
-        Idv.months = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "okt", "nov", "dec"];
         return Idv;
     }());
+    Idv.days_nl = ["zondag", "maandag", "dinsdag", "woensdag", "donderdag", "vrijdag", "zaterdag"];
+    Idv.days_en = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saterday"];
+    Idv.months = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "okt", "nov", "dec"];
     Idv_1.Idv = Idv;
 })(Idv || (Idv = {}));
 //# sourceMappingURL=IdvHelper.js.map
@@ -10287,21 +10446,21 @@ var KanbanBoard;
         KanbanBoardEditCtrl.prototype.colorUpdated = function (c, i) {
             i.color = c;
         };
-        // $inject annotation.
-        // It provides $injector with information about dependencies to be injected into constructor
-        // it is better to have it close to the constructor, because the parameters must match in count and type.
-        // See http://docs.angularjs.org/guide/di
-        KanbanBoardEditCtrl.$inject = [
-            '$scope',
-            '$timeout',
-            '$compile',
-            'layerService',
-            '$templateCache',
-            'messageBusService',
-            'mapService', 'dashboardService'
-        ];
         return KanbanBoardEditCtrl;
     }());
+    // $inject annotation.
+    // It provides $injector with information about dependencies to be injected into constructor
+    // it is better to have it close to the constructor, because the parameters must match in count and type.
+    // See http://docs.angularjs.org/guide/di
+    KanbanBoardEditCtrl.$inject = [
+        '$scope',
+        '$timeout',
+        '$compile',
+        'layerService',
+        '$templateCache',
+        'messageBusService',
+        'mapService', 'dashboardService'
+    ];
     KanbanBoard.KanbanBoardEditCtrl = KanbanBoardEditCtrl;
 })(KanbanBoard || (KanbanBoard = {}));
 //# sourceMappingURL=KanbanBoard-edit.js.map
@@ -10409,17 +10568,17 @@ var KanbanColumn;
                 }
             }
         };
-        // $inject annotation.
-        // It provides $injector with information about dependencies to be injected into constructor
-        // it is better to have it close to the constructor, because the parameters must match in count and type.
-        // See http://docs.angularjs.org/guide/di
-        KanbanBoardCtrl.$inject = [
-            '$scope',
-            'layerService',
-            'messageBusService'
-        ];
         return KanbanBoardCtrl;
     }());
+    // $inject annotation.
+    // It provides $injector with information about dependencies to be injected into constructor
+    // it is better to have it close to the constructor, because the parameters must match in count and type.
+    // See http://docs.angularjs.org/guide/di
+    KanbanBoardCtrl.$inject = [
+        '$scope',
+        'layerService',
+        'messageBusService'
+    ];
     KanbanColumn.KanbanBoardCtrl = KanbanBoardCtrl;
 })(KanbanColumn || (KanbanColumn = {}));
 //# sourceMappingURL=KanbanBoardCtrl.js.map
@@ -10722,18 +10881,18 @@ var KanbanColumn;
                 this.$layerService.addLayer(this.layer, function (t) { });
             }
         };
-        // $inject annotation.
-        // It provides $injector with information about dependencies to be injected into constructor
-        // it is better to have it close to the constructor, because the parameters must match in count and type.
-        // See http://docs.angularjs.org/guide/di
-        KanbanColumnCtrl.$inject = [
-            '$scope',
-            'layerService',
-            'messageBusService',
-            'mapService'
-        ];
         return KanbanColumnCtrl;
     }());
+    // $inject annotation.
+    // It provides $injector with information about dependencies to be injected into constructor
+    // it is better to have it close to the constructor, because the parameters must match in count and type.
+    // See http://docs.angularjs.org/guide/di
+    KanbanColumnCtrl.$inject = [
+        '$scope',
+        'layerService',
+        'messageBusService',
+        'mapService'
+    ];
     KanbanColumn.KanbanColumnCtrl = KanbanColumnCtrl;
 })(KanbanColumn || (KanbanColumn = {}));
 //# sourceMappingURL=KanbanColumnCtrl.js.map
@@ -10803,15 +10962,15 @@ var LanguageSwitch;
             this.$translate.use(language.key);
             this.$messageBus.publish('language', 'newLanguage', language.key);
         };
-        LanguageSwitchCtrl.$inject = [
-            '$scope',
-            '$translate',
-            '$languages',
-            'layerService',
-            'messageBusService'
-        ];
         return LanguageSwitchCtrl;
     }());
+    LanguageSwitchCtrl.$inject = [
+        '$scope',
+        '$translate',
+        '$languages',
+        'layerService',
+        'messageBusService'
+    ];
     LanguageSwitch.LanguageSwitchCtrl = LanguageSwitchCtrl;
 })(LanguageSwitch || (LanguageSwitch = {}));
 //# sourceMappingURL=LanguageSwitchCtrl.js.map
@@ -10831,10 +10990,10 @@ var LayersDirective;
             this.project = this.layerService.project;
             if (this.project.layerDirectory) {
                 $http.get(this.project.layerDirectory)
-                    .success(function (result) {
-                    _this.layers = result;
+                    .then(function (res) {
+                    _this.layers = res.data;
                 })
-                    .error(function () { console.log('AddLayerCtrl: error calling $http'); });
+                    .catch(function () { console.log('AddLayerCtrl: error calling $http'); });
             }
         }
         AddLayerCtrl.prototype.addGroup = function () {
@@ -10878,16 +11037,16 @@ var LayersDirective;
             console.log('cancel');
             this.$modalInstance.dismiss('cancel');
         };
-        AddLayerCtrl.$inject = [
-            '$scope',
-            '$http',
-            '$modalInstance',
-            'layerService',
-            '$translate',
-            'messageBusService'
-        ];
         return AddLayerCtrl;
     }());
+    AddLayerCtrl.$inject = [
+        '$scope',
+        '$http',
+        '$modalInstance',
+        'layerService',
+        '$translate',
+        'messageBusService'
+    ];
     LayersDirective.AddLayerCtrl = AddLayerCtrl;
 })(LayersDirective || (LayersDirective = {}));
 //# sourceMappingURL=AddLayerCtrl.js.map
@@ -11080,6 +11239,7 @@ var LayersDirective;
                 //this.resource.featureTypes[id] = newType;
                 //this.$layerService.saveResource(this.resource);
                 this.editFeaturetype(newType);
+                //this.editLayer(this.layer);
             }
         };
         LayersDirectiveCtrl.prototype.dropdownpos = function (event) {
@@ -11408,11 +11568,10 @@ var LayersDirective;
                                     r.featureTypes['Default'] = csComp.Helpers.createDefaultType(_this.newLayer.data.features[0], r);
                                 // call api
                                 _this.$http.post('api/resources', r)
-                                    .success(function (data) {
+                                    .then(function (res) {
                                     // resource sucessfully added, continu
                                     cb(null);
-                                })
-                                    .error(function (e) {
+                                }, function (e) {
                                     // error adding resource, stop
                                     _this.$messageBusService.notifyError('Creating layer', 'Error creating new layer, resource already exists');
                                     cb(e);
@@ -11440,7 +11599,8 @@ var LayersDirective;
                                 l.features = _this.newLayer.data.features;
                             // post layer to api
                             _this.$http.post('/api/layers/' + l.id, l)
-                                .success(function (data) {
+                                .then(function (res) {
+                                var data = res.data;
                                 // init layer
                                 _this.$layerService.initLayer(group, _this.newLayer);
                                 // add to group
@@ -11450,7 +11610,7 @@ var LayersDirective;
                                 // layer sucessfully added, continu
                                 cb(null);
                             })
-                                .error(function (e) {
+                                .catch(function (e) {
                                 _this.$messageBusService.notifyError('Creating layer', 'Error creating new layer');
                                 console.log('error adding layer');
                                 cb(e);
@@ -11529,21 +11689,21 @@ var LayersDirective;
         LayersDirectiveCtrl.prototype.filterHiddenGroups = function (group) {
             return group.title[0] !== '_' && group.id[0] !== '_';
         };
-        // $inject annotation.
-        // It provides $injector with information about dependencies to be injected into constructor
-        // it is better to have it close to the constructor, because the parameters must match in count and type.
-        // See http://docs.angularjs.org/guide/di
-        LayersDirectiveCtrl.$inject = [
-            '$scope',
-            'layerService',
-            'messageBusService',
-            'mapService',
-            'dashboardService',
-            '$uibModal',
-            '$http'
-        ];
         return LayersDirectiveCtrl;
     }());
+    // $inject annotation.
+    // It provides $injector with information about dependencies to be injected into constructor
+    // it is better to have it close to the constructor, because the parameters must match in count and type.
+    // See http://docs.angularjs.org/guide/di
+    LayersDirectiveCtrl.$inject = [
+        '$scope',
+        'layerService',
+        'messageBusService',
+        'mapService',
+        'dashboardService',
+        '$uibModal',
+        '$http'
+    ];
     LayersDirective.LayersDirectiveCtrl = LayersDirectiveCtrl;
 })(LayersDirective || (LayersDirective = {}));
 //# sourceMappingURL=LayersDirectiveCtrl.js.map
@@ -11808,17 +11968,17 @@ var Legend;
                 $('#filter-tab').click();
             }
         };
-        // $inject annotation
-        // It provides $injector with information about dependencies to be injected into constructor
-        // it is better to have it close to the constructor, because the parameters must match in count and type.
-        // See http://docs.angularjs.org/guide/di
-        LegendCtrl.$inject = [
-            '$scope',
-            'layerService',
-            'messageBusService'
-        ];
         return LegendCtrl;
     }());
+    // $inject annotation
+    // It provides $injector with information about dependencies to be injected into constructor
+    // it is better to have it close to the constructor, because the parameters must match in count and type.
+    // See http://docs.angularjs.org/guide/di
+    LegendCtrl.$inject = [
+        '$scope',
+        'layerService',
+        'messageBusService'
+    ];
     Legend.LegendCtrl = LegendCtrl;
 })(Legend || (Legend = {}));
 //# sourceMappingURL=LegendCtrl.js.map
@@ -11850,23 +12010,7 @@ var LegendList;
                 // scope is an Angular scope object.
                 // element is the jqLite - wrapped element that this directive matches.
                 // attrs is a hash object with key - value pairs of normalized attribute names and their corresponding attribute values.
-                link: function (scope, element, attrs) {
-                    // Deal with resizing the element list
-                    scope.onResizeFunction = function () {
-                        var filterHeight = 50;
-                        var paginationCtrlHeight = 100;
-                        var itemHeight = 60;
-                        //scope.windowHeight          = $window.innerHeight;
-                        //scope.windowWidth           = $window.innerWidth;
-                        scope.numberOfItems = Math.floor(($window.innerHeight - filterHeight - paginationCtrlHeight) / itemHeight);
-                    };
-                    // Call to the function when the page is first loaded
-                    scope.onResizeFunction();
-                    angular.element($window).bind('resize', function () {
-                        scope.onResizeFunction();
-                        scope.$apply();
-                    });
-                },
+                link: function (scope, element, attrs) { },
                 replace: true,
                 transclude: true,
                 controller: LegendList.LegendListCtrl
@@ -11891,6 +12035,8 @@ var LegendList;
             this.expressionService = expressionService;
             /** If true, the legend is visible in the DOM. */
             this.isVisible = false;
+            /** Calls updateLegendItemsDebounced */
+            this.updateLegendItems = _.debounce(this.updateLegendItemsDebounced, 500);
             $scope.vm = this;
             messageBusService.subscribe('project', function (title) {
                 switch (title) {
@@ -11903,6 +12049,7 @@ var LegendList;
             messageBusService.subscribe('layer', function (title) {
                 switch (title) {
                     case 'activated':
+                    case 'updated':
                     case 'deactivate':
                         // Update the legend when a layer is added or removed.
                         _this.updateLegendItems();
@@ -11923,7 +12070,7 @@ var LegendList;
             });
             // receive a trigger to redraw the legend when it becomes visible.        
             $scope.$watch(function () {
-                return $('#legend').is(':visible');
+                return $('#legend-list-content').is(':visible');
             }, function (isVisible) {
                 _this.isVisible = isVisible;
                 if (isVisible)
@@ -11942,7 +12089,7 @@ var LegendList;
          * 3. Third approach is to use a legend that is defined in a featuretype. This is useful if you want to show a custom legend.
          * For 1. use 'updateLegendItemsUsingFeatureTypes()', for 2. use 'updateLegendItemsUsingFeatures(), for 3. use 'updateLegendStatically()'
          */
-        LegendListCtrl.prototype.updateLegendItems = function () {
+        LegendListCtrl.prototype.updateLegendItemsDebounced = function () {
             //this.updateLegendItemsUsingFeatureTypes(); // 1.
             this.updateLegendItemsUsingFeatures(); // 2.
             //this.updateLegendStatically(); // 3.
@@ -12026,7 +12173,7 @@ var LegendList;
                 if (!f._gui.included)
                     return;
                 var bounds = csComp.Helpers.GeoExtensions.getFeatureBounds(f);
-                if (_this.bbox && bounds && !_this.bbox.contains(bounds))
+                if (_this.bbox && bounds && !_this.bbox.overlaps(bounds))
                     return;
                 var ft = f.fType;
                 if (!ft)
@@ -12097,21 +12244,21 @@ var LegendList;
                 return '';
             }
         };
-        // $inject annotation.
-        // It provides $injector with information about dependencies to be injected into constructor
-        // it is better to have it close to the constructor, because the parameters must match in count and type.
-        // See http://docs.angularjs.org/guide/di
-        LegendListCtrl.$inject = [
-            '$scope',
-            '$sce',
-            '$timeout',
-            'layerService',
-            'mapService',
-            'messageBusService',
-            'expressionService'
-        ];
         return LegendListCtrl;
     }());
+    // $inject annotation.
+    // It provides $injector with information about dependencies to be injected into constructor
+    // it is better to have it close to the constructor, because the parameters must match in count and type.
+    // See http://docs.angularjs.org/guide/di
+    LegendListCtrl.$inject = [
+        '$scope',
+        '$sce',
+        '$timeout',
+        'layerService',
+        'mapService',
+        'messageBusService',
+        'expressionService'
+    ];
     LegendList.LegendListCtrl = LegendListCtrl;
 })(LegendList || (LegendList = {}));
 //# sourceMappingURL=LegendListCtrl.js.map
@@ -12175,30 +12322,36 @@ var MapElement;
         MapElementCtrl.prototype.initMap = function () {
             this.$layerService.selectRenderer('leaflet');
         };
-        // $inject annotation.
-        // It provides $injector with information a'bout dependencies to be injected into constructor
-        // it is better to have it close to the constructor, because the parameters must match in count and type.
-        // See http://docs.angularjs.org/guide/di
-        MapElementCtrl.$inject = [
-            '$scope',
-            'layerService',
-            'mapService',
-            'messageBusService'
-        ];
         return MapElementCtrl;
     }());
+    // $inject annotation.
+    // It provides $injector with information a'bout dependencies to be injected into constructor
+    // it is better to have it close to the constructor, because the parameters must match in count and type.
+    // See http://docs.angularjs.org/guide/di
+    MapElementCtrl.$inject = [
+        '$scope',
+        'layerService',
+        'mapService',
+        'messageBusService'
+    ];
     MapElement.MapElementCtrl = MapElementCtrl;
 })(MapElement || (MapElement = {}));
 //# sourceMappingURL=MapElementCtrl.js.map
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var Mca;
 (function (Mca_1) {
     var Models;
     (function (Models) {
+        var ScoringFunctionType;
         (function (ScoringFunctionType) {
             ScoringFunctionType[ScoringFunctionType["Manual"] = 0] = "Manual";
             ScoringFunctionType[ScoringFunctionType["Ascending"] = 1] = "Ascending";
@@ -12207,8 +12360,7 @@ var Mca;
             ScoringFunctionType[ScoringFunctionType["DescendingSigmoid"] = 4] = "DescendingSigmoid";
             ScoringFunctionType[ScoringFunctionType["GaussianPeak"] = 5] = "GaussianPeak";
             ScoringFunctionType[ScoringFunctionType["GaussianValley"] = 6] = "GaussianValley";
-        })(Models.ScoringFunctionType || (Models.ScoringFunctionType = {}));
-        var ScoringFunctionType = Models.ScoringFunctionType;
+        })(ScoringFunctionType = Models.ScoringFunctionType || (Models.ScoringFunctionType = {}));
         /**
         * Scoring function creates a PLA of the scoring algorithm.
         */
@@ -12287,8 +12439,8 @@ var Mca;
                 this.isPlaScaled = false;
                 /** Scale PLA using property statistics (min & max) :x' = ax+b, where a=r/10 and b=min and r=max-min */
                 this.mapToMinMax = true;
-                // Do not serialize the following properties
-                this._propValues = [];
+                this._propValues = {};
+                this._scoreVals = {};
                 this._x = [];
                 this._y = [];
             }
@@ -12306,6 +12458,8 @@ var Mca;
                 this.maxCutoffValue = input.maxCutoffValue;
                 this.minValue = input.minValue;
                 this.maxValue = input.maxValue;
+                this.unknownValue = input.unknownValue || 'zero';
+                this.dynamicBoundsValue = input.dynamicBoundsValue || 'none';
                 if (input.criteria) {
                     input.criteria.forEach(function (c) {
                         _this.criteria.push(new Criterion().deserialize(c));
@@ -12359,31 +12513,32 @@ var Mca;
                     return;
                 }
                 var scores = this.scores;
-                this._propValues = [];
+                this._propValues = {};
                 if (this.requiresMaximum() || this.requiresMinimum() || this.isPlaScaled) {
                     features.forEach(function (feature) {
                         if (feature.properties.hasOwnProperty(_this.label)) {
                             // The property is available. I use the '+' to convert the string value to a number.
                             var prop = feature.properties[_this.label];
                             if ($.isNumeric(prop)) {
-                                _this._propValues.push(prop);
+                                _this._propValues[feature.id] = prop;
                             }
                         }
                     });
                 }
+                var _propValuesArray = _.values(this._propValues);
+                this._stats = csComp.Helpers.standardDeviation(_propValuesArray);
                 var max = this.maxValue, min = this.minValue;
                 if (this.isPlaScaled || this.requiresMaximum()) {
-                    max = max || Math.max.apply(null, this._propValues);
+                    max = max || Math.max.apply(null, _propValuesArray);
                     scores.replace('max', max.toPrecision(3));
                 }
                 if (this.isPlaScaled || this.requiresMinimum()) {
-                    min = min || Math.min.apply(null, this._propValues);
+                    min = min || Math.min.apply(null, _propValuesArray);
                     scores.replace('min', min.toPrecision(3));
                 }
                 if (this.isPlaScaled) {
-                    var stats = csComp.Helpers.standardDeviation(this._propValues);
-                    max = (max != undefined) ? max : Math.min(max, stats.avg + 2 * stats.stdDev);
-                    min = (min != undefined) ? min : Math.max(min, stats.avg - 2 * stats.stdDev);
+                    max = (max != undefined) ? max : Math.min(max, this._stats.avg + 2 * this._stats.stdDev);
+                    min = (min != undefined) ? min : Math.max(min, this._stats.avg - 2 * this._stats.stdDev);
                 }
                 // Regex to split the scores: [^\d\.]+ and remove empty entries
                 var pla = scores.split(/[^\d\.]+/).filter(function (item) { return item.length > 0; });
@@ -12393,9 +12548,25 @@ var Mca;
                     a = range / 10;
                     b = min;
                 }
+                else if (this.dynamicBoundsValue === '1.5_iqr') {
+                    var quartiles = csComp.Helpers.quartiles(_propValuesArray);
+                    var iqr = quartiles.q3 - quartiles.q1;
+                    min = quartiles.q1 - (1.5 * iqr);
+                    max = quartiles.q3 + (1.5 * iqr);
+                    a = (max - min) / 10,
+                        b = min;
+                }
+                else if (this.dynamicBoundsValue === '3_iqr') {
+                    var quartiles = csComp.Helpers.quartiles(_propValuesArray);
+                    var iqr = quartiles.q3 - quartiles.q1;
+                    min = quartiles.q1 - (3 * iqr);
+                    max = quartiles.q3 + (3 * iqr);
+                    a = (max - min) / 10,
+                        b = min;
+                }
                 else if (this.mapToMinMax) {
-                    min = _.min(this._propValues);
-                    max = _.max(this._propValues);
+                    min = _.min(_propValuesArray);
+                    max = _.max(_propValuesArray);
                     a = (max - min) / 10,
                         b = min;
                 }
@@ -12432,41 +12603,77 @@ var Mca;
                 }
                 this.isPlaUpdated = true;
             };
+            Criterion.prototype.featureHasProperty = function (f) {
+                return f.properties.hasOwnProperty(this.label) && f.properties[this.label] != null;
+            };
+            Criterion.prototype.getFeatureScore = function (x) {
+                if (this.maxCutoffValue <= x || x <= this.minCutoffValue) {
+                    return 0;
+                }
+                if (x < this._x[0]) {
+                    return this._y[0];
+                }
+                var last = this._x.length - 1;
+                if (x > this._x[last]) {
+                    return this._y[last];
+                }
+                //for (var k in this.x) {
+                for (var k = 0; k < this._x.length; k++) {
+                    if (x < this._x[k]) {
+                        // Found relative position of x in this.x
+                        var x0 = this._x[k - 1];
+                        var x1 = this._x[k];
+                        var y0 = this._y[k - 1];
+                        var y1 = this._y[k];
+                        // Use linear interpolation
+                        var linInterpol = (y1 - y0) * (x - x0) / (x1 - x0);
+                        return linInterpol;
+                    }
+                }
+                return this.getScoreForUnknownValue(this.unknownValue || 'zero');
+            };
+            Criterion.prototype.getScoreForUnknownValue = function (unknownValue) {
+                var score;
+                if (typeof unknownValue === 'number') {
+                    score = unknownValue;
+                }
+                else {
+                    switch (unknownValue) {
+                        case 'zero':
+                            score = 0;
+                            break;
+                        case 'half':
+                            score = 0.5;
+                            break;
+                        case 'average':
+                            score = 0.5; // this._stats.avg;// TODO: problem, the average score can only be calculated after all other scores are obtained...
+                            break;
+                        default:
+                            score = 0;
+                            break;
+                    }
+                }
+                return score;
+            };
             Criterion.prototype.getScore = function (feature) {
                 if (!this.isPlaUpdated) {
                     throw ('Error: PLA must be updated for criterion ' + this.title + '!');
                 }
                 if (this.criteria.length === 0) {
                     // End point: compute the score for each feature
-                    if (feature.properties.hasOwnProperty(this.label)) {
+                    if (this.featureHasProperty(feature)) {
                         // The property is available
-                        var x = feature.properties[this.label];
-                        if (this.maxCutoffValue <= x || x <= this.minCutoffValue) {
-                            return 0;
-                        }
-                        if (x < this._x[0]) {
-                            return this._y[0];
-                        }
-                        var last = this._x.length - 1;
-                        if (x > this._x[last]) {
-                            return this._y[last];
-                        }
-                        //for (var k in this.x) {
-                        for (var k = 0; k < this._x.length; k++) {
-                            if (x < this._x[k]) {
-                                // Found relative position of x in this.x
-                                var x0 = this._x[k - 1];
-                                var x1 = this._x[k];
-                                var y0 = this._y[k - 1];
-                                var y1 = this._y[k];
-                                // Use linear interpolation
-                                return (y1 - y0) * (x - x0) / (x1 - x0);
-                            }
-                        }
+                        var featureValue = feature.properties[this.label];
+                        var featureScore = this.getFeatureScore(featureValue);
+                        this._scoreVals[feature.id] = featureScore;
+                        return featureScore;
                     }
                     else {
-                        // If the feature does not have a value for the selected property, return zero.                    
-                        return 0;
+                        // If the feature does not have a value for the selected property, check the return policy to return. 
+                        // Options: return zero, return 0.5 or return the average score of all other features.
+                        var score = this.getScoreForUnknownValue(this.unknownValue);
+                        this._scoreVals[feature.id] = score;
+                        return score;
                     }
                 }
                 else {
@@ -12480,7 +12687,6 @@ var Mca;
                     });
                     return finalScore_1;
                 }
-                return 0;
             };
             return Criterion;
         }());
@@ -12489,20 +12695,23 @@ var Mca;
         var Mca = (function (_super) {
             __extends(Mca, _super);
             function Mca(mca) {
-                _super.call(this);
-                this.id = csComp.Helpers.getGuid();
+                var _this = _super.call(this) || this;
+                _this.id = csComp.Helpers.getGuid();
                 /** Maximum number of star ratings to use to set the weight */
-                this.userWeightMax = 5;
+                _this.userWeightMax = 5;
                 /** Applicable feature ids as a string[]. */
-                this.featureIds = [];
+                _this.featureIds = [];
                 if (mca) {
-                    this.deserialize(mca);
+                    _this.deserialize(mca);
                 }
                 else {
-                    this.weight = 1;
-                    this.isPlaUpdated = false;
-                    this.calculationMode = Mca_1.McaCalculationMode.AllFeatures;
+                    _this.weight = 1;
+                    _this.isPlaUpdated = false;
+                    _this.calculationMode = Mca_1.McaCalculationMode.AllFeatures;
+                    _this.unknownValue = 'zero';
+                    _this.dynamicBoundsValue = 'none';
                 }
+                return _this;
             }
             Object.defineProperty(Mca.prototype, "rankLabel", {
                 get: function () {
@@ -12526,6 +12735,7 @@ var Mca;
                 this.maxValue = input.maxValue;
                 this.scaleMinValue = input.scaleMinValue;
                 this.scaleMaxValue = input.scaleMaxValue;
+                this.legendType = input.legendType;
                 this.legend = input.legend;
                 this.calculationMode = input.calculationMode || Mca_1.McaCalculationMode.AllFeatures;
                 _super.prototype.deserialize.call(this, input);
@@ -12656,12 +12866,12 @@ var Mca;
      * @export
      * @enum {number}
      */
+    var McaCalculationMode;
     (function (McaCalculationMode) {
         McaCalculationMode[McaCalculationMode["AllFeatures"] = 1] = "AllFeatures";
         McaCalculationMode[McaCalculationMode["SelectedFeatures"] = 2] = "SelectedFeatures";
         McaCalculationMode[McaCalculationMode["FilteredFeatures"] = 4] = "FilteredFeatures";
-    })(Mca.McaCalculationMode || (Mca.McaCalculationMode = {}));
-    var McaCalculationMode = Mca.McaCalculationMode;
+    })(McaCalculationMode = Mca.McaCalculationMode || (Mca.McaCalculationMode = {}));
     var McaCtrl = (function () {
         function McaCtrl($scope, $uibModal, $translate, $timeout, $localStorageService, layerService, messageBusService) {
             var _this = this;
@@ -12718,7 +12928,6 @@ var Mca;
                         break;
                     case 'activated':
                         _this.updateAvailableMcas();
-                        _this.calculateMca();
                         break;
                 }
             });
@@ -12835,6 +13044,7 @@ var Mca;
             this.features = [];
             this.calculateMca();
             this.drawChart(criterion);
+            this.messageBusService.publish('mca', 'updated', this.selectedCriterion || this.mca);
         };
         McaCtrl.prototype.editMca = function (mca) {
             this.showMcaEditor(mca);
@@ -12993,7 +13203,7 @@ var Mca;
                     if (crit.userWeight < 0) {
                         y1 = y1.map(function (v) { return 1 - v; });
                     }
-                    csComp.Helpers.Plot.drawMcaPlot(crit._propValues, {
+                    csComp.Helpers.Plot.drawMcaPlot(_.values(crit._propValues), {
                         id: id,
                         width: 220,
                         height: 70,
@@ -13008,7 +13218,7 @@ var Mca;
                         if (crit.userWeight < 0) {
                             y2 = y2.map(function (v) { return 1 - v; });
                         }
-                        csComp.Helpers.Plot.drawMcaPlot(c._propValues, {
+                        csComp.Helpers.Plot.drawMcaPlot(_.values(c._propValues), {
                             id: id + '_' + j++,
                             width: 220,
                             height: 70,
@@ -13132,6 +13342,7 @@ var Mca;
                     });
                 });
             }
+            this.availableMcas = _.sortBy(this.availableMcas, 'title');
             if (!mca && this.availableMcas.length > 0) {
                 this.mca = this.availableMcas[0];
                 this.updateMca();
@@ -13141,6 +13352,7 @@ var Mca;
             var _this = this;
             if (!this.mca)
                 return;
+            var t0 = performance.now();
             var mca = this.mca;
             mca.featureIds.forEach(function (featureId) {
                 if (!(_this.layerService._featureTypes.hasOwnProperty(featureId))) {
@@ -13188,11 +13400,10 @@ var Mca;
                 mca.updatePla(_this.features, true);
                 mca.update();
                 var tempScores = [];
-                var index = 0;
-                _this.features.forEach(function (feature) {
+                _this.features.forEach(function (feature, index) {
                     var score = mca.getScore(feature);
                     if (mca.rankTitle) {
-                        var tempItem = { score: score, index: index++ };
+                        var tempItem = { score: score, index: index };
                         tempScores.push(tempItem);
                     }
                     feature.properties[mca.label] = score * 100;
@@ -13231,6 +13442,7 @@ var Mca;
             if (this.groupStyle) {
                 this.layerService.updateStyle(this.groupStyle);
             }
+            console.log("Calculated MCA in " + (performance.now() - t0).toFixed(2) + " ms");
         };
         McaCtrl.prototype.applyPropertyInfoToCriteria = function (mca, featureType) {
             var propertyTypes = csComp.Helpers.getPropertyTypes(featureType, this.layerService.propertyTypeData);
@@ -13291,14 +13503,18 @@ var Mca;
                 }
             }
         };
-        McaCtrl.prototype.setStyle = function (item) {
+        McaCtrl.prototype.isMcaStyleSet = function () {
             // If groupStyle has been set, we have called it before.
             // However, make sure that not another filter has set the fillColor too, overwriting our label.
-            if (this.groupStyle
+            return (this.groupStyle
                 && this.groupStyle.group != null
                 && this.groupStyle.group.styles != null
                 && this.groupStyle.group.styles.length > 0
-                && this.groupStyle.group.styles.filter(function (s) { return s.visualAspect === 'fillColor'; })[0].property === this.mca.label) {
+                && this.groupStyle.group.styles.filter(function (s) { return s.visualAspect === 'fillColor'; })[0].property === this.mca.label);
+        };
+        McaCtrl.prototype.setStyle = function (item) {
+            if (this.isMcaStyleSet()) {
+                this.groupStyle.activeLegend = this.getLegend(this.mca);
                 this.layerService.updateStyle(this.groupStyle);
             }
             else {
@@ -13320,14 +13536,45 @@ var Mca;
         };
         McaCtrl.prototype.getLegend = function (mca) {
             var legend;
-            if (mca.legend) {
+            var type = mca.legendType || 'static';
+            if (type === 'static' && mca.legend) {
                 legend = mca.legend;
+            }
+            else if (type === 'dynamic') {
+                legend = this.getDynamicLegend(mca);
             }
             else {
                 legend = McaCtrl.defaultLegend();
             }
             legend.id = mca.label;
             return legend;
+        };
+        McaCtrl.prototype.getDynamicLegend = function (mca) {
+            var scores = this.getFeatureScores(mca.label);
+            var quartiles = csComp.Helpers.quartiles(scores);
+            var iqr = quartiles.q3 - quartiles.q1;
+            var legendKeyValues = [
+                { key: '100', val: 100 },
+                { key: '1.5*IQR', val: Math.min(quartiles.q3 + 1.5 * iqr, 99) },
+                { key: 'Q3', val: quartiles.q3 },
+                { key: 'median', val: quartiles.median },
+                { key: 'Q1', val: quartiles.q1 },
+                { key: '-1.5*IQR', val: Math.max(quartiles.q1 - 1.5 * iqr, 1) },
+                { key: '0', val: 0 }
+            ];
+            var legend = csComp.Helpers.createDiscreteLegend(mca.getTitle(), legendKeyValues, mca.id);
+            legend.defaultLabel = 'Incomplete';
+            legend.legendEntries.push({ label: 'Incomplete', color: '#555555', sortKey: 'ZZ' });
+            return legend;
+        };
+        McaCtrl.prototype.getFeatureScores = function (mcaLabel) {
+            var scores = [];
+            this.features.forEach(function (f) {
+                if (f.properties.hasOwnProperty(mcaLabel)) {
+                    scores.push(f.properties[mcaLabel]);
+                }
+            });
+            return scores;
         };
         McaCtrl.createPropertyType = function (mca) {
             var mi = {
@@ -13395,19 +13642,19 @@ var Mca;
                     }]
             };
         };
-        McaCtrl.mcaChartId = 'mcaChart';
-        McaCtrl.mcas = 'MCAs';
-        McaCtrl.$inject = [
-            '$scope',
-            '$uibModal',
-            '$translate',
-            '$timeout',
-            'localStorageService',
-            'layerService',
-            'messageBusService'
-        ];
         return McaCtrl;
     }());
+    McaCtrl.mcaChartId = 'mcaChart';
+    McaCtrl.mcas = 'MCAs';
+    McaCtrl.$inject = [
+        '$scope',
+        '$uibModal',
+        '$translate',
+        '$timeout',
+        'localStorageService',
+        'layerService',
+        'messageBusService'
+    ];
     Mca.McaCtrl = McaCtrl;
 })(Mca || (Mca = {}));
 //# sourceMappingURL=McaCtrl.js.map
@@ -13670,16 +13917,16 @@ var Mca;
         McaEditorCtrl.prototype.toggleItemDetails = function (index) {
             this.showItem = this.showItem == index ? -1 : index;
         };
-        McaEditorCtrl.$inject = [
-            '$scope',
-            '$uibModalInstance',
-            'layerService',
-            '$translate',
-            'messageBusService',
-            'mca'
-        ];
         return McaEditorCtrl;
     }());
+    McaEditorCtrl.$inject = [
+        '$scope',
+        '$uibModalInstance',
+        'layerService',
+        '$translate',
+        'messageBusService',
+        'mca'
+    ];
     Mca.McaEditorCtrl = McaEditorCtrl;
 })(Mca || (Mca = {}));
 //# sourceMappingURL=McaEditorCtrl.js.map
@@ -13707,23 +13954,7 @@ var Mobile;
                 restrict: 'E',
                 scope: {},
                 templateUrl: 'directives/Mobile/Mobile.tpl.html',
-                link: function (scope, element, attrs) {
-                    // Deal with resizing the element list
-                    scope.onResizeFunction = function () {
-                        var filterHeight = 50;
-                        var paginationCtrlHeight = 100;
-                        var itemHeight = 60;
-                        //scope.windowHeight          = $window.innerHeight;
-                        //scope.windowWidth           = $window.innerWidth;
-                        scope.numberOfItems = Math.floor(($window.innerHeight - filterHeight - paginationCtrlHeight) / itemHeight);
-                    };
-                    // Call to the function when the page is first loaded
-                    scope.onResizeFunction();
-                    angular.element($window).bind('resize', function () {
-                        scope.onResizeFunction();
-                        scope.$apply();
-                    });
-                },
+                link: function (scope, element, attrs) { },
                 replace: false,
                 transclude: false,
                 controller: Mobile.MobileCtrl
@@ -13778,17 +14009,17 @@ var Mobile;
             });
             this.geoService.start({});
         }
-        // $inject annotation.
-        // It provides $injector with information about dependencies to be injected into constructor
-        // it is better to have it close to the constructor, because the parameters must match in count and type.
-        // See http://docs.angularjs.org/guide/di
-        MobileCtrl.$inject = [
-            '$scope',
-            'layerService',
-            'messageBusService', 'localStorageService', 'geoService'
-        ];
         return MobileCtrl;
     }());
+    // $inject annotation.
+    // It provides $injector with information about dependencies to be injected into constructor
+    // it is better to have it close to the constructor, because the parameters must match in count and type.
+    // See http://docs.angularjs.org/guide/di
+    MobileCtrl.$inject = [
+        '$scope',
+        'layerService',
+        'messageBusService', 'localStorageService', 'geoService'
+    ];
     Mobile.MobileCtrl = MobileCtrl;
 })(Mobile || (Mobile = {}));
 //# sourceMappingURL=MobileCtrl.js.map
@@ -13816,23 +14047,7 @@ var Navigate;
                 restrict: 'E',
                 scope: {},
                 templateUrl: 'directives/Navigate/Navigate.tpl.html',
-                link: function (scope, element, attrs) {
-                    // Deal with resizing the element list
-                    scope.onResizeFunction = function () {
-                        var filterHeight = 50;
-                        var paginationCtrlHeight = 100;
-                        var itemHeight = 60;
-                        //scope.windowHeight          = $window.innerHeight;
-                        //scope.windowWidth           = $window.innerWidth;
-                        scope.numberOfItems = Math.floor(($window.innerHeight - filterHeight - paginationCtrlHeight) / itemHeight);
-                    };
-                    // Call to the function when the page is first loaded
-                    scope.onResizeFunction();
-                    angular.element($window).bind('resize', function () {
-                        scope.onResizeFunction();
-                        scope.$apply();
-                    });
-                },
+                link: function (scope, element, attrs) { },
                 replace: false,
                 transclude: false,
                 controller: Navigate.NavigateCtrl
@@ -13926,7 +14141,7 @@ var Navigate;
                     marker: 'pin'
                 };
                 this.$layerService.initFeatureType(ft, null);
-                this.$layerService._featureTypes[(this.$layerService.project.url + "#" + ft.id)] = ft;
+                this.$layerService._featureTypes[this.$layerService.project.url + "#" + ft.id] = ft;
             }
         };
         /** Remove the search results from the map. */
@@ -14176,20 +14391,20 @@ var Navigate;
                 _this.updateRecentFeaturesList();
             });
         };
-        // $inject annotation.
-        // It provides $injector with information about dependencies to be injected into constructor
-        // it is better to have it close to the constructor, because the parameters must match in count and type.
-        // See http://docs.angularjs.org/guide/di
-        NavigateCtrl.$inject = [
-            '$scope',
-            'layerService',
-            'messageBusService',
-            'localStorageService',
-            'dashboardService',
-            'geoService'
-        ];
         return NavigateCtrl;
     }());
+    // $inject annotation.
+    // It provides $injector with information about dependencies to be injected into constructor
+    // it is better to have it close to the constructor, because the parameters must match in count and type.
+    // See http://docs.angularjs.org/guide/di
+    NavigateCtrl.$inject = [
+        '$scope',
+        'layerService',
+        'messageBusService',
+        'localStorageService',
+        'dashboardService',
+        'geoService'
+    ];
     Navigate.NavigateCtrl = NavigateCtrl;
 })(Navigate || (Navigate = {}));
 //# sourceMappingURL=NavigateCtrl.js.map
@@ -14209,6 +14424,210 @@ var Search;
     Search.NavigateState = NavigateState;
 })(Search || (Search = {}));
 //# sourceMappingURL=SearchClasses.js.map
+var ProfileHeader;
+(function (ProfileHeader) {
+    var ProfileHeaderCtrl = (function () {
+        function ProfileHeaderCtrl($scope, $localStorageService, $layerService, $mapService, $messageBus, profileService) {
+            var _this = this;
+            this.$scope = $scope;
+            this.$localStorageService = $localStorageService;
+            this.$layerService = $layerService;
+            this.$mapService = $mapService;
+            this.$messageBus = $messageBus;
+            this.profileService = profileService;
+            $scope.vm = this;
+            console.log('init profile service');
+            $messageBus.subscribe('project', function (action, value) {
+                if (_this.$layerService.project) {
+                    _this.$scope.enabled = _this.$layerService.project.profile.authenticationMethod !== csComp.Services.authMethods.none;
+                    console.log(_this.$layerService.project.profile.authenticationMethod);
+                    switch (_this.$layerService.project.profile.authenticationMethod) {
+                    }
+                }
+            });
+        }
+        ProfileHeaderCtrl.prototype.startLogin = function () {
+            this.profileService.startLogin();
+        };
+        ProfileHeaderCtrl.prototype.logout = function () {
+            this.profileService.logoutUser();
+        };
+        return ProfileHeaderCtrl;
+    }());
+    ProfileHeaderCtrl.$inject = [
+        '$scope',
+        'localStorageService',
+        'layerService',
+        'mapService',
+        'messageBusService',
+        'profileService'
+    ];
+    ProfileHeader.ProfileHeaderCtrl = ProfileHeaderCtrl;
+    /**
+     * Config
+     */
+    var moduleName = 'csComp';
+    try {
+        ProfileHeader.myModule = angular.module(moduleName);
+    }
+    catch (err) {
+        // named module does not exist, so create one
+        ProfileHeader.myModule = angular.module(moduleName, []);
+    }
+    /**
+      * Directive to set the expert mode, so we can determine what the user should see (degree of difficulty).
+      * The expert mode can either be set manually, e.g. using this directive, or by setting the expertMode property in the
+      * project.json file. In neither are set, we assume that we are dealing with an expert, so all features should be enabled.
+      *
+      * Precedence:
+      * - when a declaration is absent, assume Expert.
+      * - when the mode is set in local storage, take that value.
+      * - when the mode is set in the project.json file, take that value.
+      *
+      * As we want the expertMode to be always available, we have added it to the MapService service.
+      */
+    ProfileHeader.myModule
+        .directive('profileHeader', [
+        '$compile',
+        function ($compile) {
+            return {
+                terminal: true,
+                restrict: 'E',
+                scope: {},
+                templateUrl: 'directives/Profile/ProfileHeader.tpl.html',
+                compile: function (el) {
+                    var fn = $compile(el);
+                    return function (scope) {
+                        fn(scope);
+                    };
+                },
+                //link: function (scope, element, attrs) {
+                //     // Since we are wrapping the rating directive in this directive, I couldn't use transclude,
+                //     // so I copy the existing attributes manually.
+                //     var attributeString = '';
+                //     for (var key in attrs) {
+                //         if (key.substr(0, 1) !== '$' && attrs.hasOwnProperty(key)) attributeString += key + '="' + attrs[key] + '" ';
+                //     }
+                //     var html = '<rating ng-model="expertMode" '
+                //         + attributeString
+                //         + 'tooltip-html-unsafe="{{\'EXPERTMODE.EXPLANATION\' | translate}}" tooltip-placement="bottom" tooltip-trigger="'mouseenter'" tooltip-append-to-body="false"'
+                //         + 'max="3"></rating>';
+                //     var e = $compile(html)(scope);
+                //     element.replaceWith(e);
+                // },
+                replace: true,
+                transclude: true,
+                controller: ProfileHeaderCtrl
+            };
+        }
+    ]);
+})(ProfileHeader || (ProfileHeader = {}));
+//# sourceMappingURL=ProfileHeaderCtrl.js.map
+var ProfileTab;
+(function (ProfileTab) {
+    var ProfileTabCtrl = (function () {
+        function ProfileTabCtrl($scope, $localStorageService, $layerService, $mapService, $messageBus, profileService) {
+            var _this = this;
+            this.$scope = $scope;
+            this.$localStorageService = $localStorageService;
+            this.$layerService = $layerService;
+            this.$mapService = $mapService;
+            this.$messageBus = $messageBus;
+            this.profileService = profileService;
+            $scope.vm = this;
+            $messageBus.subscribe('project', function (action, value) {
+                if (_this.$layerService.project) {
+                    _this.$scope.enabled = _this.$layerService.project.profile.authenticationMethod !== csComp.Services.authMethods.none;
+                    console.log(_this.$layerService.project.profile.authenticationMethod);
+                    switch (_this.$layerService.project.profile.authenticationMethod) {
+                    }
+                }
+            });
+        }
+        ProfileTabCtrl.prototype.startLogin = function () {
+            this.profileService.startLogin();
+        };
+        ProfileTabCtrl.prototype.validateUser = function () {
+            this.profileService.validateUser(this.userName, this.userPassword);
+            this.userPassword = '';
+        };
+        ProfileTabCtrl.prototype.signupUser = function () {
+            this.profileService.signupUser(this.name, this.userName, this.userPassword);
+        };
+        ProfileTabCtrl.prototype.logout = function () {
+            this.profileService.logoutUser();
+        };
+        return ProfileTabCtrl;
+    }());
+    ProfileTabCtrl.$inject = [
+        '$scope',
+        'localStorageService',
+        'layerService',
+        'mapService',
+        'messageBusService',
+        'profileService'
+    ];
+    ProfileTab.ProfileTabCtrl = ProfileTabCtrl;
+    /**
+     * Config
+     */
+    var moduleName = 'csComp';
+    try {
+        ProfileTab.myModule = angular.module(moduleName);
+    }
+    catch (err) {
+        // named module does not exist, so create one
+        ProfileTab.myModule = angular.module(moduleName, []);
+    }
+    /**
+      * Directive to set the expert mode, so we can determine what the user should see (degree of difficulty).
+      * The expert mode can either be set manually, e.g. using this directive, or by setting the expertMode property in the
+      * project.json file. In neither are set, we assume that we are dealing with an expert, so all features should be enabled.
+      *
+      * Precedence:
+      * - when a declaration is absent, assume Expert.
+      * - when the mode is set in local storage, take that value.
+      * - when the mode is set in the project.json file, take that value.
+      *
+      * As we want the expertMode to be always available, we have added it to the MapService service.
+      */
+    ProfileTab.myModule
+        .directive('profiletab', [
+        '$compile',
+        function ($compile) {
+            return {
+                terminal: true,
+                restrict: 'E',
+                scope: {},
+                templateUrl: 'directives/Profile/ProfileTab.tpl.html',
+                compile: function (el) {
+                    var fn = $compile(el);
+                    return function (scope) {
+                        fn(scope);
+                    };
+                },
+                //link: function (scope, element, attrs) {
+                //     // Since we are wrapping the rating directive in this directive, I couldn't use transclude,
+                //     // so I copy the existing attributes manually.
+                //     var attributeString = '';
+                //     for (var key in attrs) {
+                //         if (key.substr(0, 1) !== '$' && attrs.hasOwnProperty(key)) attributeString += key + '="' + attrs[key] + '" ';
+                //     }
+                //     var html = '<rating ng-model="expertMode" '
+                //         + attributeString
+                //         + 'tooltip-html-unsafe="{{\'EXPERTMODE.EXPLANATION\' | translate}}" tooltip-placement="bottom" tooltip-trigger="'mouseenter'" tooltip-append-to-body="false"'
+                //         + 'max="3"></rating>';
+                //     var e = $compile(html)(scope);
+                //     element.replaceWith(e);
+                // },
+                replace: true,
+                transclude: true,
+                controller: ProfileTabCtrl
+            };
+        }
+    ]);
+})(ProfileTab || (ProfileTab = {}));
+//# sourceMappingURL=ProfileTabCtrl.js.map
 var OfflineSearch;
 (function (OfflineSearch) {
     /**
@@ -14376,7 +14795,8 @@ var OfflineSearch;
         OfflineSearchCtrl.prototype.loadSearchResults = function (url) {
             var _this = this;
             this.$http.get(url)
-                .success(function (offlineSearchResult) {
+                .then(function (res) {
+                var offlineSearchResult = res.data;
                 _this.offlineSearchResult = offlineSearchResult;
                 var kwi = offlineSearchResult.keywordIndex;
                 var keywordIndex = {};
@@ -14392,7 +14812,7 @@ var OfflineSearch;
                 _this.offlineSearchResult.keywordIndex = keywordIndex;
                 _this.isReady = true;
             })
-                .error(function () { console.log("OfflineSearch: error with $http "); });
+                .catch(function () { console.log("OfflineSearch: error with $http "); });
         };
         /**
          * Get the locations based on the entered text.
@@ -14529,223 +14949,22 @@ var OfflineSearch;
             this.$mapService.zoomTo(feature);
             this.$layerService.selectFeature(feature);
         };
-        // $inject annotation.
-        // It provides $injector with information about dependencies to be injected into constructor
-        // it is better to have it close to the constructor, because the parameters must match in count and type.
-        // See http://docs.angularjs.org/guide/di
-        OfflineSearchCtrl.$inject = [
-            '$scope',
-            '$http',
-            'layerService',
-            'mapService',
-            'messageBusService'
-        ];
         return OfflineSearchCtrl;
     }());
+    // $inject annotation.
+    // It provides $injector with information about dependencies to be injected into constructor
+    // it is better to have it close to the constructor, because the parameters must match in count and type.
+    // See http://docs.angularjs.org/guide/di
+    OfflineSearchCtrl.$inject = [
+        '$scope',
+        '$http',
+        'layerService',
+        'mapService',
+        'messageBusService'
+    ];
     OfflineSearch.OfflineSearchCtrl = OfflineSearchCtrl;
 })(OfflineSearch || (OfflineSearch = {}));
 //# sourceMappingURL=OfflineSearchCtrl.js.map
-var ProfileHeader;
-(function (ProfileHeader) {
-    var ProfileHeaderCtrl = (function () {
-        function ProfileHeaderCtrl($scope, $localStorageService, $layerService, $mapService, $messageBus, profileService) {
-            var _this = this;
-            this.$scope = $scope;
-            this.$localStorageService = $localStorageService;
-            this.$layerService = $layerService;
-            this.$mapService = $mapService;
-            this.$messageBus = $messageBus;
-            this.profileService = profileService;
-            $scope.vm = this;
-            console.log('init profile service');
-            $messageBus.subscribe('project', function (action, value) {
-                if (_this.$layerService.project) {
-                    _this.$scope.enabled = _this.$layerService.project.profile.authenticationMethod != csComp.Services.authMethods.none;
-                    console.log(_this.$layerService.project.profile.authenticationMethod);
-                    switch (_this.$layerService.project.profile.authenticationMethod) {
-                    }
-                }
-            });
-        }
-        ProfileHeaderCtrl.prototype.startLogin = function () {
-            this.profileService.startLogin();
-        };
-        ProfileHeaderCtrl.prototype.logout = function () {
-            this.profileService.logoutUser();
-        };
-        ProfileHeaderCtrl.$inject = [
-            '$scope',
-            'localStorageService',
-            'layerService',
-            'mapService',
-            'messageBusService',
-            'profileService'
-        ];
-        return ProfileHeaderCtrl;
-    }());
-    ProfileHeader.ProfileHeaderCtrl = ProfileHeaderCtrl;
-    /**
-* Config
-*/
-    var moduleName = 'csComp';
-    try {
-        ProfileHeader.myModule = angular.module(moduleName);
-    }
-    catch (err) {
-        // named module does not exist, so create one
-        ProfileHeader.myModule = angular.module(moduleName, []);
-    }
-    /**
-      * Directive to set the expert mode, so we can determine what the user should see (degree of difficulty).
-      * The expert mode can either be set manually, e.g. using this directive, or by setting the expertMode property in the
-      * project.json file. In neither are set, we assume that we are dealing with an expert, so all features should be enabled.
-      *
-      * Precedence:
-      * - when a declaration is absent, assume Expert.
-      * - when the mode is set in local storage, take that value.
-      * - when the mode is set in the project.json file, take that value.
-      *
-      * As we want the expertMode to be always available, we have added it to the MapService service.
-      */
-    ProfileHeader.myModule
-        .directive('profileHeader', [
-        '$compile',
-        function ($compile) {
-            return {
-                terminal: true,
-                restrict: 'E',
-                scope: {},
-                templateUrl: 'directives/Profile/ProfileHeader.tpl.html',
-                compile: function (el) {
-                    var fn = $compile(el);
-                    return function (scope) {
-                        fn(scope);
-                    };
-                },
-                //link: function (scope, element, attrs) {
-                //     // Since we are wrapping the rating directive in this directive, I couldn't use transclude,
-                //     // so I copy the existing attributes manually.
-                //     var attributeString = '';
-                //     for (var key in attrs) {
-                //         if (key.substr(0, 1) !== '$' && attrs.hasOwnProperty(key)) attributeString += key + '="' + attrs[key] + '" ';
-                //     }
-                //     var html = '<rating ng-model="expertMode" '
-                //         + attributeString
-                //         + 'tooltip-html-unsafe="{{\'EXPERTMODE.EXPLANATION\' | translate}}" tooltip-placement="bottom" tooltip-trigger="mouseenter" tooltip-append-to-body="false"'
-                //         + 'max="3"></rating>';
-                //     var e = $compile(html)(scope);
-                //     element.replaceWith(e);
-                // },
-                replace: true,
-                transclude: true,
-                controller: ProfileHeaderCtrl
-            };
-        }
-    ]);
-})(ProfileHeader || (ProfileHeader = {}));
-//# sourceMappingURL=ProfileHeaderCtrl.js.map
-var ProfileTab;
-(function (ProfileTab) {
-    var ProfileTabCtrl = (function () {
-        function ProfileTabCtrl($scope, $localStorageService, $layerService, $mapService, $messageBus, profileService) {
-            var _this = this;
-            this.$scope = $scope;
-            this.$localStorageService = $localStorageService;
-            this.$layerService = $layerService;
-            this.$mapService = $mapService;
-            this.$messageBus = $messageBus;
-            this.profileService = profileService;
-            $scope.vm = this;
-            $messageBus.subscribe('project', function (action, value) {
-                if (_this.$layerService.project) {
-                    _this.$scope.enabled = _this.$layerService.project.profile.authenticationMethod != csComp.Services.authMethods.none;
-                    console.log(_this.$layerService.project.profile.authenticationMethod);
-                    switch (_this.$layerService.project.profile.authenticationMethod) {
-                    }
-                }
-            });
-        }
-        ProfileTabCtrl.prototype.startLogin = function () {
-            this.profileService.startLogin();
-        };
-        ProfileTabCtrl.prototype.validateUser = function () {
-            this.profileService.validateUser(this.userName, this.userPassword);
-            this.userPassword = "";
-        };
-        ProfileTabCtrl.prototype.logout = function () {
-            this.profileService.logoutUser();
-        };
-        ProfileTabCtrl.$inject = [
-            '$scope',
-            'localStorageService',
-            'layerService',
-            'mapService',
-            'messageBusService',
-            'profileService'
-        ];
-        return ProfileTabCtrl;
-    }());
-    ProfileTab.ProfileTabCtrl = ProfileTabCtrl;
-    /**
-* Config
-*/
-    var moduleName = 'csComp';
-    try {
-        ProfileTab.myModule = angular.module(moduleName);
-    }
-    catch (err) {
-        // named module does not exist, so create one
-        ProfileTab.myModule = angular.module(moduleName, []);
-    }
-    /**
-      * Directive to set the expert mode, so we can determine what the user should see (degree of difficulty).
-      * The expert mode can either be set manually, e.g. using this directive, or by setting the expertMode property in the
-      * project.json file. In neither are set, we assume that we are dealing with an expert, so all features should be enabled.
-      *
-      * Precedence:
-      * - when a declaration is absent, assume Expert.
-      * - when the mode is set in local storage, take that value.
-      * - when the mode is set in the project.json file, take that value.
-      *
-      * As we want the expertMode to be always available, we have added it to the MapService service.
-      */
-    ProfileTab.myModule
-        .directive('profiletab', [
-        '$compile',
-        function ($compile) {
-            return {
-                terminal: true,
-                restrict: 'E',
-                scope: {},
-                templateUrl: 'directives/Profile/ProfileTab.tpl.html',
-                compile: function (el) {
-                    var fn = $compile(el);
-                    return function (scope) {
-                        fn(scope);
-                    };
-                },
-                //link: function (scope, element, attrs) {
-                //     // Since we are wrapping the rating directive in this directive, I couldn't use transclude,
-                //     // so I copy the existing attributes manually.
-                //     var attributeString = '';
-                //     for (var key in attrs) {
-                //         if (key.substr(0, 1) !== '$' && attrs.hasOwnProperty(key)) attributeString += key + '="' + attrs[key] + '" ';
-                //     }
-                //     var html = '<rating ng-model="expertMode" '
-                //         + attributeString
-                //         + 'tooltip-html-unsafe="{{\'EXPERTMODE.EXPLANATION\' | translate}}" tooltip-placement="bottom" tooltip-trigger="mouseenter" tooltip-append-to-body="false"'
-                //         + 'max="3"></rating>';
-                //     var e = $compile(html)(scope);
-                //     element.replaceWith(e);
-                // },
-                replace: true,
-                transclude: true,
-                controller: ProfileTabCtrl
-            };
-        }
-    ]);
-})(ProfileTab || (ProfileTab = {}));
-//# sourceMappingURL=ProfileTabCtrl.js.map
 var ProjectHeaderSelection;
 (function (ProjectHeaderSelection) {
     /**
@@ -14793,19 +15012,19 @@ var ProjectHeaderSelection;
             this.$messageBusService = $messageBusService;
             $scope.vm = this;
         }
-        // $inject annotation.
-        // It provides $injector with information about dependencies to be injected into constructor
-        // it is better to have it close to the constructor, because the parameters must match in count and type.
-        // See http://docs.angularjs.org/guide/di
-        ProjectHeaderSelectionCtrl.$inject = [
-            '$scope',
-            'layerService',
-            'dashboardService',
-            'mapService',
-            'messageBusService'
-        ];
         return ProjectHeaderSelectionCtrl;
     }());
+    // $inject annotation.
+    // It provides $injector with information about dependencies to be injected into constructor
+    // it is better to have it close to the constructor, because the parameters must match in count and type.
+    // See http://docs.angularjs.org/guide/di
+    ProjectHeaderSelectionCtrl.$inject = [
+        '$scope',
+        'layerService',
+        'dashboardService',
+        'mapService',
+        'messageBusService'
+    ];
     ProjectHeaderSelection.ProjectHeaderSelectionCtrl = ProjectHeaderSelectionCtrl;
 })(ProjectHeaderSelection || (ProjectHeaderSelection = {}));
 //# sourceMappingURL=ProjectHeaderSelectionCtrl.js.map
@@ -14911,21 +15130,21 @@ var ProjectSettings;
                 console.log('Project.json updated succesfully!');
             }
         };
-        // $inject annotation.
-        // It provides $injector with information about dependencies to be injected into constructor
-        // it is better to have it close to the constructor, because the parameters must match in count and type.
-        // See http://docs.angularjs.org/guide/di
-        ProjectSettingsCtrl.$inject = [
-            '$scope',
-            '$timeout',
-            'layerService',
-            'dashboardService',
-            'mapService',
-            'messageBusService',
-            'localStorageService'
-        ];
         return ProjectSettingsCtrl;
     }());
+    // $inject annotation.
+    // It provides $injector with information about dependencies to be injected into constructor
+    // it is better to have it close to the constructor, because the parameters must match in count and type.
+    // See http://docs.angularjs.org/guide/di
+    ProjectSettingsCtrl.$inject = [
+        '$scope',
+        '$timeout',
+        'layerService',
+        'dashboardService',
+        'mapService',
+        'messageBusService',
+        'localStorageService'
+    ];
     ProjectSettings.ProjectSettingsCtrl = ProjectSettingsCtrl;
 })(ProjectSettings || (ProjectSettings = {}));
 //# sourceMappingURL=ProjectSettingsCtrl.js.map
@@ -14944,6 +15163,7 @@ var Helpers;
             // named module does not exist, so create one
             Resize.myModule = angular.module(moduleName, []);
         }
+        ;
         /**
           * Directive to resize an element by settings its width or height,
           * for example to make sure that the scrollbar appears.
@@ -14961,7 +15181,8 @@ var Helpers;
                     // Name if optional. Text Binding (Prefix: @), One-way Binding (Prefix: &), Two-way Binding (Prefix: =)
                     scope: {
                         resizeX: '@',
-                        resizeY: '@'
+                        resizeY: '@',
+                        resizeRelativeToParent: '@'
                     },
                     // Directives that want to modify the DOM typically use the link option.link takes a function with the following signature, function link(scope, element, attrs) { ... } where:
                     // * scope is an Angular scope object.
@@ -14970,13 +15191,20 @@ var Helpers;
                     link: function (scope, element, attrs) {
                         scope.onResizeFunction = function () {
                             // console.log(scope.resizeX + "-" + scope.resizeY);
+                            var height, width;
+                            if (scope.resizeRelativeToParent) {
+                                height = element.parent().innerHeight();
+                                width = element.parent().innerWidth();
+                            }
+                            else {
+                                height = $window.innerHeight;
+                                width = $window.innerWidth;
+                            }
                             if (scope.resizeX) {
-                                var windowWidth = $window.innerWidth;
-                                element.width((windowWidth - scope.resizeX) + 'px');
+                                element.width((width - +scope.resizeX) + 'px');
                             }
                             if (scope.resizeY) {
-                                var windowHeight = $window.innerHeight;
-                                element.height((windowHeight - scope.resizeY) + 'px');
+                                element.height((height - +scope.resizeY) + 'px');
                             }
                         };
                         // Call to the function when the page is first loaded
@@ -15083,9 +15311,14 @@ var StyleList;
       * Directive to display the available map layers.
       */
     StyleList.myModule
-        .filter('reverse', function () {
-        return function (items) {
-            return items.slice().reverse();
+        .filter('sortLegend', function () {
+        return function (legendItems) {
+            if (_.pluck(legendItems, 'sortKey').filter(function (item) { return item != undefined; }).length === legendItems.length) {
+                return legendItems.sort(function (a, b) { return a.sortKey.localeCompare(b.sortKey); });
+            }
+            else {
+                return legendItems.slice().reverse();
+            }
         };
     })
         .directive('styleList', ['$window', '$compile', function ($window, $compile) {
@@ -15100,23 +15333,7 @@ var StyleList;
                 //        fn(scope);
                 //    };
                 //},
-                link: function (scope, element, attrs) {
-                    // Deal with resizing the element list
-                    scope.onResizeFunction = function () {
-                        var filterHeight = 50;
-                        var paginationCtrlHeight = 100;
-                        var itemHeight = 60;
-                        //scope.windowHeight          = $window.innerHeight;
-                        //scope.windowWidth           = $window.innerWidth;
-                        scope.numberOfItems = Math.floor(($window.innerHeight - filterHeight - paginationCtrlHeight) / itemHeight);
-                    };
-                    // Call to the function when the page is first loaded
-                    scope.onResizeFunction();
-                    angular.element($window).bind('resize', function () {
-                        scope.onResizeFunction();
-                        scope.$apply();
-                    });
-                },
+                link: function (scope, element, attrs) { },
                 replace: true,
                 transclude: true,
                 controller: StyleList.StyleListCtrl
@@ -15225,18 +15442,18 @@ var StyleList;
                 'background': "linear-gradient(to bottom, " + le.color + ", " + legend.legendEntries[legend.legendEntries.length - key - 2].color + ")"
             };
         };
-        // $inject annotation.
-        // It provides $injector with information about dependencies to be in  jected into constructor
-        // it is better to have it close to the constructor, because the parameters must match in count and type.
-        // See http://docs.angularjs.org/guide/di
-        StyleListCtrl.$inject = [
-            '$scope',
-            '$timeout',
-            'layerService',
-            'messageBusService'
-        ];
         return StyleListCtrl;
     }());
+    // $inject annotation.
+    // It provides $injector with information about dependencies to be in  jected into constructor
+    // it is better to have it close to the constructor, because the parameters must match in count and type.
+    // See http://docs.angularjs.org/guide/di
+    StyleListCtrl.$inject = [
+        '$scope',
+        '$timeout',
+        'layerService',
+        'messageBusService'
+    ];
     StyleList.StyleListCtrl = StyleListCtrl;
 })(StyleList || (StyleList = {}));
 //# sourceMappingURL=StyleListCtrl.js.map
@@ -15343,6 +15560,7 @@ var Timeline;
                 'moveable': false,
                 'zoomMax': 172800000000,
                 'zoomMin': 3600000
+                //'layout': 'box'
             };
             this.debounceUpdate = _.debounce(this.updateFeatures, 500);
             this.debounceSetItems = _.debounce(function (items) { _this.addItems(items); }, 500);
@@ -15875,19 +16093,19 @@ var Timeline;
             vis.locales['nl_NL'] = vis.locales['nl'];
             vis.locales['nl_BE'] = vis.locales['nl'];
         };
-        // $inject annotation.
-        // It provides $injector with information about dependencies to be injected into constructor
-        // it is better to have it close to the constructor, because the parameters must match in count and type.
-        // See http://docs.angularjs.org/guide/di
-        TimelineCtrl.$inject = [
-            '$scope',
-            'layerService',
-            'mapService',
-            'messageBusService',
-            'TimelineService'
-        ];
         return TimelineCtrl;
     }());
+    // $inject annotation.
+    // It provides $injector with information about dependencies to be injected into constructor
+    // it is better to have it close to the constructor, because the parameters must match in count and type.
+    // See http://docs.angularjs.org/guide/di
+    TimelineCtrl.$inject = [
+        '$scope',
+        'layerService',
+        'mapService',
+        'messageBusService',
+        'TimelineService'
+    ];
     Timeline.TimelineCtrl = TimelineCtrl;
 })(Timeline || (Timeline = {}));
 //# sourceMappingURL=TimelineCtrl.js.map
@@ -16006,19 +16224,19 @@ var TripPlanner;
                 this.activeTab = 'Edit';
             }
         };
-        // $inject annotation.
-        // It provides $injector with information about dependencies to be injected into constructor
-        // it is better to have it close to the constructor, because the parameters must match in count and type.
-        // See http://docs.angularjs.org/guide/di
-        TripPlannerCtrl.$inject = [
-            '$scope',
-            'mapService',
-            'layerService',
-            'messageBusService',
-            'dashboardService'
-        ];
         return TripPlannerCtrl;
     }());
+    // $inject annotation.
+    // It provides $injector with information about dependencies to be injected into constructor
+    // it is better to have it close to the constructor, because the parameters must match in count and type.
+    // See http://docs.angularjs.org/guide/di
+    TripPlannerCtrl.$inject = [
+        '$scope',
+        'mapService',
+        'layerService',
+        'messageBusService',
+        'dashboardService'
+    ];
     TripPlanner.TripPlannerCtrl = TripPlannerCtrl;
 })(TripPlanner || (TripPlanner = {}));
 //# sourceMappingURL=TripPlannerCtrl.js.map
@@ -16072,577 +16290,6 @@ var Voting;
     ]);
 })(Voting || (Voting = {}));
 //# sourceMappingURL=Voting.js.map
-var csComp;
-(function (csComp) {
-    var Services;
-    (function (Services) {
-        var ClientMessage = (function () {
-            function ClientMessage(action, data) {
-                this.action = action;
-                this.data = data;
-            }
-            return ClientMessage;
-        }());
-        Services.ClientMessage = ClientMessage;
-        // Handle returned when subscribing to a topic
-        var MessageBusHandle = (function () {
-            function MessageBusHandle(topic, callback) {
-                this.topic = topic;
-                this.callback = callback;
-            }
-            return MessageBusHandle;
-        }());
-        Services.MessageBusHandle = MessageBusHandle;
-        var TypedEvent = (function () {
-            function TypedEvent() {
-                // Private member vars
-                this._listeners = [];
-            }
-            TypedEvent.prototype.add = function (listener) {
-                /// <summary>Registers a new listener for the event.</summary>
-                /// <param name='listener'>The callback function to register.</param>
-                this._listeners.push(listener);
-            };
-            TypedEvent.prototype.remove = function (listener) {
-                /// <summary>Unregisters a listener from the event.</summary>
-                /// <param name='listener'>The callback function that was registered. If missing then all listeners will be removed.</param>
-                if (typeof listener === 'function') {
-                    for (var i = 0, l = this._listeners.length; i < l; l++) {
-                        if (this._listeners[i] === listener) {
-                            this._listeners.splice(i, 1);
-                            break;
-                        }
-                    }
-                }
-                else {
-                    this._listeners = [];
-                }
-            };
-            TypedEvent.prototype.trigger = function () {
-                var a = [];
-                for (var _i = 0; _i < arguments.length; _i++) {
-                    a[_i - 0] = arguments[_i];
-                }
-                /// <summary>Invokes all of the listeners for this event.</summary>
-                /// <param name='args'>Optional set of arguments to pass to listners.</param>
-                var context = {};
-                var listeners = this._listeners.slice(0);
-                for (var i = 0, l = listeners.length; i < l; i++) {
-                    listeners[i].apply(context, a || []);
-                }
-            };
-            return TypedEvent;
-        }());
-        Services.TypedEvent = TypedEvent;
-        var Connection = (function () {
-            function Connection(id, url, bus) {
-                this.id = id;
-                this.url = url;
-                this.bus = bus;
-                this.cache = {};
-                this.subscriptions = {};
-                // Events
-                this.events = new TypedEvent();
-            }
-            Connection.prototype.unsubscribe = function (id, callback) {
-                if (this.subscriptions.hasOwnProperty(id)) {
-                    var s = this.subscriptions[id];
-                    s.callbacks = s.callbacks.filter(function (f) { return f !== callback; });
-                    if (s.callbacks.length === 0) {
-                        this.socket.emit(id, { action: 'unsubscribe' });
-                        this.socket.removeListener(id, s.serverCallback);
-                        s.serverCallback = null;
-                        delete this.subscriptions[id];
-                    }
-                }
-            };
-            Connection.prototype.reSubscribeAll = function () {
-                console.log('resubscribing...');
-                for (var s in this.subscriptions) {
-                    console.log('reconnecting ' + s);
-                    var sub = this.subscriptions[s];
-                    this.socket.emit('subscribe', { id: sub.id, target: sub.target, type: sub.type });
-                }
-            };
-            Connection.prototype.disconnectAll = function () {
-                console.log('resubscribing...');
-                for (var s in this.subscriptions) {
-                    var sub = this.subscriptions[s];
-                    sub.callbacks.forEach(function (cb) { return cb(sub.id, { action: 'unsubscribed' }); });
-                }
-            };
-            Connection.prototype.subscribe = function (target, type, callback) {
-                var _this = this;
-                if (!this.socket)
-                    return;
-                var sub;
-                var subs = [];
-                for (var s in this.subscriptions) {
-                    if (this.subscriptions[s].target === target && this.subscriptions[s].type === type)
-                        subs.push(this.subscriptions[s]);
-                }
-                if (subs == null || subs.length === 0) {
-                    sub = new ServerSubscription(target, type);
-                    this.socket.emit('subscribe', { id: sub.id, target: sub.target, type: sub.type });
-                    sub.callbacks.push(callback);
-                    this.subscriptions[sub.id] = sub;
-                    sub.serverCallback = function (r) {
-                        if (type === 'key') {
-                            _this.bus.publish('keyupdate', target, r);
-                        }
-                        //console.log(r.action);
-                        sub.callbacks.forEach(function (cb) { return cb(sub.id, r); });
-                    };
-                    this.socket.on(sub.id, sub.serverCallback);
-                }
-                else {
-                    sub = subs[0];
-                    sub.callbacks.push(callback);
-                }
-                return sub;
-            };
-            Connection.prototype.connect = function (callback) {
-                var _this = this;
-                if (this.isConnected || this.isConnecting || typeof io === 'undefined') {
-                    console.log((typeof io === 'undefined') ? 'SocketIO is not defined!' : 'SocketIO already connected');
-                    callback();
-                    return;
-                }
-                this.socket = io();
-                this.isConnecting = true;
-                this.socket.on('connect', function () {
-                    //console.log(JSON.stringify(this.socket));
-                    console.log('socket.io connected');
-                    _this.isConnecting = false;
-                    _this.isConnected = true;
-                    _this.events.trigger('connected');
-                    _this.reSubscribeAll();
-                    callback();
-                });
-                this.socket.on('disconnect', function () {
-                    _this.isConnecting = false;
-                    _this.isConnected = false;
-                    _this.disconnectAll();
-                    _this.events.trigger('disconnected');
-                });
-                this.socket.on('reconnect_attempt', function () {
-                    console.log('socket.io reconnect attempt');
-                    _this.isConnecting = true;
-                    _this.isConnected = false;
-                });
-                this.socket.on('reconnect_failed', function () {
-                    console.log('socket.io reconnect failed');
-                    _this.isConnecting = false;
-                });
-            };
-            Connection.prototype.disconnect = function () { return; };
-            return Connection;
-        }());
-        Services.Connection = Connection;
-        (function (NotifyLocation) {
-            NotifyLocation[NotifyLocation["BottomRight"] = 0] = "BottomRight";
-            NotifyLocation[NotifyLocation["BottomLeft"] = 1] = "BottomLeft";
-            NotifyLocation[NotifyLocation["TopRight"] = 2] = "TopRight";
-            NotifyLocation[NotifyLocation["TopLeft"] = 3] = "TopLeft";
-            NotifyLocation[NotifyLocation["TopBar"] = 4] = "TopBar";
-        })(Services.NotifyLocation || (Services.NotifyLocation = {}));
-        var NotifyLocation = Services.NotifyLocation;
-        (function (NotifyType) {
-            NotifyType[NotifyType["Normal"] = 0] = "Normal";
-            NotifyType[NotifyType["Info"] = 1] = "Info";
-            NotifyType[NotifyType["Error"] = 2] = "Error";
-            NotifyType[NotifyType["Success"] = 3] = "Success";
-        })(Services.NotifyType || (Services.NotifyType = {}));
-        var NotifyType = Services.NotifyType;
-        var ServerSubscription = (function () {
-            function ServerSubscription(target, type) {
-                this.target = target;
-                this.type = type;
-                this.callbacks = [];
-                this.id = csComp.Helpers.getGuid();
-            }
-            return ServerSubscription;
-        }());
-        Services.ServerSubscription = ServerSubscription;
-        /**
-         * Simple message bus service, used for subscribing and unsubsubscribing to topics.
-         * @see {@link https://gist.github.com/floatingmonkey/3384419}
-         */
-        var MessageBusService = (function () {
-            function MessageBusService($translate) {
-                this.$translate = $translate;
-                this.connections = {};
-                this.notifications = [];
-                this.confirms = [];
-                PNotify.prototype.options.styling = 'fontawesome';
-            }
-            MessageBusService.prototype.getConnection = function (id) {
-                if (this.connections.hasOwnProperty(id))
-                    return this.connections[id];
-                return null;
-            };
-            MessageBusService.prototype.initConnection = function (id, url, callback) {
-                if (id == null)
-                    id = '';
-                var c = this.getConnection(id);
-                if (c == null) {
-                    c = new Connection(id, url, this);
-                    this.connections[c.id] = c;
-                }
-                this.connections[id].connect(function () {
-                    //for (var topic in c.cache) {
-                    //    c.socket.on(topic,(r) => {
-                    //        c.cache[topic].forEach(cb => cb(topic, r));
-                    //    });
-                    //}
-                    callback();
-                });
-            };
-            MessageBusService.prototype.serverPublish = function (topic, message, serverId) {
-                if (serverId === void 0) { serverId = ''; }
-                var c = this.getConnection(serverId);
-                if (c == null)
-                    return null;
-                c.socket.emit(topic, message);
-            };
-            MessageBusService.prototype.serverSendMessage = function (msg, serverId) {
-                if (serverId === void 0) { serverId = ''; }
-                var c = this.getConnection(serverId);
-                if (c == null || c.socket == null)
-                    return null;
-                c.socket.emit('msg', msg);
-            };
-            MessageBusService.prototype.serverSendMessageAction = function (action, data, serverId) {
-                if (serverId === void 0) { serverId = ''; }
-                var cm = new ClientMessage(action, data);
-                this.serverSendMessage(cm, serverId);
-            };
-            MessageBusService.prototype.serverSubscribe = function (target, type, callback, serverId) {
-                if (serverId === void 0) { serverId = ''; }
-                var c = this.getConnection(serverId);
-                if (c == null)
-                    return null;
-                var sub = c.subscribe(target, type, callback);
-                if (sub)
-                    return new MessageBusHandle(sub.id, callback);
-                return null;
-            };
-            MessageBusService.prototype.serverUnsubscribe = function (handle, serverId) {
-                if (serverId === void 0) { serverId = ''; }
-                if (!handle)
-                    return;
-                var c = this.getConnection(serverId);
-                if (c == null)
-                    return null;
-                c.unsubscribe(handle.topic, handle.callback);
-            };
-            /**
-             * Publish a notification that needs to be translated
-             * @title:              the translation key of the notification's title
-             * @text:               the translation key of the notification's content
-             * @variableReplacement the key to replace in the content translation (see: https://angular-translate.github.io/docs/#/guide/06_variable-replacement)
-             * @location:           the location on the screen where the notification is shown (default bottom right)
-             */
-            MessageBusService.prototype.notifyWithTranslation = function (title, text, variableReplacement, location, type, duration) {
-                var _this = this;
-                if (variableReplacement === void 0) { variableReplacement = null; }
-                if (location === void 0) { location = NotifyLocation.BottomRight; }
-                if (type === void 0) { type = NotifyType.Normal; }
-                if (duration === void 0) { duration = 4000; }
-                this.$translate(title).then(function (translatedTitle) {
-                    _this.$translate(text, variableReplacement).then(function (translatedText) {
-                        _this.notify(translatedTitle, translatedText, location, type, duration);
-                    });
-                });
-            };
-            MessageBusService.prototype.notifyError = function (title, text) {
-                this.notify(title, text, NotifyLocation.TopBar, NotifyType.Error);
-            };
-            /**
-             * Publish a notification
-             * @title:       the title of the notification
-             * @text:        the contents of the notification
-             * @location:    the location on the screen where the notification is shown (default bottom right)
-             * @notifyType:  the type of notification
-             */
-            MessageBusService.prototype.notify = function (title, text, location, notifyType, duration) {
-                if (location === void 0) { location = NotifyLocation.TopBar; }
-                if (notifyType === void 0) { notifyType = NotifyType.Normal; }
-                if (duration === void 0) { duration = 4000; }
-                //Check if a notication with the same title exists. If so, update existing, if not, add new notification.
-                if (this.notifications) {
-                    this.notifications = this.notifications.filter(function (n) { return (n.state && n.state !== 'closed'); });
-                    var updatedText;
-                    this.notifications.some(function (n) {
-                        if (n.state === 'closed')
-                            return false;
-                        if (n.options.title === title) {
-                            var foundText = false;
-                            var splittedText = n.options.text.split('\n');
-                            splittedText.some(function (textLine, index, _splittedText) {
-                                if (textLine.replace(/(\ \<\d+\>$)/, '') === text) {
-                                    var txt = textLine.replace(/(\ \<\d+\>$)/, '');
-                                    var nrWithBrackets = textLine.match(/(\ \<\d+\>$)/);
-                                    var nr;
-                                    nr = (!nrWithBrackets) ? 2 : +(nrWithBrackets[0].match(/\d+/)) + 1;
-                                    _splittedText[index] = txt + ' <' + nr + '>';
-                                    foundText = true;
-                                    return true;
-                                }
-                                return false;
-                            });
-                            if (!foundText) {
-                                splittedText.push(text);
-                            }
-                            updatedText = splittedText.join('\n');
-                            n.update({ text: updatedText });
-                            return true;
-                        }
-                        else {
-                            return false;
-                        }
-                    });
-                    if (updatedText) {
-                        return;
-                    }
-                }
-                var opts = {
-                    title: title,
-                    text: text,
-                    cornerclass: 'ui-pnotify-sharp',
-                    shadow: false,
-                    addclass: "csNotify",
-                    width: "500px",
-                    animation: "fade",
-                    mouse_reset: true,
-                    animate_speed: "slow",
-                    nonblock: {
-                        nonblock: true,
-                        nonblock_opacity: .2
-                    },
-                    buttons: {
-                        closer: true,
-                        sticker: false
-                    },
-                    hide: true
-                };
-                if (typeof duration != 'undefined')
-                    opts['delay'] = duration;
-                var PNot = new PNotify(opts);
-                this.notifications.push(PNot);
-                return PNot;
-            };
-            MessageBusService.prototype.confirmButtons = function (title, text, buttons, callback) {
-                var c = [];
-                // buttons.forEach(b=>{
-                //     c.push({ text: c, addClass: "", promptTrigger: true, click: (notice, value) =>{ notice.remove(); notice.get().trigger("pnotify.confirm", [notice, value]); } })
-                // })
-                var options = {
-                    title: title,
-                    text: text,
-                    addclass: "csNotify",
-                    width: "500px",
-                    animation: "fade",
-                    hide: false,
-                    confirm: {
-                        confirm: true,
-                        buttons: c
-                    },
-                    buttons: {
-                        closer: false,
-                        sticker: false
-                    },
-                    history: {
-                        history: false
-                    },
-                    icon: 'fa fa-question-circle',
-                    cornerclass: 'ui-pnotify-sharp'
-                };
-                var pn = new PNotify(options).get()
-                    .on('pnotify.confirm', function (notice, value) {
-                    callback("ok");
-                })
-                    .on('pnotify.cancel', function () { callback(null); });
-                return pn;
-            };
-            /**
-             * Show a confirm dialog
-             * @title           : the title of the notification
-             * @text            : the contents of the notification
-             * @callback        : the callback that will be called after the confirmation has been answered.
-             */
-            MessageBusService.prototype.confirm = function (title, text, callback, allowDuplicate) {
-                if (allowDuplicate === void 0) { allowDuplicate = true; }
-                if (!allowDuplicate && this.confirms && _.any(this.confirms, function (n) { return (!n.options.closed && n.options.title === title && n.options.text === text); }))
-                    return;
-                var options = {
-                    title: title,
-                    text: text,
-                    addclass: "csNotify",
-                    width: "500px",
-                    animation: "fade",
-                    hide: false,
-                    closed: false,
-                    confirm: {
-                        confirm: true
-                    },
-                    buttons: {
-                        closer: true,
-                        sticker: true
-                    },
-                    history: {
-                        history: false
-                    },
-                    icon: 'fa fa-question-circle',
-                    cornerclass: 'ui-pnotify-sharp',
-                    duration: 60000
-                };
-                var pn = new PNotify(options).get()
-                    .on('pnotify.confirm', function (n) {
-                    options.closed = true;
-                    callback(true);
-                })
-                    .on('pnotify.cancel', function (n) { options.closed = true; callback(false); });
-                pn.options = options;
-                this.confirms.push(pn);
-                return pn;
-            };
-            MessageBusService.prototype.notifyBottom = function (title, text) {
-                var stack_bar_bottom = { 'dir1': 'up', 'dir2': 'right', 'spacing1': 0, 'spacing2': 0 };
-                var options = {
-                    title: 'Over Here',
-                    text: 'Check me out. I\'m in a different stack.',
-                    addclass: 'stack-bar-bottom',
-                    cornerclass: '',
-                    width: '70%',
-                    stack: stack_bar_bottom
-                };
-                var pn = new PNotify(options);
-            };
-            /**
-             * Publish a notification
-             * @title: the title of the notification
-             * @text:  the contents of the notification
-             */
-            MessageBusService.prototype.notifyData = function (data) {
-                var pn = new PNotify(data);
-                //this.publish('notify', '', data);
-            };
-            /**
-             * Publish to a topic
-             */
-            MessageBusService.prototype.publish = function (topic, title, data) {
-                //window.console.log('publish: ' + topic + ', ' + title);
-                if (!MessageBusService.cache[topic])
-                    return;
-                MessageBusService.cache[topic].forEach(function (cb) { return cb(title, data); });
-            };
-            //public publish(topic: string, title: string, data?: any): void {
-            //	MessageBusService.publish(topic, title, data);
-            //}
-            /**
-             * Subscribe to a topic
-             * @param {string} topic The desired topic of the message.
-             * @param {IMessageBusCallback} callback The callback to call.
-             */
-            MessageBusService.prototype.subscribe = function (topic, callback) {
-                if (!MessageBusService.cache[topic])
-                    MessageBusService.cache[topic] = new Array();
-                MessageBusService.cache[topic].push(callback);
-                return new MessageBusHandle(topic, callback);
-            };
-            /**
-             * Unsubscribe to a topic by providing its handle
-             */
-            MessageBusService.prototype.unsubscribe = function (handle) {
-                var topic = handle.topic;
-                var callback = handle.callback;
-                if (!MessageBusService.cache[topic])
-                    return;
-                MessageBusService.cache[topic].forEach(function (cb, idx) {
-                    if (cb === callback) {
-                        MessageBusService.cache[topic].splice(idx, 1);
-                        return;
-                    }
-                });
-            };
-            MessageBusService.cache = {};
-            MessageBusService.$inject = [
-                '$translate'
-            ];
-            return MessageBusService;
-        }());
-        Services.MessageBusService = MessageBusService;
-        var EventObj = (function () {
-            function EventObj() {
-            }
-            // Events primitives ======================
-            EventObj.prototype.bind = function (event, fct) {
-                this.myEvents = this.myEvents || {};
-                this.myEvents[event] = this.myEvents[event] || [];
-                this.myEvents[event].push(fct);
-            };
-            EventObj.prototype.unbind = function (event, fct) {
-                this.myEvents = this.myEvents || {};
-                if (event in this.myEvents === false)
-                    return;
-                this.myEvents[event].splice(this.myEvents[event].indexOf(fct), 1);
-            };
-            EventObj.prototype.unbindEvent = function (event) {
-                this.myEvents = this.myEvents || {};
-                this.myEvents[event] = [];
-            };
-            EventObj.prototype.unbindAll = function () {
-                this.myEvents = this.myEvents || {};
-                for (var event in this.myEvents)
-                    this.myEvents[event] = false;
-            };
-            EventObj.prototype.trigger = function (event) {
-                var args = [];
-                for (var _i = 1; _i < arguments.length; _i++) {
-                    args[_i - 1] = arguments[_i];
-                }
-                this.myEvents = this.myEvents || {};
-                if (event in this.myEvents === false)
-                    return;
-                for (var i = 0; i < this.myEvents[event].length; i++) {
-                    this.myEvents[event][i].apply(this, Array.prototype.slice.call(arguments, 1));
-                }
-            };
-            EventObj.prototype.registerEvent = function (evtname) {
-                this[evtname] = function (callback, replace) {
-                    if (typeof callback === 'function') {
-                        if (replace)
-                            this.unbindEvent(evtname);
-                        this.bind(evtname, callback);
-                    }
-                    return this;
-                };
-            };
-            EventObj.prototype.registerEvents = function (evtnames) {
-                var _this = this;
-                evtnames.forEach(function (evtname) {
-                    _this.registerEvent(evtname);
-                });
-            };
-            return EventObj;
-        }());
-        Services.EventObj = EventObj;
-        /**
-          * Register service
-          */
-        var moduleName = 'csComp';
-        try {
-            Services.myModule = angular.module(moduleName);
-        }
-        catch (err) {
-            // named module does not exist, so create one
-            Services.myModule = angular.module(moduleName, []);
-        }
-        Services.myModule.service('messageBusService', csComp.Services.MessageBusService);
-    })(Services = csComp.Services || (csComp.Services = {}));
-})(csComp || (csComp = {}));
-//# sourceMappingURL=MessageBus.js.map
 var csComp;
 (function (csComp) {
     var Services;
@@ -16705,6 +16352,7 @@ var csComp;
                                     }, 50);
                                 });
                                 return;
+                                // If the layer is being loaded, activate style after activation message.
                             }
                             else if (pl.isLoading) {
                                 var handle = _this.messageBusService.subscribe('layer', function (a, l) {
@@ -16778,12 +16426,12 @@ var csComp;
                     return;
                 this.layerService.setGroupStyle(group, propType);
             };
-            ActionService.$inject = [
-                'messageBusService',
-                '$timeout'
-            ];
             return ActionService;
         }());
+        ActionService.$inject = [
+            'messageBusService',
+            '$timeout'
+        ];
         Services.ActionService = ActionService;
         /**
           * Register service
@@ -17102,6 +16750,7 @@ var csComp;
                                         i += 1;
                                     });
                                 }
+                                //   f.sensors[p].forEach()
                             }
                         });
                         this.ctrl.widget.enabled = false;
@@ -17272,6 +16921,7 @@ var csComp;
                                             values.push({ x: t, y: s, c: title });
                                         i += 1;
                                     });
+                                    //   f.sensors[p].forEach()
                                 }
                             });
                         });
@@ -17445,6 +17095,7 @@ var csComp;
                                     i += 1;
                                 });
                                 _this.ctrl.$scope.data._csv += csvRow + '\n';
+                                //   f.sensors[p].forEach()
                             }
                         });
                         var spec = {
@@ -17790,7 +17441,7 @@ var csComp;
                     }
                     var popoverString = '';
                     if (tab.popover !== '' && (this.$mapService.expertMode === Services.Expertise.Beginner || this.$mapService.expertMode === Services.Expertise.Intermediate)) {
-                        popoverString = 'popover="' + tab.popover + '" popover-placement="left" popover-trigger="mouseenter" popover-append-to-body="true"';
+                        popoverString = "uib-popover=\"" + tab.popover + "\" popover-placement=\"left\" popover-trigger=\"'mouseenter'\" popover-append-to-body=\"true\"";
                     }
                     $('#rightpanelTabs').append(this.$compile('<li id="' +
                         tab.container + '-tab" class="rightPanelTab rightPanelTabAnimated" ' +
@@ -17838,6 +17489,9 @@ var csComp;
                     if (c) {
                         //var s = (<any>c).scope();
                         c.remove();
+                        // if (s) {
+                        //     this.$timeout(() => { s.$parent.$destroy(); }, 0);
+                        // }
                     }
                 }
                 catch (e) {
@@ -17881,20 +17535,20 @@ var csComp;
                     $('#leftPanelTab a[data-target="#basewidgets"]').tab('show'); // Select tab by name
                 }
             };
-            DashboardService.$inject = [
-                '$rootScope',
-                '$compile',
-                '$injector',
-                '$location',
-                '$timeout',
-                '$translate',
-                'messageBusService',
-                'layerService',
-                'mapService',
-                'localStorageService'
-            ];
             return DashboardService;
         }());
+        DashboardService.$inject = [
+            '$rootScope',
+            '$compile',
+            '$injector',
+            '$location',
+            '$timeout',
+            '$translate',
+            'messageBusService',
+            'layerService',
+            'mapService',
+            'localStorageService'
+        ];
         Services.DashboardService = DashboardService;
         /**
           * Register service
@@ -18088,6 +17742,585 @@ var csComp;
 (function (csComp) {
     var Services;
     (function (Services) {
+        // Interface for message bus callbacks, i.e. (data: any) => any,
+        // so you can supply a single data argument of any type, and it may return any type.
+        var ClientMessage = (function () {
+            function ClientMessage(action, data) {
+                this.action = action;
+                this.data = data;
+            }
+            return ClientMessage;
+        }());
+        Services.ClientMessage = ClientMessage;
+        // Handle returned when subscribing to a topic
+        var MessageBusHandle = (function () {
+            function MessageBusHandle(topic, callback) {
+                this.topic = topic;
+                this.callback = callback;
+            }
+            return MessageBusHandle;
+        }());
+        Services.MessageBusHandle = MessageBusHandle;
+        var TypedEvent = (function () {
+            function TypedEvent() {
+                // Private member vars
+                this._listeners = [];
+            }
+            TypedEvent.prototype.add = function (listener) {
+                /// <summary>Registers a new listener for the event.</summary>
+                /// <param name='listener'>The callback function to register.</param>
+                this._listeners.push(listener);
+            };
+            TypedEvent.prototype.remove = function (listener) {
+                /// <summary>Unregisters a listener from the event.</summary>
+                /// <param name='listener'>The callback function that was registered. If missing then all listeners will be removed.</param>
+                if (typeof listener === 'function') {
+                    for (var i = 0, l = this._listeners.length; i < l; l++) {
+                        if (this._listeners[i] === listener) {
+                            this._listeners.splice(i, 1);
+                            break;
+                        }
+                    }
+                }
+                else {
+                    this._listeners = [];
+                }
+            };
+            TypedEvent.prototype.trigger = function () {
+                var a = [];
+                for (var _i = 0; _i < arguments.length; _i++) {
+                    a[_i] = arguments[_i];
+                }
+                /// <summary>Invokes all of the listeners for this event.</summary>
+                /// <param name='args'>Optional set of arguments to pass to listners.</param>
+                var context = {};
+                var listeners = this._listeners.slice(0);
+                for (var i = 0, l = listeners.length; i < l; i++) {
+                    listeners[i].apply(context, a || []);
+                }
+            };
+            return TypedEvent;
+        }());
+        Services.TypedEvent = TypedEvent;
+        var Connection = (function () {
+            function Connection(id, url, bus) {
+                this.id = id;
+                this.url = url;
+                this.bus = bus;
+                this.cache = {};
+                this.subscriptions = {};
+                // Events
+                this.events = new TypedEvent();
+            }
+            Connection.prototype.unsubscribe = function (id, callback) {
+                if (this.subscriptions.hasOwnProperty(id)) {
+                    var s = this.subscriptions[id];
+                    s.callbacks = s.callbacks.filter(function (f) { return f !== callback; });
+                    if (s.callbacks.length === 0) {
+                        this.socket.emit(id, { action: 'unsubscribe' });
+                        this.socket.removeListener(id, s.serverCallback);
+                        s.serverCallback = null;
+                        delete this.subscriptions[id];
+                    }
+                }
+            };
+            Connection.prototype.reSubscribeAll = function () {
+                console.log('resubscribing...');
+                for (var s in this.subscriptions) {
+                    console.log('reconnecting ' + s);
+                    var sub = this.subscriptions[s];
+                    this.socket.emit('subscribe', { id: sub.id, target: sub.target, type: sub.type });
+                }
+            };
+            Connection.prototype.disconnectAll = function () {
+                console.log('resubscribing...');
+                for (var s in this.subscriptions) {
+                    var sub = this.subscriptions[s];
+                    sub.callbacks.forEach(function (cb) { return cb(sub.id, { action: 'unsubscribed' }); });
+                }
+            };
+            Connection.prototype.subscribe = function (target, type, callback) {
+                var _this = this;
+                if (!this.socket)
+                    return;
+                var sub;
+                var subs = [];
+                for (var s in this.subscriptions) {
+                    if (this.subscriptions[s].target === target && this.subscriptions[s].type === type)
+                        subs.push(this.subscriptions[s]);
+                }
+                if (subs == null || subs.length === 0) {
+                    sub = new ServerSubscription(target, type);
+                    this.socket.emit('subscribe', { id: sub.id, target: sub.target, type: sub.type });
+                    sub.callbacks.push(callback);
+                    this.subscriptions[sub.id] = sub;
+                    sub.serverCallback = function (r) {
+                        if (type === 'key') {
+                            _this.bus.publish('keyupdate', target, r);
+                        }
+                        //console.log(r.action);
+                        sub.callbacks.forEach(function (cb) { return cb(sub.id, r); });
+                    };
+                    this.socket.on(sub.id, sub.serverCallback);
+                }
+                else {
+                    sub = subs[0];
+                    sub.callbacks.push(callback);
+                }
+                return sub;
+            };
+            Connection.prototype.connect = function (callback) {
+                var _this = this;
+                if (this.isConnected || this.isConnecting || typeof io === 'undefined') {
+                    console.log((typeof io === 'undefined') ? 'SocketIO is not defined!' : 'SocketIO already connected');
+                    callback();
+                    return;
+                }
+                this.socket = io();
+                this.isConnecting = true;
+                this.socket.on('connect', function () {
+                    //console.log(JSON.stringify(this.socket));
+                    console.log('socket.io connected');
+                    _this.isConnecting = false;
+                    _this.isConnected = true;
+                    _this.events.trigger('connected');
+                    _this.reSubscribeAll();
+                    callback();
+                });
+                this.socket.on('disconnect', function () {
+                    _this.isConnecting = false;
+                    _this.isConnected = false;
+                    _this.disconnectAll();
+                    _this.events.trigger('disconnected');
+                });
+                this.socket.on('reconnect_attempt', function () {
+                    console.log('socket.io reconnect attempt');
+                    _this.isConnecting = true;
+                    _this.isConnected = false;
+                });
+                this.socket.on('reconnect_failed', function () {
+                    console.log('socket.io reconnect failed');
+                    _this.isConnecting = false;
+                });
+            };
+            Connection.prototype.disconnect = function () { return; };
+            return Connection;
+        }());
+        Services.Connection = Connection;
+        var NotifyLocation;
+        (function (NotifyLocation) {
+            NotifyLocation[NotifyLocation["BottomRight"] = 0] = "BottomRight";
+            NotifyLocation[NotifyLocation["BottomLeft"] = 1] = "BottomLeft";
+            NotifyLocation[NotifyLocation["TopRight"] = 2] = "TopRight";
+            NotifyLocation[NotifyLocation["TopLeft"] = 3] = "TopLeft";
+            NotifyLocation[NotifyLocation["TopBar"] = 4] = "TopBar";
+        })(NotifyLocation = Services.NotifyLocation || (Services.NotifyLocation = {}));
+        var NotifyType;
+        (function (NotifyType) {
+            NotifyType[NotifyType["Normal"] = 0] = "Normal";
+            NotifyType[NotifyType["Info"] = 1] = "Info";
+            NotifyType[NotifyType["Error"] = 2] = "Error";
+            NotifyType[NotifyType["Success"] = 3] = "Success";
+        })(NotifyType = Services.NotifyType || (Services.NotifyType = {}));
+        var ServerSubscription = (function () {
+            function ServerSubscription(target, type) {
+                this.target = target;
+                this.type = type;
+                this.callbacks = [];
+                this.id = csComp.Helpers.getGuid();
+            }
+            return ServerSubscription;
+        }());
+        Services.ServerSubscription = ServerSubscription;
+        /**
+         * Simple message bus service, used for subscribing and unsubsubscribing to topics.
+         * @see {@link https://gist.github.com/floatingmonkey/3384419}
+         */
+        var MessageBusService = (function () {
+            function MessageBusService($translate) {
+                this.$translate = $translate;
+                this.connections = {};
+                this.notifications = [];
+                this.confirms = [];
+                PNotify.prototype.options.styling = 'fontawesome';
+            }
+            MessageBusService.prototype.getConnection = function (id) {
+                if (this.connections.hasOwnProperty(id))
+                    return this.connections[id];
+                return null;
+            };
+            MessageBusService.prototype.initConnection = function (id, url, callback) {
+                if (id == null)
+                    id = '';
+                var c = this.getConnection(id);
+                if (c == null) {
+                    c = new Connection(id, url, this);
+                    this.connections[c.id] = c;
+                }
+                this.connections[id].connect(function () {
+                    //for (var topic in c.cache) {
+                    //    c.socket.on(topic,(r) => {
+                    //        c.cache[topic].forEach(cb => cb(topic, r));
+                    //    });
+                    //}
+                    callback();
+                });
+            };
+            MessageBusService.prototype.serverPublish = function (topic, message, serverId) {
+                if (serverId === void 0) { serverId = ''; }
+                var c = this.getConnection(serverId);
+                if (c == null)
+                    return null;
+                c.socket.emit(topic, message);
+            };
+            MessageBusService.prototype.serverSendMessage = function (msg, serverId) {
+                if (serverId === void 0) { serverId = ''; }
+                var c = this.getConnection(serverId);
+                if (c == null || c.socket == null)
+                    return null;
+                c.socket.emit('msg', msg);
+            };
+            MessageBusService.prototype.serverSendMessageAction = function (action, data, serverId) {
+                if (serverId === void 0) { serverId = ''; }
+                var cm = new ClientMessage(action, data);
+                this.serverSendMessage(cm, serverId);
+            };
+            MessageBusService.prototype.serverSubscribe = function (target, type, callback, serverId) {
+                if (serverId === void 0) { serverId = ''; }
+                var c = this.getConnection(serverId);
+                if (c == null)
+                    return null;
+                var sub = c.subscribe(target, type, callback);
+                if (sub)
+                    return new MessageBusHandle(sub.id, callback);
+                return null;
+            };
+            MessageBusService.prototype.serverUnsubscribe = function (handle, serverId) {
+                if (serverId === void 0) { serverId = ''; }
+                if (!handle)
+                    return;
+                var c = this.getConnection(serverId);
+                if (c == null)
+                    return null;
+                c.unsubscribe(handle.topic, handle.callback);
+            };
+            /**
+             * Publish a notification that needs to be translated
+             * @title:              the translation key of the notification's title
+             * @text:               the translation key of the notification's content
+             * @variableReplacement the key to replace in the content translation (see: https://angular-translate.github.io/docs/#/guide/06_variable-replacement)
+             * @location:           the location on the screen where the notification is shown (default bottom right)
+             */
+            MessageBusService.prototype.notifyWithTranslation = function (title, text, variableReplacement, location, type, duration) {
+                var _this = this;
+                if (variableReplacement === void 0) { variableReplacement = null; }
+                if (location === void 0) { location = NotifyLocation.BottomRight; }
+                if (type === void 0) { type = NotifyType.Normal; }
+                if (duration === void 0) { duration = 4000; }
+                this.$translate(title).then(function (translatedTitle) {
+                    _this.$translate(text, variableReplacement).then(function (translatedText) {
+                        _this.notify(translatedTitle, translatedText, location, type, duration);
+                    }).catch(function (err) {
+                        _this.notify(translatedTitle || title, text, location, type, duration);
+                    });
+                }).catch(function (err) {
+                    _this.notify(title, text, location, type, duration);
+                });
+            };
+            MessageBusService.prototype.notifyError = function (title, text) {
+                this.notify(title, text, NotifyLocation.TopBar, NotifyType.Error);
+            };
+            /**
+             * Publish a notification
+             * @title:       the title of the notification
+             * @text:        the contents of the notification
+             * @location:    the location on the screen where the notification is shown (default bottom right)
+             * @notifyType:  the type of notification
+             */
+            MessageBusService.prototype.notify = function (title, text, location, notifyType, duration) {
+                if (location === void 0) { location = NotifyLocation.TopBar; }
+                if (notifyType === void 0) { notifyType = NotifyType.Normal; }
+                if (duration === void 0) { duration = 4000; }
+                //Check if a notication with the same title exists. If so, update existing, if not, add new notification.
+                if (this.notifications) {
+                    this.notifications = this.notifications.filter(function (n) { return (n.state && n.state !== 'closed'); });
+                    var updatedText;
+                    this.notifications.some(function (n) {
+                        if (n.state === 'closed')
+                            return false;
+                        if (n.options.title === title) {
+                            var foundText = false;
+                            var splittedText = n.options.text.split('\n');
+                            splittedText.some(function (textLine, index, _splittedText) {
+                                if (textLine.replace(/(\ \<\d+\>$)/, '') === text) {
+                                    var txt = textLine.replace(/(\ \<\d+\>$)/, '');
+                                    var nrWithBrackets = textLine.match(/(\ \<\d+\>$)/);
+                                    var nr;
+                                    nr = (!nrWithBrackets) ? 2 : +(nrWithBrackets[0].match(/\d+/)) + 1;
+                                    _splittedText[index] = txt + ' <' + nr + '>';
+                                    foundText = true;
+                                    return true;
+                                }
+                                return false;
+                            });
+                            if (!foundText) {
+                                splittedText.push(text);
+                            }
+                            updatedText = splittedText.join('\n');
+                            n.update({ text: updatedText });
+                            return true;
+                        }
+                        else {
+                            return false;
+                        }
+                    });
+                    if (updatedText) {
+                        return;
+                    }
+                }
+                var opts = {
+                    title: title,
+                    text: text,
+                    cornerclass: 'ui-pnotify-sharp',
+                    shadow: false,
+                    addclass: "csNotify",
+                    width: "500px",
+                    animation: "fade",
+                    mouse_reset: true,
+                    animate_speed: "slow",
+                    nonblock: {
+                        nonblock: true,
+                        nonblock_opacity: .2
+                    },
+                    buttons: {
+                        closer: true,
+                        sticker: false
+                    },
+                    hide: true
+                };
+                if (typeof duration != 'undefined')
+                    opts['delay'] = duration;
+                if (notifyType != NotifyType.Normal)
+                    opts['type'] = NotifyType[notifyType].toLowerCase();
+                var PNot = new PNotify(opts);
+                this.notifications.push(PNot);
+                return PNot;
+            };
+            MessageBusService.prototype.confirmButtons = function (title, text, buttons, callback) {
+                var c = [];
+                // buttons.forEach(b=>{
+                //     c.push({ text: c, addClass: "", promptTrigger: true, click: (notice, value) =>{ notice.remove(); notice.get().trigger("pnotify.confirm", [notice, value]); } })
+                // })
+                var options = {
+                    title: title,
+                    text: text,
+                    addclass: "csNotify",
+                    width: "500px",
+                    animation: "fade",
+                    hide: false,
+                    confirm: {
+                        confirm: true,
+                        buttons: c
+                    },
+                    buttons: {
+                        closer: false,
+                        sticker: false
+                    },
+                    history: {
+                        history: false
+                    },
+                    icon: 'fa fa-question-circle',
+                    cornerclass: 'ui-pnotify-sharp'
+                };
+                var pn = new PNotify(options).get()
+                    .on('pnotify.confirm', function (notice, value) {
+                    callback("ok");
+                })
+                    .on('pnotify.cancel', function () { callback(null); });
+                return pn;
+            };
+            /**
+             * Show a confirm dialog
+             * @title           : the title of the notification
+             * @text            : the contents of the notification
+             * @callback        : the callback that will be called after the confirmation has been answered.
+             */
+            MessageBusService.prototype.confirm = function (title, text, callback, allowDuplicate) {
+                if (allowDuplicate === void 0) { allowDuplicate = true; }
+                if (!allowDuplicate && this.confirms && _.any(this.confirms, function (n) { return (!n.options.closed && n.options.title === title && n.options.text === text); }))
+                    return;
+                var options = {
+                    title: title,
+                    text: text,
+                    addclass: "csNotify",
+                    width: "500px",
+                    animation: "fade",
+                    hide: false,
+                    closed: false,
+                    confirm: {
+                        confirm: true
+                    },
+                    buttons: {
+                        closer: true,
+                        sticker: true
+                    },
+                    history: {
+                        history: false
+                    },
+                    icon: 'fa fa-question-circle',
+                    cornerclass: 'ui-pnotify-sharp',
+                    duration: 60000
+                };
+                var pn = new PNotify(options).get()
+                    .on('pnotify.confirm', function (n) {
+                    options.closed = true;
+                    callback(true);
+                })
+                    .on('pnotify.cancel', function (n) { options.closed = true; callback(false); });
+                pn.options = options;
+                this.confirms.push(pn);
+                return pn;
+            };
+            MessageBusService.prototype.notifyBottom = function (title, text) {
+                var stack_bar_bottom = { 'dir1': 'up', 'dir2': 'right', 'spacing1': 0, 'spacing2': 0 };
+                var options = {
+                    title: 'Over Here',
+                    text: 'Check me out. I\'m in a different stack.',
+                    addclass: 'stack-bar-bottom',
+                    cornerclass: '',
+                    width: '70%',
+                    stack: stack_bar_bottom
+                };
+                var pn = new PNotify(options);
+            };
+            /**
+             * Publish a notification
+             * @title: the title of the notification
+             * @text:  the contents of the notification
+             */
+            MessageBusService.prototype.notifyData = function (data) {
+                var pn = new PNotify(data);
+                //this.publish('notify', '', data);
+            };
+            /**
+             * Publish to a topic
+             */
+            MessageBusService.prototype.publish = function (topic, title, data) {
+                //window.console.log('publish: ' + topic + ', ' + title);
+                if (!MessageBusService.cache[topic])
+                    return;
+                MessageBusService.cache[topic].forEach(function (cb) { return cb(title, data); });
+            };
+            //public publish(topic: string, title: string, data?: any): void {
+            //	MessageBusService.publish(topic, title, data);
+            //}
+            /**
+             * Subscribe to a topic
+             * @param {string} topic The desired topic of the message.
+             * @param {IMessageBusCallback} callback The callback to call.
+             */
+            MessageBusService.prototype.subscribe = function (topic, callback) {
+                if (!MessageBusService.cache[topic])
+                    MessageBusService.cache[topic] = new Array();
+                MessageBusService.cache[topic].push(callback);
+                return new MessageBusHandle(topic, callback);
+            };
+            /**
+             * Unsubscribe to a topic by providing its handle
+             */
+            MessageBusService.prototype.unsubscribe = function (handle) {
+                var topic = handle.topic;
+                var callback = handle.callback;
+                if (!MessageBusService.cache[topic])
+                    return;
+                MessageBusService.cache[topic].forEach(function (cb, idx) {
+                    if (cb === callback) {
+                        MessageBusService.cache[topic].splice(idx, 1);
+                        return;
+                    }
+                });
+            };
+            return MessageBusService;
+        }());
+        MessageBusService.cache = {};
+        MessageBusService.$inject = [
+            '$translate'
+        ];
+        Services.MessageBusService = MessageBusService;
+        var EventObj = (function () {
+            function EventObj() {
+            }
+            // Events primitives ======================
+            EventObj.prototype.bind = function (event, fct) {
+                this.myEvents = this.myEvents || {};
+                this.myEvents[event] = this.myEvents[event] || [];
+                this.myEvents[event].push(fct);
+            };
+            EventObj.prototype.unbind = function (event, fct) {
+                this.myEvents = this.myEvents || {};
+                if (event in this.myEvents === false)
+                    return;
+                this.myEvents[event].splice(this.myEvents[event].indexOf(fct), 1);
+            };
+            EventObj.prototype.unbindEvent = function (event) {
+                this.myEvents = this.myEvents || {};
+                this.myEvents[event] = [];
+            };
+            EventObj.prototype.unbindAll = function () {
+                this.myEvents = this.myEvents || {};
+                for (var event in this.myEvents)
+                    this.myEvents[event] = false;
+            };
+            EventObj.prototype.trigger = function (event) {
+                var args = [];
+                for (var _i = 1; _i < arguments.length; _i++) {
+                    args[_i - 1] = arguments[_i];
+                }
+                this.myEvents = this.myEvents || {};
+                if (event in this.myEvents === false)
+                    return;
+                for (var i = 0; i < this.myEvents[event].length; i++) {
+                    this.myEvents[event][i].apply(this, Array.prototype.slice.call(arguments, 1));
+                }
+            };
+            EventObj.prototype.registerEvent = function (evtname) {
+                this[evtname] = function (callback, replace) {
+                    if (typeof callback === 'function') {
+                        if (replace)
+                            this.unbindEvent(evtname);
+                        this.bind(evtname, callback);
+                    }
+                    return this;
+                };
+            };
+            EventObj.prototype.registerEvents = function (evtnames) {
+                var _this = this;
+                evtnames.forEach(function (evtname) {
+                    _this.registerEvent(evtname);
+                });
+            };
+            return EventObj;
+        }());
+        Services.EventObj = EventObj;
+        /**
+          * Register service
+          */
+        var moduleName = 'csComp';
+        try {
+            Services.myModule = angular.module(moduleName);
+        }
+        catch (err) {
+            // named module does not exist, so create one
+            Services.myModule = angular.module(moduleName, []);
+        }
+        Services.myModule.service('messageBusService', csComp.Services.MessageBusService);
+    })(Services = csComp.Services || (csComp.Services = {}));
+})(csComp || (csComp = {}));
+//# sourceMappingURL=MessageBus.js.map
+var csComp;
+(function (csComp) {
+    var Services;
+    (function (Services) {
         'use strict';
         var Coordinates = (function () {
             function Coordinates() {
@@ -18154,17 +18387,19 @@ var csComp;
                     }, opts);
                 }
                 else {
+                    // this.$rootScope.$broadcast('error', this.geolocation_msgs['errors.location.unsupportedBrowser']);
+                    // this.$rootScope.$apply(function() { deferred.reject(this.geolocation_msgs['errors.location.unsupportedBrowser']); });
                 }
                 return;
             };
-            GeoService.$inject = [
-                'messageBusService',
-                '$rootScope',
-                '$window',
-                '$q'
-            ];
             return GeoService;
         }());
+        GeoService.$inject = [
+            'messageBusService',
+            '$rootScope',
+            '$window',
+            '$q'
+        ];
         Services.GeoService = GeoService;
         /**
           * Register service
@@ -18439,11 +18674,11 @@ var csComp;
                     return null;
                 return csComp.Helpers.convertPropertyInfo(pt, this.evalExpression(pt.expression, features, feature));
             };
-            ExpressionService.$inject = [
-                '$parse'
-            ];
             return ExpressionService;
         }());
+        ExpressionService.$inject = [
+            '$parse'
+        ];
         Services.ExpressionService = ExpressionService;
         /**
          * Register service
@@ -18460,21 +18695,26 @@ var csComp;
     })(Services = csComp.Services || (csComp.Services = {}));
 })(csComp || (csComp = {}));
 //# sourceMappingURL=ExpressionService.js.map
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var csComp;
 (function (csComp) {
     var Services;
     (function (Services) {
         'use strict';
+        var ActionType;
         (function (ActionType) {
             ActionType[ActionType["Context"] = 0] = "Context";
             ActionType[ActionType["Hover"] = 1] = "Hover";
-        })(Services.ActionType || (Services.ActionType = {}));
-        var ActionType = Services.ActionType;
+        })(ActionType = Services.ActionType || (Services.ActionType = {}));
         var BasicActionService = (function () {
             function BasicActionService() {
             }
@@ -18507,8 +18747,9 @@ var csComp;
         var LayerActions = (function (_super) {
             __extends(LayerActions, _super);
             function LayerActions() {
-                _super.apply(this, arguments);
-                this.id = 'LayerActions';
+                var _this = _super !== null && _super.apply(this, arguments) || this;
+                _this.id = 'LayerActions';
+                return _this;
             }
             LayerActions.prototype.addLayer = function (layer) {
                 if (layer.fitToMap && layer.layerSource && _.isFunction(layer.layerSource.fitMap)) {
@@ -18555,6 +18796,17 @@ var csComp;
                         layer.layerSource.refreshLayer(layer);
                     };
                     res.push(reset);
+                }
+                if (layer.enabled && layer.isDynamic) {
+                    var erase = { title: 'Clean Layer', icon: 'eraser' };
+                    erase.callback = function (layer, layerService) {
+                        console.log('Eraseing features from layer: ' + layer.title);
+                        layer.data.features.forEach(function (f) {
+                            layerService.removeFeature(f);
+                        });
+                        layer.data.features.length = 0;
+                    };
+                    res.push(erase);
                 }
                 if (this.layerService.$mapService.isAdminExpert) {
                     var remove = { title: 'Remove Layer', icon: 'trash' };
@@ -18768,7 +19020,6 @@ var csComp;
                 //     }
                 // });
                 this.checkMobile();
-                this.enableDrop();
             }
             LayerService.prototype.setLanguage = function (project) {
                 var params = this.$location.search();
@@ -18791,7 +19042,7 @@ var csComp;
                 }
             };
             LayerService.prototype.updateBBOX = function (bbox, bboxarray) {
-                var _loop_1 = function() {
+                var _loop_1 = function () {
                     layer = this_1.loadedLayers[l];
                     layer.BBOX = bbox;
                     if (layer.refreshBBOX) {
@@ -18801,6 +19052,12 @@ var csComp;
                         //     oldStyles = layer.group.styles;
                         // }
                         layer.layerSource.refreshLayer(layer);
+                        // if (layer.group && oldStyles) {
+                        //     oldStyles.forEach((gs) => {
+                        //         this.saveStyle(layer.group, gs);
+                        //     });
+                        //     this.updateGroupFeatures(layer.group);
+                        // }
                     }
                     if (layer.partialBoundingBoxUpdates) {
                         var changed_1 = false;
@@ -18815,8 +19072,7 @@ var csComp;
                             this_1.updateLayerSensorData(layer);
                     }
                 };
-                var this_1 = this;
-                var layer;
+                var this_1 = this, layer;
                 for (var l in this.loadedLayers) {
                     _loop_1();
                 }
@@ -18848,15 +19104,15 @@ var csComp;
                     console.log('kpi:' + link);
                     layer._gui['loadingKpiLink'] = true;
                     this.$http.get(link)
-                        .success(function (data) {
+                        .then(function (res) {
+                        var data = res.data;
                         layer._gui['loadingKpiLink'] = false;
                         layer.kpiTimestamps = data.timestamps;
                         if (typeof data.kpis !== 'undefined') {
                             layer.sensors = data.kpis;
                         }
                         _this.$messageBusService.publish('timeline', 'sensorLinkUpdated');
-                    })
-                        .error(function (e) {
+                    }, function (e) {
                         layer._gui['loadingKpiLink'] = false;
                         console.log('error loading sensor data');
                     });
@@ -18888,6 +19144,7 @@ var csComp;
                     var link = layer.sensorLink.url;
                     if (!this.project.activeDashboard.isLive) {
                         link += '?tbox=' + t.start + ',' + t.end;
+                        //if (layer._gui.hasOwnProperty('lastSensorLink') && layer._gui['lastSensorLink'] === link) return;
                     }
                     else {
                         if (_.isUndefined(layer.sensorLink.liveInterval)) {
@@ -18916,6 +19173,9 @@ var csComp;
                                 f.sensors = {};
                                 if (data.features && data.features.hasOwnProperty(f.id)) {
                                     f.sensors = data.features[f.id];
+                                    // for (var s in f.sensors) {
+                                    //     this.cleanSensorData(f, s);
+                                    // }
                                 }
                             });
                             console.log('sensor data processed ' + (new Date().getTime() - timeLoaded).toString());
@@ -19022,6 +19282,7 @@ var csComp;
             LayerService.prototype.checkMobile = function () {
                 if (screen.width <= 719) {
                     this.isMobile = true;
+                    //alert('is mobile');
                 }
             };
             LayerService.prototype.getActions = function (feature, type) {
@@ -19358,10 +19619,10 @@ var csComp;
                 console.log('saving feature type');
                 if (resource.url) {
                     this.$http.put('/api/resources', csComp.Helpers.cloneWithoutUnderscore(resource))
-                        .success(function (data) {
+                        .then(function (res) {
+                        var data = res.data;
                         console.log('resource saved');
-                    })
-                        .error(function (e) {
+                    }, function (e) {
                         console.log('error saving resource');
                     });
                 }
@@ -19409,7 +19670,8 @@ var csComp;
                         if (!this.typesResources.hasOwnProperty(url) || requestReload) {
                             var success = false;
                             this.$http.get(url)
-                                .success(function (resource) {
+                                .then(function (res) {
+                                var resource = res.data;
                                 success = true;
                                 if (!resource || (typeof resource === 'string' && resource !== 'null')) {
                                     _this.$messageBusService.notifyError('Error loading resource type', url);
@@ -19423,8 +19685,7 @@ var csComp;
                                     }
                                 }
                                 callback();
-                            })
-                                .error(function (err) {
+                            }, function (err) {
                                 _this.$messageBusService.notifyError('ERROR loading TypeResources', 'While loading: ' + url);
                                 console.log(err);
                             });
@@ -19758,6 +20019,11 @@ var csComp;
                 }
                 if (!feature.isSelected) {
                     this.$messageBusService.publish('feature', 'onFeatureDeselect', feature);
+                    // var rpt = new RightPanelTab();
+                    // rpt.container = 'featureprops';
+                    // this.$messageBusService.publish('rightpanel', 'deactivate', rpt);
+                    // rpt.container = 'featurerelations';
+                    // this.$messageBusService.publish('rightpanel', 'deactivate', rpt);
                 }
                 else {
                     if (!feature.fType.selectActions) {
@@ -20095,11 +20361,11 @@ var csComp;
                         s.selectedStrokeColor = csComp.Helpers.getColorString(style.selectedStrokeColor, '#000');
                     if (style.selectedFillColor)
                         s.selectedFillColor = csComp.Helpers.getColorString(style.selectedFillColor);
-                    if (style.selectedStrokeWidth)
+                    if (style.selectedStrokeWidth >= 0)
                         s.selectedStrokeWidth = style.selectedStrokeWidth;
-                    if (style.iconWidth)
+                    if (style.iconWidth >= 0)
                         s.iconWidth = style.iconWidth;
-                    if (style.iconHeight)
+                    if (style.iconHeight >= 0)
                         s.iconHeight = style.iconHeight;
                     if (style.heightAboveSeaProperty)
                         s.heightAboveSeaProperty = style.heightAboveSeaProperty;
@@ -20111,9 +20377,9 @@ var csComp;
                         s.modelMinimumPixelSize = style.modelMinimumPixelSize;
                     if (style.innerTextProperty)
                         s.innerTextProperty = style.innerTextProperty;
-                    if (style.innerTextSize)
+                    if (style.innerTextSize >= 0)
                         s.innerTextSize = style.innerTextSize;
-                    if (style.cornerRadius)
+                    if (style.cornerRadius >= 0)
                         s.cornerRadius = style.cornerRadius;
                     if (style.rotateProperty && properties.hasOwnProperty(style.rotateProperty)) {
                         s.rotate = Number(properties[style.rotateProperty]);
@@ -20146,6 +20412,8 @@ var csComp;
                 }
                 feature._gui['style'] = {};
                 if (feature.layer) {
+                    if (!feature.layer.hasOwnProperty('opacity'))
+                        feature.layer.opacity = 100;
                     s.opacity = (feature.layer.isTransparent) ? 0 : s.opacity * (feature.layer.opacity / 100);
                     s.fillOpacity = (feature.layer.isTransparent) ? 0 : s.fillOpacity * (feature.layer.opacity / 100);
                     s.iconHeight = (feature.layer.isTransparent) ? 0 : s.iconHeight;
@@ -20210,6 +20478,7 @@ var csComp;
                             catch (e) {
                                 console.log('Error setting style for feature ' + e.message);
                             }
+                            //s.fillColor = this.getColor(feature.properties[layer.group.styleProperty], null);
                         }
                     });
                 }
@@ -20509,7 +20778,7 @@ var csComp;
                 this.$messageBusService.publish('updatelegend', 'updatedstyle', gs);
             };
             LayerService.prototype.setStyleForProperty = function (layer, property) {
-                this.setStyle({
+                return this.setStyle({
                     feature: {
                         featureTypeName: layer.url + '#' + property,
                         layer: layer
@@ -20629,6 +20898,7 @@ var csComp;
                     gf.title = prop;
                     gf.rangex = [0, 1];
                     group.filters.push(gf);
+                    // add filter
                 }
                 else {
                     var pos = group.filters.indexOf(filter);
@@ -20848,6 +21118,8 @@ var csComp;
             LayerService.prototype.getFeatureTypeId = function (feature) {
                 if (!feature.hasOwnProperty('layer'))
                     feature['layer'] = new Services.ProjectLayer();
+                if (!feature.hasOwnProperty('properties'))
+                    feature['properties'] = {};
                 var ftId = feature.properties['FeatureTypeId'] || feature.properties['featureTypeId'] || feature.layer.defaultFeatureType || 'Default';
                 // if (name.toLowerCase().startsWith('http://')) return name;
                 // if (csComp.Helpers.startsWith(name.toLowerCase(), 'http://')) return name;
@@ -21021,7 +21293,12 @@ var csComp;
                     this.openSingleProject = true;
                 }
                 this.$http.get(url)
-                    .success(function (solution) {
+                    .then(function (res) {
+                    if (!res || !res.data) {
+                        console.log('Error: no solution obtained!');
+                        return;
+                    }
+                    var solution = res.data;
                     if (typeof solution !== 'object') {
                         console.log('Error: obtained solution is not a json object!');
                         return;
@@ -21090,24 +21367,24 @@ var csComp;
                             });
                             if (!foundProject) {
                                 _this.$http.get(u_1)
-                                    .success(function (data) {
-                                    if (data) {
+                                    .then(function (res) {
+                                    var data;
+                                    if (res.data) {
+                                        data = res.data;
                                         _this.parseProject(data, { title: data.title, url: data.url, dynamic: true }, []);
                                     }
-                                })
-                                    .error(function (data) {
+                                }, function (err) {
                                     _this.$messageBusService.notify('ERROR loading project', 'while loading: ' + u_1);
                                 });
                             }
                         }
                         else {
                             _this.$http.get(u_1)
-                                .success(function (data) {
+                                .then(function (data) {
                                 if (data) {
                                     _this.parseProject(data, { title: data.title, url: data.url, dynamic: true }, []);
                                 }
-                            })
-                                .error(function (data) {
+                            }, function (data) {
                                 _this.$messageBusService.notify('ERROR loading project', 'while loading: ' + u_1);
                             });
                         }
@@ -21130,8 +21407,7 @@ var csComp;
                         solution.widgetStyles['default'] = defaultStyle;
                     }
                     _this.solution = solution;
-                })
-                    .error(function () {
+                }, function () {
                     _this.$messageBusService.notify('ERROR loading solution', 'while loading: ' + url);
                 });
             };
@@ -21174,13 +21450,13 @@ var csComp;
                 }
                 if (!project) {
                     this.$http.get(solutionProject.url)
-                        .success(function (prj) {
+                        .then(function (res) {
+                        var prj = res.data;
                         _this.parseProject(prj, solutionProject, layerIds);
                         _this.throttleSensorDataUpdate = _.debounce(_this.updateSensorData, _this.project.timeLine.updateDelay);
                         var delayFocusChange = _.debounce(function (date) { _this.refreshActiveLayers(); }, _this.project.timeLine.updateDelay);
                         //alert('project open ' + this.$location.absUrl());
-                    })
-                        .error(function () {
+                    }, function () {
                         _this.$messageBusService.notify('ERROR loading project', 'while loading: ' + solutionProject.url);
                     });
                 }
@@ -21193,6 +21469,9 @@ var csComp;
                 prj.solution = this.solution;
                 this.setLanguage(prj);
                 this.project = new Services.Project().deserialize(prj);
+                if (!this.project.disableDrop) {
+                    this.enableDrop();
+                }
                 this.$mapService.initDraw(this);
                 if (typeof this.project.isDynamic === 'undefined')
                     this.project.isDynamic = solutionProject.dynamic;
@@ -21210,7 +21489,11 @@ var csComp;
                 this.$messageBusService.publish('map', 'showLocation', this.project.showLocation);
                 this.initTypeResources(this.project);
                 if (this.project.eventTab) {
-                    var rpt = csComp.Helpers.createRightPanelTab('eventtab', 'eventtab', {}, 'Events', '{{"EVENT_INFO" | translate}}', 'book');
+                    var rpt = csComp.Helpers.createRightPanelTab('eventtab', 'eventtab', {}, 'Events', "{{'EVENT_INFO' | translate}}", 'book');
+                    this.$messageBusService.publish('rightpanel', 'activate', rpt);
+                }
+                if (this.project.legendTab) {
+                    var rpt = csComp.Helpers.createRightPanelTab('legend-list', 'legend-list', {}, 'Icon legend', "{{'LEGEND' | translate}}", 'list-ul', false, false);
                     this.$messageBusService.publish('rightpanel', 'activate', rpt);
                 }
                 // if no dashboards defined, create one
@@ -21395,6 +21678,7 @@ var csComp;
                                     if (layer) {
                                         var l = _this.findLayer(layer.id);
                                         if (!l) {
+                                            //this.$messageBusService.notify('New layer available', layer.title);
                                         }
                                         else if (l.quickRefresh) {
                                             if (l.enabled) {
@@ -21445,6 +21729,11 @@ var csComp;
                                                     _this.openProject(solutionProject, null, project);
                                                 }
                                             }, false);
+                                            // this.$messageBusService.confirm('The project has been updated, do you want to update it?', 'yes',()=>{
+                                            //     this.openProject(solutionProject, null, project);
+                                            // });
+                                            //this.openProject(solutionProject, null, project);
+                                            //var solProj = this.solution.projects.filter(sp => { return (sp.title === project.title) }).pop();
                                         }
                                     }
                                 }
@@ -21516,6 +21805,8 @@ var csComp;
                                     }
                                     _this.apply();
                                 });
+                                // init group
+                                // add layer
                             }
                             if (msg.action === 'layer-remove') {
                                 msg.data.forEach(function (l) {
@@ -21531,6 +21822,7 @@ var csComp;
                                         g.layers.forEach(function (layer) {
                                             if (layer.id === l.id) {
                                                 _this.removeLayer(layer, true);
+                                                //console.log('remove layer'+layer.id);
                                             }
                                         });
                                         if (g.layers.length === 0) {
@@ -21538,6 +21830,9 @@ var csComp;
                                         }
                                     }
                                 });
+                                // find group
+                                // find layer
+                                // remove layer
                             }
                         });
                     }
@@ -22020,21 +22315,21 @@ var csComp;
                     }
                 });
             };
-            LayerService.$inject = [
-                '$location',
-                '$compile',
-                '$translate',
-                'messageBusService',
-                'mapService',
-                '$rootScope',
-                'geoService',
-                '$http',
-                'expressionService',
-                'actionService',
-                'localStorageService'
-            ];
             return LayerService;
         }());
+        LayerService.$inject = [
+            '$location',
+            '$compile',
+            '$translate',
+            'messageBusService',
+            'mapService',
+            '$rootScope',
+            'geoService',
+            '$http',
+            'expressionService',
+            'actionService',
+            'localStorageService'
+        ];
         Services.LayerService = LayerService;
         /**
          * object for sending layer messages over socket.io channel
@@ -22048,6 +22343,7 @@ var csComp;
         /**
          * List of available action for sending/receiving layer actions over socket.io channel
          */
+        var LayerUpdateAction;
         (function (LayerUpdateAction) {
             LayerUpdateAction[LayerUpdateAction["updateFeature"] = 0] = "updateFeature";
             LayerUpdateAction[LayerUpdateAction["updateLog"] = 1] = "updateLog";
@@ -22055,23 +22351,22 @@ var csComp;
             LayerUpdateAction[LayerUpdateAction["updateLayer"] = 3] = "updateLayer";
             LayerUpdateAction[LayerUpdateAction["deleteLayer"] = 4] = "deleteLayer";
             LayerUpdateAction[LayerUpdateAction["addUpdateFeatureBatch"] = 5] = "addUpdateFeatureBatch";
-        })(Services.LayerUpdateAction || (Services.LayerUpdateAction = {}));
-        var LayerUpdateAction = Services.LayerUpdateAction;
+        })(LayerUpdateAction = Services.LayerUpdateAction || (Services.LayerUpdateAction = {}));
         /** Type of change in an ApiEvent */
+        var ChangeType;
         (function (ChangeType) {
             ChangeType[ChangeType["Create"] = 0] = "Create";
             ChangeType[ChangeType["Update"] = 1] = "Update";
             ChangeType[ChangeType["Delete"] = 2] = "Delete";
-        })(Services.ChangeType || (Services.ChangeType = {}));
-        var ChangeType = Services.ChangeType;
+        })(ChangeType = Services.ChangeType || (Services.ChangeType = {}));
         /**
          * List of available action for sending/receiving project actions over socket.io channel
          */
+        var ProjectUpdateAction;
         (function (ProjectUpdateAction) {
             ProjectUpdateAction[ProjectUpdateAction["updateProject"] = 0] = "updateProject";
             ProjectUpdateAction[ProjectUpdateAction["deleteProject"] = 1] = "deleteProject";
-        })(Services.ProjectUpdateAction || (Services.ProjectUpdateAction = {}));
-        var ProjectUpdateAction = Services.ProjectUpdateAction;
+        })(ProjectUpdateAction = Services.ProjectUpdateAction || (Services.ProjectUpdateAction = {}));
         /**
          * object for sending project messages over socket.io channel
          */
@@ -22096,18 +22391,24 @@ var csComp;
     })(Services = csComp.Services || (csComp.Services = {}));
 })(csComp || (csComp = {}));
 //# sourceMappingURL=LayerService.js.map
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var MatrixAction;
 (function (MatrixAction) {
     var MatrixActionModel = (function (_super) {
         __extends(MatrixActionModel, _super);
         function MatrixActionModel() {
-            _super.apply(this, arguments);
-            this.id = 'MatrixActionModel';
+            var _this = _super !== null && _super.apply(this, arguments) || this;
+            _this.id = 'MatrixActionModel';
+            return _this;
         }
         MatrixActionModel.prototype.init = function (layerService) {
             _super.prototype.init.call(this, layerService);
@@ -22168,11 +22469,16 @@ var MatrixAction;
     MatrixAction.MatrixActionModel = MatrixActionModel;
 })(MatrixAction || (MatrixAction = {}));
 //# sourceMappingURL=MatrixAction.js.map
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var RelationAction;
 (function (RelationAction) {
     /**
@@ -22183,8 +22489,9 @@ var RelationAction;
     var RelationActionModel = (function (_super) {
         __extends(RelationActionModel, _super);
         function RelationActionModel() {
-            _super.apply(this, arguments);
-            this.id = 'RelationActionModel';
+            var _this = _super !== null && _super.apply(this, arguments) || this;
+            _this.id = 'RelationActionModel';
+            return _this;
         }
         RelationActionModel.prototype.init = function (layerService) {
             _super.prototype.init.call(this, layerService);
@@ -22562,14 +22869,14 @@ var csComp;
                     }
                 });
             };
-            MapService.expertModeKey = 'expertMode';
-            MapService.$inject = [
-                'localStorageService',
-                '$timeout',
-                'messageBusService'
-            ];
             return MapService;
         }());
+        MapService.expertModeKey = 'expertMode';
+        MapService.$inject = [
+            'localStorageService',
+            '$timeout',
+            'messageBusService'
+        ];
         Services.MapService = MapService;
         /**
           * Register service
@@ -22590,17 +22897,138 @@ var csComp;
 (function (csComp) {
     var Services;
     (function (Services) {
-        'use strict';
+        /**
+         * Helper class to decode a JWT token (public part)
+         *
+         * Source extracted from: https://github.com/auth0/jwt-decode
+         *
+         * @export
+         * @class JwtDecoder
+         */
+        var JwtDecoder = (function () {
+            function JwtDecoder() {
+            }
+            /**
+             * Decode the JWT and return the public info.
+             *
+             * @static
+             * @param {string} token JWT token
+             * @param {boolean} [containsHeader=true] In case it also contains non-public info
+             * @returns {IJwtToken}
+             *
+             * @memberOf JwtDecoder
+             */
+            JwtDecoder.decode = function (token, containsHeader) {
+                if (containsHeader === void 0) { containsHeader = true; }
+                var atob = function (input) {
+                    var message;
+                    /**
+                     * The code was extracted from:
+                     * https://github.com/davidchambers/Base64.js
+                     */
+                    var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
+                    var InvalidCharacterError = function (newMessage) {
+                        message = newMessage;
+                    };
+                    InvalidCharacterError.prototype = new Error();
+                    InvalidCharacterError.prototype.name = 'InvalidCharacterError';
+                    var polyfill = function (input) {
+                        var str = String(input).replace(/=+$/, '');
+                        if (str.length % 4 === 1) {
+                            throw new InvalidCharacterError('"atob" failed: The string to be decoded is not correctly encoded.');
+                        }
+                        for (
+                        // initialize result and counters
+                        var bc = 0, bs, buffer, idx = 0, output = ''; 
+                        // get next character
+                        buffer = str.charAt(idx++); 
+                        // character found in table? initialize bit storage and add its ascii value;
+                        ~buffer && (bs = bc % 4 ? bs * 64 + buffer : buffer,
+                            // and if not first of each 4 characters,
+                            // convert the first 8 bits to one ascii character
+                            bc++ % 4) ? output += String.fromCharCode(255 & bs >> (-2 * bc & 6)) : 0) {
+                            // try to find character in table (0-63, not found => -1)
+                            buffer = chars.indexOf(buffer);
+                        }
+                        return output;
+                    };
+                    return polyfill(input);
+                };
+                var decodeURIComponent = function (str, containsHeader) {
+                    if (containsHeader === void 0) { containsHeader = true; }
+                    str = str.split('.')[containsHeader ? 1 : 0];
+                    var output = str.replace(/-/g, '+').replace(/_/g, '/');
+                    switch (output.length % 4) {
+                        case 0:
+                            break;
+                        case 2:
+                            output += '==';
+                            break;
+                        case 3:
+                            output += '=';
+                            break;
+                        default:
+                            throw 'Illegal base64url string!';
+                    }
+                    return atob(output);
+                };
+                if (!token) {
+                    return {};
+                }
+                return JSON.parse(decodeURIComponent(token, containsHeader));
+            };
+            return JwtDecoder;
+        }());
+        Services.JwtDecoder = JwtDecoder;
         /*
          * Singleton service that holds a reference to the map.
          * In case other controllers need access to the map, they can inject this service.
          */
         var ProfileService = (function () {
-            function ProfileService($localStorageService, $timeout, $messageBusService) {
+            function ProfileService($localStorageService, $timeout, $http, $messageBusService) {
+                var _this = this;
                 this.$localStorageService = $localStorageService;
                 this.$timeout = $timeout;
+                this.$http = $http;
                 this.$messageBusService = $messageBusService;
+                this.jwtDecoded = JwtDecoder.decode(this.token);
+                if (this.jwtDecoded.exp) {
+                    var expiresInMsec = Date.parse(this.jwtDecoded.expires) - Date.now();
+                    if (expiresInMsec > 0) {
+                        this.addJwtToHeader();
+                        this.loggedIn = true;
+                        this.userProfile = this.$localStorageService.get('profile');
+                        setTimeout(function () { return _this.validateUser(); }, expiresInMsec - 5 * 60 * 1000);
+                    }
+                }
             }
+            Object.defineProperty(ProfileService.prototype, "userProfile", {
+                /**
+                 * Returns the user profile when logged in successfully.
+                 * @memberOf ProfileService
+                 */
+                get: function () {
+                    return this.loggedIn ? this.profile : {};
+                },
+                set: function (profile) {
+                    var _this = this;
+                    this.profile = profile;
+                    this.$localStorageService.set('profile', profile);
+                    if (!_.isFunction(this.update))
+                        return;
+                    this.update(profile, function (error) {
+                        if (error) {
+                            _this.$messageBusService.notify('profile', "update_failed: " + error.message);
+                        }
+                        else {
+                            _this.profile = profile;
+                            _this.$messageBusService.notify('profile', 'update_ok');
+                        }
+                    });
+                },
+                enumerable: true,
+                configurable: true
+            });
             ProfileService.prototype.startLogin = function () {
                 var rpt = csComp.Helpers.createRightPanelTab('profile', 'profiletab', null, 'Selected feature', '{{"FEATURE_INFO" | translate}}', 'user', true, false);
                 this.$messageBusService.publish('rightpanel', 'activate', rpt);
@@ -22609,28 +23037,106 @@ var csComp;
                 var _this = this;
                 if (_.isFunction(this.validate) && !this.isValidating) {
                     this.isValidating = true;
-                    this.validate(userName, userPassword, function (status, profile) {
+                    this.validate(userName, userPassword, function (success, profile) {
                         _this.isValidating = false;
-                        _this.loggedIn = status;
-                        if (!_this.loggedIn) {
-                            _this.$messageBusService.notify("Login Result", "Login Failed");
+                        _this.loggedIn = success;
+                        if (_this.loggedIn) {
+                            _this.userProfile = profile;
+                            _this.$messageBusService.publish('profileservice', 'login', profile);
+                        }
+                        else {
+                            _this.$messageBusService.notify('Login Result', 'Login Failed');
+                        }
+                    });
+                }
+            };
+            ProfileService.prototype.signupUser = function (name, userName, userPassword) {
+                var _this = this;
+                if (_.isFunction(this.signup) && !this.isSignupping) {
+                    this.isSignupping = true;
+                    this.signup(name, userName, userPassword, function (success, profile) {
+                        _this.isSignupping = false;
+                        _this.loggedIn = success;
+                        if (_this.loggedIn) {
+                            _this.userProfile = profile;
+                            _this.$messageBusService.publish('profileservice', 'login', profile);
+                            _this.$messageBusService.notify('Login Result', 'Signed up and logged in successfully');
+                        }
+                        else {
+                            _this.$messageBusService.notify('Login Result', 'Signup Failed');
                         }
                     });
                 }
             };
             ProfileService.prototype.logoutUser = function () {
                 this.loggedIn = false;
+                this.clearToken();
+                this.$messageBusService.publish('profileservice', 'logout');
                 if (_.isFunction(this.logout)) {
                     this.logout();
                 }
             };
-            ProfileService.$inject = [
-                'localStorageService',
-                '$timeout',
-                'messageBusService'
-            ];
+            Object.defineProperty(ProfileService.prototype, "token", {
+                /**
+                 * Returns the JSON Web Token, if available.
+                 *
+                 * @memberOf ProfileService
+                 */
+                get: function () {
+                    if (this.jwtToken) {
+                        return this.jwtToken;
+                    }
+                    this.jwtToken = this.$localStorageService.get('jwt') || '';
+                    return this.jwtToken;
+                },
+                /**
+                 * Sets the JSON Web Token
+                 *
+                 * @memberOf ProfileService
+                 */
+                set: function (myToken) {
+                    this.addJwtToHeader();
+                    this.jwtToken = myToken;
+                    this.$localStorageService.set('jwt', myToken);
+                },
+                enumerable: true,
+                configurable: true
+            });
+            /**
+             * Clears the token in the localStorage
+             *
+             * @memberOf ProfileService
+             */
+            ProfileService.prototype.clearToken = function () {
+                this.token = '';
+                this.userProfile = {};
+            };
+            /**
+             * Add JSON Web Token to the http header.
+             * See also: https://docs.angularjs.org/api/ng/service/$http
+             *
+             * @private
+             * @returns
+             *
+             * @memberOf ProfileService
+             */
+            ProfileService.prototype.addJwtToHeader = function () {
+                var token = this.token;
+                if (!token) {
+                    return;
+                }
+                this.$http.defaults.headers.common.Authorization = token;
+                console.log('Security token set.');
+                this.$messageBusService.publish('profileservice', 'setToken');
+            };
             return ProfileService;
         }());
+        ProfileService.$inject = [
+            'localStorageService',
+            '$timeout',
+            '$http',
+            'messageBusService'
+        ];
         Services.ProfileService = ProfileService;
         /**
           * Register service
@@ -22668,16 +23174,16 @@ var csComp;
                     this.$mapService.zoomToLocation(center);
                 }
             };
-            // $inject annotation.
-            // It provides $injector with information about dependencies to be injected into constructor
-            // it is better to have it close to the constructor, because the parameters must match in count and type.
-            // See http://docs.angularjs.org/guide/di
-            SearchFormCtrl.$inject = [
-                '$scope',
-                'mapService'
-            ];
             return SearchFormCtrl;
         }());
+        // $inject annotation.
+        // It provides $injector with information about dependencies to be injected into constructor
+        // it is better to have it close to the constructor, because the parameters must match in count and type.
+        // See http://docs.angularjs.org/guide/di
+        SearchFormCtrl.$inject = [
+            '$scope',
+            'mapService'
+        ];
         Search.SearchFormCtrl = SearchFormCtrl;
     })(Search = csComp.Search || (csComp.Search = {}));
 })(csComp || (csComp = {}));
@@ -22864,8 +23370,8 @@ var Dashboard;
                     // The stop() function of a widget sits in the controller. We can reach the controller through the
                     // scope of the widget element.
                     try {
-                        var wElm = document.getElementById(w.elementId);
-                        var wScope = angular.element((wElm.children[0]).children[0]).scope(); // The widget is a child of the widget-container
+                        var wElm = document.getElementById(w.elementId + "-parent");
+                        var wScope = angular.element(wElm).children().children().scope(); // The widget is a grandchild of the widget-parent
                         if (wScope && wScope.vm && wScope.vm.stop) {
                             wScope.vm.stop();
                         }
@@ -22893,6 +23399,7 @@ var Dashboard;
                 widget._left = widget.left;
                 widget._right = widget.right;
                 widget._zindex = '1';
+                widget._gridContainer = widget.inGridContainer; // Responsive container https://getbootstrap.com/examples/grid/
             }
         };
         DashboardCtrl.prototype.toggleWidget = function (widget) {
@@ -22948,45 +23455,46 @@ var Dashboard;
                 o.action(w);
         };
         DashboardCtrl.prototype.updateWidget = function (w) {
+            var _this = this;
             //console.log('updating widget ' + w.directive);
             if (w._initialized && this.$scope.dashboard._initialized)
                 return;
-            w._initialized = true;
-            var widgetElement;
-            var newScope = this.$scope;
-            newScope.widget = w;
-            if (w.position === 'rightpanel') {
-                var rpt = csComp.Helpers.createRightPanelTab(w.id, w.directive, w.data, w.title, '{{"FEATURE_INFO" | translate}}', w.icon, true, false);
-                rpt.open = false;
-                this.$messageBusService.publish('rightpanel', 'activate', rpt);
-            }
-            else {
-                if (w.template) {
-                    widgetElement = this.$compile(this.$templateCache.get(w.template))(newScope);
-                }
-                else if (w.url) {
-                    widgetElement = this.$compile('<div>url</div>')(this.$scope);
-                }
-                else if (w.directive) {
-                    //var newScope : ng.IScope;
-                    widgetElement = this.$compile('<' + w.directive + '></' + w.directive + '>')(newScope);
+            this.$timeout(function () {
+                w._initialized = true;
+                var widgetElement;
+                var newScope = _this.$scope;
+                newScope.widget = w;
+                if (w.position === 'rightpanel') {
+                    var rpt = csComp.Helpers.createRightPanelTab(w.id, w.directive, w.data, w.title, '{{"FEATURE_INFO" | translate}}', w.icon, true, false);
+                    rpt.open = false;
+                    _this.$messageBusService.publish('rightpanel', 'activate', rpt);
                 }
                 else {
-                    widgetElement = this.$compile('<div></div>')(this.$scope);
+                    if (w.template) {
+                        widgetElement = _this.$compile(_this.$templateCache.get(w.template))(newScope);
+                    }
+                    else if (w.url) {
+                        widgetElement = _this.$compile('<div>url</div>')(_this.$scope);
+                    }
+                    else if (w.directive) {
+                        //var newScope : ng.IScope;
+                        widgetElement = _this.$compile('<' + w.directive + '></' + w.directive + '>')(newScope);
+                    }
+                    else {
+                        widgetElement = _this.$compile('<div></div>')(_this.$scope);
+                    }
                 }
-            }
-            this.getOptions(w);
-            if (widgetElement) {
-                //alert(w.elementId);
-                this.updateWidgetPosition(w);
-                var el = $('#' + w.elementId);
-                //if (w._isFullscreen) el = $('#dashboard-widget-fullscreen');
-                el.empty();
-                el.append(widgetElement);
-            }
-            if (this.$scope.$root.$$phase !== '$apply' && this.$scope.$root.$$phase !== '$digest') {
-                this.$scope.$apply();
-            }
+                _this.getOptions(w);
+                if (widgetElement) {
+                    //alert(w.elementId);
+                    _this.updateWidgetPosition(w);
+                    var el = $('#' + w.elementId + '-parent');
+                    //if (w._isFullscreen) el = $('#dashboard-widget-fullscreen');
+                    el.empty();
+                    el.append(widgetElement);
+                }
+            }, 0);
+            // if (this.$scope.$root.$$phase !== '$apply' && this.$scope.$root.$$phase !== '$digest') { this.$scope.$apply(); }
         };
         DashboardCtrl.prototype.toggleInteract = function (widget) {
             widget._interaction = !widget._interaction;
@@ -23034,6 +23542,7 @@ var Dashboard;
             if (db.description) {
                 var rpt = csComp.Helpers.createRightPanelTab('headerinfo', 'infowidget', { title: db.name, mdText: db.description }, 'Selected feature', '{{"FEATURE_INFO" | translate}}', 'question', true, false);
                 this.$messageBusService.publish('rightpanel', 'activate', rpt);
+                //this.$layerService.visual.rightPanelVisible = true; // otherwise, the rightpanel briefly flashes open before closing.
             }
         };
         DashboardCtrl.prototype.checkLayers = function () {
@@ -23223,6 +23732,7 @@ var Dashboard;
             if (!d._initialized) {
                 this.$layerService.visual.leftPanelVisible = d.showLeftmenu;
                 this.$layerService.visual.rightPanelVisible = d.showRightmenu;
+                this.$layerService.visual.navbarVisible = d.showNavbar;
             }
             this.updateWidgetsThrottled(d.widgets, function () {
                 d._initialized = true;
@@ -23251,22 +23761,22 @@ var Dashboard;
                 cb();
             }
         };
-        //public dashboard: csComp.Services.Dashboard;
-        // $inject annotation.
-        // It provides $injector with information about dependencies to be in  jected into constructor
-        // it is better to have it close to the constructor, because the parameters must match in count and type.
-        // See http://docs.angularjs.org/guide/di
-        DashboardCtrl.$inject = [
-            '$scope',
-            '$compile',
-            'layerService',
-            'mapService',
-            'messageBusService',
-            'dashboardService',
-            '$templateCache', '$timeout'
-        ];
         return DashboardCtrl;
     }());
+    //public dashboard: csComp.Services.Dashboard;
+    // $inject annotation.
+    // It provides $injector with information about dependencies to be in  jected into constructor
+    // it is better to have it close to the constructor, because the parameters must match in count and type.
+    // See http://docs.angularjs.org/guide/di
+    DashboardCtrl.$inject = [
+        '$scope',
+        '$compile',
+        'layerService',
+        'mapService',
+        'messageBusService',
+        'dashboardService',
+        '$templateCache', '$timeout'
+    ];
     Dashboard_1.DashboardCtrl = DashboardCtrl;
 })(Dashboard || (Dashboard = {}));
 //# sourceMappingURL=DashboardCtrl.js.map
@@ -23319,19 +23829,19 @@ var DashboarHeaderdSelection;
             var res = this.$layerService.project.dashboards.filter(function (d) { return (d.parents && d.parents.indexOf(db.id) > -1); });
             return res;
         };
-        // $inject annotation.
-        // It provides $injector with information about dependencies to be injected into constructor
-        // it is better to have it close to the constructor, because the parameters must match in count and type.
-        // See http://docs.angularjs.org/guide/di
-        DashboardHeaderSelectionCtrl.$inject = [
-            '$scope',
-            'layerService',
-            'dashboardService',
-            'mapService',
-            'messageBusService'
-        ];
         return DashboardHeaderSelectionCtrl;
     }());
+    // $inject annotation.
+    // It provides $injector with information about dependencies to be injected into constructor
+    // it is better to have it close to the constructor, because the parameters must match in count and type.
+    // See http://docs.angularjs.org/guide/di
+    DashboardHeaderSelectionCtrl.$inject = [
+        '$scope',
+        'layerService',
+        'dashboardService',
+        'mapService',
+        'messageBusService'
+    ];
     DashboarHeaderdSelection.DashboardHeaderSelectionCtrl = DashboardHeaderSelectionCtrl;
 })(DashboarHeaderdSelection || (DashboarHeaderdSelection = {}));
 //# sourceMappingURL=DashboardHeaderSelectionCtrl.js.map
@@ -23367,23 +23877,7 @@ var DashboardSelection;
                 //        fn(scope);
                 //    };
                 //},
-                link: function (scope, element, attrs) {
-                    // Deal with resizing the element list
-                    scope.onResizeFunction = function () {
-                        var filterHeight = 50;
-                        var paginationCtrlHeight = 100;
-                        var itemHeight = 60;
-                        //scope.windowHeight          = $window.innerHeight;
-                        //scope.windowWidth           = $window.innerWidth;
-                        scope.numberOfItems = Math.floor(($window.innerHeight - filterHeight - paginationCtrlHeight) / itemHeight);
-                    };
-                    // Call to the function when the page is first loaded
-                    scope.onResizeFunction();
-                    angular.element($window).bind('resize', function () {
-                        scope.onResizeFunction();
-                        scope.$apply();
-                    });
-                },
+                link: function (scope, element, attrs) { },
                 replace: true,
                 transclude: true,
                 controller: DashboardSelection.DashboardSelectionCtrl
@@ -23539,21 +24033,23 @@ var DashboardSelection;
                     _this.publishDashboardUpdate();
                     //this.checkLayers();
                 }, 100);
+                // render all widgets
+                //this.refreshDashboard();
             }
         };
-        // $inject annotation.
-        // It provides $injector with information about dependencies to be injected into constructor
-        // it is better to have it close to the constructor, because the parameters must match in count and type.
-        // See http://docs.angularjs.org/guide/di
-        DashboardSelectionCtrl.$inject = [
-            '$scope',
-            'layerService',
-            'dashboardService',
-            'mapService',
-            'messageBusService'
-        ];
         return DashboardSelectionCtrl;
     }());
+    // $inject annotation.
+    // It provides $injector with information about dependencies to be injected into constructor
+    // it is better to have it close to the constructor, because the parameters must match in count and type.
+    // See http://docs.angularjs.org/guide/di
+    DashboardSelectionCtrl.$inject = [
+        '$scope',
+        'layerService',
+        'dashboardService',
+        'mapService',
+        'messageBusService'
+    ];
     DashboardSelection.DashboardSelectionCtrl = DashboardSelectionCtrl;
 })(DashboardSelection || (DashboardSelection = {}));
 //# sourceMappingURL=DashboardSelectionCtrl.js.map
@@ -23638,23 +24134,23 @@ var Search;
         SearchCtrl.prototype.selectFirst = function () {
             this.$messageBusService.publish('search', 'selectFirstResult');
         };
-        //public dashboard: csComp.Services.Dashboard;
-        // $inject annotation.
-        // It provides $injector with information about dependencies to be in  jected into constructor
-        // it is better to have it close to the constructor, because the parameters must match in count and type.
-        // See http://docs.angularjs.org/guide/di
-        SearchCtrl.$inject = [
-            '$scope',
-            '$compile',
-            'layerService',
-            'mapService',
-            'messageBusService',
-            'dashboardService',
-            '$templateCache',
-            '$timeout'
-        ];
         return SearchCtrl;
     }());
+    //public dashboard: csComp.Services.Dashboard;
+    // $inject annotation.
+    // It provides $injector with information about dependencies to be in  jected into constructor
+    // it is better to have it close to the constructor, because the parameters must match in count and type.
+    // See http://docs.angularjs.org/guide/di
+    SearchCtrl.$inject = [
+        '$scope',
+        '$compile',
+        'layerService',
+        'mapService',
+        'messageBusService',
+        'dashboardService',
+        '$templateCache',
+        '$timeout'
+    ];
     Search.SearchCtrl = SearchCtrl;
 })(Search || (Search = {}));
 //# sourceMappingURL=SearchCtrl.js.map
@@ -23782,19 +24278,19 @@ var DashboardEdit;
                 this.$scope.$apply();
             }
         };
-        // $inject annotation.
-        // It provides $injector with information about dependencies to be injected into constructor
-        // it is better to have it close to the constructor, because the parameters must match in count and type.
-        // See http://docs.angularjs.org/guide/di
-        DashboardEditCtrl.$inject = [
-            '$scope',
-            'mapService',
-            'layerService',
-            'messageBusService',
-            'dashboardService'
-        ];
         return DashboardEditCtrl;
     }());
+    // $inject annotation.
+    // It provides $injector with information about dependencies to be injected into constructor
+    // it is better to have it close to the constructor, because the parameters must match in count and type.
+    // See http://docs.angularjs.org/guide/di
+    DashboardEditCtrl.$inject = [
+        '$scope',
+        'mapService',
+        'layerService',
+        'messageBusService',
+        'dashboardService'
+    ];
     DashboardEdit.DashboardEditCtrl = DashboardEditCtrl;
 })(DashboardEdit || (DashboardEdit = {}));
 //# sourceMappingURL=DashboardEditCtrl.js.map
@@ -23863,19 +24359,19 @@ var WidgetEdit;
             this.dashboardService.deactivateTabContainer("widget-content");
             this.dashboardService.deactivateTabContainer("widget");
         };
-        // $inject annotation.
-        // It provides $injector with information about dependencies to be injected into constructor
-        // it is better to have it close to the constructor, because the parameters must match in count and type.
-        // See http://docs.angularjs.org/guide/di
-        WidgetEditCtrl.$inject = [
-            '$scope',
-            'mapService',
-            'layerService',
-            'messageBusService',
-            'dashboardService'
-        ];
         return WidgetEditCtrl;
     }());
+    // $inject annotation.
+    // It provides $injector with information about dependencies to be injected into constructor
+    // it is better to have it close to the constructor, because the parameters must match in count and type.
+    // See http://docs.angularjs.org/guide/di
+    WidgetEditCtrl.$inject = [
+        '$scope',
+        'mapService',
+        'layerService',
+        'messageBusService',
+        'dashboardService'
+    ];
     WidgetEdit.WidgetEditCtrl = WidgetEditCtrl;
 })(WidgetEdit || (WidgetEdit = {}));
 //# sourceMappingURL=WidgetEditCtrl.js.map
@@ -23972,17 +24468,17 @@ var FeatureTypeEditor;
             this.$layerService.updateFeatureTypes(this.$scope.featureType);
             this.$messageBusService.publish("featuretype", "stopEditing");
         };
-        // $inject annotation.
-        // It provides $injector with information about dependencies to be in  jected into constructor
-        // it is better to have it close to the constructor, because the parameters must match in count and type.
-        // See http://docs.angularjs.org/guide/di
-        FeatureTypeEditorCtrl.$inject = [
-            '$scope',
-            'layerService',
-            'messageBusService'
-        ];
         return FeatureTypeEditorCtrl;
     }());
+    // $inject annotation.
+    // It provides $injector with information about dependencies to be in  jected into constructor
+    // it is better to have it close to the constructor, because the parameters must match in count and type.
+    // See http://docs.angularjs.org/guide/di
+    FeatureTypeEditorCtrl.$inject = [
+        '$scope',
+        'layerService',
+        'messageBusService'
+    ];
     FeatureTypeEditor.FeatureTypeEditorCtrl = FeatureTypeEditorCtrl;
 })(FeatureTypeEditor || (FeatureTypeEditor = {}));
 //# sourceMappingURL=FeatureTypeEditorCtrl.js.map
@@ -24059,17 +24555,17 @@ var FeatureTypes;
                 this.selectedResource = this.$layerService.typesResources[this.selectedResourceUrl];
             }
         };
-        // $inject annotation.
-        // It provides $injector with information about dependencies to be in  jected into constructor
-        // it is better to have it close to the constructor, because the parameters must match in count and type.
-        // See http://docs.angularjs.org/guide/di
-        FeatureTypesCtrl.$inject = [
-            '$scope',
-            'layerService',
-            'messageBusService'
-        ];
         return FeatureTypesCtrl;
     }());
+    // $inject annotation.
+    // It provides $injector with information about dependencies to be in  jected into constructor
+    // it is better to have it close to the constructor, because the parameters must match in count and type.
+    // See http://docs.angularjs.org/guide/di
+    FeatureTypesCtrl.$inject = [
+        '$scope',
+        'layerService',
+        'messageBusService'
+    ];
     FeatureTypes.FeatureTypesCtrl = FeatureTypesCtrl;
 })(FeatureTypes || (FeatureTypes = {}));
 //# sourceMappingURL=FeatureTypesCtrl.js.map
@@ -24143,19 +24639,19 @@ var GroupEdit;
         GroupEditCtrl.prototype.updateOws = function () {
             this.$scope.group.loadLayersFromOWS();
         };
-        // $inject annotation.
-        // It provides $injector with information about dependencies to be injected into constructor
-        // it is better to have it close to the constructor, because the parameters must match in count and type.
-        // See http://docs.angularjs.org/guide/di
-        GroupEditCtrl.$inject = [
-            '$scope',
-            'mapService',
-            'layerService',
-            'messageBusService',
-            'dashboardService'
-        ];
         return GroupEditCtrl;
     }());
+    // $inject annotation.
+    // It provides $injector with information about dependencies to be injected into constructor
+    // it is better to have it close to the constructor, because the parameters must match in count and type.
+    // See http://docs.angularjs.org/guide/di
+    GroupEditCtrl.$inject = [
+        '$scope',
+        'mapService',
+        'layerService',
+        'messageBusService',
+        'dashboardService'
+    ];
     GroupEdit.GroupEditCtrl = GroupEditCtrl;
 })(GroupEdit || (GroupEdit = {}));
 //# sourceMappingURL=GroupEditCtrl.js.map
@@ -24332,20 +24828,20 @@ var LayerEditor;
         LayerEditorCtrl.prototype.editFeaturetype = function (type) {
             this.$messageBusService.publish('featuretype', 'startEditing', type);
         };
-        // $inject annotation.
-        // It provides $injector with information about dependencies to be injected into constructor
-        // it is better to have it close to the constructor, because the parameters must match in count and type.
-        // See http://docs.angularjs.org/guide/di
-        LayerEditorCtrl.$inject = [
-            '$scope',
-            '$http',
-            'mapService',
-            'layerService',
-            'messageBusService',
-            'dashboardService'
-        ];
         return LayerEditorCtrl;
     }());
+    // $inject annotation.
+    // It provides $injector with information about dependencies to be injected into constructor
+    // it is better to have it close to the constructor, because the parameters must match in count and type.
+    // See http://docs.angularjs.org/guide/di
+    LayerEditorCtrl.$inject = [
+        '$scope',
+        '$http',
+        'mapService',
+        'layerService',
+        'messageBusService',
+        'dashboardService'
+    ];
     LayerEditor.LayerEditorCtrl = LayerEditorCtrl;
 })(LayerEditor || (LayerEditor = {}));
 //# sourceMappingURL=LayerEditorCtrl.js.map
@@ -24436,30 +24932,31 @@ var LayerSettings;
         LayerSettingsCtrl.prototype.getTypes = function () {
             var _this = this;
             this.$http.get(this.layer.typeUrl)
-                .success(function (response) {
+                .then(function (res) {
+                var response = res.data;
                 setTimeout(function () {
                     _this.availabeTypes = response.featureTypes;
                     if (_this.$scope.$root.$$phase !== '$apply' && _this.$scope.$root.$$phase !== '$digest')
                         _this.$scope.$apply();
                 }, 0);
             })
-                .error(function () { console.log('LayerEditCtl.getTypes: error with $http'); });
+                .catch(function () { console.log('LayerEditCtl.getTypes: error with $http'); });
         };
         ;
-        // $inject annotation.
-        // It provides $injector with information about dependencies to be injected into constructor
-        // it is better to have it close to the constructor, because the parameters must match in count and type.
-        // See http://docs.angularjs.org/guide/di
-        LayerSettingsCtrl.$inject = [
-            '$scope',
-            '$http',
-            'mapService',
-            'layerService',
-            'messageBusService',
-            'dashboardService'
-        ];
         return LayerSettingsCtrl;
     }());
+    // $inject annotation.
+    // It provides $injector with information about dependencies to be injected into constructor
+    // it is better to have it close to the constructor, because the parameters must match in count and type.
+    // See http://docs.angularjs.org/guide/di
+    LayerSettingsCtrl.$inject = [
+        '$scope',
+        '$http',
+        'mapService',
+        'layerService',
+        'messageBusService',
+        'dashboardService'
+    ];
     LayerSettings.LayerSettingsCtrl = LayerSettingsCtrl;
 })(LayerSettings || (LayerSettings = {}));
 //# sourceMappingURL=LayerSettingsCtrl.js.map
@@ -24655,17 +25152,17 @@ var PropertyTypes;
                 this.selectedResource = this.$layerService.typesResources[this.selectedResourceUrl];
             }
         };
-        // $inject annotation.
-        // It provides $injector with information about dependencies to be in  jected into constructor
-        // it is better to have it close to the constructor, because the parameters must match in count and type.
-        // See http://docs.angularjs.org/guide/di
-        PropertyTypesCtrl.$inject = [
-            '$scope',
-            'layerService',
-            'messageBusService'
-        ];
         return PropertyTypesCtrl;
     }());
+    // $inject annotation.
+    // It provides $injector with information about dependencies to be in  jected into constructor
+    // it is better to have it close to the constructor, because the parameters must match in count and type.
+    // See http://docs.angularjs.org/guide/di
+    PropertyTypesCtrl.$inject = [
+        '$scope',
+        'layerService',
+        'messageBusService'
+    ];
     PropertyTypes.PropertyTypesCtrl = PropertyTypesCtrl;
 })(PropertyTypes || (PropertyTypes = {}));
 //# sourceMappingURL=PropertyTypesCtrl.js.map
@@ -24721,15 +25218,15 @@ var Agenda;
             if (this.selectedLayer)
                 this.widget.data.selectedLayerId = this.selectedLayer.id;
         };
-        AgendaWidgetEditCtrl.$inject = [
-            '$scope',
-            '$http',
-            'layerService',
-            'messageBusService',
-            '$timeout'
-        ];
         return AgendaWidgetEditCtrl;
     }());
+    AgendaWidgetEditCtrl.$inject = [
+        '$scope',
+        '$http',
+        'layerService',
+        'messageBusService',
+        '$timeout'
+    ];
     Agenda.AgendaWidgetEditCtrl = AgendaWidgetEditCtrl;
 })(Agenda || (Agenda = {}));
 //# sourceMappingURL=AgendaWidget-edit.js.map
@@ -24839,15 +25336,15 @@ var Agenda;
             });
             return propValue;
         };
-        AgendaWidgetCtrl.$inject = [
-            '$scope',
-            '$http',
-            'layerService',
-            'messageBusService',
-            '$timeout'
-        ];
         return AgendaWidgetCtrl;
     }());
+    AgendaWidgetCtrl.$inject = [
+        '$scope',
+        '$http',
+        'layerService',
+        'messageBusService',
+        '$timeout'
+    ];
     Agenda.AgendaWidgetCtrl = AgendaWidgetCtrl;
 })(Agenda || (Agenda = {}));
 //# sourceMappingURL=AgendaWidget.js.map
@@ -24919,15 +25416,15 @@ var ButtonWidget;
             else
                 this.$scope.selectedMessage = this.$scope.data.messages[0];
         };
-        // $inject annotation.
-        ButtonWidgetEditCtrl.$inject = [
-            '$scope',
-            '$timeout',
-            'messageBusService',
-            'dashboardService'
-        ];
         return ButtonWidgetEditCtrl;
     }());
+    // $inject annotation.
+    ButtonWidgetEditCtrl.$inject = [
+        '$scope',
+        '$timeout',
+        'messageBusService',
+        'dashboardService'
+    ];
     ButtonWidget.ButtonWidgetEditCtrl = ButtonWidgetEditCtrl;
 })(ButtonWidget || (ButtonWidget = {}));
 //# sourceMappingURL=ButtonWidget-edit.js.map
@@ -25250,17 +25747,17 @@ var ButtonWidget;
                 $('#filter-tab').tab('show');
             }
         };
-        ButtonWidgetCtrl.$inject = [
-            '$scope',
-            '$http',
-            'layerService',
-            'messageBusService',
-            'actionService',
-            '$timeout',
-            '$sce'
-        ];
         return ButtonWidgetCtrl;
     }());
+    ButtonWidgetCtrl.$inject = [
+        '$scope',
+        '$http',
+        'layerService',
+        'messageBusService',
+        'actionService',
+        '$timeout',
+        '$sce'
+    ];
     ButtonWidget.ButtonWidgetCtrl = ButtonWidgetCtrl;
 })(ButtonWidget || (ButtonWidget = {}));
 //# sourceMappingURL=ButtonWidget.js.map
@@ -25330,21 +25827,21 @@ var ChartsWidget;
             var _this = this;
             vg.parse.spec(this.$scope.data.spec, function (chart) { chart({ el: "#vis" + _this.$scope.data._id }).update(); });
         };
-        // $inject annotation.
-        // It provides $injector with information about dependencies to be injected into constructor
-        // it is better to have it close to the constructor, because the parameters must match in count and type.
-        // See http://docs.angularjs.org/guide/di
-        ChartsEditCtrl.$inject = [
-            '$scope',
-            '$timeout',
-            '$compile',
-            'layerService',
-            '$templateCache',
-            'messageBusService',
-            'mapService', 'dashboardService'
-        ];
         return ChartsEditCtrl;
     }());
+    // $inject annotation.
+    // It provides $injector with information about dependencies to be injected into constructor
+    // it is better to have it close to the constructor, because the parameters must match in count and type.
+    // See http://docs.angularjs.org/guide/di
+    ChartsEditCtrl.$inject = [
+        '$scope',
+        '$timeout',
+        '$compile',
+        'layerService',
+        '$templateCache',
+        'messageBusService',
+        'mapService', 'dashboardService'
+    ];
     ChartsWidget.ChartsEditCtrl = ChartsEditCtrl;
 })(ChartsWidget || (ChartsWidget = {}));
 //# sourceMappingURL=Charts-edit.js.map
@@ -25566,18 +26063,25 @@ var ChartsWidget;
                         }
                     });
                 }
+                //vgspec = d.spec;
+                //if (d.lite) vgspec = vl.compile(d.spec);
+                //vg.parse.spec(vgspec, (chart) => { chart({ el: '#vis' + d._id }).update(); });
+                //d._view.update();
+                //break;
+                //     }
+                // });
             }
         };
-        ChartCtrl.$inject = [
-            '$scope',
-            '$timeout',
-            'layerService',
-            'messageBusService',
-            'mapService',
-            'dashboardService'
-        ];
         return ChartCtrl;
     }());
+    ChartCtrl.$inject = [
+        '$scope',
+        '$timeout',
+        'layerService',
+        'messageBusService',
+        'mapService',
+        'dashboardService'
+    ];
     ChartsWidget.ChartCtrl = ChartCtrl;
 })(ChartsWidget || (ChartsWidget = {}));
 //# sourceMappingURL=ChartsCtrl.js.map
@@ -25669,7 +26173,7 @@ var CompareWidget;
             $scope.data = this.widget.data;
             if (!$scope.data)
                 $scope.data = { numbersOnly: true };
-            this.parentWidget = $('#' + this.widget.elementId).parent();
+            this.parentWidget = $('#' + (this.widget.elementId + "-parent"));
             this.parentWidget.hide();
             this.mBusHandles.push($messageBusService.subscribe('feature', function (title, feature) {
                 switch (title) {
@@ -25760,22 +26264,22 @@ var CompareWidget;
             });
             return entries;
         };
-        // $inject annotation.
-        // It provides $injector with information about dependencies to be injected into constructor
-        // it is better to have it close to the constructor, because the parameters must match in count and type.
-        // See http://docs.angularjs.org/guide/di
-        CompareWidgetCtrl.$inject = [
-            '$scope',
-            '$location',
-            '$timeout',
-            '$sce',
-            'mapService',
-            'layerService',
-            'messageBusService',
-            '$translate'
-        ];
         return CompareWidgetCtrl;
     }());
+    // $inject annotation.
+    // It provides $injector with information about dependencies to be injected into constructor
+    // it is better to have it close to the constructor, because the parameters must match in count and type.
+    // See http://docs.angularjs.org/guide/di
+    CompareWidgetCtrl.$inject = [
+        '$scope',
+        '$location',
+        '$timeout',
+        '$sce',
+        'mapService',
+        'layerService',
+        'messageBusService',
+        '$translate'
+    ];
     CompareWidget.CompareWidgetCtrl = CompareWidgetCtrl;
 })(CompareWidget || (CompareWidget = {}));
 //# sourceMappingURL=CompareWidgetCtrl.js.map
@@ -25904,6 +26408,7 @@ var Filters;
                 if (d.id && d.layer && d.layer.group && d.layer.group.markers && d.layer.group.markers.hasOwnProperty(d.id)) {
                     var marker = d.layer.group.markers[d.id];
                     return (marker.feature.geometry.coordinates);
+                    //group.filterResult.push(feature);
                 }
                 return null;
             });
@@ -25966,19 +26471,19 @@ var Filters;
                 this.$layerService.removeFilter(this.$scope.filter);
             }
         };
-        // $inject annotation.
-        // It provides $injector with information about dependencies to be injected into constructor
-        // it is better to have it close to the constructor, because the parameters must match in count and type.
-        // See http://docs.angularjs.org/guide/di
-        AreaFilterCtrl.$inject = [
-            '$scope',
-            'layerService',
-            'messageBusService',
-            '$timeout',
-            '$translate'
-        ];
         return AreaFilterCtrl;
     }());
+    // $inject annotation.
+    // It provides $injector with information about dependencies to be injected into constructor
+    // it is better to have it close to the constructor, because the parameters must match in count and type.
+    // See http://docs.angularjs.org/guide/di
+    AreaFilterCtrl.$inject = [
+        '$scope',
+        'layerService',
+        'messageBusService',
+        '$timeout',
+        '$translate'
+    ];
     Filters.AreaFilterCtrl = AreaFilterCtrl;
 })(Filters || (Filters = {}));
 //# sourceMappingURL=AreaFilterCtrl.js.map
@@ -26139,19 +26644,19 @@ var Filters;
                 this.$layerService.removeFilter(this.$scope.filter);
             }
         };
-        // $inject annotation.
-        // It provides $injector with information about dependencies to be injected into constructor
-        // it is better to have it close to the constructor, because the parameters must match in count and type.
-        // See http://docs.angularjs.org/guide/di
-        BarFilterCtrl.$inject = [
-            '$scope',
-            'layerService',
-            'messageBusService',
-            '$timeout',
-            '$translate'
-        ];
         return BarFilterCtrl;
     }());
+    // $inject annotation.
+    // It provides $injector with information about dependencies to be injected into constructor
+    // it is better to have it close to the constructor, because the parameters must match in count and type.
+    // See http://docs.angularjs.org/guide/di
+    BarFilterCtrl.$inject = [
+        '$scope',
+        'layerService',
+        'messageBusService',
+        '$timeout',
+        '$translate'
+    ];
     Filters.BarFilterCtrl = BarFilterCtrl;
 })(Filters || (Filters = {}));
 //# sourceMappingURL=BarFilterCtrl.js.map
@@ -26216,17 +26721,17 @@ var Filters;
                 this.$layerService.removeFilter(this.$scope.filter);
             }
         };
-        // $inject annotation.
-        // It provides $injector with information about dependencies to be injected into constructor
-        // it is better to have it close to the constructor, because the parameters must match in count and type.
-        // See http://docs.angularjs.org/guide/di
-        BoolFilterCtrl.$inject = [
-            '$scope',
-            'layerService',
-            'messageBusService'
-        ];
         return BoolFilterCtrl;
     }());
+    // $inject annotation.
+    // It provides $injector with information about dependencies to be injected into constructor
+    // it is better to have it close to the constructor, because the parameters must match in count and type.
+    // See http://docs.angularjs.org/guide/di
+    BoolFilterCtrl.$inject = [
+        '$scope',
+        'layerService',
+        'messageBusService'
+    ];
     Filters.BoolFilterCtrl = BoolFilterCtrl;
 })(Filters || (Filters = {}));
 //# sourceMappingURL=BoolFilterCtrl.js.map
@@ -26261,6 +26766,9 @@ var Filters;
                     }
                 });
                 $scope.$watch('vm.switch', function () { _this.updateDateFilter(); });
+                // $scope.$watch('filter.stringValue', ()=> {
+                //
+                // });
             }
         }
         DateFilterCtrl.prototype.select = function () {
@@ -26317,17 +26825,17 @@ var Filters;
                 this.$layerService.removeFilter(this.$scope.filter);
             }
         };
-        // $inject annotation.
-        // It provides $injector with information about dependencies to be injected into constructor
-        // it is better to have it close to the constructor, because the parameters must match in count and type.
-        // See http://docs.angularjs.org/guide/di
-        DateFilterCtrl.$inject = [
-            '$scope',
-            'layerService',
-            'messageBusService'
-        ];
         return DateFilterCtrl;
     }());
+    // $inject annotation.
+    // It provides $injector with information about dependencies to be injected into constructor
+    // it is better to have it close to the constructor, because the parameters must match in count and type.
+    // See http://docs.angularjs.org/guide/di
+    DateFilterCtrl.$inject = [
+        '$scope',
+        'layerService',
+        'messageBusService'
+    ];
     Filters.DateFilterCtrl = DateFilterCtrl;
 })(Filters || (Filters = {}));
 //# sourceMappingURL=DateFilterCtrl.js.map
@@ -26467,19 +26975,19 @@ var Filters;
                 this.$layerService.removeFilter(this.$scope.filter);
             }
         };
-        // $inject annotation.
-        // It provides $injector with information about dependencies to be injected into constructor
-        // it is better to have it close to the constructor, because the parameters must match in count and type.
-        // See http://docs.angularjs.org/guide/di
-        LocationFilterCtrl.$inject = [
-            '$scope',
-            'layerService',
-            'messageBusService',
-            '$timeout',
-            '$translate'
-        ];
         return LocationFilterCtrl;
     }());
+    // $inject annotation.
+    // It provides $injector with information about dependencies to be injected into constructor
+    // it is better to have it close to the constructor, because the parameters must match in count and type.
+    // See http://docs.angularjs.org/guide/di
+    LocationFilterCtrl.$inject = [
+        '$scope',
+        'layerService',
+        'messageBusService',
+        '$timeout',
+        '$translate'
+    ];
     Filters.LocationFilterCtrl = LocationFilterCtrl;
 })(Filters || (Filters = {}));
 //# sourceMappingURL=LocationFilterCtrl.js.map
@@ -26646,7 +27154,7 @@ var Filters;
                 }, 100);
             })
                 .on('filtered', function (e) {
-                console.log('Filtered rowchart');
+                console.log("Filtered rowchart (" + e.dimension().top(1000).length + ")");
             });
             this.dcChart.xAxis().ticks(8);
             this.dcChart.selectAll();
@@ -26730,19 +27238,19 @@ var Filters;
                     canvas.parentElement.removeChild(canvas);
                 } });
         };
-        // $inject annotation.
-        // It provides $injector with information about dependencies to be injected into constructor
-        // it is better to have it close to the constructor, because the parameters must match in count and type.
-        // See http://docs.angularjs.org/guide/di
-        RowFilterCtrl.$inject = [
-            '$scope',
-            'layerService',
-            'messageBusService',
-            '$timeout',
-            '$translate'
-        ];
         return RowFilterCtrl;
     }());
+    // $inject annotation.
+    // It provides $injector with information about dependencies to be injected into constructor
+    // it is better to have it close to the constructor, because the parameters must match in count and type.
+    // See http://docs.angularjs.org/guide/di
+    RowFilterCtrl.$inject = [
+        '$scope',
+        'layerService',
+        'messageBusService',
+        '$timeout',
+        '$translate'
+    ];
     Filters.RowFilterCtrl = RowFilterCtrl;
 })(Filters || (Filters = {}));
 //# sourceMappingURL=RowFilterCtrl.js.map
@@ -26851,18 +27359,18 @@ var Filters;
                 this.$layerService.removeFilter(this.$scope.filter);
             }
         };
-        // $inject annotation.
-        // It provides $injector with information about dependencies to be injected into constructor
-        // it is better to have it close to the constructor, because the parameters must match in count and type.
-        // See http://docs.angularjs.org/guide/di
-        ScatterFilterCtrl.$inject = [
-            '$scope',
-            'layerService',
-            'messageBusService',
-            '$timeout'
-        ];
         return ScatterFilterCtrl;
     }());
+    // $inject annotation.
+    // It provides $injector with information about dependencies to be injected into constructor
+    // it is better to have it close to the constructor, because the parameters must match in count and type.
+    // See http://docs.angularjs.org/guide/di
+    ScatterFilterCtrl.$inject = [
+        '$scope',
+        'layerService',
+        'messageBusService',
+        '$timeout'
+    ];
     Filters.ScatterFilterCtrl = ScatterFilterCtrl;
 })(Filters || (Filters = {}));
 //# sourceMappingURL=ScatterFilterCtrl.js.map
@@ -26894,7 +27402,7 @@ var Filters;
                     var fn = $compile(el);
                     //console.log('this is the compile function of legendDirective');
                     return function (scope) {
-                        fn(scope);
+                        fn(scope, function () { }); //https://docs.angularjs.org/error/$compile/multilink
                     };
                 },
                 replace: true,
@@ -26957,7 +27465,7 @@ var Filters;
                     var fn = $compile(el);
                     //console.log('this is the compile function of legendDirective');
                     return function (scope) {
-                        fn(scope);
+                        fn(scope, function () { }); //https://docs.angularjs.org/error/$compile/multilink
                     };
                 },
                 replace: true,
@@ -27121,20 +27629,353 @@ var Filters;
                 this.$layerService.removeFilter(this.$scope.filter);
             }
         };
-        // $inject annotation.
-        // It provides $injector with information about dependencies to be injected into constructor
-        // it is better to have it close to the constructor, because the parameters must match in count and type.
-        // See http://docs.angularjs.org/guide/di
-        TextFilterCtrl.$inject = [
-            '$scope',
-            'layerService',
-            'messageBusService'
-        ];
         return TextFilterCtrl;
     }());
+    // $inject annotation.
+    // It provides $injector with information about dependencies to be injected into constructor
+    // it is better to have it close to the constructor, because the parameters must match in count and type.
+    // See http://docs.angularjs.org/guide/di
+    TextFilterCtrl.$inject = [
+        '$scope',
+        'layerService',
+        'messageBusService'
+    ];
     Filters.TextFilterCtrl = TextFilterCtrl;
 })(Filters || (Filters = {}));
 //# sourceMappingURL=TextFilterCtrl.js.map
+var Filters;
+(function (Filters) {
+    /* Custom implementation of the rowfilter for wodk */
+    var WodkRowFilterCtrl = (function () {
+        // dependencies are injected via AngularJS $injector
+        // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
+        function WodkRowFilterCtrl($scope, $layerService, $messageBus, $timeout, $translate) {
+            var _this = this;
+            this.$scope = $scope;
+            this.$layerService = $layerService;
+            this.$messageBus = $messageBus;
+            this.$timeout = $timeout;
+            this.$translate = $translate;
+            $scope.vm = this;
+            $translate('REMOVE').then(function (translation) {
+                $scope.removeString = translation;
+            });
+            $translate('CREATE_SCATTER').then(function (translation) {
+                $scope.createScatterString = translation;
+            });
+            $translate('SAVE_AS_IMAGE').then(function (translation) {
+                $scope.saveAsImageString = translation;
+            });
+            var par = $scope.$parent.$parent;
+            if (par.hasOwnProperty('filter')) {
+                $scope.filter = par['filter'];
+            }
+            else {
+            }
+            if (window.canvg) {
+                this.exporterAvailable = true;
+            }
+            else {
+                this.exporterAvailable = false;
+            }
+            this.$messageBus.subscribe('filters', function (title, groupId) {
+                switch (title) {
+                    case 'updateGroup':
+                        if ($scope.filter && $scope.filter.group.id === groupId) {
+                            _this.updateFilter();
+                        }
+                        break;
+                }
+            });
+            if ($scope && $scope.filter) {
+                setTimeout(function () { return _this.initRowFilter(); });
+                //$timeout.call(()=>this.initBarFilter());
+                $scope.options = (function () {
+                    var res = [];
+                    res.push([$scope.removeString, function () { return _this.remove(); }]);
+                    $scope.filter.group.filters.forEach(function (gf) {
+                        if (gf.filterType == "row" && gf.property != $scope.filter.property) {
+                            res.push([$scope.createScatterString + ' ' + gf.title, function () { return _this.createScatter(gf); }]);
+                        }
+                    });
+                    if (_this.exporterAvailable) {
+                        res.push([$scope.saveAsImageString, function () { return _this.exportToImage(); }]);
+                    }
+                    return res;
+                });
+            }
+        }
+        WodkRowFilterCtrl.prototype.createScatter = function (gf) {
+            this.$layerService.createScatterFilter(this.$scope.filter.group, this.$scope.filter.property, gf.property);
+        };
+        WodkRowFilterCtrl.prototype.initRowFilter = function () {
+            var _this = this;
+            var filter = this.$scope.filter;
+            var group = filter.group;
+            var divid = 'filter_' + filter.id;
+            // Use the default dc-rowChart, unless a customRowChart is available
+            if (window.customRowChart) {
+                dc.customRowChart = window.customRowChart;
+                this.dcChart = dc.customRowChart('#' + divid);
+            }
+            else {
+                this.dcChart = dc.rowChart('#' + divid);
+            }
+            this.$scope.$apply();
+            var pt;
+            var orderList = {};
+            var dcDim = group.ndx.dimension(function (d) {
+                if (!pt)
+                    pt = _this.$layerService.getPropertyType(d, filter.property);
+                if (!d.properties.hasOwnProperty(filter.property)) {
+                    if (pt && pt.legend && pt.legend.hasOwnProperty('defaultLabel')) {
+                        return pt.legend.defaultLabel;
+                    }
+                    else {
+                        return null;
+                    }
+                }
+                else {
+                    if (d.properties[filter.property] != null) {
+                        var a = d.properties[filter.property];
+                        if (pt.type === 'options') {
+                            var r;
+                            if (pt && pt.options && pt.options.hasOwnProperty(a)) {
+                                r = pt.options[a];
+                            }
+                            else {
+                                r = a;
+                            }
+                            return r;
+                        }
+                        else if (pt.type === 'number' && pt.hasOwnProperty('legend')) {
+                            var label;
+                            pt.legend.legendEntries.some(function (le) {
+                                if (a >= le.interval.min && le.interval.max >= a) {
+                                    label = le.label;
+                                    return true;
+                                }
+                            });
+                            if (!label) {
+                                if (pt && pt.legend && pt.legend.hasOwnProperty('defaultLabel')) {
+                                    label = pt.legend.defaultLabel;
+                                }
+                                else {
+                                    label = 'Onbekend';
+                                }
+                            }
+                            return label;
+                        }
+                        else if (pt.type === 'text' || pt.type === 'textarea' || pt.type === 'textarea-right') {
+                            return a;
+                        }
+                    }
+                    return null;
+                }
+            });
+            filter.dimension = dcDim;
+            var dcGroup = dcDim.group();
+            // If a legend is present, add a group for each entry, such that it is shown in the filter even when there are no such features in the group (yet).
+            if (pt && pt.legend) {
+                var allEntries = [];
+                _.each(pt.legend.legendEntries, function (le) { allEntries.push(le.label); });
+                var fakeNdx = crossfilter(allEntries);
+                var fakeDim = fakeNdx.dimension(function (d) {
+                    return d;
+                });
+                var fakeGroup = fakeDim.group();
+                //Sort ordering
+                pt.legend.legendEntries.forEach(function (le) {
+                    if (le.hasOwnProperty('sortKey')) {
+                        var sk = le.sortKey;
+                        if (!orderList.hasOwnProperty(sk)) {
+                            orderList[le.label] = { nr: Object.keys(orderList).length, sortKey: sk };
+                        }
+                    }
+                });
+                var sortKeys = _.map(orderList, function (item) { return item.sortKey; });
+                sortKeys = sortKeys.sort();
+                _.each(orderList, function (val, key) { val.nr = sortKeys.indexOf(val.sortKey); });
+            }
+            var ensuredGroup = (fakeGroup ? this.ensureAllBins(dcGroup, fakeGroup) : null);
+            var h = (ensuredGroup && ensuredGroup.size() < 6) ? 180 : 250;
+            this.dcChart.width(275)
+                .height(h)
+                .margins({ top: 2, right: 2, bottom: 2, left: 2 })
+                .dimension(dcDim)
+                .group(ensuredGroup || dcGroup)
+                .title(function (d) {
+                return d.key;
+            })
+                .elasticX(true)
+                .colors(function (d) {
+                if (pt && pt.legend) {
+                    if (pt.options) {
+                        return csComp.Helpers.getColorFromLegend(d, pt.legend);
+                    }
+                    else if (pt.type === 'number' && !isNaN(d)) {
+                        var arr = pt.legend.legendEntries.filter(function (le) {
+                            return (d >= le.interval.min && le.interval.max >= d);
+                        });
+                        if (arr.length > 0) {
+                            return arr[0].color.substring(0, 7);
+                        }
+                        else {
+                            if (pt && pt.legend && pt.legend.hasOwnProperty('defaultLabel')) {
+                                return _.find((pt.legend.legendEntries), function (le) { return le.label === pt.legend.defaultLabel; });
+                            }
+                            else {
+                                return '#444444';
+                            }
+                        }
+                    }
+                    else if (!pt.options) {
+                        var arr = pt.legend.legendEntries.filter((function (le) { return le.label === d; }));
+                        return (arr.length > 0 ? arr[0].color.substring(0, 7) : '#444444');
+                    }
+                }
+                else {
+                    return "red";
+                }
+            })
+                .cap(10)
+                .ordering(function (d) {
+                if (pt && pt.legend) {
+                    if (orderList.hasOwnProperty(d.key)) {
+                        return orderList[d.key].nr;
+                    }
+                    else {
+                        return d.key || d.value;
+                    }
+                }
+                else {
+                    return d.key || d.value;
+                }
+            })
+                .on('renderlet', function (e) {
+                dc.events.trigger(function () {
+                    _this.$layerService.updateFilterGroupCount(group);
+                }, 0);
+                dc.events.trigger(function () {
+                    console.log('WodkRowFilterCtrl: renderlet');
+                    if (dcDim && dcDim.top(Infinity).length > 0 && typeof dcDim.top(Infinity)[0] === 'undefined') {
+                        console.log('dcDim contains undefined objects');
+                    }
+                    else {
+                        group.filterResult = dcDim.top(Infinity);
+                        _this.$layerService.updateMapFilter(group);
+                    }
+                }, 100);
+            })
+                .on('filtered', function (e) {
+                console.log('Filtered rowchart ' + e.dimension().top(1000).length + ' ' + e.anchorName());
+                group.filterResult = dcDim.top(Infinity);
+                _this.$layerService.updateMapFilter(group);
+            });
+            this.dcChart.xAxis().ticks(8);
+            this.dcChart.selectAll();
+            this.updateRange();
+        };
+        WodkRowFilterCtrl.prototype.ensureAllBins = function (source_group, fake_group) {
+            var bins = fake_group.all().slice(0);
+            return {
+                all: function () {
+                    var result = source_group.all().slice(0); // copy original results (we mustn't modify them)
+                    var found = {};
+                    result.forEach(function (d) {
+                        found[d.key] = true;
+                    });
+                    bins.forEach(function (d) {
+                        if (!found[d.key])
+                            result.push({ key: d.key, value: 0 });
+                    });
+                    return result;
+                },
+                top: function (n) {
+                    var result = source_group.all().slice(0); // copy original results (we mustn't modify them)
+                    var found = {};
+                    result.forEach(function (d) {
+                        found[d.key] = true;
+                    });
+                    bins.forEach(function (d) {
+                        if (!found[d.key])
+                            result.push({ key: d.key, value: 0 });
+                    });
+                    return result.slice(0, n);
+                },
+                size: function () {
+                    return bins.length;
+                }
+            };
+        };
+        ;
+        WodkRowFilterCtrl.prototype.updateFilter = function () {
+            var _this = this;
+            setTimeout(function () {
+                console.log('WodkRowFilterCtrl: updateFilter()');
+                if (_this.$scope.filter.filterLabel) {
+                    _this.dcChart.filter(_this.$scope.filter.filterLabel);
+                }
+                _this.dcChart.render();
+                dc.renderAll();
+                _this.$layerService.updateMapFilter(_this.$scope.filter.group);
+            }, 20);
+        };
+        WodkRowFilterCtrl.prototype.updateRange = function () {
+            var _this = this;
+            setTimeout(function () {
+                console.log('WodkRowFilterCtrl: updateRange()');
+                var filter = _this.$scope.filter;
+                var group = filter.group;
+                _this.dcChart.filterAll();
+                if (_this.$scope.filter.filterLabel) {
+                    _this.dcChart.filter(_this.$scope.filter.filterLabel);
+                }
+                _this.dcChart.render();
+                // dc.redrawAll();
+                // dc.renderAll();
+                group.filterResult = filter.dimension.top(Infinity);
+                _this.$layerService.updateMapFilter(_this.$scope.filter.group);
+                _this.$layerService.triggerUpdateFilter(_this.$scope.filter.group.id);
+                _this.$scope.$apply();
+            }, 0);
+        };
+        WodkRowFilterCtrl.prototype.remove = function () {
+            if (this.$scope.filter) {
+                this.$layerService.removeFilter(this.$scope.filter);
+            }
+        };
+        WodkRowFilterCtrl.prototype.exportToImage = function () {
+            var _this = this;
+            var canvg = window.canvg || undefined;
+            if (!canvg)
+                return;
+            var svg = new XMLSerializer().serializeToString(this.dcChart.root().node().firstChild);
+            var canvas = document.createElement('canvas');
+            document.body.appendChild(canvas);
+            canvg(canvas, svg, { renderCallback: function () {
+                    var img = canvas.toDataURL("image/png");
+                    var fileName = _this.$scope.filter.title || 'rowfilter-export';
+                    csComp.Helpers.saveImage(img, fileName + '.png', 'png');
+                    canvas.parentElement.removeChild(canvas);
+                } });
+        };
+        return WodkRowFilterCtrl;
+    }());
+    // $inject annotation.
+    // It provides $injector with information about dependencies to be injected into constructor
+    // it is better to have it close to the constructor, because the parameters must match in count and type.
+    // See http://docs.angularjs.org/guide/di
+    WodkRowFilterCtrl.$inject = [
+        '$scope',
+        'layerService',
+        'messageBusService',
+        '$timeout',
+        '$translate'
+    ];
+    Filters.WodkRowFilterCtrl = WodkRowFilterCtrl;
+})(Filters || (Filters = {}));
+//# sourceMappingURL=WodkRowFilter.js.map
 var FilterStyleWidget;
 (function (FilterStyleWidget) {
     /**
@@ -27335,16 +28176,16 @@ var FilterStyleWidget;
                 }
             });
         };
-        FilterStyleWidgetCtrl.$inject = [
-            '$scope',
-            '$timeout',
-            '$translate',
-            'layerService',
-            'messageBusService',
-            'mapService'
-        ];
         return FilterStyleWidgetCtrl;
     }());
+    FilterStyleWidgetCtrl.$inject = [
+        '$scope',
+        '$timeout',
+        '$translate',
+        'layerService',
+        'messageBusService',
+        'mapService'
+    ];
     FilterStyleWidget.FilterStyleWidgetCtrl = FilterStyleWidgetCtrl;
 })(FilterStyleWidget || (FilterStyleWidget = {}));
 //# sourceMappingURL=FilterStyleWidgetCtrl.js.map
@@ -27410,6 +28251,7 @@ var FocusTimeWidget;
                             $scope.$evalAsync(function () {
                                 _this.time = _this.layerService.project.timeLine.focusDate().getTime();
                             });
+                            //console.log(d);
                         }
                     });
                     break;
@@ -27449,21 +28291,22 @@ var FocusTimeWidget;
                                 _this.endTime = _this.time;
                                 _this.time = et;
                             }
+                            //this.time = new Date(this.endTime.getTime() -this.layer.sensorLink.actualInterval);
                         }
                         else {
                             _this.time = _this.layer._gui["timestamp"];
                         }
                     });
         };
-        FocusTimeWidgetCtrl.$inject = [
-            '$scope',
-            '$http',
-            'layerService',
-            'messageBusService',
-            '$timeout'
-        ];
         return FocusTimeWidgetCtrl;
     }());
+    FocusTimeWidgetCtrl.$inject = [
+        '$scope',
+        '$http',
+        'layerService',
+        'messageBusService',
+        '$timeout'
+    ];
     FocusTimeWidget.FocusTimeWidgetCtrl = FocusTimeWidgetCtrl;
 })(FocusTimeWidget || (FocusTimeWidget = {}));
 //# sourceMappingURL=FocusTimeWidget.js.map
@@ -27528,15 +28371,15 @@ var HeaderWidget;
             this.$messageBus.publish('rightpanel', 'activate', rpt);
             this.$layerService.visual.rightPanelVisible = true; // otherwise, the rightpanel briefly flashes open before closing.
         };
-        HeaderWidgetCtrl.$inject = [
-            '$scope',
-            '$timeout',
-            'layerService',
-            'messageBusService',
-            'mapService'
-        ];
         return HeaderWidgetCtrl;
     }());
+    HeaderWidgetCtrl.$inject = [
+        '$scope',
+        '$timeout',
+        'layerService',
+        'messageBusService',
+        'mapService'
+    ];
     HeaderWidget.HeaderWidgetCtrl = HeaderWidgetCtrl;
 })(HeaderWidget || (HeaderWidget = {}));
 //# sourceMappingURL=HeaderWidgetCtrl.js.map
@@ -27589,15 +28432,15 @@ var InfoWidget;
                 this.parentWidget = $('#' + this.widget.elementId).parent();
             }
         }
-        InfoWidgetCtrl.$inject = [
-            '$scope',
-            '$timeout',
-            'layerService',
-            'messageBusService',
-            'mapService'
-        ];
         return InfoWidgetCtrl;
     }());
+    InfoWidgetCtrl.$inject = [
+        '$scope',
+        '$timeout',
+        'layerService',
+        'messageBusService',
+        'mapService'
+    ];
     InfoWidget.InfoWidgetCtrl = InfoWidgetCtrl;
 })(InfoWidget || (InfoWidget = {}));
 //# sourceMappingURL=InfoWidgetCtrl.js.map
@@ -27644,16 +28487,16 @@ var IFrameWidget;
         IFrameEditCtrl.prototype.update = function () {
             this.$scope.data._safeurl = this.$sce.trustAsResourceUrl(this.$scope.data.url);
         };
-        // $inject annotation.
-        // It provides $injector with information about dependencies to be injected into constructor
-        // it is better to have it close to the constructor, because the parameters must match in count and type.
-        // See http://docs.angularjs.org/guide/di
-        IFrameEditCtrl.$inject = [
-            '$scope',
-            '$sce'
-        ];
         return IFrameEditCtrl;
     }());
+    // $inject annotation.
+    // It provides $injector with information about dependencies to be injected into constructor
+    // it is better to have it close to the constructor, because the parameters must match in count and type.
+    // See http://docs.angularjs.org/guide/di
+    IFrameEditCtrl.$inject = [
+        '$scope',
+        '$sce'
+    ];
     IFrameWidget.IFrameEditCtrl = IFrameEditCtrl;
 })(IFrameWidget || (IFrameWidget = {}));
 //# sourceMappingURL=IFrame-edit.js.map
@@ -27706,15 +28549,803 @@ var IFrameWidget;
         IFrameWidgetCtrl.prototype.update = function () {
             this.$scope.data._safeurl = this.$sce.trustAsResourceUrl(this.$scope.data.url);
         };
-        IFrameWidgetCtrl.$inject = [
-            '$scope',
-            '$sce'
-        ];
         return IFrameWidgetCtrl;
     }());
+    IFrameWidgetCtrl.$inject = [
+        '$scope',
+        '$sce'
+    ];
     IFrameWidget.IFrameWidgetCtrl = IFrameWidgetCtrl;
 })(IFrameWidget || (IFrameWidget = {}));
 //# sourceMappingURL=IFrameWidgetCtrl.js.map
+var LocationWidget;
+(function (LocationWidget) {
+    /** Config */
+    var moduleName = 'csComp';
+    try {
+        LocationWidget.myModule = angular.module(moduleName);
+    }
+    catch (err) {
+        // named module does not exist, so create one
+        LocationWidget.myModule = angular.module(moduleName, []);
+    }
+    /** Directive to send a message to a REST endpoint. Similar in goal to the Chrome plugin POSTMAN. */
+    LocationWidget.myModule.directive('locationwidget', [function () {
+            return {
+                restrict: 'E',
+                scope: {},
+                templateUrl: 'directives/Widgets/LocationWidget/LocationWidget.tpl.html',
+                replace: true,
+                transclude: false,
+                controller: LocationWidgetCtrl
+            };
+        }]);
+    var LocationWidgetCtrl = (function () {
+        function LocationWidgetCtrl($scope, $http, layerService, messageBusService, actionService, $timeout) {
+            var _this = this;
+            this.$scope = $scope;
+            this.$http = $http;
+            this.layerService = layerService;
+            this.messageBusService = messageBusService;
+            this.actionService = actionService;
+            this.$timeout = $timeout;
+            this.streetViewUrl = 'https://maps.googleapis.com/maps/api/streetview';
+            this.location = {};
+            $scope.vm = this;
+            var par = $scope.$parent;
+            $scope.data = par.widget.data;
+            if ($scope.data.streetViewUrl)
+                this.streetViewUrl = $scope.data.streetViewUrl;
+            this.parentWidget = $('#' + par.widget.elementId + '-parent');
+            this.parentWidget.hide();
+            messageBusService.subscribe('geocoding', function (action, data) {
+                if (action !== 'reverseLookupResult')
+                    return;
+                _this.parentWidget.show();
+                _this.updateWidget(data);
+            });
+        }
+        LocationWidgetCtrl.prototype.updateWidget = function (data) {
+            this.location = {};
+            if (!data || !data.annotations)
+                return;
+            if (data.formatted)
+                this.location.title = data.formatted;
+            // Set address
+            if (data.components) {
+                if (data.components.postcode)
+                    this.location.postcode = data.components.postcode;
+                if (data.components.city)
+                    this.location.city = data.components.city;
+                if (data.components.neighbourhood)
+                    this.location.neighbourhood = data.components.neighbourhood;
+                if (data.components.road || data.components.pedestrian) {
+                    this.location.address = data.components.road || data.components.pedestrian;
+                    if (data.components.house_number)
+                        this.location.address += " " + data.components.house_number;
+                    this.location.streetViewUrlThumb = this.streetViewUrl + "?size=200x200&location=" + this.location.address + "," + this.location.city + "&key=" + this.$scope.data.streetViewApiKey;
+                    this.location.streetViewUrlFull = this.streetViewUrl + "?size=640x640&location=" + this.location.address + "," + this.location.city + "&key=" + this.$scope.data.streetViewApiKey;
+                }
+            }
+            // Set locations
+            this.location.locations = [];
+            if (data.geometry)
+                this.location.locations.push(data.geometry.lat + ", " + data.geometry.lng);
+            if (data.annotations.DMS)
+                this.location.locations.push("DMS latitude: " + data.annotations.DMS.lat + ", longitude: " + data.annotations.DMS.lng);
+            if (data.geometry)
+                this.location.locations.push("WGS84 latitude: " + data.geometry.lat + ", longitude: " + data.geometry.lng);
+            if (data.annotations.MGRS)
+                this.location.locations.push("MGRS: " + data.annotations.MGRS);
+            if (data.annotations.Mercator)
+                this.location.locations.push("Mercator x: " + data.annotations.Mercator.x + ", y: " + data.annotations.Mercator.y);
+            if (this.location.locations.length > 0)
+                this.selectedLocationFormat = this.location.locations[0];
+            this.location.defaultLocation = this.location.locations[0];
+            // Set sunrise and sunset
+            if (data.annotations.sun) {
+                var sunrise = new Date(data.annotations.sun.rise.apparent * 1000);
+                this.location.sunrise = String.format('{0:HH}:{0:mm}:{0:ss}', sunrise);
+                var sunset = new Date(data.annotations.sun.set.apparent * 1000);
+                this.location.sunset = String.format('{0:HH}:{0:mm}:{0:ss}', sunset);
+            }
+        };
+        LocationWidgetCtrl.prototype.close = function () {
+            this.location = {};
+            this.parentWidget.hide();
+        };
+        return LocationWidgetCtrl;
+    }());
+    LocationWidgetCtrl.$inject = [
+        '$scope',
+        '$http',
+        'layerService',
+        'messageBusService',
+        'actionService',
+        '$timeout'
+    ];
+    LocationWidget.LocationWidgetCtrl = LocationWidgetCtrl;
+})(LocationWidget || (LocationWidget = {}));
+//# sourceMappingURL=LocationWidget.js.map
+var Markdown;
+(function (Markdown) {
+    /**
+      * Config
+      */
+    var moduleName = 'csComp';
+    try {
+        Markdown.myModule = angular.module(moduleName);
+    }
+    catch (err) {
+        // named module does not exist, so create one
+        Markdown.myModule = angular.module(moduleName, []);
+    }
+    /**
+      * Directive to display the available map layers.
+      */
+    Markdown.myModule.directive('markdownwidgetEdit', [
+        '$compile',
+        function ($compile) {
+            return {
+                terminal: true,
+                restrict: 'E',
+                scope: {},
+                templateUrl: 'directives/Widgets/MarkdownWidget/Markdown-edit.tpl.html',
+                replace: true,
+                transclude: true,
+                controller: MarkdownEditCtrl
+            };
+        }
+    ]);
+    var MarkdownEditCtrl = (function () {
+        function MarkdownEditCtrl($scope, $timeout, $compile, $layerService, $templateCache, $messageBus, $mapService, $dashboardService) {
+            this.$scope = $scope;
+            this.$timeout = $timeout;
+            this.$compile = $compile;
+            this.$layerService = $layerService;
+            this.$templateCache = $templateCache;
+            this.$messageBus = $messageBus;
+            this.$mapService = $mapService;
+            this.$dashboardService = $dashboardService;
+            $scope.vm = this;
+            var par = $scope.$parent;
+            this.widget = par.data;
+            $scope.data = this.widget.data;
+        }
+        MarkdownEditCtrl.prototype.updateText = function () {
+            this.$scope.data.mdText = this.$scope.data.content;
+        };
+        return MarkdownEditCtrl;
+    }());
+    // $inject annotation.
+    // It provides $injector with information about dependencies to be injected into constructor
+    // it is better to have it close to the constructor, because the parameters must match in count and type.
+    // See http://docs.angularjs.org/guide/di
+    MarkdownEditCtrl.$inject = [
+        '$scope',
+        '$timeout',
+        '$compile',
+        'layerService',
+        '$templateCache',
+        'messageBusService',
+        'mapService', 'dashboardService'
+    ];
+    Markdown.MarkdownEditCtrl = MarkdownEditCtrl;
+})(Markdown || (Markdown = {}));
+//# sourceMappingURL=Markdown-edit.js.map
+var MarkdownWidget;
+(function (MarkdownWidget) {
+    /**
+      * Config
+      */
+    var moduleName = 'csComp';
+    try {
+        MarkdownWidget.myModule = angular.module(moduleName);
+    }
+    catch (err) {
+        // named module does not exist, so create one
+        MarkdownWidget.myModule = angular.module(moduleName, []);
+    }
+    /**
+      * Directive to display the available map layers.
+      */
+    MarkdownWidget.myModule.directive('markdownwidget', [function () {
+            return {
+                restrict: 'E',
+                scope: {},
+                templateUrl: 'directives/Widgets/MarkdownWidget/MarkdownWidget.tpl.html',
+                replace: true,
+                transclude: false,
+                controller: MarkdownWidget.MarkdownWidgetCtrl
+            };
+        }
+    ]);
+})(MarkdownWidget || (MarkdownWidget = {}));
+//# sourceMappingURL=MarkdownWidget.js.map
+var MarkdownWidget;
+(function (MarkdownWidget) {
+    var MarkdownWidgetData = (function () {
+        function MarkdownWidgetData() {
+        }
+        return MarkdownWidgetData;
+    }());
+    MarkdownWidget.MarkdownWidgetData = MarkdownWidgetData;
+    var MarkdownWidgetCtrl = (function () {
+        function MarkdownWidgetCtrl($scope, $timeout, $layerService, $messageBus, $mapService) {
+            var _this = this;
+            this.$scope = $scope;
+            this.$timeout = $timeout;
+            this.$layerService = $layerService;
+            this.$messageBus = $messageBus;
+            this.$mapService = $mapService;
+            $scope.vm = this;
+            var par = $scope.$parent;
+            this.widget = par.widget;
+            $scope.data = this.widget.data;
+            $scope.data.mdText = $scope.data.content;
+            $scope.minimized = false;
+            this.dataProperties = {};
+            if (window.jsPDF) {
+                this.exporterAvailable = true;
+            }
+            else {
+                this.exporterAvailable = false;
+            }
+            this.parentWidget = $('#' + this.widget.elementId).parent();
+            if (typeof $scope.data.featureTypeName !== 'undefined' && typeof $scope.data.dynamicProperties !== 'undefined' && $scope.data.dynamicProperties.length > 0) {
+                // Hide widget
+                this.parentWidget.hide();
+                this.msgBusHandle = this.$messageBus.subscribe('feature', function (action, feature) {
+                    switch (action) {
+                        case 'onUpdateWidgets':
+                        case 'onFeatureDeselect':
+                        case 'onFeatureSelect':
+                            _this.selectFeature(feature);
+                            break;
+                        default:
+                            break;
+                    }
+                });
+            }
+            if (!(typeof $scope.data.url === 'undefined')) {
+                var url = $scope.data.url;
+                if ($scope.data.useLanguagePrefix) {
+                    var extensions = url.split('.');
+                    var newExtension = this.$layerService.currentLocale + '.' + extensions.pop();
+                    extensions.push(newExtension);
+                    url = extensions.join('.');
+                }
+                $.get(url, function (md) {
+                    $timeout(function () {
+                        $scope.data.content = $scope.data.mdText = md;
+                    }, 0);
+                });
+            }
+            // in case a separate datafile is used
+            if (!(typeof $scope.data.dataSourceUrl === 'undefined')) {
+                url = $scope.data.dataSourceUrl;
+                $.get(url, function (properties) {
+                    $timeout(function () {
+                        _this.dataProperties = JSON.parse(properties);
+                        _this.replaceKeys();
+                    }, 0);
+                });
+            }
+        }
+        MarkdownWidgetCtrl.prototype.canMinimize = function () {
+            return (this.$scope.data.hasOwnProperty('canMinimize'))
+                ? this.$scope.data['canMinimize']
+                : true;
+        };
+        MarkdownWidgetCtrl.prototype.minimize = function () {
+            this.$scope.minimized = !this.$scope.minimized;
+            if (this.$scope.minimized) {
+                this.parentWidget.css('height', '30px');
+            }
+            else {
+                this.parentWidget.css('height', this.widget.height);
+            }
+        };
+        MarkdownWidgetCtrl.prototype.canClose = function () {
+            return (this.$scope.data.hasOwnProperty('canClose'))
+                ? this.$scope.data['canClose']
+                : true;
+        };
+        MarkdownWidgetCtrl.prototype.close = function () {
+            this.parentWidget.hide();
+        };
+        MarkdownWidgetCtrl.prototype.stop = function () {
+            if (this.msgBusHandle) {
+                this.$messageBus.unsubscribe(this.msgBusHandle);
+            }
+        };
+        MarkdownWidgetCtrl.prototype.escapeRegExp = function (str) {
+            return str.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, '\\$1');
+        };
+        MarkdownWidgetCtrl.prototype.replaceAll = function (str, find, replace) {
+            return str.replace(new RegExp(this.escapeRegExp(find), 'g'), replace);
+        };
+        MarkdownWidgetCtrl.prototype.selectFeature = function (feature) {
+            var _this = this;
+            if (!feature || !feature.isSelected || feature.featureTypeName !== this.$scope.data.featureTypeName) {
+                this.parentWidget.hide();
+                return;
+            }
+            this.$timeout(function () {
+                _this.$scope.lastSelectedFeature = feature;
+                var md = _this.$scope.data.content;
+                var i = 0;
+                _this.$scope.data.dynamicProperties.forEach(function (p) {
+                    var searchPattern = '{{' + i++ + '}}';
+                    var displayText = '';
+                    if (feature.properties.hasOwnProperty(p)) {
+                        var pt = _this.$layerService.getPropertyType(feature, p);
+                        displayText = csComp.Helpers.convertPropertyInfo(pt, feature.properties[p]);
+                    }
+                    md = _this.replaceAll(md, searchPattern, displayText);
+                });
+                _this.parentWidget.show();
+                _this.$scope.data.mdText = md;
+            }, 0);
+        };
+        MarkdownWidgetCtrl.prototype.replaceKeys = function () {
+            var _this = this;
+            var md = this.$scope.data.content;
+            this.$timeout(function () {
+                var keys = Object.keys(_this.dataProperties);
+                keys.forEach(function (k) {
+                    if (_this.dataProperties.hasOwnProperty(k)) {
+                        var searchPattern = '{{' + k + '}}';
+                        var replacePattern = _this.dataProperties[k];
+                        md = _this.replaceAll(md, searchPattern, replacePattern);
+                    }
+                });
+                _this.$scope.data.mdText = md;
+            }, 0);
+        };
+        MarkdownWidgetCtrl.prototype.exportToPDF = function () {
+            var jsPDF = window.jsPDF || undefined;
+            if (!jsPDF)
+                return;
+            var doc = new jsPDF('p', 'pt', 'a3');
+            doc.setFontSize(12);
+            doc.fromHTML($('#' + this.widget.elementId).get(0), 15, 15, {
+                'width': +this.widget.width
+            });
+            var fileName = this.$scope.lastSelectedFeature.properties['Name'] || 'markdown-export';
+            doc.save(fileName + '.pdf');
+        };
+        return MarkdownWidgetCtrl;
+    }());
+    MarkdownWidgetCtrl.$inject = [
+        '$scope',
+        '$timeout',
+        'layerService',
+        'messageBusService',
+        'mapService'
+    ];
+    MarkdownWidget.MarkdownWidgetCtrl = MarkdownWidgetCtrl;
+})(MarkdownWidget || (MarkdownWidget = {}));
+//# sourceMappingURL=MarkdownWidgetCtrl.js.map
+var MCAWidget;
+(function (MCAWidget) {
+    /**
+      * Config
+      */
+    var moduleName = 'csComp';
+    try {
+        MCAWidget.myModule = angular.module(moduleName);
+    }
+    catch (err) {
+        // named module does not exist, so create one
+        MCAWidget.myModule = angular.module(moduleName, []);
+    }
+    /**
+      * Directive to display the available map layers.
+      */
+    MCAWidget.myModule.directive('mcawidget', [function () {
+            return {
+                restrict: 'E',
+                scope: {},
+                templateUrl: 'directives/Widgets/MCAWidget/MCAWidget.tpl.html',
+                replace: true,
+                transclude: false,
+                controller: MCAWidget.MCAWidgetCtrl
+            };
+        }
+    ]);
+})(MCAWidget || (MCAWidget = {}));
+//# sourceMappingURL=MCAWidget.js.map
+var MCAWidget;
+(function (MCAWidget) {
+    var MCAWidgetData = (function () {
+        function MCAWidgetData() {
+        }
+        return MCAWidgetData;
+    }());
+    MCAWidget.MCAWidgetData = MCAWidgetData;
+    var MCAWidgetCtrl = (function () {
+        function MCAWidgetCtrl($scope, $timeout, $controller, $layerService, $messageBus, $mapService) {
+            var _this = this;
+            this.$scope = $scope;
+            this.$timeout = $timeout;
+            this.$controller = $controller;
+            this.$layerService = $layerService;
+            this.$messageBus = $messageBus;
+            this.$mapService = $mapService;
+            this.mBusHandles = [];
+            $scope.vm = this;
+            var par = $scope.$parent;
+            this.widget = par.widget;
+            $scope.data = this.widget.data;
+            $scope.data.filterByDefaultFeatureType = $scope.data.filterByDefaultFeatureType || false;
+            if (typeof $scope.data.layerId !== 'undefined') {
+                // Hide widget
+                this.parentWidget = $("#" + this.widget.elementId).parent();
+                this.parentWidget.hide();
+                this.mBusHandles.push(this.$messageBus.subscribe('layer', function (action, layer) {
+                    switch (action) {
+                        case 'activated':
+                        case 'deactivate':
+                            _this.activateLayer(layer);
+                            break;
+                        default:
+                            break;
+                    }
+                }));
+                this.mBusHandles.push(this.$messageBus.subscribe('mca', function (action, mca) {
+                    switch (action) {
+                        case 'updated':
+                        case 'deactivate':
+                            if (!mca)
+                                break;
+                            $timeout(function () {
+                                if (_this.selectedMCA !== mca.id) {
+                                    _this.selectedMCA = mca.id;
+                                    _this.setMcaAsStyle(_this.selectedMCA);
+                                }
+                            }, 0);
+                            break;
+                        default:
+                            break;
+                    }
+                }));
+                // Activate widget when layer is already loaded
+                var l = this.$layerService.findLoadedLayer($scope.data.layerId);
+                if (l) {
+                    this.activateLayer(l);
+                }
+            }
+        }
+        MCAWidgetCtrl.prototype.stop = function () {
+            var _this = this;
+            if (this.mBusHandles) {
+                this.mBusHandles.forEach(function (mbh) {
+                    _this.$messageBus.unsubscribe(mbh);
+                });
+                this.mBusHandles.length = 0;
+            }
+        };
+        MCAWidgetCtrl.prototype.activateLayer = function (layer) {
+            var _this = this;
+            this.mcaScope = this.getMcaScope();
+            if (!this.mcaScope)
+                return;
+            this.selectedMCA = this.mcaScope.vm.mca.id;
+            if (layer.id !== this.$scope.data.layerId || (layer.id === this.$scope.data.layerId && !layer.enabled)) {
+                this.parentWidget.hide();
+                return;
+            }
+            this.layer = layer;
+            if (this.$scope.data.autoApplyStyle) {
+                this.setStyleForProperty();
+            }
+            this.$timeout(function () {
+                _this.parentWidget.show();
+            }, 0);
+        };
+        MCAWidgetCtrl.prototype.getMcaScope = function () {
+            var mcaElm = angular.element('div[id="mca"]');
+            if (!mcaElm) {
+                console.log('Mca element not found.');
+                return;
+            }
+            var mcaScope = mcaElm.scope();
+            if (!mcaScope) {
+                console.log('Mca controller scope not found.');
+                return;
+            }
+            else {
+                var l = this.$layerService.findLoadedLayer(this.$scope.data.layerId);
+                if (l && this.$scope.data.filterByDefaultFeatureType) {
+                    this.$scope.data.availableMcas = mcaScope.vm.availableMcas.filter(function (mca) {
+                        return mca.featureIds[0].split('#').pop() === l.defaultFeatureType;
+                    });
+                }
+                else {
+                    this.$scope.data.availableMcas = mcaScope.vm.availableMcas;
+                }
+            }
+            return mcaScope;
+        };
+        MCAWidgetCtrl.prototype.setStyleForProperty = function () {
+            if (!this.mcaScope || !this.mcaScope.vm.mca) {
+                console.log('Mca controller scope not found.');
+                return;
+            }
+            var gs = this.$layerService.setStyleForProperty(this.layer, this.mcaScope.vm.mca.label);
+            if (!gs)
+                return;
+            gs.activeLegend = this.mcaScope.vm.getLegend(this.mcaScope.vm.mca);
+            this.mcaScope.vm.groupStyle = gs;
+            this.$layerService.updateStyle(gs);
+        };
+        MCAWidgetCtrl.prototype.setMcaAsStyle = function (mcaId) {
+            if (!this.mcaScope || !this.mcaScope.vm.mca) {
+                console.log('Mca controller scope not found.');
+                return;
+            }
+            var vm = this.mcaScope.vm;
+            var mca = vm.findMcaById(mcaId);
+            vm.updateAvailableMcas(mca);
+            vm.updateMca();
+            if (!this.$layerService.lastSelectedFeature) {
+                // this.$messageBus.notifyWithTranslation('SELECT_A_FEATURE', 'SELECT_FEATURE_FOR_STYLE');
+                this.setStyleForProperty();
+                return;
+            }
+            vm.updateSelectedFeature(this.$layerService.lastSelectedFeature);
+            if (!vm.showFeature) {
+                this.$messageBus.notifyWithTranslation('SELECT_A_FEATURE', 'SELECT_FEATURE_FOR_STYLE');
+                return;
+            }
+            if (vm.properties.length > 0) {
+                vm.updateMca();
+                console.log('Set mca style.');
+                vm.setStyle(vm.properties[0]);
+            }
+        };
+        return MCAWidgetCtrl;
+    }());
+    MCAWidgetCtrl.$inject = [
+        '$scope',
+        '$timeout',
+        '$controller',
+        'layerService',
+        'messageBusService',
+        'mapService'
+    ];
+    MCAWidget.MCAWidgetCtrl = MCAWidgetCtrl;
+})(MCAWidget || (MCAWidget = {}));
+//# sourceMappingURL=MCAWidgetCtrl.js.map
+var MarvelWidget;
+(function (MarvelWidget) {
+    /**
+      * Config
+      */
+    var moduleName = 'csComp';
+    try {
+        MarvelWidget.myModule = angular.module(moduleName);
+    }
+    catch (err) {
+        // named module does not exist, so create one
+        MarvelWidget.myModule = angular.module(moduleName, []);
+    }
+    /**
+      * Directive to display the available map layers.
+      */
+    MarvelWidget.myModule.directive('marvelwidget', [function () {
+            return {
+                restrict: 'E',
+                scope: {},
+                templateUrl: 'directives/Widgets/MarvelWidget/MarvelWidget.tpl.html',
+                replace: true,
+                transclude: false,
+                controller: MarvelWidget.MarvelWidgetCtrl
+            };
+        }
+    ]);
+})(MarvelWidget || (MarvelWidget = {}));
+//# sourceMappingURL=MarvelWidget.js.map
+var MarvelWidget;
+(function (MarvelWidget) {
+    var MarvelWidgetData = (function () {
+        function MarvelWidgetData() {
+        }
+        return MarvelWidgetData;
+    }());
+    MarvelWidget.MarvelWidgetData = MarvelWidgetData;
+    var MarvelWidgetCtrl = (function () {
+        function MarvelWidgetCtrl($scope, $timeout, $translate, $layerService, $messageBus, $mapService) {
+            var _this = this;
+            this.$scope = $scope;
+            this.$timeout = $timeout;
+            this.$translate = $translate;
+            this.$layerService = $layerService;
+            this.$messageBus = $messageBus;
+            this.$mapService = $mapService;
+            $scope.vm = this;
+            var par = $scope.$parent;
+            this.widget = par.widget;
+            this.parentWidget = $("#" + this.widget.elementId).parent();
+            this.defaultStates = ['OK', 'Stressed', 'Failed'];
+            this.initDependencies();
+            $scope.data = this.widget.data;
+            $scope.minimized = false;
+            $scope.editmode = false;
+            if (typeof $scope.data.featureTypeName !== 'undefined') {
+                // Hide widget
+                this.parentWidget.hide();
+                this.$messageBus.subscribe('feature', function (action, feature) {
+                    switch (action) {
+                        case 'onFeatureDeselect':
+                        case 'onFeatureSelect':
+                            _this.selectFeature(feature);
+                            break;
+                        default:
+                            break;
+                    }
+                });
+            }
+        }
+        MarvelWidgetCtrl.prototype.initDependencies = function () {
+            var _this = this;
+            this.$scope.dependencyTypes = {};
+            this.$scope.dependencyTypes['_dep_water'] = { label: '', type: 'number' };
+            this.$scope.dependencyTypes['_dep_UPS'] = { label: '', type: 'number' };
+            this.$scope.dependencyTypes['_dep_features'] = { label: '', type: 'stringarray' };
+            // Overwrite labels with translations
+            this.$translate('MARVEL_WATER_LEVEL').then(function (translation) {
+                _this.$scope.dependencyTypes['_dep_water']['label'] = translation;
+            });
+            this.$translate('MARVEL_UPS_DURATION').then(function (translation) {
+                _this.$scope.dependencyTypes['_dep_UPS']['label'] = translation;
+            });
+            this.$translate('MARVEL_FEATURE_DEP').then(function (translation) {
+                _this.$scope.dependencyTypes['_dep_features']['label'] = translation;
+            });
+            this.$scope.states = this.defaultStates;
+            return {};
+        };
+        MarvelWidgetCtrl.prototype.minimize = function () {
+            this.$scope.minimized = !this.$scope.minimized;
+            if (this.$scope.minimized) {
+                this.parentWidget.css("height", "30px");
+            }
+            else {
+                this.parentWidget.css("height", this.widget.height);
+            }
+        };
+        MarvelWidgetCtrl.prototype.edit = function () {
+            var _this = this;
+            this.$scope.editmode = !this.$scope.editmode;
+            if (!this.$scope.editmode) {
+                this.$timeout(function () {
+                    var w = $("#" + _this.widget.elementId);
+                    Marvelous.refreshView(w);
+                }, 50);
+            }
+        };
+        MarvelWidgetCtrl.prototype.close = function () {
+            this.parentWidget.hide();
+        };
+        /** Save single feature update by sending it to the server over the messageBus  */
+        MarvelWidgetCtrl.prototype.save = function () {
+            var f = this.$scope.selectedFeature;
+            var s = new csComp.Services.LayerUpdate();
+            s.layerId = f.layerId;
+            s.action = csComp.Services.LayerUpdateAction.updateFeature;
+            s.item = csComp.Services.Feature.serialize(f);
+            this.$messageBus.serverSendMessageAction("layer", s);
+            this.edit(); // Toggle edit mode
+            console.log('Published feature changes');
+        };
+        /** Save all features of the selected feature's featureType. Set a property
+          * 'changeAllFeaturesOfType' to inform the simservice that all features
+          * should be updated.
+          */
+        MarvelWidgetCtrl.prototype.saveAll = function () {
+            var f = this.$scope.selectedFeature;
+            var s = new csComp.Services.LayerUpdate();
+            s.layerId = f.layerId;
+            s.action = csComp.Services.LayerUpdateAction.updateFeature;
+            s.item = csComp.Services.Feature.serialize(f);
+            s.item['changeAllFeaturesOfType'] = true;
+            this.$messageBus.serverSendMessageAction("layer", s);
+            this.edit(); // Toggle edit mode
+            console.log('Published feature changes');
+        };
+        MarvelWidgetCtrl.prototype.escapeRegExp = function (str) {
+            return str.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
+        };
+        MarvelWidgetCtrl.prototype.replaceAll = function (str, find, replace) {
+            return str.replace(new RegExp(this.escapeRegExp(find), 'g'), replace);
+        };
+        MarvelWidgetCtrl.prototype.addDependency = function (id, dep) {
+            if (this.$scope.selectedFeature.properties.hasOwnProperty(id)) {
+                delete this.$scope.selectedFeature.properties[id];
+            }
+            else {
+                switch (dep.type) {
+                    case 'number':
+                        this.$scope.selectedFeature.properties[id] = 0;
+                        break;
+                    case 'string':
+                        this.$scope.selectedFeature.properties[id] = '';
+                        break;
+                    case 'stringarray':
+                        this.$scope.selectedFeature.properties[id] = [];
+                        break;
+                    default:
+                        this.$scope.selectedFeature.properties[id] = null;
+                        break;
+                }
+            }
+        };
+        MarvelWidgetCtrl.prototype.addDependencyFeature = function (dep) {
+            if (!this.$scope.selectedFeature.properties.hasOwnProperty(dep))
+                return;
+            var newVal = $('#add-' + dep).val();
+            if (!newVal || (newVal === ''))
+                return;
+            if (!this.$scope.selectedFeature.properties[dep].some(function (d) { return newVal === d; })) {
+                this.$scope.selectedFeature.properties[dep].push(newVal);
+                $('#add-' + dep).val('');
+            }
+        };
+        MarvelWidgetCtrl.prototype.removeDependencyFeature = function (dep, name) {
+            if (this.$scope.selectedFeature.properties.hasOwnProperty(dep)) {
+                this.$scope.selectedFeature.properties[dep] = this.$scope.selectedFeature.properties[dep].filter(function (d) { return name !== d; });
+            }
+        };
+        MarvelWidgetCtrl.prototype.selectFeature = function (feature) {
+            var _this = this;
+            if (!feature || !feature.isSelected) {
+                this.parentWidget.hide();
+                return;
+            }
+            if (typeof this.$scope.data.marvelFolder === 'undefined')
+                return;
+            if (!feature.fType || !feature.fType.id)
+                return;
+            //TODO: get the options from the propertyTypeData
+            var pts = csComp.Helpers.getPropertyTypes(feature.fType, {});
+            pts.forEach(function (p) {
+                if (p.hasOwnProperty && p.hasOwnProperty('label') && p.label === 'state') {
+                    _this.$scope.states = _.values(p.options);
+                }
+            });
+            this.$scope.selectedFeature = feature;
+            var featureTypeName = feature.fType.id.split('#').pop().replace(/(\_\d$)/, ''); // Remove state appendix (e.g. Hospital_0)
+            var filePath = this.$scope.data.marvelFolder + featureTypeName + '.mrvjson';
+            this.parentWidget.show();
+            $.ajax({
+                url: filePath,
+                success: function (marvel) {
+                    _this.$timeout(function () {
+                        _this.$scope.data.title = feature.fType.name;
+                        var w = $("#" + _this.widget.elementId);
+                        Marvelous.model(marvel, featureTypeName, w);
+                    }, 0);
+                },
+                error: function () {
+                    _this.parentWidget.hide();
+                }
+            });
+        };
+        return MarvelWidgetCtrl;
+    }());
+    MarvelWidgetCtrl.$inject = [
+        '$scope',
+        '$timeout',
+        '$translate',
+        'layerService',
+        'messageBusService',
+        'mapService'
+    ];
+    MarvelWidget.MarvelWidgetCtrl = MarvelWidgetCtrl;
+})(MarvelWidget || (MarvelWidget = {}));
+//# sourceMappingURL=MarvelWidgetCtrl.js.map
 var Indicators;
 (function (Indicators) {
     /**
@@ -27772,7 +29403,8 @@ var Indicators;
                 input: {
                     value: {
                         type: 'expression',
-                        default: '~[\'value\']' },
+                        default: '~[\'value\']'
+                    },
                     min: {
                         type: 'expression',
                         default: 0
@@ -27899,21 +29531,21 @@ var Indicators;
             }
             ;
         };
-        // $inject annotation.
-        // It provides $injector with information about dependencies to be injected into constructor
-        // it is better to have it close to the constructor, because the parameters must match in count and type.
-        // See http://docs.angularjs.org/guide/di
-        IndicatorsEditCtrl.$inject = [
-            '$scope',
-            '$timeout',
-            '$compile',
-            'layerService',
-            '$templateCache',
-            'messageBusService',
-            'mapService', 'dashboardService'
-        ];
         return IndicatorsEditCtrl;
     }());
+    // $inject annotation.
+    // It provides $injector with information about dependencies to be injected into constructor
+    // it is better to have it close to the constructor, because the parameters must match in count and type.
+    // See http://docs.angularjs.org/guide/di
+    IndicatorsEditCtrl.$inject = [
+        '$scope',
+        '$timeout',
+        '$compile',
+        'layerService',
+        '$templateCache',
+        'messageBusService',
+        'mapService', 'dashboardService'
+    ];
     Indicators.IndicatorsEditCtrl = IndicatorsEditCtrl;
 })(Indicators || (Indicators = {}));
 //# sourceMappingURL=Indicators-edit.js.map
@@ -28212,778 +29844,24 @@ var Indicators;
             }
             ;
         };
-        // $inject annotation.
-        // It provides $injector with information about dependencies to be injected into constructor
-        // it is better to have it close to the constructor, because the parameters must match in count and type.
-        // See http://docs.angularjs.org/guide/di
-        IndicatorsCtrl.$inject = [
-            '$scope',
-            '$timeout',
-            'layerService',
-            'messageBusService',
-            'mapService',
-            'dashboardService',
-            '$translate'
-        ];
         return IndicatorsCtrl;
     }());
+    // $inject annotation.
+    // It provides $injector with information about dependencies to be injected into constructor
+    // it is better to have it close to the constructor, because the parameters must match in count and type.
+    // See http://docs.angularjs.org/guide/di
+    IndicatorsCtrl.$inject = [
+        '$scope',
+        '$timeout',
+        'layerService',
+        'messageBusService',
+        'mapService',
+        'dashboardService',
+        '$translate'
+    ];
     Indicators.IndicatorsCtrl = IndicatorsCtrl;
 })(Indicators || (Indicators = {}));
 //# sourceMappingURL=IndicatorsCtrl.js.map
-var LocationWidget;
-(function (LocationWidget) {
-    /** Config */
-    var moduleName = 'csComp';
-    try {
-        LocationWidget.myModule = angular.module(moduleName);
-    }
-    catch (err) {
-        // named module does not exist, so create one
-        LocationWidget.myModule = angular.module(moduleName, []);
-    }
-    /** Directive to send a message to a REST endpoint. Similar in goal to the Chrome plugin POSTMAN. */
-    LocationWidget.myModule.directive('locationwidget', [function () {
-            return {
-                restrict: 'E',
-                scope: {},
-                templateUrl: 'directives/Widgets/LocationWidget/LocationWidget.tpl.html',
-                replace: true,
-                transclude: false,
-                controller: LocationWidgetCtrl
-            };
-        }]);
-    var LocationWidgetCtrl = (function () {
-        function LocationWidgetCtrl($scope, $http, layerService, messageBusService, actionService, $timeout) {
-            var _this = this;
-            this.$scope = $scope;
-            this.$http = $http;
-            this.layerService = layerService;
-            this.messageBusService = messageBusService;
-            this.actionService = actionService;
-            this.$timeout = $timeout;
-            this.streetViewUrl = 'https://maps.googleapis.com/maps/api/streetview';
-            this.location = {};
-            $scope.vm = this;
-            var par = $scope.$parent;
-            $scope.data = par.widget.data;
-            if ($scope.data.streetViewUrl)
-                this.streetViewUrl = $scope.data.streetViewUrl;
-            this.parentWidget = $('#' + par.widget.elementId).parent();
-            this.parentWidget.hide();
-            messageBusService.subscribe('geocoding', function (action, data) {
-                if (action !== 'reverseLookupResult')
-                    return;
-                _this.parentWidget.show();
-                _this.updateWidget(data);
-            });
-        }
-        LocationWidgetCtrl.prototype.updateWidget = function (data) {
-            this.location = {};
-            if (!data || !data.annotations)
-                return;
-            if (data.formatted)
-                this.location.title = data.formatted;
-            // Set address
-            if (data.components) {
-                if (data.components.postcode)
-                    this.location.postcode = data.components.postcode;
-                if (data.components.city)
-                    this.location.city = data.components.city;
-                if (data.components.neighbourhood)
-                    this.location.neighbourhood = data.components.neighbourhood;
-                if (data.components.road || data.components.pedestrian) {
-                    this.location.address = data.components.road || data.components.pedestrian;
-                    if (data.components.house_number)
-                        this.location.address += " " + data.components.house_number;
-                    this.location.streetViewUrlThumb = this.streetViewUrl + "?size=200x200&location=" + this.location.address + "," + this.location.city + "&key=" + this.$scope.data.streetViewApiKey;
-                    this.location.streetViewUrlFull = this.streetViewUrl + "?size=640x640&location=" + this.location.address + "," + this.location.city + "&key=" + this.$scope.data.streetViewApiKey;
-                }
-            }
-            // Set locations
-            this.location.locations = [];
-            if (data.geometry)
-                this.location.locations.push(data.geometry.lat + ", " + data.geometry.lng);
-            if (data.annotations.DMS)
-                this.location.locations.push("DMS latitude: " + data.annotations.DMS.lat + ", longitude: " + data.annotations.DMS.lng);
-            if (data.geometry)
-                this.location.locations.push("WGS84 latitude: " + data.geometry.lat + ", longitude: " + data.geometry.lng);
-            if (data.annotations.MGRS)
-                this.location.locations.push("MGRS: " + data.annotations.MGRS);
-            if (data.annotations.Mercator)
-                this.location.locations.push("Mercator x: " + data.annotations.Mercator.x + ", y: " + data.annotations.Mercator.y);
-            if (this.location.locations.length > 0)
-                this.selectedLocationFormat = this.location.locations[0];
-            this.location.defaultLocation = this.location.locations[0];
-            // Set sunrise and sunset
-            if (data.annotations.sun) {
-                var sunrise = new Date(data.annotations.sun.rise.apparent * 1000);
-                this.location.sunrise = String.format('{0:HH}:{0:mm}:{0:ss}', sunrise);
-                var sunset = new Date(data.annotations.sun.set.apparent * 1000);
-                this.location.sunset = String.format('{0:HH}:{0:mm}:{0:ss}', sunset);
-            }
-        };
-        LocationWidgetCtrl.prototype.close = function () {
-            this.location = {};
-            this.parentWidget.hide();
-        };
-        LocationWidgetCtrl.$inject = [
-            '$scope',
-            '$http',
-            'layerService',
-            'messageBusService',
-            'actionService',
-            '$timeout'
-        ];
-        return LocationWidgetCtrl;
-    }());
-    LocationWidget.LocationWidgetCtrl = LocationWidgetCtrl;
-})(LocationWidget || (LocationWidget = {}));
-//# sourceMappingURL=LocationWidget.js.map
-var Markdown;
-(function (Markdown) {
-    /**
-      * Config
-      */
-    var moduleName = 'csComp';
-    try {
-        Markdown.myModule = angular.module(moduleName);
-    }
-    catch (err) {
-        // named module does not exist, so create one
-        Markdown.myModule = angular.module(moduleName, []);
-    }
-    /**
-      * Directive to display the available map layers.
-      */
-    Markdown.myModule.directive('markdownwidgetEdit', [
-        '$compile',
-        function ($compile) {
-            return {
-                terminal: true,
-                restrict: 'E',
-                scope: {},
-                templateUrl: 'directives/Widgets/MarkdownWidget/Markdown-edit.tpl.html',
-                replace: true,
-                transclude: true,
-                controller: MarkdownEditCtrl
-            };
-        }
-    ]);
-    var MarkdownEditCtrl = (function () {
-        function MarkdownEditCtrl($scope, $timeout, $compile, $layerService, $templateCache, $messageBus, $mapService, $dashboardService) {
-            this.$scope = $scope;
-            this.$timeout = $timeout;
-            this.$compile = $compile;
-            this.$layerService = $layerService;
-            this.$templateCache = $templateCache;
-            this.$messageBus = $messageBus;
-            this.$mapService = $mapService;
-            this.$dashboardService = $dashboardService;
-            $scope.vm = this;
-            var par = $scope.$parent;
-            this.widget = par.data;
-            $scope.data = this.widget.data;
-        }
-        MarkdownEditCtrl.prototype.updateText = function () {
-            this.$scope.data.mdText = this.$scope.data.content;
-        };
-        // $inject annotation.
-        // It provides $injector with information about dependencies to be injected into constructor
-        // it is better to have it close to the constructor, because the parameters must match in count and type.
-        // See http://docs.angularjs.org/guide/di
-        MarkdownEditCtrl.$inject = [
-            '$scope',
-            '$timeout',
-            '$compile',
-            'layerService',
-            '$templateCache',
-            'messageBusService',
-            'mapService', 'dashboardService'
-        ];
-        return MarkdownEditCtrl;
-    }());
-    Markdown.MarkdownEditCtrl = MarkdownEditCtrl;
-})(Markdown || (Markdown = {}));
-//# sourceMappingURL=Markdown-edit.js.map
-var MarkdownWidget;
-(function (MarkdownWidget) {
-    /**
-      * Config
-      */
-    var moduleName = 'csComp';
-    try {
-        MarkdownWidget.myModule = angular.module(moduleName);
-    }
-    catch (err) {
-        // named module does not exist, so create one
-        MarkdownWidget.myModule = angular.module(moduleName, []);
-    }
-    /**
-      * Directive to display the available map layers.
-      */
-    MarkdownWidget.myModule.directive('markdownwidget', [function () {
-            return {
-                restrict: 'E',
-                scope: {},
-                templateUrl: 'directives/Widgets/MarkdownWidget/MarkdownWidget.tpl.html',
-                replace: true,
-                transclude: false,
-                controller: MarkdownWidget.MarkdownWidgetCtrl
-            };
-        }
-    ]);
-})(MarkdownWidget || (MarkdownWidget = {}));
-//# sourceMappingURL=MarkdownWidget.js.map
-var MarkdownWidget;
-(function (MarkdownWidget) {
-    var MarkdownWidgetData = (function () {
-        function MarkdownWidgetData() {
-        }
-        return MarkdownWidgetData;
-    }());
-    MarkdownWidget.MarkdownWidgetData = MarkdownWidgetData;
-    var MarkdownWidgetCtrl = (function () {
-        function MarkdownWidgetCtrl($scope, $timeout, $layerService, $messageBus, $mapService) {
-            var _this = this;
-            this.$scope = $scope;
-            this.$timeout = $timeout;
-            this.$layerService = $layerService;
-            this.$messageBus = $messageBus;
-            this.$mapService = $mapService;
-            $scope.vm = this;
-            var par = $scope.$parent;
-            this.widget = par.widget;
-            $scope.data = this.widget.data;
-            $scope.data.mdText = $scope.data.content;
-            $scope.minimized = false;
-            this.dataProperties = {};
-            if (window.jsPDF) {
-                this.exporterAvailable = true;
-            }
-            else {
-                this.exporterAvailable = false;
-            }
-            this.parentWidget = $('#' + this.widget.elementId).parent();
-            if (typeof $scope.data.featureTypeName !== 'undefined' && typeof $scope.data.dynamicProperties !== 'undefined' && $scope.data.dynamicProperties.length > 0) {
-                // Hide widget
-                this.parentWidget.hide();
-                this.msgBusHandle = this.$messageBus.subscribe('feature', function (action, feature) {
-                    switch (action) {
-                        case 'onUpdateWidgets':
-                        case 'onFeatureDeselect':
-                        case 'onFeatureSelect':
-                            _this.selectFeature(feature);
-                            break;
-                        default:
-                            break;
-                    }
-                });
-            }
-            if (!(typeof $scope.data.url === 'undefined')) {
-                var url = $scope.data.url;
-                if ($scope.data.useLanguagePrefix) {
-                    var extensions = url.split('.');
-                    var newExtension = this.$layerService.currentLocale + '.' + extensions.pop();
-                    extensions.push(newExtension);
-                    url = extensions.join('.');
-                }
-                $.get(url, function (md) {
-                    $timeout(function () {
-                        $scope.data.content = $scope.data.mdText = md;
-                    }, 0);
-                });
-            }
-            // in case a separate datafile is used
-            if (!(typeof $scope.data.dataSourceUrl === 'undefined')) {
-                url = $scope.data.dataSourceUrl;
-                $.get(url, function (properties) {
-                    $timeout(function () {
-                        _this.dataProperties = JSON.parse(properties);
-                        _this.replaceKeys();
-                    }, 0);
-                });
-            }
-        }
-        MarkdownWidgetCtrl.prototype.canMinimize = function () {
-            return (this.$scope.data.hasOwnProperty('canMinimize'))
-                ? this.$scope.data['canMinimize']
-                : true;
-        };
-        MarkdownWidgetCtrl.prototype.minimize = function () {
-            this.$scope.minimized = !this.$scope.minimized;
-            if (this.$scope.minimized) {
-                this.parentWidget.css('height', '30px');
-            }
-            else {
-                this.parentWidget.css('height', this.widget.height);
-            }
-        };
-        MarkdownWidgetCtrl.prototype.canClose = function () {
-            return (this.$scope.data.hasOwnProperty('canClose'))
-                ? this.$scope.data['canClose']
-                : true;
-        };
-        MarkdownWidgetCtrl.prototype.close = function () {
-            this.parentWidget.hide();
-        };
-        MarkdownWidgetCtrl.prototype.stop = function () {
-            if (this.msgBusHandle) {
-                this.$messageBus.unsubscribe(this.msgBusHandle);
-            }
-        };
-        MarkdownWidgetCtrl.prototype.escapeRegExp = function (str) {
-            return str.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, '\\$1');
-        };
-        MarkdownWidgetCtrl.prototype.replaceAll = function (str, find, replace) {
-            return str.replace(new RegExp(this.escapeRegExp(find), 'g'), replace);
-        };
-        MarkdownWidgetCtrl.prototype.selectFeature = function (feature) {
-            var _this = this;
-            if (!feature || !feature.isSelected || feature.featureTypeName !== this.$scope.data.featureTypeName) {
-                this.parentWidget.hide();
-                return;
-            }
-            this.$timeout(function () {
-                _this.$scope.lastSelectedFeature = feature;
-                var md = _this.$scope.data.content;
-                var i = 0;
-                _this.$scope.data.dynamicProperties.forEach(function (p) {
-                    var searchPattern = '{{' + i++ + '}}';
-                    var displayText = '';
-                    if (feature.properties.hasOwnProperty(p)) {
-                        var pt = _this.$layerService.getPropertyType(feature, p);
-                        displayText = csComp.Helpers.convertPropertyInfo(pt, feature.properties[p]);
-                    }
-                    md = _this.replaceAll(md, searchPattern, displayText);
-                });
-                _this.parentWidget.show();
-                _this.$scope.data.mdText = md;
-            }, 0);
-        };
-        MarkdownWidgetCtrl.prototype.replaceKeys = function () {
-            var _this = this;
-            var md = this.$scope.data.content;
-            this.$timeout(function () {
-                var keys = Object.keys(_this.dataProperties);
-                keys.forEach(function (k) {
-                    if (_this.dataProperties.hasOwnProperty(k)) {
-                        var searchPattern = '{{' + k + '}}';
-                        var replacePattern = _this.dataProperties[k];
-                        md = _this.replaceAll(md, searchPattern, replacePattern);
-                    }
-                });
-                _this.$scope.data.mdText = md;
-            }, 0);
-        };
-        MarkdownWidgetCtrl.prototype.exportToPDF = function () {
-            var jsPDF = window.jsPDF || undefined;
-            if (!jsPDF)
-                return;
-            var doc = new jsPDF('p', 'pt', 'a3');
-            doc.setFontSize(12);
-            doc.fromHTML($('#' + this.widget.elementId).get(0), 15, 15, {
-                'width': +this.widget.width
-            });
-            var fileName = this.$scope.lastSelectedFeature.properties['Name'] || 'markdown-export';
-            doc.save(fileName + '.pdf');
-        };
-        MarkdownWidgetCtrl.$inject = [
-            '$scope',
-            '$timeout',
-            'layerService',
-            'messageBusService',
-            'mapService'
-        ];
-        return MarkdownWidgetCtrl;
-    }());
-    MarkdownWidget.MarkdownWidgetCtrl = MarkdownWidgetCtrl;
-})(MarkdownWidget || (MarkdownWidget = {}));
-//# sourceMappingURL=MarkdownWidgetCtrl.js.map
-var MarvelWidget;
-(function (MarvelWidget) {
-    /**
-      * Config
-      */
-    var moduleName = 'csComp';
-    try {
-        MarvelWidget.myModule = angular.module(moduleName);
-    }
-    catch (err) {
-        // named module does not exist, so create one
-        MarvelWidget.myModule = angular.module(moduleName, []);
-    }
-    /**
-      * Directive to display the available map layers.
-      */
-    MarvelWidget.myModule.directive('marvelwidget', [function () {
-            return {
-                restrict: 'E',
-                scope: {},
-                templateUrl: 'directives/Widgets/MarvelWidget/MarvelWidget.tpl.html',
-                replace: true,
-                transclude: false,
-                controller: MarvelWidget.MarvelWidgetCtrl
-            };
-        }
-    ]);
-})(MarvelWidget || (MarvelWidget = {}));
-//# sourceMappingURL=MarvelWidget.js.map
-var MarvelWidget;
-(function (MarvelWidget) {
-    var MarvelWidgetData = (function () {
-        function MarvelWidgetData() {
-        }
-        return MarvelWidgetData;
-    }());
-    MarvelWidget.MarvelWidgetData = MarvelWidgetData;
-    var MarvelWidgetCtrl = (function () {
-        function MarvelWidgetCtrl($scope, $timeout, $translate, $layerService, $messageBus, $mapService) {
-            var _this = this;
-            this.$scope = $scope;
-            this.$timeout = $timeout;
-            this.$translate = $translate;
-            this.$layerService = $layerService;
-            this.$messageBus = $messageBus;
-            this.$mapService = $mapService;
-            $scope.vm = this;
-            var par = $scope.$parent;
-            this.widget = par.widget;
-            this.parentWidget = $("#" + this.widget.elementId).parent();
-            this.defaultStates = ['OK', 'Stressed', 'Failed'];
-            this.initDependencies();
-            $scope.data = this.widget.data;
-            $scope.minimized = false;
-            $scope.editmode = false;
-            if (typeof $scope.data.featureTypeName !== 'undefined') {
-                // Hide widget
-                this.parentWidget.hide();
-                this.$messageBus.subscribe('feature', function (action, feature) {
-                    switch (action) {
-                        case 'onFeatureDeselect':
-                        case 'onFeatureSelect':
-                            _this.selectFeature(feature);
-                            break;
-                        default:
-                            break;
-                    }
-                });
-            }
-        }
-        MarvelWidgetCtrl.prototype.initDependencies = function () {
-            var _this = this;
-            this.$scope.dependencyTypes = {};
-            this.$scope.dependencyTypes['_dep_water'] = { label: '', type: 'number' };
-            this.$scope.dependencyTypes['_dep_UPS'] = { label: '', type: 'number' };
-            this.$scope.dependencyTypes['_dep_features'] = { label: '', type: 'stringarray' };
-            // Overwrite labels with translations
-            this.$translate('MARVEL_WATER_LEVEL').then(function (translation) {
-                _this.$scope.dependencyTypes['_dep_water']['label'] = translation;
-            });
-            this.$translate('MARVEL_UPS_DURATION').then(function (translation) {
-                _this.$scope.dependencyTypes['_dep_UPS']['label'] = translation;
-            });
-            this.$translate('MARVEL_FEATURE_DEP').then(function (translation) {
-                _this.$scope.dependencyTypes['_dep_features']['label'] = translation;
-            });
-            this.$scope.states = this.defaultStates;
-            return {};
-        };
-        MarvelWidgetCtrl.prototype.minimize = function () {
-            this.$scope.minimized = !this.$scope.minimized;
-            if (this.$scope.minimized) {
-                this.parentWidget.css("height", "30px");
-            }
-            else {
-                this.parentWidget.css("height", this.widget.height);
-            }
-        };
-        MarvelWidgetCtrl.prototype.edit = function () {
-            var _this = this;
-            this.$scope.editmode = !this.$scope.editmode;
-            if (!this.$scope.editmode) {
-                this.$timeout(function () {
-                    var w = $("#" + _this.widget.elementId);
-                    Marvelous.refreshView(w);
-                }, 50);
-            }
-        };
-        MarvelWidgetCtrl.prototype.close = function () {
-            this.parentWidget.hide();
-        };
-        /** Save single feature update by sending it to the server over the messageBus  */
-        MarvelWidgetCtrl.prototype.save = function () {
-            var f = this.$scope.selectedFeature;
-            var s = new csComp.Services.LayerUpdate();
-            s.layerId = f.layerId;
-            s.action = csComp.Services.LayerUpdateAction.updateFeature;
-            s.item = csComp.Services.Feature.serialize(f);
-            this.$messageBus.serverSendMessageAction("layer", s);
-            this.edit(); // Toggle edit mode
-            console.log('Published feature changes');
-        };
-        /** Save all features of the selected feature's featureType. Set a property
-          * 'changeAllFeaturesOfType' to inform the simservice that all features
-          * should be updated.
-          */
-        MarvelWidgetCtrl.prototype.saveAll = function () {
-            var f = this.$scope.selectedFeature;
-            var s = new csComp.Services.LayerUpdate();
-            s.layerId = f.layerId;
-            s.action = csComp.Services.LayerUpdateAction.updateFeature;
-            s.item = csComp.Services.Feature.serialize(f);
-            s.item['changeAllFeaturesOfType'] = true;
-            this.$messageBus.serverSendMessageAction("layer", s);
-            this.edit(); // Toggle edit mode
-            console.log('Published feature changes');
-        };
-        MarvelWidgetCtrl.prototype.escapeRegExp = function (str) {
-            return str.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
-        };
-        MarvelWidgetCtrl.prototype.replaceAll = function (str, find, replace) {
-            return str.replace(new RegExp(this.escapeRegExp(find), 'g'), replace);
-        };
-        MarvelWidgetCtrl.prototype.addDependency = function (id, dep) {
-            if (this.$scope.selectedFeature.properties.hasOwnProperty(id)) {
-                delete this.$scope.selectedFeature.properties[id];
-            }
-            else {
-                switch (dep.type) {
-                    case 'number':
-                        this.$scope.selectedFeature.properties[id] = 0;
-                        break;
-                    case 'string':
-                        this.$scope.selectedFeature.properties[id] = '';
-                        break;
-                    case 'stringarray':
-                        this.$scope.selectedFeature.properties[id] = [];
-                        break;
-                    default:
-                        this.$scope.selectedFeature.properties[id] = null;
-                        break;
-                }
-            }
-        };
-        MarvelWidgetCtrl.prototype.addDependencyFeature = function (dep) {
-            if (!this.$scope.selectedFeature.properties.hasOwnProperty(dep))
-                return;
-            var newVal = $('#add-' + dep).val();
-            if (!newVal || (newVal === ''))
-                return;
-            if (!this.$scope.selectedFeature.properties[dep].some(function (d) { return newVal === d; })) {
-                this.$scope.selectedFeature.properties[dep].push(newVal);
-                $('#add-' + dep).val('');
-            }
-        };
-        MarvelWidgetCtrl.prototype.removeDependencyFeature = function (dep, name) {
-            if (this.$scope.selectedFeature.properties.hasOwnProperty(dep)) {
-                this.$scope.selectedFeature.properties[dep] = this.$scope.selectedFeature.properties[dep].filter(function (d) { return name !== d; });
-            }
-        };
-        MarvelWidgetCtrl.prototype.selectFeature = function (feature) {
-            var _this = this;
-            if (!feature || !feature.isSelected) {
-                this.parentWidget.hide();
-                return;
-            }
-            if (typeof this.$scope.data.marvelFolder === 'undefined')
-                return;
-            if (!feature.fType || !feature.fType.id)
-                return;
-            //TODO: get the options from the propertyTypeData
-            var pts = csComp.Helpers.getPropertyTypes(feature.fType, {});
-            pts.forEach(function (p) {
-                if (p.hasOwnProperty && p.hasOwnProperty('label') && p.label === 'state') {
-                    _this.$scope.states = _.values(p.options);
-                }
-            });
-            this.$scope.selectedFeature = feature;
-            var featureTypeName = feature.fType.id.split('#').pop().replace(/(\_\d$)/, ''); // Remove state appendix (e.g. Hospital_0)
-            var filePath = this.$scope.data.marvelFolder + featureTypeName + '.mrvjson';
-            this.parentWidget.show();
-            $.ajax({
-                url: filePath,
-                success: function (marvel) {
-                    _this.$timeout(function () {
-                        _this.$scope.data.title = feature.fType.name;
-                        var w = $("#" + _this.widget.elementId);
-                        Marvelous.model(marvel, featureTypeName, w);
-                    }, 0);
-                },
-                error: function () {
-                    _this.parentWidget.hide();
-                }
-            });
-        };
-        MarvelWidgetCtrl.$inject = [
-            '$scope',
-            '$timeout',
-            '$translate',
-            'layerService',
-            'messageBusService',
-            'mapService'
-        ];
-        return MarvelWidgetCtrl;
-    }());
-    MarvelWidget.MarvelWidgetCtrl = MarvelWidgetCtrl;
-})(MarvelWidget || (MarvelWidget = {}));
-//# sourceMappingURL=MarvelWidgetCtrl.js.map
-var MCAWidget;
-(function (MCAWidget) {
-    /**
-      * Config
-      */
-    var moduleName = 'csComp';
-    try {
-        MCAWidget.myModule = angular.module(moduleName);
-    }
-    catch (err) {
-        // named module does not exist, so create one
-        MCAWidget.myModule = angular.module(moduleName, []);
-    }
-    /**
-      * Directive to display the available map layers.
-      */
-    MCAWidget.myModule.directive('mcawidget', [function () {
-            return {
-                restrict: 'E',
-                scope: {},
-                templateUrl: 'directives/Widgets/MCAWidget/MCAWidget.tpl.html',
-                replace: true,
-                transclude: false,
-                controller: MCAWidget.MCAWidgetCtrl
-            };
-        }
-    ]);
-})(MCAWidget || (MCAWidget = {}));
-//# sourceMappingURL=MCAWidget.js.map
-var MCAWidget;
-(function (MCAWidget) {
-    var MCAWidgetData = (function () {
-        function MCAWidgetData() {
-        }
-        return MCAWidgetData;
-    }());
-    MCAWidget.MCAWidgetData = MCAWidgetData;
-    var MCAWidgetCtrl = (function () {
-        function MCAWidgetCtrl($scope, $timeout, $controller, $layerService, $messageBus, $mapService) {
-            var _this = this;
-            this.$scope = $scope;
-            this.$timeout = $timeout;
-            this.$controller = $controller;
-            this.$layerService = $layerService;
-            this.$messageBus = $messageBus;
-            this.$mapService = $mapService;
-            this.mBusHandles = [];
-            $scope.vm = this;
-            var par = $scope.$parent;
-            this.widget = par.widget;
-            $scope.data = this.widget.data;
-            $scope.data.filterByDefaultFeatureType = $scope.data.filterByDefaultFeatureType || false;
-            if (typeof $scope.data.layerId !== 'undefined') {
-                // Hide widget
-                this.parentWidget = $("#" + this.widget.elementId).parent();
-                this.parentWidget.hide();
-                this.mBusHandles.push(this.$messageBus.subscribe('layer', function (action, layer) {
-                    switch (action) {
-                        case 'activated':
-                        case 'deactivate':
-                            _this.activateLayer(layer);
-                            break;
-                        default:
-                            break;
-                    }
-                }));
-                // Activate widget when layer is already loaded
-                var l = this.$layerService.findLoadedLayer($scope.data.layerId);
-                if (l) {
-                    this.activateLayer(l);
-                }
-            }
-        }
-        MCAWidgetCtrl.prototype.stop = function () {
-            var _this = this;
-            if (this.mBusHandles) {
-                this.mBusHandles.forEach(function (mbh) {
-                    _this.$messageBus.unsubscribe(mbh);
-                });
-                this.mBusHandles.length = 0;
-            }
-        };
-        MCAWidgetCtrl.prototype.activateLayer = function (layer) {
-            var _this = this;
-            this.mcaScope = this.getMcaScope();
-            if (!this.mcaScope)
-                return;
-            if (layer.id !== this.$scope.data.layerId || (layer.id === this.$scope.data.layerId && !layer.enabled)) {
-                this.parentWidget.hide();
-                return;
-            }
-            this.$timeout(function () {
-                _this.parentWidget.show();
-            }, 0);
-        };
-        MCAWidgetCtrl.prototype.getMcaScope = function () {
-            var mcaElm = angular.element('div[id="mca"]');
-            if (!mcaElm) {
-                console.log('Mca element not found.');
-                return;
-            }
-            var mcaScope = mcaElm.scope();
-            if (!mcaScope) {
-                console.log('Mca controller scope not found.');
-                return;
-            }
-            else {
-                var l = this.$layerService.findLoadedLayer(this.$scope.data.layerId);
-                if (l && this.$scope.data.filterByDefaultFeatureType) {
-                    this.$scope.data.availableMcas = mcaScope.vm.availableMcas.filter(function (mca) {
-                        return mca.featureIds[0].split('#').pop() === l.defaultFeatureType;
-                    });
-                }
-                else {
-                    this.$scope.data.availableMcas = mcaScope.vm.availableMcas;
-                }
-            }
-            return mcaScope;
-        };
-        MCAWidgetCtrl.prototype.setMcaAsStyle = function (mcaId) {
-            if (!this.mcaScope || !this.mcaScope.vm.mca) {
-                console.log('Mca controller scope not found.');
-                return;
-            }
-            else {
-                if (!this.$layerService.lastSelectedFeature) {
-                    this.$messageBus.notifyWithTranslation('SELECT_A_FEATURE', 'SELECT_FEATURE_FOR_STYLE');
-                    return;
-                }
-                var vm = this.mcaScope.vm;
-                var mca = vm.findMcaById(mcaId);
-                vm.updateAvailableMcas(mca);
-                vm.updateSelectedFeature(this.$layerService.lastSelectedFeature);
-                if (!vm.showFeature) {
-                    this.$messageBus.notifyWithTranslation('SELECT_A_FEATURE', 'SELECT_FEATURE_FOR_STYLE');
-                    return;
-                }
-                if (vm.properties.length > 0) {
-                    vm.updateMca();
-                    console.log('Set mca style.');
-                    vm.setStyle(vm.properties[0]);
-                }
-            }
-        };
-        MCAWidgetCtrl.$inject = [
-            '$scope',
-            '$timeout',
-            '$controller',
-            'layerService',
-            'messageBusService',
-            'mapService'
-        ];
-        return MCAWidgetCtrl;
-    }());
-    MCAWidget.MCAWidgetCtrl = MCAWidgetCtrl;
-})(MCAWidget || (MCAWidget = {}));
-//# sourceMappingURL=MCAWidgetCtrl.js.map
 var NavigatorWidget;
 (function (NavigatorWidget) {
     /**
@@ -29039,15 +29917,15 @@ var NavigatorWidget;
                 this.parentWidget.hide();
             }
         }
-        NavigatorWidgetCtrl.$inject = [
-            '$scope',
-            '$timeout',
-            'layerService',
-            'messageBusService',
-            'mapService'
-        ];
         return NavigatorWidgetCtrl;
     }());
+    NavigatorWidgetCtrl.$inject = [
+        '$scope',
+        '$timeout',
+        'layerService',
+        'messageBusService',
+        'mapService'
+    ];
     NavigatorWidget.NavigatorWidgetCtrl = NavigatorWidgetCtrl;
 })(NavigatorWidget || (NavigatorWidget = {}));
 //# sourceMappingURL=NavigatorWidgetCtrl.js.map
@@ -29128,34 +30006,34 @@ var PostMan;
             switch (msg.httpMethod.name.toUpperCase()) {
                 case 'POST':
                     this.$http.post(msg.url, msg.message)
-                        .success(function () { _this.result = 'OK'; })
-                        .error(function (err) { _this.result = "Error: " + err; });
+                        .then(function () { _this.result = 'OK'; })
+                        .catch(function (err) { _this.result = "Error: " + err; });
                     break;
                 case 'PUT':
                     this.$http.put(msg.url, msg.message)
-                        .success(function () { _this.result = 'OK'; })
-                        .error(function (err) { _this.result = "Error: " + err; });
+                        .then(function () { _this.result = 'OK'; })
+                        .catch(function (err) { _this.result = "Error: " + err; });
                     break;
                 case 'GET':
                     this.$http.get(msg.url, msg.message)
-                        .success(function (data) { _this.result = "Result: " + data; })
-                        .error(function (err) { _this.result = "Error: " + err; });
+                        .then(function (data) { _this.result = "Result: " + data.data; })
+                        .catch(function (err) { _this.result = "Error: " + err; });
                     break;
                 case 'DELETE':
                     this.$http.delete(msg.url, msg.message)
-                        .success(function () { _this.result = 'OK'; })
-                        .error(function (err) { _this.result = "Error: " + err; });
+                        .then(function () { _this.result = 'OK'; })
+                        .catch(function (err) { _this.result = "Error: " + err; });
                     break;
             }
         };
-        PostManCtrl.$inject = [
-            '$scope',
-            '$http',
-            'messageBusService',
-            '$timeout'
-        ];
         return PostManCtrl;
     }());
+    PostManCtrl.$inject = [
+        '$scope',
+        '$http',
+        'messageBusService',
+        '$timeout'
+    ];
     PostMan.PostManCtrl = PostManCtrl;
 })(PostMan || (PostMan = {}));
 //# sourceMappingURL=PostManCtrl.js.map
@@ -29204,15 +30082,15 @@ var PostMan;
             else
                 this.$scope.selectedMessage = this.$scope.data.messages[0];
         };
-        // $inject annotation.
-        PostManEditCtrl.$inject = [
-            '$scope',
-            '$timeout',
-            'messageBusService',
-            'dashboardService'
-        ];
         return PostManEditCtrl;
     }());
+    // $inject annotation.
+    PostManEditCtrl.$inject = [
+        '$scope',
+        '$timeout',
+        'messageBusService',
+        'dashboardService'
+    ];
     PostMan.PostManEditCtrl = PostManEditCtrl;
 })(PostMan || (PostMan = {}));
 //# sourceMappingURL=PostManEditCtrl.js.map
@@ -29347,14 +30225,14 @@ var Presentation;
             }
             return this.presentations[lastKey];
         };
-        PresentationService.$inject = [
-            '$rootScope',
-            'layerService',
-            'messageBusService',
-            'dashboardService'
-        ];
         return PresentationService;
     }());
+    PresentationService.$inject = [
+        '$rootScope',
+        'layerService',
+        'messageBusService',
+        'dashboardService'
+    ];
     Presentation.PresentationService = PresentationService;
     /**
      * Register service
@@ -29420,15 +30298,15 @@ var Presentation;
             if (this.selectedLayer)
                 this.widget.data.selectedLayerId = this.selectedLayer.id;
         };
-        PresentationWidgetEditCtrl.$inject = [
-            '$scope',
-            '$http',
-            'layerService',
-            'messageBusService',
-            '$timeout'
-        ];
         return PresentationWidgetEditCtrl;
     }());
+    PresentationWidgetEditCtrl.$inject = [
+        '$scope',
+        '$http',
+        'layerService',
+        'messageBusService',
+        '$timeout'
+    ];
     Presentation.PresentationWidgetEditCtrl = PresentationWidgetEditCtrl;
 })(Presentation || (Presentation = {}));
 //# sourceMappingURL=PresentationWidget-edit.js.map
@@ -29646,14 +30524,14 @@ var Presentation;
                 this.$scope.$digest();
             this.presentationService.save(layer);
         };
-        PresentationWidgetCtrl.$inject = [
-            '$scope',
-            'layerService',
-            'messageBusService',
-            'presentationService'
-        ];
         return PresentationWidgetCtrl;
     }());
+    PresentationWidgetCtrl.$inject = [
+        '$scope',
+        'layerService',
+        'messageBusService',
+        'presentationService'
+    ];
     Presentation.PresentationWidgetCtrl = PresentationWidgetCtrl;
 })(Presentation || (Presentation = {}));
 //# sourceMappingURL=PresentationWidget.js.map
@@ -29690,14 +30568,14 @@ var SimState;
             //var par = <any>$scope.$parent;
             //$scope.data = <PostManEditorData>par.widget.data;
         }
-        SimStateEditCtrl.$inject = [
-            '$scope',
-            '$http',
-            'messageBusService',
-            '$timeout'
-        ];
         return SimStateEditCtrl;
     }());
+    SimStateEditCtrl.$inject = [
+        '$scope',
+        '$http',
+        'messageBusService',
+        '$timeout'
+    ];
     SimState.SimStateEditCtrl = SimStateEditCtrl;
 })(SimState || (SimState = {}));
 //# sourceMappingURL=SimState-edit.js.map
@@ -29746,14 +30624,14 @@ var SimState;
                 }, 0);
             });
         }
-        SimStateCtrl.$inject = [
-            '$scope',
-            '$http',
-            'messageBusService',
-            '$timeout'
-        ];
         return SimStateCtrl;
     }());
+    SimStateCtrl.$inject = [
+        '$scope',
+        '$http',
+        'messageBusService',
+        '$timeout'
+    ];
     SimState.SimStateCtrl = SimStateCtrl;
 })(SimState || (SimState = {}));
 //# sourceMappingURL=SimState.js.map
@@ -29817,12 +30695,13 @@ var SimTimeController;
 //# sourceMappingURL=SimTimeController.js.map
 var SimTimeController;
 (function (SimTimeController) {
+    var PlayState;
     (function (PlayState) {
         PlayState[PlayState["Stopped"] = 0] = "Stopped";
         PlayState[PlayState["Playing"] = 1] = "Playing";
         PlayState[PlayState["Paused"] = 2] = "Paused";
-    })(SimTimeController.PlayState || (SimTimeController.PlayState = {}));
-    var PlayState = SimTimeController.PlayState;
+    })(PlayState = SimTimeController.PlayState || (SimTimeController.PlayState = {}));
+    var SimCommand;
     (function (SimCommand) {
         SimCommand[SimCommand["Start"] = 0] = "Start";
         SimCommand[SimCommand["Pause"] = 1] = "Pause";
@@ -29830,8 +30709,7 @@ var SimTimeController;
         SimCommand[SimCommand["Run"] = 3] = "Run";
         SimCommand[SimCommand["Finish"] = 4] = "Finish";
         SimCommand[SimCommand["Exit"] = 5] = "Exit";
-    })(SimTimeController.SimCommand || (SimTimeController.SimCommand = {}));
-    var SimCommand = SimTimeController.SimCommand;
+    })(SimCommand = SimTimeController.SimCommand || (SimTimeController.SimCommand = {}));
     var SimTimeControllerCtrl = (function () {
         // dependencies are injected via AngularJS $injector
         // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
@@ -29945,6 +30823,7 @@ var SimTimeController;
                     if (!isNaN(_this.time.getTime())) {
                         _this.updateTimeSinceSimStart();
                         _this.messageBusService.publish('timeline', 'setFocus', _this.time);
+                        //console.log(`Simtimecontroller published focusTime: ${this.time}`);
                     }
                     else {
                         console.log("ERROR processing Sim.SimTime message! Received: (input: " + JSON.stringify(msg.data.item, null, 2));
@@ -30017,18 +30896,18 @@ var SimTimeController;
             // this.$http.post( '/api/keys/simTime', msg)
             //     .error((err) => alert( "Failed to deliver message: " + JSON.stringify({err: err})));
         };
-        // $inject annotation.
-        // It provides $injector with information about dependencies to be in  jected into constructor
-        // it is better to have it close to the constructor, because the parameters must match in count and type.
-        // See http://docs.angularjs.org/guide/di
-        SimTimeControllerCtrl.$inject = [
-            '$scope',
-            '$http',
-            'messageBusService',
-            '$timeout'
-        ];
         return SimTimeControllerCtrl;
     }());
+    // $inject annotation.
+    // It provides $injector with information about dependencies to be in  jected into constructor
+    // it is better to have it close to the constructor, because the parameters must match in count and type.
+    // See http://docs.angularjs.org/guide/di
+    SimTimeControllerCtrl.$inject = [
+        '$scope',
+        '$http',
+        'messageBusService',
+        '$timeout'
+    ];
     SimTimeController.SimTimeControllerCtrl = SimTimeControllerCtrl;
 })(SimTimeController || (SimTimeController = {}));
 //# sourceMappingURL=SimTimeControllerCtrl.js.map
@@ -30056,18 +30935,18 @@ var SimTimeController;
             if (!$scope.data.url)
                 $scope.data.url = 'api/keys/simTime';
         }
-        // $inject annotation.
-        // It provides $injector with information about dependencies to be injected into constructor
-        // it is better to have it close to the constructor, because the parameters must match in count and type.
-        // See http://docs.angularjs.org/guide/di
-        SimTimeControllerEditCtrl.$inject = [
-            '$scope',
-            '$timeout',
-            'messageBusService',
-            'dashboardService'
-        ];
         return SimTimeControllerEditCtrl;
     }());
+    // $inject annotation.
+    // It provides $injector with information about dependencies to be injected into constructor
+    // it is better to have it close to the constructor, because the parameters must match in count and type.
+    // See http://docs.angularjs.org/guide/di
+    SimTimeControllerEditCtrl.$inject = [
+        '$scope',
+        '$timeout',
+        'messageBusService',
+        'dashboardService'
+    ];
     SimTimeController.SimTimeControllerEditCtrl = SimTimeControllerEditCtrl;
 })(SimTimeController || (SimTimeController = {}));
 //# sourceMappingURL=SimTimeControllerEditCtrl.js.map
@@ -30276,24 +31155,29 @@ var TableWidget;
                 return '';
             }
         };
-        TableWidgetCtrl.$inject = [
-            '$scope',
-            '$timeout',
-            'layerService',
-            'messageBusService',
-            'mapService',
-            '$sce'
-        ];
         return TableWidgetCtrl;
     }());
+    TableWidgetCtrl.$inject = [
+        '$scope',
+        '$timeout',
+        'layerService',
+        'messageBusService',
+        'mapService',
+        '$sce'
+    ];
     TableWidget.TableWidgetCtrl = TableWidgetCtrl;
 })(TableWidget || (TableWidget = {}));
 //# sourceMappingURL=TableWidgetCtrl.js.map
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var csComp;
 (function (csComp) {
     var Services;
@@ -30304,21 +31188,21 @@ var csComp;
              * @param  {string} apiKey: route to the search api (optional, followed by a |), and the Bing maps key (required)
              */
             function BingSearchAction($http, apiKey, searchUrl, data) {
-                var _this = this;
                 if (searchUrl === void 0) { searchUrl = 'http://dev.virtualearth.net/REST/v1/Locations'; }
                 if (data === void 0) { data = {
                     culture: 'nl',
                     userLocation: '52.077857,4.316639'
                 }; }
-                _super.call(this);
-                this.$http = $http;
-                this.apiKey = apiKey;
-                this.searchUrl = searchUrl;
-                this.data = data;
-                this.isReady = true;
-                this.id = 'BingSearchActions';
-                this.searchCache = {};
-                this.debouncedFn = _.debounce(function (query, result) { return _this.bingRestRequest(query, result); }, 2500);
+                var _this = _super.call(this) || this;
+                _this.$http = $http;
+                _this.apiKey = apiKey;
+                _this.searchUrl = searchUrl;
+                _this.data = data;
+                _this.isReady = true;
+                _this.id = 'BingSearchActions';
+                _this.searchCache = {};
+                _this.debouncedFn = _.debounce(function (query, result) { return _this.bingRestRequest(query, result); }, 2500);
+                return _this;
             }
             BingSearchAction.prototype.init = function (layerService) {
                 _super.prototype.init.call(this, layerService);
@@ -30335,7 +31219,7 @@ var csComp;
                     this.geocodeCallback(this.searchCache[query.query], handler, query.query);
                     return;
                 }
-                var geocodeRequest = (this.searchUrl + "?query=")
+                var geocodeRequest = this.searchUrl + "?query="
                     + encodeURIComponent(query.query)
                     + ("&culture=" + this.data.culture + "&userLocation=" + this.data.userLocation + "&maxResults=10&jsonp=JSON_CALLBACK&key=" + this.apiKey);
                 this.callRestService(geocodeRequest, function (result, handler, query) { return _this.geocodeCallback(result, handler, query); }, handler, query.query);
@@ -30343,10 +31227,11 @@ var csComp;
             /** JSONP callback wrapper */
             BingSearchAction.prototype.callRestService = function (request, callback, handler, query) {
                 this.$http.jsonp(request)
-                    .success(function (r) {
+                    .then(function (res) {
+                    var r = res.data;
                     callback(r, handler, query);
                 })
-                    .error(function (data, status, error, thing) {
+                    .catch(function (error) {
                     alert(error);
                 });
             };
@@ -30393,11 +31278,16 @@ var csComp;
     })(Services = csComp.Services || (csComp.Services = {}));
 })(csComp || (csComp = {}));
 //# sourceMappingURL=BingSearchAction.js.map
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var csComp;
 (function (csComp) {
     var Services;
@@ -30408,18 +31298,18 @@ var csComp;
              * @param  {string} apiKey: route to the search api (optional, followed by a |), and the Bing maps key (required)
              */
             function EsriBagSearchAction($http, apiKey, searchUrl, data) {
-                var _this = this;
                 if (searchUrl === void 0) { searchUrl = 'https://services.arcgisonline.nl/arcgis/rest/services/Geocoder_BAG/GeocodeServer/findAddressCandidates'; }
-                _super.call(this);
-                this.$http = $http;
-                this.apiKey = apiKey;
-                this.searchUrl = searchUrl;
-                this.data = data;
-                this.isReady = true;
-                this.id = 'EsriBagSearchAction';
-                this.searchCache = {};
-                this.queryUrl = this.searchUrl + "?f=pjson";
-                this.debouncedFn = _.debounce(function (query, result) { return _this.esriRestRequest(query, result); }, 1000);
+                var _this = _super.call(this) || this;
+                _this.$http = $http;
+                _this.apiKey = apiKey;
+                _this.searchUrl = searchUrl;
+                _this.data = data;
+                _this.isReady = true;
+                _this.id = 'EsriBagSearchAction';
+                _this.searchCache = {};
+                _this.queryUrl = _this.searchUrl + "?f=pjson";
+                _this.debouncedFn = _.debounce(function (query, result) { return _this.esriRestRequest(query, result); }, 1000);
+                return _this;
             }
             EsriBagSearchAction.prototype.init = function (layerService) {
                 _super.prototype.init.call(this, layerService);
@@ -30442,10 +31332,11 @@ var csComp;
             /** JSONP callback wrapper */
             EsriBagSearchAction.prototype.callRestService = function (request, callback, handler, query) {
                 this.$http.get(request)
-                    .success(function (r) {
+                    .then(function (res) {
+                    var r = res.data;
                     callback(r, handler, query);
                 })
-                    .error(function (data, status, error, thing) {
+                    .catch(function (error) {
                     console.log('Error contacting Esri');
                 });
             };
@@ -30486,11 +31377,16 @@ var csComp;
     })(Services = csComp.Services || (csComp.Services = {}));
 })(csComp || (csComp = {}));
 //# sourceMappingURL=EsriBagSearchAction.js.map
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var csComp;
 (function (csComp) {
     var Services;
@@ -30554,18 +31450,20 @@ var csComp;
              * @param  {string} projectUri: path to the project.json file
              */
             function OfflineSearchActions($http, projectUri) {
-                _super.call(this);
-                this.$http = $http;
-                this.isReady = true;
-                this.id = 'OfflineSearchActions';
+                var _this = _super.call(this) || this;
+                _this.$http = $http;
+                _this.isReady = true;
+                _this.id = 'OfflineSearchActions';
                 var offlineSearchResultUri = projectUri.replace('project.json', 'offline_search_result.json');
-                this.loadIndex(offlineSearchResultUri);
+                _this.loadIndex(offlineSearchResultUri);
+                return _this;
             }
             /** Load the offline search index from a json file. */
             OfflineSearchActions.prototype.loadIndex = function (url) {
                 var _this = this;
                 this.$http.get(url)
-                    .success(function (offlineSearchResult) {
+                    .then(function (res) {
+                    var offlineSearchResult = res.data;
                     _this.offlineSearchResult = offlineSearchResult;
                     var kwi = offlineSearchResult.keywordIndex;
                     var keywordIndex = {};
@@ -30581,7 +31479,7 @@ var csComp;
                     _this.offlineSearchResult.keywordIndex = keywordIndex;
                     _this.isReady = true;
                 })
-                    .error(function () { console.log("OfflineSearch: error with $http "); });
+                    .catch(function () { console.log("OfflineSearch: error with $http "); });
             };
             OfflineSearchActions.prototype.search = function (query, result) {
                 var _this = this;
@@ -30742,11 +31640,16 @@ var csComp;
     })(Services = csComp.Services || (csComp.Services = {}));
 })(csComp || (csComp = {}));
 //# sourceMappingURL=OfflineSearchAction.js.map
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var csComp;
 (function (csComp) {
     var Services;
@@ -30757,11 +31660,12 @@ var csComp;
              * @param  {string} searchUrl: route to the search api
              */
             function OnlineSearchActions($http, searchUrl) {
-                _super.call(this);
-                this.$http = $http;
-                this.isReady = true;
-                this.id = 'OnlineSearchActions';
-                this.searchUrl = searchUrl;
+                var _this = _super.call(this) || this;
+                _this.$http = $http;
+                _this.isReady = true;
+                _this.id = 'OnlineSearchActions';
+                _this.searchUrl = searchUrl;
+                return _this;
             }
             OnlineSearchActions.prototype.search = function (query, result) {
                 var _this = this;
@@ -30857,11 +31761,16 @@ var csComp;
     })(Services = csComp.Services || (csComp.Services = {}));
 })(csComp || (csComp = {}));
 //# sourceMappingURL=OnlineSearchAction.js.map
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var csComp;
 (function (csComp) {
     var Services;
@@ -30872,28 +31781,29 @@ var csComp;
              * @param  {string} apiKey: route to the search api (optional, followed by a |), and the Bing maps key (required)
              */
             function OpenCageDataSearchAction($http, apiKey, searchUrl, data) {
-                var _this = this;
                 if (searchUrl === void 0) { searchUrl = 'https://api.opencagedata.com/geocode/v1/geojson'; }
-                _super.call(this);
-                this.$http = $http;
-                this.apiKey = apiKey;
-                this.searchUrl = searchUrl;
-                this.data = data;
-                this.isReady = true;
-                this.id = 'OpenCageDataSearchAction';
-                this.searchCache = {};
-                this.queryUrl = this.searchUrl
-                    + ("?pretty=1&no_dedupe=1&limit=10&jsonp=JSON_CALLBACK&key=" + this.apiKey)
-                    + (this.data.bounds ? "&bounds=" + this.data.bounds : '')
-                    + (this.data.culture ? "&countrycode=" + this.data.culture : '&nl')
-                    + (this.data.language ? "&language=" + this.data.language : '&nl-NL');
-                this.debouncedFn = _.debounce(function (query, result) { return _this.ocdRestRequest(query, result); }, 2500);
-                this.messageBus = data.messageBus;
-                this.messageBus.subscribe('geocoding', function (action, point) {
-                    if (action.toLowerCase() !== 'reverselookup')
+                var _this = _super.call(this) || this;
+                _this.$http = $http;
+                _this.apiKey = apiKey;
+                _this.searchUrl = searchUrl;
+                _this.data = data;
+                _this.isReady = true;
+                _this.id = 'OpenCageDataSearchAction';
+                _this.searchCache = {};
+                _this.queryUrl = _this.searchUrl
+                    + ("?pretty=1&no_dedupe=1&limit=10&key=" + _this.apiKey)
+                    + (_this.data.bounds ? "&bounds=" + _this.data.bounds : '')
+                    + (_this.data.culture ? "&countrycode=" + _this.data.culture : '&nl')
+                    + (_this.data.language ? "&language=" + _this.data.language : '&nl-NL');
+                _this.debouncedFn = _.debounce(function (query, result) { return _this.ocdRestRequest(query, result); }, 2500);
+                _this.messageBus = data.messageBus;
+                _this.messageBus.subscribe('geocoding', function (action, point) {
+                    if (action.toLowerCase() !== 'reverselookup') {
                         return;
+                    }
                     _this.reverseGeocodeLookup(point);
                 });
+                return _this;
             }
             OpenCageDataSearchAction.prototype.init = function (layerService) {
                 _super.prototype.init.call(this, layerService);
@@ -30902,13 +31812,14 @@ var csComp;
             OpenCageDataSearchAction.prototype.reverseGeocodeLookup = function (point) {
                 var _this = this;
                 var geocodeRequest = this.queryUrl + "&q=" + point.lat + "," + point.lng;
-                this.$http.jsonp(geocodeRequest)
-                    .success(function (r) {
+                this.$http.get(geocodeRequest)
+                    .then(function (res) {
+                    var r = res.data;
                     if (!r.results || r.results.length === 0)
                         return;
                     _this.messageBus.publish('geocoding', 'reverseLookupResult', r.results[0]);
                 })
-                    .error(function (data, status, error, thing) {
+                    .catch(function (error) {
                     console.log(error);
                 });
             };
@@ -30930,10 +31841,11 @@ var csComp;
             /** JSONP callback wrapper */
             OpenCageDataSearchAction.prototype.callRestService = function (request, callback, handler, query) {
                 this.$http.jsonp(request)
-                    .success(function (r) {
+                    .then(function (res) {
+                    var r = res.data;
                     callback(r, handler, query);
                 })
-                    .error(function (data, status, error, thing) {
+                    .catch(function (error) {
                     alert(error);
                 });
             };
@@ -30981,624 +31893,6 @@ var csComp;
     })(Services = csComp.Services || (csComp.Services = {}));
 })(csComp || (csComp = {}));
 //# sourceMappingURL=OpenCageDataSearchAction.js.map
-/*
- Generic  Canvas Overlay for leaflet,
- Stanislav Sumbera, April , 2014
-
- - added userDrawFunc that is called when Canvas need to be redrawn
- - added few useful params for userDrawFunc callback
-  - fixed resize map bug
-  inspired & portions taken from  :   https://github.com/Leaflet/Leaflet.heat
-
-*/
-var L;
-(function (L) {
-    var CanvasOverlay = L.Class.extend({
-        initialize: function (userDrawFunc, layer, options) {
-            this._layer = layer,
-                this._userDrawFunc = userDrawFunc;
-            this._layerAdd = this;
-            L.Util.setOptions(this, options);
-        },
-        call: function (layer) {
-            this.onAdd(layer._mapToAdd);
-        },
-        fire: function (action) {
-            if (action && action === 'remove') {
-            }
-        },
-        drawing: function (userDrawFunc) {
-            this._userDrawFunc = userDrawFunc;
-            return this;
-        },
-        params: function (options) {
-            L.Util.setOptions(this, options);
-            return this;
-        },
-        canvas: function () {
-            return this._canvas;
-        },
-        redraw: function () {
-            if (!this._frame) {
-                this._frame = L.Util.requestAnimFrame(this._redraw, this);
-            }
-            return this;
-        },
-        onAdd: function (map) {
-            var _this = this;
-            this._map = map;
-            this._canvas = L.DomUtil.create('canvas', 'leaflet-overlay-layer');
-            var size = this._map.getSize();
-            this._canvas.width = size.x;
-            this._canvas.height = size.y;
-            this._context = this._canvas.getContext("2d");
-            this._popup = null;
-            this.onMouseMoveDelay = _.throttle(function (evt) {
-                var pos = _this._getCanvasPos();
-                var rgb = _this._context.getImageData(evt.x - pos.left, evt.y - pos.top, 1, 1).data;
-                // only show tooltip when a colored cell is located at the mouse cursor position
-                if ((rgb[0] + rgb[1] + rgb[2]) > 0) {
-                    var latLng = _this._map.containerPointToLatLng(new L.Point(evt.x - pos.left, evt.y - pos.top));
-                    var i = Math.floor((latLng.lat - _this.options.topLeftLat) / _this.options.deltaLat);
-                    var j = Math.floor((latLng.lng - _this.options.topLeftLon) / _this.options.deltaLon);
-                    var value = '';
-                    if (0 <= i && i < _this.options.data.length &&
-                        0 <= j && j < _this.options.data[0].length) {
-                        value = String.format("{0:0.00}", _this.options.data[i][j]);
-                    }
-                    (_this._layer.dataSourceParameters.legendStringFormat) ? value = String.format(_this._layer.dataSourceParameters.legendStringFormat, value) : null;
-                    var content = '<table><td>' + value + '</td></tr>' + '</table>';
-                    if (_this._popup && _this._map._popup && _this._map._popup._isOpen) {
-                        _this._popup.setLatLng(_this._map.containerPointToLatLng(new L.Point(evt.x, evt.y))).setContent(content);
-                    }
-                    else {
-                        _this._popup = L.popup({
-                            offset: new L.Point(-25, -15),
-                            closeOnClick: true,
-                            autoPan: false,
-                            className: 'featureTooltip'
-                        }).setLatLng(_this._map.containerPointToLatLng(new L.Point(evt.x, evt.y))).setContent(content).openOn(_this._map);
-                    }
-                }
-                else {
-                    _this._map.closePopup(_this._popup);
-                    _this._popup = null;
-                }
-                //console.log('mousemoved ' + evt.x + ', ' + evt.y + ',  color: R' + rgb[0] + ' G' + rgb[1] + ' B' + rgb[2]);
-            }, 500);
-            map.getPanes().overlayPane.addEventListener('mousemove', this.onMouseMoveDelay);
-            var animated = this._map.options.zoomAnimation && L.Browser.any3d;
-            L.DomUtil.addClass(this._canvas, 'leaflet-zoom-' + (animated ? 'animated' : 'hide'));
-            if (!map._panes.overlayPane.firstChild) {
-                map._panes.overlayPane.appendChild(this._canvas);
-            }
-            else {
-                map._panes.overlayPane.insertBefore(this._canvas, map._panes.overlayPane.firstChild);
-            }
-            map.on('moveend', this._reset, this);
-            map.on('resize', this._resize, this);
-            if (map.options.zoomAnimation && L.Browser.any3d) {
-                map.on('zoomanim', this._animateZoom, this);
-            }
-            this._reset();
-        },
-        onRemove: function (map) {
-            map.getPanes().overlayPane.removeChild(this._canvas);
-            map.off('moveend', this._reset, this);
-            map.off('resize', this._resize, this);
-            map.getPanes().overlayPane.removeEventListener('mousemove', this.onMouseMoveDelay);
-            map.closePopup(this._popup);
-            this._popup = null;
-            if (map.options.zoomAnimation) {
-                map.off('zoomanim', this._animateZoom, this);
-            }
-            this._canvas = null;
-        },
-        addTo: function (map) {
-            map.addLayer(this);
-            return this;
-        },
-        _getCanvasPos: function () {
-            var obj = this._canvas;
-            var top = 0;
-            var left = 0;
-            while (obj && obj.tagName != "BODY") {
-                top += obj.offsetTop;
-                left += obj.offsetLeft;
-                obj = obj.offsetParent;
-            }
-            return {
-                top: top,
-                left: left
-            };
-        },
-        _resize: function (resizeEvent) {
-            this._canvas.width = resizeEvent.newSize.x;
-            this._canvas.height = resizeEvent.newSize.y;
-        },
-        _reset: function () {
-            var topLeft = this._map.containerPointToLayerPoint([0, 0]);
-            L.DomUtil.setPosition(this._canvas, topLeft);
-            this._redraw();
-        },
-        _redraw: function () {
-            var size = this._map.getSize();
-            var bounds = this._map.getBounds();
-            var zoomScale = (size.x * 180) / (20037508.34 * (bounds.getEast() - bounds.getWest())); // resolution = 1/zoomScale
-            var zoom = this._map.getZoom();
-            // console.time('process');
-            if (this._userDrawFunc) {
-                this._userDrawFunc(this, this._layer, {
-                    canvas: this._canvas,
-                    bounds: bounds,
-                    size: size,
-                    zoomScale: zoomScale,
-                    zoom: zoom,
-                    options: this.options
-                });
-            }
-            // console.timeEnd('process');
-            this._frame = null;
-        },
-        _animateZoom: function (e) {
-            var scale = this._map.getZoomScale(e.zoom), offset = this._map._getCenterOffset(e.center)._multiplyBy(-scale).subtract(this._map._getMapPanePos());
-            if (L.DomUtil.getTranslateString) {
-                this._canvas.style[L.DomUtil.TRANSFORM] = L.DomUtil.getTranslateString(offset) + ' scale(' + scale + ')';
-            }
-            else {
-                this._canvas.style[L.DomUtil.TRANSFORM] = 'scale(' + scale + ')';
-            }
-        }
-    });
-    function canvasOverlay(userDrawFunc, layer, options) {
-        return new CanvasOverlay(userDrawFunc, layer, options);
-    }
-    L.canvasOverlay = canvasOverlay;
-    ;
-})(L || (L = {}));
-//# sourceMappingURL=canvasOverlay.js.map
-var csComp;
-(function (csComp) {
-    var Services;
-    (function (Services) {
-        var GeojsonRenderer = (function () {
-            function GeojsonRenderer() {
-            }
-            GeojsonRenderer.render = function (service, layer, mapRenderer) {
-                layer.mapLayer = new L.LayerGroup();
-                service.map.map.addLayer(layer.mapLayer);
-                if (!layer.data || !layer.data.features)
-                    return;
-                layer.data.features.forEach(function (f) {
-                    var marker = mapRenderer.addFeature(f);
-                    if (marker)
-                        layer.group.markers[f.id] = marker;
-                });
-            };
-            GeojsonRenderer.remove = function (service, layer) {
-                var g = layer.group;
-                //m = layer.group.vectors;
-                if (g.clustering) {
-                    var m = g._cluster;
-                    service.project.features.forEach(function (feature) {
-                        if (feature.layerId === layer.id) {
-                            try {
-                                m.removeLayer(layer.group.markers[feature.id]);
-                                delete layer.group.markers[feature.id];
-                            }
-                            catch (error) { }
-                        }
-                    });
-                }
-                else {
-                    service.project.features.forEach(function (feature) {
-                        if (feature.layerId !== layer.id)
-                            return;
-                        if (layer.group.markers.hasOwnProperty(feature.id)) {
-                            delete layer.group.markers[feature.id];
-                        }
-                        else if (feature.geometry && feature.geometry.type === 'Overlay') {
-                            service.map.map.removeLayer(feature._gui['imageOverlay']);
-                        }
-                    });
-                    if (service.map.map && layer.mapLayer) {
-                        try {
-                            service.map.map.removeLayer(layer.mapLayer);
-                        }
-                        catch (error) { }
-                    }
-                }
-            };
-            return GeojsonRenderer;
-        }());
-        Services.GeojsonRenderer = GeojsonRenderer;
-    })(Services = csComp.Services || (csComp.Services = {}));
-})(csComp || (csComp = {}));
-//# sourceMappingURL=geojsonRenderer.js.map
-var csComp;
-(function (csComp) {
-    var Services;
-    (function (Services) {
-        var GridLayerRenderer = (function () {
-            function GridLayerRenderer() {
-            }
-            GridLayerRenderer.render = function (service, layer) {
-                var gridParams = layer.dataSourceParameters;
-                var legend = [];
-                var levels;
-                if (typeof gridParams.contourLevels === 'number') {
-                    levels = [];
-                    var nrLevels = (gridParams.contourLevels);
-                    var dl = (gridParams.maxThreshold - gridParams.minThreshold) / nrLevels;
-                    for (var l = gridParams.minThreshold + dl / 2; l < gridParams.maxThreshold; l += dl)
-                        levels.push(Math.round(l * 10) / 10); // round to nearest decimal.
-                }
-                else {
-                    levels = gridParams.contourLevels;
-                }
-                // Create a new groupstyle. If no legend is provided, this style can be used to change the colors used to draw the grid.
-                // If a legend is provided, that will be used as activelegend.
-                var gs = new Services.GroupStyle(service.$translate);
-                gs.id = csComp.Helpers.getGuid();
-                gs.title = (gridParams.legendDescription) ? gridParams.legendDescription : layer.title;
-                gs.meta = null;
-                gs.visualAspect = 'fillColor';
-                gs.availableAspects = ['fillColor'];
-                gs.info = { min: 0, max: 0, count: 0, mean: 0, varience: 0, sd: 0 };
-                gs.fixedColorRange = true;
-                gs.enabled = true;
-                gs.group = layer.group;
-                if (!gridParams.legend) {
-                    gs.property = 'gridlayer';
-                    gs.canSelectColor = true;
-                    gs.colors = [(gridParams.minColor) ? gridParams.minColor : '#00fbff', (gridParams.maxColor) ? gridParams.maxColor : '#0400ff'];
-                    gs.activeLegend = {
-                        legendKind: 'interpolated',
-                        description: gs.title,
-                        visualAspect: 'fillColor',
-                        legendEntries: []
-                    };
-                }
-                else {
-                    gs.property = '';
-                    gs.canSelectColor = false;
-                    gs.colors = ['#ffffff', '#000000'];
-                    gs.activeLegend = gridParams.legend;
-                    gs.activeLegend.legendEntries.forEach(function (le) {
-                        legend.push({ val: le.value, color: le.color });
-                    });
-                }
-                service.saveStyle(layer.group, gs);
-                var overlay = L.canvasOverlay(GridLayerRenderer.drawFunction, layer, {
-                    data: layer.data,
-                    noDataValue: gridParams.noDataValue,
-                    topLeftLat: gridParams.startLat,
-                    topLeftLon: gridParams.startLon,
-                    deltaLat: gridParams.deltaLat,
-                    deltaLon: gridParams.deltaLon,
-                    min: gridParams.minThreshold,
-                    max: gridParams.maxThreshold,
-                    minColor: gs.colors[0],
-                    maxColor: gs.colors[1],
-                    areColorsUpdated: false,
-                    levels: levels,
-                    legend: legend,
-                    opacity: (layer.opacity) ? (+layer.opacity) / 100 : 0.3
-                });
-                layer.mapLayer = new L.LayerGroup();
-                service.map.map.addLayer(layer.mapLayer);
-                layer.mapLayer.addLayer(overlay);
-            };
-            GridLayerRenderer.drawFunction = function (overlay, layer, settings) {
-                var map = this._map;
-                var opt = settings.options, data = opt.data;
-                if (!data)
-                    return;
-                var row = data.length, col = data[0].length, size = settings.size, legend = opt.legend;
-                // update the legend when new from- and to-colors are chosen.
-                // the complete color range of the legend will be calculated using the hue value of the from and to colors.
-                if (legend.length === 0 || opt.areColorsUpdated) {
-                    legend = [];
-                    if (opt.minColor[0] !== '#')
-                        opt.minColor = ColorExt.Utils.colorNameToHex(opt.minColor);
-                    if (opt.maxColor[0] !== '#')
-                        opt.maxColor = ColorExt.Utils.colorNameToHex(opt.maxColor);
-                    var fromHue = ColorExt.Utils.rgbToHue(opt.minColor);
-                    var toHue = ColorExt.Utils.rgbToHue(opt.maxColor);
-                    for (var i_1 = 0; i_1 < opt.levels.length; i_1++) {
-                        var level = opt.levels[i_1];
-                        legend.push({ val: level, color: ColorExt.Utils.toColor(level, opt.levels[0], opt.levels[opt.levels.length - 1], fromHue, toHue) });
-                    }
-                    if (layer.group.styles && layer.group.styles.length > 0) {
-                        layer.group.styles[0].activeLegend = {
-                            legendKind: 'interpolated',
-                            description: layer.group.styles[0].title,
-                            visualAspect: 'fillColor',
-                            legendEntries: []
-                        };
-                        legend.forEach(function (i) {
-                            var legEntry = { label: String.format(layer.dataSourceParameters['legendStringFormat'] || '{0:00}', i.val), value: i.val, color: i.color };
-                            layer.group.styles[0].activeLegend.legendEntries.push(legEntry);
-                        });
-                    }
-                    overlay.options.legend = opt.legend = legend;
-                    opt.areColorsUpdated = false;
-                }
-                var min = opt.min || Number.MIN_VALUE, max = opt.max || Number.MAX_VALUE;
-                var topLeft = map.latLngToContainerPoint(new L.LatLng(opt.topLeftLat, opt.topLeftLon)), botRight = map.latLngToContainerPoint(new L.LatLng(opt.topLeftLat + row * opt.deltaLat, opt.topLeftLon + col * opt.deltaLon));
-                var startX = topLeft.x, startY = topLeft.y, deltaX = (botRight.x - topLeft.x) / col, botOfFirstRow = map.latLngToContainerPoint(new L.LatLng(opt.topLeftLat + opt.deltaLat, opt.topLeftLon)), deltaY = botOfFirstRow.y - topLeft.y;
-                var ctx = settings.canvas.getContext('2d');
-                ctx.clearRect(0, 0, size.x, size.y);
-                // Check the boundaries
-                if (startX > size.x || startY > size.y || botRight.x < 0 || botRight.y < 0) {
-                    //console.log('Outside boundary');
-                    return;
-                }
-                var sJ = 0, eI = row, eJ = col;
-                if (startX < -deltaX) {
-                    sJ = -Math.ceil(startX / deltaX);
-                    startX += sJ * deltaX;
-                }
-                if (botRight.x > size.x) {
-                    eJ -= Math.floor((botRight.x - size.x) / deltaX);
-                }
-                if (botRight.y > size.y && deltaY > 0) {
-                    eI -= Math.floor((botRight.y - size.y) / deltaY);
-                }
-                var noDataValue = opt.noDataValue;
-                ctx.globalAlpha = opt.opacity || 0.3;
-                //console.time('process');
-                var y = startY;
-                var lat = opt.topLeftLat; // + sI * opt.deltaLat;
-                for (var i = 0; i < eI; i++) {
-                    lat += opt.deltaLat;
-                    var botY = map.latLngToContainerPoint(new L.LatLng(lat, opt.topLeftLon)).y;
-                    deltaY = botY - y;
-                    if (y <= -deltaY || deltaY === 0) {
-                        y = botY;
-                        continue;
-                    }
-                    var x = startX;
-                    for (var j = sJ; j < eJ; j++) {
-                        var cell = data[i][j];
-                        if (cell === noDataValue || cell < min || cell > max) {
-                            x += deltaX;
-                            continue;
-                        }
-                        var closest = legend.reduce(function (prev, curr) {
-                            return (Math.abs(curr.val - cell) < Math.abs(prev.val - cell) ? curr : prev);
-                        });
-                        ctx.fillStyle = closest.color;
-                        ctx.fillRect(x, y, deltaX, deltaY);
-                        x += deltaX;
-                    }
-                    y = botY;
-                }
-                //console.timeEnd('process');
-            };
-            return GridLayerRenderer;
-        }());
-        Services.GridLayerRenderer = GridLayerRenderer;
-    })(Services = csComp.Services || (csComp.Services = {}));
-})(csComp || (csComp = {}));
-//# sourceMappingURL=gridLayerRenderer.js.map
-var csComp;
-(function (csComp) {
-    var Services;
-    (function (Services) {
-        var HeatmapRenderer = (function () {
-            function HeatmapRenderer() {
-            }
-            HeatmapRenderer.render = function (service, layer, mapRenderer) {
-                if (layer.quickRefresh && layer.quickRefresh == true)
-                    return; //When only updating style of current heatmap, do not add a new layer.
-                var time = new Date().getTime();
-                // create leaflet layers
-                layer.isLoading = true;
-                if (layer.group.clustering) {
-                    var markers = L.geoJson(layer.data, {
-                        pointToLayer: function (feature, latlng) { return mapRenderer.createFeature(feature); },
-                        onEachFeature: function (feature, lay) {
-                            //We do not need to init the feature here: already done in style.
-                            //this.initFeature(feature, layer);
-                            layer.group.markers[feature.id] = lay;
-                            lay.on({
-                                mouseover: function (a) { return mapRenderer.showFeatureTooltip(a, layer.group); },
-                                mouseout: function (s) { return mapRenderer.hideFeatureTooltip(s); }
-                            });
-                        }
-                    });
-                    layer.group._cluster.addLayer(markers);
-                }
-                else {
-                    layer.mapLayer = new L.LayerGroup();
-                    service.map.map.addLayer(layer.mapLayer);
-                    if (layer.data && layer.data.features) {
-                        var v = L.geoJson(layer.data, {
-                            onEachFeature: function (feature, lay) {
-                                //We do not need to init the feature here: already done in style.
-                                //this.initFeature(feature, layer);
-                                layer.group.markers[feature.id] = lay;
-                                lay.on({
-                                    mouseover: function (a) { return mapRenderer.showFeatureTooltip(a, layer.group); },
-                                    mouseout: function (s) { return mapRenderer.hideFeatureTooltip(s); },
-                                    mousemove: function (d) { return mapRenderer.updateFeatureTooltip(d); },
-                                    click: function (e) {
-                                        mapRenderer.selectFeature(feature);
-                                    }
-                                });
-                            },
-                            style: function (f, m) {
-                                layer.group.markers[f.id] = m;
-                                return f.effectiveStyle;
-                            },
-                            pointToLayer: function (feature, latlng) { return mapRenderer.createFeature(feature); }
-                        });
-                    }
-                    else {
-                        var v = L.geoJson([]);
-                    }
-                    service.project.features.forEach(function (f) {
-                        if (f.layerId !== layer.id)
-                            return;
-                        var ft = service.getFeatureType(f);
-                        f.properties['Name'] = f.properties[ft.style.nameLabel];
-                    });
-                    layer.mapLayer.addLayer(v);
-                    layer.isLoading = false;
-                    var time2 = new Date().getTime();
-                }
-            };
-            return HeatmapRenderer;
-        }());
-        Services.HeatmapRenderer = HeatmapRenderer;
-    })(Services = csComp.Services || (csComp.Services = {}));
-})(csComp || (csComp = {}));
-//# sourceMappingURL=heatmapRenderer.js.map
-var csComp;
-(function (csComp) {
-    var Services;
-    (function (Services) {
-        var TileLayerRenderer = (function () {
-            function TileLayerRenderer() {
-            }
-            TileLayerRenderer.render = function (service, layer) {
-                var layers = layer.url.split('|');
-                var layerUrl = layers[0];
-                if (layer.timeDependent) {
-                    // convert epoch to time string parameter
-                    var ft = service.project.timeLine.focus;
-                    if (layer.timeResolution) {
-                        var tr = layer.timeResolution;
-                        ft = Math.floor(ft / tr) * tr;
-                    }
-                    ;
-                    var d = new Date(0);
-                    d.setUTCSeconds(ft / 1000);
-                    var sDate = d.yyyymmdd();
-                    var hrs = d.getHours();
-                    var mins = d.getMinutes();
-                    var secs = d.getSeconds();
-                    var sTime = csComp.Utils.twoDigitStr(hrs) +
-                        csComp.Utils.twoDigitStr(mins) + csComp.Utils.twoDigitStr(secs);
-                    layerUrl += '&time=' + sDate + sTime;
-                }
-                else if (layer.disableCache) {
-                    // check if we need to create a unique url to force a refresh
-                    layer.cacheKey = new Date().getTime().toString();
-                    layerUrl += '&cache=' + layer.cacheKey;
-                }
-                var tileLayer = L.tileLayer(layerUrl, { attribution: layer.description });
-                layer.mapLayer = new L.LayerGroup();
-                tileLayer.setOpacity(layer.opacity / 100);
-                service.map.map.addLayer(layer.mapLayer);
-                if (layers.length > 1) {
-                    TileLayerRenderer.addUtfGrid(service, layer, layers[1]);
-                }
-                layer.mapLayer.addLayer(tileLayer);
-                tileLayer.on('loading', function (event) {
-                    layer.isLoading = true;
-                    service.$rootScope.$apply();
-                    if (service.$rootScope.$$phase !== '$apply' && service.$rootScope.$$phase !== '$digest') {
-                        service.$rootScope.$apply();
-                    }
-                });
-                tileLayer.on('load', function (event) {
-                    layer.isLoading = false;
-                    if (service.$rootScope.$$phase !== '$apply' && service.$rootScope.$$phase !== '$digest') {
-                        service.$rootScope.$apply();
-                    }
-                });
-                layer.isLoading = true;
-            };
-            /**
-             * Add a UTF Grid Layer to the tilelayer.
-             */
-            TileLayerRenderer.addUtfGrid = function (service, layer, utfGridLayerUrl) {
-                var utfGrid = new L.UtfGrid(utfGridLayerUrl, {
-                    resolution: 4,
-                    useJsonP: false
-                });
-                utfGrid.on('click', function (e) {
-                    //click events are fired with e.data==null if an area with no hit is clicked
-                    if (e.data) {
-                        var feature = new Services.Feature();
-                        feature.properties = e.data;
-                        feature.layer = layer;
-                        feature.featureTypeName = layer.typeUrl + "#" + layer.defaultFeatureType;
-                        feature.fType = service.getFeatureType(feature);
-                        if (!feature.properties.hasOwnProperty('Name'))
-                            csComp.Helpers.setFeatureName(feature, this.propertyTypeData);
-                        service.$messageBusService.publish('feature', 'onFeatureSelect', feature);
-                        console.log('Clicked: ' + JSON.stringify(e.data, null, 2));
-                    }
-                    else {
-                        console.log('click: nothing');
-                    }
-                });
-                // utfGrid.on('mouseover', function (e) {
-                //     console.log('hover: ' + JSON.stringify(e.data, null, 2));
-                // });
-                service.map.map.addLayer(utfGrid);
-            };
-            return TileLayerRenderer;
-        }());
-        Services.TileLayerRenderer = TileLayerRenderer;
-    })(Services = csComp.Services || (csComp.Services = {}));
-})(csComp || (csComp = {}));
-//# sourceMappingURL=tileLayerRenderer.js.map
-var csComp;
-(function (csComp) {
-    var Services;
-    (function (Services) {
-        var WmsRenderer = (function () {
-            function WmsRenderer() {
-            }
-            WmsRenderer.getUrl = function (layer, date) {
-                var url = layer.url;
-                if (layer.timeDependent) {
-                    date.setMinutes(Math.floor(date.getMinutes() / 5) * 5);
-                    layer.url += '&time=' + moment(date).format('YYYY-MM-DDTHH:mm:SS') + 'Z';
-                }
-                ;
-                layer._gui['wmsurl'] = url;
-                return url;
-            };
-            WmsRenderer.render = function (service, layer) {
-                var url = WmsRenderer.getUrl(layer, service.project.timeLine.focusDate());
-                var wms = L.tileLayer.wms(layer.url, {
-                    layers: layer.wmsLayers,
-                    opacity: layer.opacity / 100,
-                    format: 'image/png',
-                    transparent: true,
-                    attribution: layer.description,
-                    tiled: true
-                });
-                layer.mapLayer = new L.LayerGroup();
-                service.map.map.addLayer(layer.mapLayer);
-                layer.mapLayer.addLayer(wms);
-                layer._gui['wmsleaflet'] = wms;
-                wms.on('loading', function (event) {
-                    layer.isLoading = true;
-                    service.$rootScope.$apply();
-                    if (service.$rootScope.$$phase != '$apply' && service.$rootScope.$$phase != '$digest') {
-                        service.$rootScope.$apply();
-                    }
-                });
-                wms.on('load', function (event) {
-                    layer.isLoading = false;
-                    if (service.$rootScope.$$phase != '$apply' && service.$rootScope.$$phase != '$digest') {
-                        service.$rootScope.$apply();
-                    }
-                });
-                layer.isLoading = true;
-            };
-            return WmsRenderer;
-        }());
-        Services.WmsRenderer = WmsRenderer;
-    })(Services = csComp.Services || (csComp.Services = {}));
-})(csComp || (csComp = {}));
-//# sourceMappingURL=wmsRenderer.js.map
 var csComp;
 (function (csComp) {
     var Services;
@@ -31705,7 +31999,8 @@ var csComp;
                                         [corners.getNorthWest().lng, corners.getNorthWest().lat],
                                         [corners.getNorthEast().lng, corners.getNorthEast().lat],
                                         [corners.getSouthEast().lng, corners.getSouthEast().lat],
-                                        [corners.getSouthWest().lng, corners.getSouthWest().lat]]];
+                                        [corners.getSouthWest().lng, corners.getSouthWest().lat]
+                                    ]];
                                 var bounds = JSON.stringify({ type: 'Polygon', coordinates: coords, crs: { type: 'name', properties: { 'name': 'EPSG:4326' } } });
                                 // get data from BAG
                                 bagRequestData = {
@@ -31833,11 +32128,16 @@ var csComp;
     })(Services = csComp.Services || (csComp.Services = {}));
 })(csComp || (csComp = {}));
 //# sourceMappingURL=DatabaseSource.js.map
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var csComp;
 (function (csComp) {
     var Services;
@@ -31988,7 +32288,8 @@ var csComp;
             GeoJsonSource.prototype.layerMenuOptions = function (layer) {
                 var _this = this;
                 var result = [
-                    ['Fit map', (function ($itemScope) { return _this.fitMap(layer); })]];
+                    ['Fit map', (function ($itemScope) { return _this.fitMap(layer); })]
+                ];
                 if (layer.hasSensorData && layer.timestamps)
                     result.push(['Fit time', (function ($itemScope) { return _this.fitTimeline(layer); })]);
                 result.push(null);
@@ -32040,20 +32341,21 @@ var csComp;
                             }
                             if (layer.isLoading) {
                                 _this.$http.get(u)
-                                    .success(function (data) {
+                                    .then(function (res) {
+                                    var data = res.data;
                                     layer.count = 0;
                                     layer.isLoading = false;
                                     layer.enabled = true;
                                     if (layer.localStorage) {
                                         var d = JSON.stringify(data);
                                         window.localStorage.setItem('layer.' + layer.id, d);
+                                        //this.$storage.set('layer.' + layer.id, JSON.stringify(data));
                                     }
                                     _this.initLayer(data, layer);
                                     if (layer.hasSensorData)
                                         _this.fitTimeline(layer);
                                     cb(null, null);
-                                })
-                                    .error(function () {
+                                }, function () {
                                     layer.count = 0;
                                     layer.isLoading = false;
                                     layer.enabled = false;
@@ -32243,9 +32545,10 @@ var csComp;
         var EditableGeoJsonSource = (function (_super) {
             __extends(EditableGeoJsonSource, _super);
             function EditableGeoJsonSource(service, $http, $storage) {
-                _super.call(this, service, $http, $storage);
-                this.service = service;
-                this.title = 'editablegeojson';
+                var _this = _super.call(this, service, $http, $storage) || this;
+                _this.service = service;
+                _this.title = 'editablegeojson';
+                return _this;
                 // subscribe
             }
             EditableGeoJsonSource.prototype.updateFeatureByProperty = function (key, id, value, layer) {
@@ -32341,7 +32644,8 @@ var csComp;
             EditableGeoJsonSource.prototype.layerMenuOptions = function (layer) {
                 var _this = this;
                 var result = [
-                    ['Fit map', (function ($itemScope) { return _this.fitMap(layer); })]];
+                    ['Fit map', (function ($itemScope) { return _this.fitMap(layer); })]
+                ];
                 if (layer.hasSensorData && layer.timestamps)
                     result.push(['Fit time', (function ($itemScope) { return _this.fitTimeline(layer); })]);
                 result.push(null);
@@ -32390,8 +32694,9 @@ var csComp;
         var DynamicGeoJsonSource = (function (_super) {
             __extends(DynamicGeoJsonSource, _super);
             function DynamicGeoJsonSource(service, $http, $storage) {
-                _super.call(this, service, $http, $storage);
-                this.service = service;
+                var _this = _super.call(this, service, $http, $storage) || this;
+                _this.service = service;
+                return _this;
             }
             DynamicGeoJsonSource.prototype.addLayer = function (layer, callback, data) {
                 if (data === void 0) { data = null; }
@@ -32509,9 +32814,10 @@ var csComp;
         var EsriJsonSource = (function (_super) {
             __extends(EsriJsonSource, _super);
             function EsriJsonSource(service, $http, $storage) {
-                _super.call(this, service, $http, $storage);
-                this.service = service;
-                this.title = 'esrijson';
+                var _this = _super.call(this, service, $http, $storage) || this;
+                _this.service = service;
+                _this.title = 'esrijson';
+                return _this;
                 // subscribe
             }
             EsriJsonSource.prototype.addLayer = function (layer, callback) {
@@ -32524,7 +32830,8 @@ var csComp;
                     url: url,
                     method: 'GET',
                     params: { url: layer.url }
-                }).success(function (data) {
+                }).then(function (res) {
+                    var data = res.data;
                     if (typeof data === 'string') {
                         data = JSON.parse(data);
                     }
@@ -32542,7 +32849,7 @@ var csComp;
                     });
                     if (layer.timeAware)
                         _this.service.$messageBusService.publish('timeline', 'updateFeatures');
-                }).error(function (e) {
+                }, function (e) {
                     console.log('EsriJsonSource called $HTTP with errors: ' + e);
                 }).finally(function () {
                     layer.isLoading = false;
@@ -32555,11 +32862,16 @@ var csComp;
     })(Services = csComp.Services || (csComp.Services = {}));
 })(csComp || (csComp = {}));
 //# sourceMappingURL=GeoJsonSource.js.map
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var csComp;
 (function (csComp) {
     var Services;
@@ -32571,15 +32883,17 @@ var csComp;
         var GridDataSource = (function (_super) {
             __extends(GridDataSource, _super);
             function GridDataSource(service, $http, $storage) {
-                _super.call(this, service, $http, $storage);
-                this.service = service;
-                this.title = "grid";
+                var _this = _super.call(this, service, $http, $storage) || this;
+                _this.service = service;
+                _this.title = "grid";
+                return _this;
             }
             GridDataSource.prototype.addLayer = function (layer, callback) {
                 var _this = this;
                 this.layer = layer;
                 if (typeof layer.dataSourceParameters === 'undefined') {
                     throw new Error("Undefined IGridData data property in GridDataSource.");
+                    //return;
                 }
                 this.gridParams = layer.dataSourceParameters;
                 // Select the appropriate converter for converting points to features:
@@ -33246,7 +33560,8 @@ var csComp;
                         layer.isLoading = true;
                         // get data
                         _this.$http.get(layer.url)
-                            .success(function (data) {
+                            .then(function (res) {
+                            var data = res.data;
                             layer.count = 0;
                             layer.isLoading = false;
                             // if this is a topojson layer, convert to geojson first
@@ -33276,7 +33591,7 @@ var csComp;
                             _this.service.$messageBusService.publish("timeline", "updateFeatures");
                             cb(null, null);
                         })
-                            .error(function () {
+                            .catch(function () {
                             layer.count = 0;
                             layer.isLoading = false;
                             _this.service.$messageBusService.notify('ERROR loading ' + layer.title, '\nwhile loading: ' + layer.url);
@@ -33299,11 +33614,16 @@ var csComp;
     })(Services = csComp.Services || (csComp.Services = {}));
 })(csComp || (csComp = {}));
 //# sourceMappingURL=HierarchySource.js.map
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var csComp;
 (function (csComp) {
     var Services;
@@ -33311,9 +33631,10 @@ var csComp;
         var KmlDataSource = (function (_super) {
             __extends(KmlDataSource, _super);
             function KmlDataSource(service, $http, $storage) {
-                _super.call(this, service, $http, $storage);
-                this.service = service;
-                this.title = "kml";
+                var _this = _super.call(this, service, $http, $storage) || this;
+                _this.service = service;
+                _this.title = "kml";
+                return _this;
             }
             KmlDataSource.prototype.get = function (x, y) { return x.getElementsByTagName(y); };
             KmlDataSource.prototype.attr = function (x, y) { return x.getAttribute(y); };
@@ -33464,11 +33785,16 @@ var csComp;
  https://github.com/rossengeorgiev/nite-overlay,
  http://mathematica.stackexchange.com/questions/3326/composition-how-to-make-a-day-and-night-world-map
 */
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 L.Terminator = L.Polygon.extend({
     options: {
         color: '#00',
@@ -33600,9 +33926,10 @@ var csComp;
         var NightDayDataSource = (function (_super) {
             __extends(NightDayDataSource, _super);
             function NightDayDataSource(service, $http, $storage) {
-                _super.call(this, service, $http, $storage);
-                this.service = service;
-                this.title = "Day Night regions on the Earth";
+                var _this = _super.call(this, service, $http, $storage) || this;
+                _this.service = service;
+                _this.title = "Day Night regions on the Earth";
+                return _this;
             }
             NightDayDataSource.prototype.addLayer = function (layer, callback) {
                 var _this = this;
@@ -33613,11 +33940,12 @@ var csComp;
                 // Check if an url to a file containing the intensity value is specified. If so, set it as defaultValue.
                 if (layer.url) {
                     this.$http.get(layer.url)
-                        .success(function (data) {
+                        .then(function (res) {
+                        var data = res.data;
                         defaultValue = parseFloat(data.toString());
                         _this.continueInit(defaultValue, layer, callback);
                     })
-                        .error(function () {
+                        .catch(function () {
                         console.log('Error reading day/night intensity file');
                         _this.continueInit(defaultValue, layer, callback);
                     });
@@ -33674,11 +34002,16 @@ var csComp;
     })(Services = csComp.Services || (csComp.Services = {}));
 })(csComp || (csComp = {}));
 //# sourceMappingURL=NightDayDataSource.js.map
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var csComp;
 (function (csComp) {
     var Services;
@@ -33686,9 +34019,10 @@ var csComp;
         var RssDataSource = (function (_super) {
             __extends(RssDataSource, _super);
             function RssDataSource(service, $http, $storage) {
-                _super.call(this, service, $http, $storage);
-                this.service = service;
-                this.title = "RSS datasource";
+                var _this = _super.call(this, service, $http, $storage) || this;
+                _this.service = service;
+                _this.title = "RSS datasource";
+                return _this;
             }
             RssDataSource.prototype.addLayer = function (layer, callback) {
                 var _this = this;
@@ -33701,7 +34035,8 @@ var csComp;
                     url: '/api/rss',
                     method: "GET",
                     params: { url: layer.url }
-                }).success(function (data) {
+                }).then(function (res) {
+                    var data = res.data;
                     layer.data = data; //csComp.Helpers.GeoExtensions.createFeatureCollection(features);
                     if (layer.data.geometries && !layer.data.features) {
                         layer.data.features = layer.data.geometries;
@@ -33713,7 +34048,7 @@ var csComp;
                     layer.isLoading = false;
                     callback(layer);
                 })
-                    .error(function () {
+                    .catch(function () {
                     console.log('RssDataSource called $HTTP with errors...');
                 });
             };
@@ -33747,6 +34082,7 @@ var csComp;
                         if (layer.timeResolution) {
                             var tr = layer.timeResolution;
                             ft = Math.floor(ft / tr) * tr;
+                            //console.log(ft.toString())
                         }
                         ;
                         var d = new Date(0);
@@ -33766,6 +34102,7 @@ var csComp;
                         }
                         this.prevDateTimes[layer.id] = sDateTime;
                         u += '&time=' + sDateTime;
+                        //console.log(u);
                     }
                     else if (layer.disableCache) {
                         // check if we need to create a unique url to force a refresh
@@ -33795,11 +34132,16 @@ var csComp;
     })(Services = csComp.Services || (csComp.Services = {}));
 })(csComp || (csComp = {}));
 //# sourceMappingURL=TileLayerSource.js.map
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var csComp;
 (function (csComp) {
     var Services;
@@ -33807,15 +34149,16 @@ var csComp;
         var VectorTileSource = (function (_super) {
             __extends(VectorTileSource, _super);
             function VectorTileSource(service, $http, $storage) {
-                _super.call(this, service, $http, $storage);
-                this.service = service;
-                this.title = 'vectortile';
-                this.requiresLayer = false;
-                this.tileCount = -1;
+                var _this = _super.call(this, service, $http, $storage) || this;
+                _this.service = service;
+                _this.title = 'vectortile';
+                _this.requiresLayer = false;
+                _this.tileCount = -1;
                 /** Store obtained results in the cache, */
-                this.cache = {};
+                _this.cache = {};
                 /** The urls that are cached (in order to keep the cache from only growing). */
-                this.cachedUrls = [];
+                _this.cachedUrls = [];
+                return _this;
             }
             VectorTileSource.prototype.addLayer = function (layer, callback) {
                 var _this = this;
@@ -33914,9 +34257,9 @@ var csComp;
                 layer.data.features = {};
                 //alert('remove layer');
             };
-            VectorTileSource.CACHE_SIZE = 99;
             return VectorTileSource;
         }(Services.GeoJsonSource));
+        VectorTileSource.CACHE_SIZE = 99;
         Services.VectorTileSource = VectorTileSource;
     })(Services = csComp.Services || (csComp.Services = {}));
 })(csComp || (csComp = {}));
@@ -33943,6 +34286,7 @@ var csComp;
                 if (layer.timeDependent) {
                     date.setMinutes(Math.floor(date.getMinutes() / 5) * 5);
                     url = layer.url.replace(/time=?([^&]*)/g, 'time=' + moment(date).utc().format('YYYY-MM-DDTHH:mm:SS') + 'Z');
+                    //layer.url += '&time=' +
                 }
                 ;
                 layer._gui['wmsurl'] = url;
@@ -33993,6 +34337,625 @@ var csComp;
     })(Services = csComp.Services || (csComp.Services = {}));
 })(csComp || (csComp = {}));
 //# sourceMappingURL=WmsSource.js.map
+/*
+ Generic  Canvas Overlay for leaflet,
+ Stanislav Sumbera, April , 2014
+
+ - added userDrawFunc that is called when Canvas need to be redrawn
+ - added few useful params for userDrawFunc callback
+  - fixed resize map bug
+  inspired & portions taken from  :   https://github.com/Leaflet/Leaflet.heat
+
+*/
+var L;
+(function (L) {
+    var CanvasOverlay = L.Class.extend({
+        initialize: function (userDrawFunc, layer, options) {
+            this._layer = layer,
+                this._userDrawFunc = userDrawFunc;
+            this._layerAdd = this;
+            L.Util.setOptions(this, options);
+        },
+        call: function (layer) {
+            this.onAdd(layer._mapToAdd);
+        },
+        fire: function (action) {
+            if (action && action === 'remove') {
+                //console.log('Canvas layer removed');
+            }
+        },
+        drawing: function (userDrawFunc) {
+            this._userDrawFunc = userDrawFunc;
+            return this;
+        },
+        params: function (options) {
+            L.Util.setOptions(this, options);
+            return this;
+        },
+        canvas: function () {
+            return this._canvas;
+        },
+        redraw: function () {
+            if (!this._frame) {
+                this._frame = L.Util.requestAnimFrame(this._redraw, this);
+            }
+            return this;
+        },
+        onAdd: function (map) {
+            var _this = this;
+            this._map = map;
+            this._canvas = L.DomUtil.create('canvas', 'leaflet-overlay-layer');
+            var size = this._map.getSize();
+            this._canvas.width = size.x;
+            this._canvas.height = size.y;
+            this._context = this._canvas.getContext("2d");
+            this._popup = null;
+            this.onMouseMoveDelay = _.throttle(function (evt) {
+                var pos = _this._getCanvasPos();
+                var rgb = _this._context.getImageData(evt.x - pos.left, evt.y - pos.top, 1, 1).data;
+                // only show tooltip when a colored cell is located at the mouse cursor position
+                if ((rgb[0] + rgb[1] + rgb[2]) > 0) {
+                    var latLng = _this._map.containerPointToLatLng(new L.Point(evt.x - pos.left, evt.y - pos.top));
+                    var i = Math.floor((latLng.lat - _this.options.topLeftLat) / _this.options.deltaLat);
+                    var j = Math.floor((latLng.lng - _this.options.topLeftLon) / _this.options.deltaLon);
+                    var value = '';
+                    if (0 <= i && i < _this.options.data.length &&
+                        0 <= j && j < _this.options.data[0].length) {
+                        value = String.format("{0:0.00}", _this.options.data[i][j]);
+                    }
+                    (_this._layer.dataSourceParameters.legendStringFormat) ? value = String.format(_this._layer.dataSourceParameters.legendStringFormat, value) : null;
+                    var content = '<table><td>' + value + '</td></tr>' + '</table>';
+                    if (_this._popup && _this._map._popup && _this._map._popup._isOpen) {
+                        _this._popup.setLatLng(_this._map.containerPointToLatLng(new L.Point(evt.x, evt.y))).setContent(content);
+                    }
+                    else {
+                        _this._popup = L.popup({
+                            offset: new L.Point(-25, -15),
+                            closeOnClick: true,
+                            autoPan: false,
+                            className: 'featureTooltip'
+                        }).setLatLng(_this._map.containerPointToLatLng(new L.Point(evt.x, evt.y))).setContent(content).openOn(_this._map);
+                    }
+                }
+                else {
+                    _this._map.closePopup(_this._popup);
+                    _this._popup = null;
+                }
+                //console.log('mousemoved ' + evt.x + ', ' + evt.y + ',  color: R' + rgb[0] + ' G' + rgb[1] + ' B' + rgb[2]);
+            }, 500);
+            map.getPanes().overlayPane.addEventListener('mousemove', this.onMouseMoveDelay);
+            var animated = this._map.options.zoomAnimation && L.Browser.any3d;
+            L.DomUtil.addClass(this._canvas, 'leaflet-zoom-' + (animated ? 'animated' : 'hide'));
+            if (!map._panes.overlayPane.firstChild) {
+                map._panes.overlayPane.appendChild(this._canvas);
+            }
+            else {
+                map._panes.overlayPane.insertBefore(this._canvas, map._panes.overlayPane.firstChild);
+            }
+            map.on('moveend', this._reset, this);
+            map.on('resize', this._resize, this);
+            if (map.options.zoomAnimation && L.Browser.any3d) {
+                map.on('zoomanim', this._animateZoom, this);
+            }
+            this._reset();
+        },
+        onRemove: function (map) {
+            map.getPanes().overlayPane.removeChild(this._canvas);
+            map.off('moveend', this._reset, this);
+            map.off('resize', this._resize, this);
+            map.getPanes().overlayPane.removeEventListener('mousemove', this.onMouseMoveDelay);
+            map.closePopup(this._popup);
+            this._popup = null;
+            if (map.options.zoomAnimation) {
+                map.off('zoomanim', this._animateZoom, this);
+            }
+            this._canvas = null;
+        },
+        addTo: function (map) {
+            map.addLayer(this);
+            return this;
+        },
+        _getCanvasPos: function () {
+            var obj = this._canvas;
+            var top = 0;
+            var left = 0;
+            while (obj && obj.tagName != "BODY") {
+                top += obj.offsetTop;
+                left += obj.offsetLeft;
+                obj = obj.offsetParent;
+            }
+            return {
+                top: top,
+                left: left
+            };
+        },
+        _resize: function (resizeEvent) {
+            this._canvas.width = resizeEvent.newSize.x;
+            this._canvas.height = resizeEvent.newSize.y;
+        },
+        _reset: function () {
+            var topLeft = this._map.containerPointToLayerPoint([0, 0]);
+            L.DomUtil.setPosition(this._canvas, topLeft);
+            this._redraw();
+        },
+        _redraw: function () {
+            var size = this._map.getSize();
+            var bounds = this._map.getBounds();
+            var zoomScale = (size.x * 180) / (20037508.34 * (bounds.getEast() - bounds.getWest())); // resolution = 1/zoomScale
+            var zoom = this._map.getZoom();
+            // console.time('process');
+            if (this._userDrawFunc) {
+                this._userDrawFunc(this, this._layer, {
+                    canvas: this._canvas,
+                    bounds: bounds,
+                    size: size,
+                    zoomScale: zoomScale,
+                    zoom: zoom,
+                    options: this.options
+                });
+            }
+            // console.timeEnd('process');
+            this._frame = null;
+        },
+        _animateZoom: function (e) {
+            var scale = this._map.getZoomScale(e.zoom), offset = this._map._getCenterOffset(e.center)._multiplyBy(-scale).subtract(this._map._getMapPanePos());
+            if (L.DomUtil.getTranslateString) {
+                this._canvas.style[L.DomUtil.TRANSFORM] = L.DomUtil.getTranslateString(offset) + ' scale(' + scale + ')';
+            }
+            else {
+                this._canvas.style[L.DomUtil.TRANSFORM] = 'scale(' + scale + ')';
+            }
+        }
+    });
+    function canvasOverlay(userDrawFunc, layer, options) {
+        return new CanvasOverlay(userDrawFunc, layer, options);
+    }
+    L.canvasOverlay = canvasOverlay;
+    ;
+})(L || (L = {}));
+//# sourceMappingURL=canvasOverlay.js.map
+var csComp;
+(function (csComp) {
+    var Services;
+    (function (Services) {
+        var GeojsonRenderer = (function () {
+            function GeojsonRenderer() {
+            }
+            GeojsonRenderer.render = function (service, layer, mapRenderer) {
+                layer.mapLayer = new L.LayerGroup();
+                service.map.map.addLayer(layer.mapLayer);
+                if (!layer.data || !layer.data.features)
+                    return;
+                layer.data.features.forEach(function (f) {
+                    var marker = mapRenderer.addFeature(f);
+                    if (marker)
+                        layer.group.markers[f.id] = marker;
+                });
+            };
+            GeojsonRenderer.remove = function (service, layer) {
+                var g = layer.group;
+                //m = layer.group.vectors;
+                if (g.clustering) {
+                    var m = g._cluster;
+                    service.project.features.forEach(function (feature) {
+                        if (feature.layerId === layer.id) {
+                            try {
+                                m.removeLayer(layer.group.markers[feature.id]);
+                                delete layer.group.markers[feature.id];
+                            }
+                            catch (error) { }
+                        }
+                    });
+                }
+                else {
+                    service.project.features.forEach(function (feature) {
+                        if (feature.layerId !== layer.id)
+                            return;
+                        if (layer.group.markers.hasOwnProperty(feature.id)) {
+                            delete layer.group.markers[feature.id];
+                        }
+                        else if (feature.geometry && feature.geometry.type === 'Overlay') {
+                            service.map.map.removeLayer(feature._gui['imageOverlay']);
+                        }
+                    });
+                    if (service.map.map && layer.mapLayer) {
+                        try {
+                            service.map.map.removeLayer(layer.mapLayer);
+                        }
+                        catch (error) { }
+                    }
+                }
+            };
+            return GeojsonRenderer;
+        }());
+        Services.GeojsonRenderer = GeojsonRenderer;
+    })(Services = csComp.Services || (csComp.Services = {}));
+})(csComp || (csComp = {}));
+//# sourceMappingURL=geojsonRenderer.js.map
+var csComp;
+(function (csComp) {
+    var Services;
+    (function (Services) {
+        var GridLayerRenderer = (function () {
+            function GridLayerRenderer() {
+            }
+            GridLayerRenderer.render = function (service, layer) {
+                var gridParams = layer.dataSourceParameters;
+                var legend = [];
+                var levels;
+                if (typeof gridParams.contourLevels === 'number') {
+                    levels = [];
+                    var nrLevels = (gridParams.contourLevels);
+                    var dl = (gridParams.maxThreshold - gridParams.minThreshold) / nrLevels;
+                    for (var l = gridParams.minThreshold + dl / 2; l < gridParams.maxThreshold; l += dl)
+                        levels.push(Math.round(l * 10) / 10); // round to nearest decimal.
+                }
+                else {
+                    levels = gridParams.contourLevels;
+                }
+                // Create a new groupstyle. If no legend is provided, this style can be used to change the colors used to draw the grid.
+                // If a legend is provided, that will be used as activelegend.
+                var gs = new Services.GroupStyle(service.$translate);
+                gs.id = csComp.Helpers.getGuid();
+                gs.title = (gridParams.legendDescription) ? gridParams.legendDescription : layer.title;
+                gs.meta = null;
+                gs.visualAspect = 'fillColor';
+                gs.availableAspects = ['fillColor'];
+                gs.info = { min: 0, max: 0, count: 0, mean: 0, varience: 0, sd: 0 };
+                gs.fixedColorRange = true;
+                gs.enabled = true;
+                gs.group = layer.group;
+                if (!gridParams.legend) {
+                    gs.property = 'gridlayer';
+                    gs.canSelectColor = true;
+                    gs.colors = [(gridParams.minColor) ? gridParams.minColor : '#00fbff', (gridParams.maxColor) ? gridParams.maxColor : '#0400ff'];
+                    gs.activeLegend = {
+                        legendKind: 'interpolated',
+                        description: gs.title,
+                        visualAspect: 'fillColor',
+                        legendEntries: []
+                    };
+                }
+                else {
+                    gs.property = '';
+                    gs.canSelectColor = false;
+                    gs.colors = ['#ffffff', '#000000'];
+                    gs.activeLegend = gridParams.legend;
+                    gs.activeLegend.legendEntries.forEach(function (le) {
+                        legend.push({ val: le.value, color: le.color });
+                    });
+                }
+                service.saveStyle(layer.group, gs);
+                var overlay = L.canvasOverlay(GridLayerRenderer.drawFunction, layer, {
+                    data: layer.data,
+                    noDataValue: gridParams.noDataValue,
+                    topLeftLat: gridParams.startLat,
+                    topLeftLon: gridParams.startLon,
+                    deltaLat: gridParams.deltaLat,
+                    deltaLon: gridParams.deltaLon,
+                    min: gridParams.minThreshold,
+                    max: gridParams.maxThreshold,
+                    minColor: gs.colors[0],
+                    maxColor: gs.colors[1],
+                    areColorsUpdated: false,
+                    levels: levels,
+                    legend: legend,
+                    opacity: (layer.opacity) ? (+layer.opacity) / 100 : 0.3
+                });
+                layer.mapLayer = new L.LayerGroup();
+                service.map.map.addLayer(layer.mapLayer);
+                layer.mapLayer.addLayer(overlay);
+            };
+            GridLayerRenderer.drawFunction = function (overlay, layer, settings) {
+                var map = this._map;
+                var opt = settings.options, data = opt.data;
+                if (!data)
+                    return;
+                var row = data.length, col = data[0].length, size = settings.size, legend = opt.legend;
+                // update the legend when new from- and to-colors are chosen.
+                // the complete color range of the legend will be calculated using the hue value of the from and to colors.
+                if (legend.length === 0 || opt.areColorsUpdated) {
+                    legend = [];
+                    if (opt.minColor[0] !== '#')
+                        opt.minColor = ColorExt.Utils.colorNameToHex(opt.minColor);
+                    if (opt.maxColor[0] !== '#')
+                        opt.maxColor = ColorExt.Utils.colorNameToHex(opt.maxColor);
+                    var fromHue = ColorExt.Utils.rgbToHue(opt.minColor);
+                    var toHue = ColorExt.Utils.rgbToHue(opt.maxColor);
+                    for (var i_1 = 0; i_1 < opt.levels.length; i_1++) {
+                        var level = opt.levels[i_1];
+                        legend.push({ val: level, color: ColorExt.Utils.toColor(level, opt.levels[0], opt.levels[opt.levels.length - 1], fromHue, toHue) });
+                    }
+                    if (layer.group.styles && layer.group.styles.length > 0) {
+                        layer.group.styles[0].activeLegend = {
+                            legendKind: 'interpolated',
+                            description: layer.group.styles[0].title,
+                            visualAspect: 'fillColor',
+                            legendEntries: []
+                        };
+                        legend.forEach(function (i) {
+                            var legEntry = { label: String.format(layer.dataSourceParameters['legendStringFormat'] || '{0:00}', i.val), value: i.val, color: i.color };
+                            layer.group.styles[0].activeLegend.legendEntries.push(legEntry);
+                        });
+                    }
+                    overlay.options.legend = opt.legend = legend;
+                    opt.areColorsUpdated = false;
+                }
+                var min = opt.min || Number.MIN_VALUE, max = opt.max || Number.MAX_VALUE;
+                var topLeft = map.latLngToContainerPoint(new L.LatLng(opt.topLeftLat, opt.topLeftLon)), botRight = map.latLngToContainerPoint(new L.LatLng(opt.topLeftLat + row * opt.deltaLat, opt.topLeftLon + col * opt.deltaLon));
+                var startX = topLeft.x, startY = topLeft.y, deltaX = (botRight.x - topLeft.x) / col, botOfFirstRow = map.latLngToContainerPoint(new L.LatLng(opt.topLeftLat + opt.deltaLat, opt.topLeftLon)), deltaY = botOfFirstRow.y - topLeft.y;
+                var ctx = settings.canvas.getContext('2d');
+                ctx.clearRect(0, 0, size.x, size.y);
+                // Check the boundaries
+                if (startX > size.x || startY > size.y || botRight.x < 0 || botRight.y < 0) {
+                    //console.log('Outside boundary');
+                    return;
+                }
+                var sJ = 0, eI = row, eJ = col;
+                if (startX < -deltaX) {
+                    sJ = -Math.ceil(startX / deltaX);
+                    startX += sJ * deltaX;
+                }
+                if (botRight.x > size.x) {
+                    eJ -= Math.floor((botRight.x - size.x) / deltaX);
+                }
+                if (botRight.y > size.y && deltaY > 0) {
+                    eI -= Math.floor((botRight.y - size.y) / deltaY);
+                }
+                var noDataValue = opt.noDataValue;
+                ctx.globalAlpha = opt.opacity || 0.3;
+                //console.time('process');
+                var y = startY;
+                var lat = opt.topLeftLat; // + sI * opt.deltaLat;
+                for (var i = 0; i < eI; i++) {
+                    lat += opt.deltaLat;
+                    var botY = map.latLngToContainerPoint(new L.LatLng(lat, opt.topLeftLon)).y;
+                    deltaY = botY - y;
+                    if (y <= -deltaY || deltaY === 0) {
+                        y = botY;
+                        continue;
+                    }
+                    var x = startX;
+                    for (var j = sJ; j < eJ; j++) {
+                        var cell = data[i][j];
+                        if (cell === noDataValue || cell < min || cell > max) {
+                            x += deltaX;
+                            continue;
+                        }
+                        var closest = legend.reduce(function (prev, curr) {
+                            return (Math.abs(curr.val - cell) < Math.abs(prev.val - cell) ? curr : prev);
+                        });
+                        ctx.fillStyle = closest.color;
+                        ctx.fillRect(x, y, deltaX, deltaY);
+                        x += deltaX;
+                    }
+                    y = botY;
+                }
+                //console.timeEnd('process');
+            };
+            return GridLayerRenderer;
+        }());
+        Services.GridLayerRenderer = GridLayerRenderer;
+    })(Services = csComp.Services || (csComp.Services = {}));
+})(csComp || (csComp = {}));
+//# sourceMappingURL=gridLayerRenderer.js.map
+var csComp;
+(function (csComp) {
+    var Services;
+    (function (Services) {
+        var HeatmapRenderer = (function () {
+            function HeatmapRenderer() {
+            }
+            HeatmapRenderer.render = function (service, layer, mapRenderer) {
+                if (layer.quickRefresh && layer.quickRefresh == true)
+                    return; //When only updating style of current heatmap, do not add a new layer.
+                var time = new Date().getTime();
+                // create leaflet layers
+                layer.isLoading = true;
+                if (layer.group.clustering) {
+                    var markers = L.geoJson(layer.data, {
+                        pointToLayer: function (feature, latlng) { return mapRenderer.createFeature(feature); },
+                        onEachFeature: function (feature, lay) {
+                            //We do not need to init the feature here: already done in style.
+                            //this.initFeature(feature, layer);
+                            layer.group.markers[feature.id] = lay;
+                            lay.on({
+                                mouseover: function (a) { return mapRenderer.showFeatureTooltip(a, layer.group); },
+                                mouseout: function (s) { return mapRenderer.hideFeatureTooltip(s); }
+                            });
+                        }
+                    });
+                    layer.group._cluster.addLayer(markers);
+                }
+                else {
+                    layer.mapLayer = new L.LayerGroup();
+                    service.map.map.addLayer(layer.mapLayer);
+                    if (layer.data && layer.data.features) {
+                        var v = L.geoJson(layer.data, {
+                            onEachFeature: function (feature, lay) {
+                                //We do not need to init the feature here: already done in style.
+                                //this.initFeature(feature, layer);
+                                layer.group.markers[feature.id] = lay;
+                                lay.on({
+                                    mouseover: function (a) { return mapRenderer.showFeatureTooltip(a, layer.group); },
+                                    mouseout: function (s) { return mapRenderer.hideFeatureTooltip(s); },
+                                    mousemove: function (d) { return mapRenderer.updateFeatureTooltip(d); },
+                                    click: function (e) {
+                                        mapRenderer.selectFeature(feature);
+                                    }
+                                });
+                            },
+                            style: function (f, m) {
+                                layer.group.markers[f.id] = m;
+                                return f.effectiveStyle;
+                            },
+                            pointToLayer: function (feature, latlng) { return mapRenderer.createFeature(feature); }
+                        });
+                    }
+                    else {
+                        var v = L.geoJson([]);
+                    }
+                    service.project.features.forEach(function (f) {
+                        if (f.layerId !== layer.id)
+                            return;
+                        var ft = service.getFeatureType(f);
+                        f.properties['Name'] = f.properties[ft.style.nameLabel];
+                    });
+                    layer.mapLayer.addLayer(v);
+                    layer.isLoading = false;
+                    var time2 = new Date().getTime();
+                }
+            };
+            return HeatmapRenderer;
+        }());
+        Services.HeatmapRenderer = HeatmapRenderer;
+    })(Services = csComp.Services || (csComp.Services = {}));
+})(csComp || (csComp = {}));
+//# sourceMappingURL=heatmapRenderer.js.map
+var csComp;
+(function (csComp) {
+    var Services;
+    (function (Services) {
+        var TileLayerRenderer = (function () {
+            function TileLayerRenderer() {
+            }
+            TileLayerRenderer.render = function (service, layer) {
+                var layers = layer.url.split('|');
+                var layerUrl = layers[0];
+                if (layer.timeDependent) {
+                    // convert epoch to time string parameter
+                    var ft = service.project.timeLine.focus;
+                    if (layer.timeResolution) {
+                        var tr = layer.timeResolution;
+                        ft = Math.floor(ft / tr) * tr;
+                    }
+                    ;
+                    var d = new Date(0);
+                    d.setUTCSeconds(ft / 1000);
+                    var sDate = d.yyyymmdd();
+                    var hrs = d.getHours();
+                    var mins = d.getMinutes();
+                    var secs = d.getSeconds();
+                    var sTime = csComp.Utils.twoDigitStr(hrs) +
+                        csComp.Utils.twoDigitStr(mins) + csComp.Utils.twoDigitStr(secs);
+                    layerUrl += '&time=' + sDate + sTime;
+                }
+                else if (layer.disableCache) {
+                    // check if we need to create a unique url to force a refresh
+                    layer.cacheKey = new Date().getTime().toString();
+                    layerUrl += '&cache=' + layer.cacheKey;
+                }
+                var tileLayer = L.tileLayer(layerUrl, { attribution: layer.description });
+                layer.mapLayer = new L.LayerGroup();
+                tileLayer.setOpacity(layer.opacity / 100);
+                service.map.map.addLayer(layer.mapLayer);
+                if (layers.length > 1) {
+                    TileLayerRenderer.addUtfGrid(service, layer, layers[1]);
+                }
+                layer.mapLayer.addLayer(tileLayer);
+                tileLayer.on('loading', function (event) {
+                    layer.isLoading = true;
+                    service.$rootScope.$apply();
+                    if (service.$rootScope.$$phase !== '$apply' && service.$rootScope.$$phase !== '$digest') {
+                        service.$rootScope.$apply();
+                    }
+                });
+                tileLayer.on('load', function (event) {
+                    layer.isLoading = false;
+                    if (service.$rootScope.$$phase !== '$apply' && service.$rootScope.$$phase !== '$digest') {
+                        service.$rootScope.$apply();
+                    }
+                });
+                layer.isLoading = true;
+            };
+            /**
+             * Add a UTF Grid Layer to the tilelayer.
+             */
+            TileLayerRenderer.addUtfGrid = function (service, layer, utfGridLayerUrl) {
+                var utfGrid = new L.UtfGrid(utfGridLayerUrl, {
+                    resolution: 4,
+                    useJsonP: false
+                });
+                utfGrid.on('click', function (e) {
+                    //click events are fired with e.data==null if an area with no hit is clicked
+                    if (e.data) {
+                        var feature = new Services.Feature();
+                        feature.properties = e.data;
+                        feature.layer = layer;
+                        feature.featureTypeName = layer.typeUrl + "#" + layer.defaultFeatureType;
+                        feature.fType = service.getFeatureType(feature);
+                        if (!feature.properties.hasOwnProperty('Name'))
+                            csComp.Helpers.setFeatureName(feature, this.propertyTypeData);
+                        service.$messageBusService.publish('feature', 'onFeatureSelect', feature);
+                        console.log('Clicked: ' + JSON.stringify(e.data, null, 2));
+                    }
+                    else {
+                        console.log('click: nothing');
+                    }
+                });
+                // utfGrid.on('mouseover', function (e) {
+                //     console.log('hover: ' + JSON.stringify(e.data, null, 2));
+                // });
+                service.map.map.addLayer(utfGrid);
+            };
+            return TileLayerRenderer;
+        }());
+        Services.TileLayerRenderer = TileLayerRenderer;
+    })(Services = csComp.Services || (csComp.Services = {}));
+})(csComp || (csComp = {}));
+//# sourceMappingURL=tileLayerRenderer.js.map
+var csComp;
+(function (csComp) {
+    var Services;
+    (function (Services) {
+        var WmsRenderer = (function () {
+            function WmsRenderer() {
+            }
+            WmsRenderer.getUrl = function (layer, date) {
+                var url = layer.url;
+                if (layer.timeDependent) {
+                    date.setMinutes(Math.floor(date.getMinutes() / 5) * 5);
+                    layer.url += '&time=' + moment(date).format('YYYY-MM-DDTHH:mm:SS') + 'Z';
+                }
+                ;
+                layer._gui['wmsurl'] = url;
+                return url;
+            };
+            WmsRenderer.render = function (service, layer) {
+                var url = WmsRenderer.getUrl(layer, service.project.timeLine.focusDate());
+                var wms = L.tileLayer.wms(layer.url, {
+                    layers: layer.wmsLayers,
+                    opacity: layer.opacity / 100,
+                    format: 'image/png',
+                    transparent: true,
+                    attribution: layer.description,
+                    tiled: true
+                });
+                layer.mapLayer = new L.LayerGroup();
+                service.map.map.addLayer(layer.mapLayer);
+                layer.mapLayer.addLayer(wms);
+                layer._gui['wmsleaflet'] = wms;
+                wms.on('loading', function (event) {
+                    layer.isLoading = true;
+                    service.$rootScope.$apply();
+                    if (service.$rootScope.$$phase != '$apply' && service.$rootScope.$$phase != '$digest') {
+                        service.$rootScope.$apply();
+                    }
+                });
+                wms.on('load', function (event) {
+                    layer.isLoading = false;
+                    if (service.$rootScope.$$phase != '$apply' && service.$rootScope.$$phase != '$digest') {
+                        service.$rootScope.$apply();
+                    }
+                });
+                layer.isLoading = true;
+            };
+            return WmsRenderer;
+        }());
+        Services.WmsRenderer = WmsRenderer;
+    })(Services = csComp.Services || (csComp.Services = {}));
+})(csComp || (csComp = {}));
+//# sourceMappingURL=wmsRenderer.js.map
 var csComp;
 (function (csComp) {
     var Services;
@@ -34370,6 +35333,7 @@ var csComp;
                         features.forEach(function (feature) {
                             if (entity.feature.id === feature.id) {
                                 entity.show(false);
+                                //toRemove.push(entity);
                             }
                         });
                     });
@@ -35122,6 +36086,10 @@ var csComp;
                         iconSize: new L.Point(iconHtml['iconPlusBorderWidth'], iconHtml['iconPlusBorderHeight']),
                         html: iconHtml['html']
                     });
+                    //icon = new L.DivIcon({
+                    //    className: 'style' + feature.poiTypeName,
+                    //    iconSize: new L.Point(feature.fType.style.iconWidth, feature.fType.style.iconHeight)
+                    //});
                 }
                 return icon;
             };

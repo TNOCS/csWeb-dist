@@ -1,5 +1,6 @@
 "use strict";
-var Utils = require('../helpers/Utils');
+Object.defineProperty(exports, "__esModule", { value: true });
+var Utils = require("../helpers/Utils");
 /**
  * Simple rule, consisting of a condition and an action.
  */
@@ -82,7 +83,7 @@ var Rule = (function () {
                                 return false;
                             if (length === 3 && propValue !== c[2])
                                 return false;
-                            console.log(("Property " + prop + " is set") + (length === 2 ? '.' : ' ' + c[2]));
+                            console.log("Property " + prop + " is set" + (length === 2 ? '.' : ' ' + c[2]));
                         }
                         break;
                     case 'propertygreaterorequalthan':

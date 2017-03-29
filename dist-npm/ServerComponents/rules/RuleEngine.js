@@ -1,9 +1,10 @@
 "use strict";
-var fs = require('fs');
-var HyperTimer = require('hypertimer');
-var WorldState = require('./WorldState');
-var Rule = require('./Rule');
-var Api = require('../api/ApiManager');
+Object.defineProperty(exports, "__esModule", { value: true });
+var fs = require("fs");
+var HyperTimer = require("hypertimer");
+var WorldState = require("./WorldState");
+var Rule = require("./Rule");
+var Api = require("../api/ApiManager");
 var RuleEngine = (function () {
     function RuleEngine(manager, layerId) {
         var _this = this;
@@ -30,9 +31,7 @@ var RuleEngine = (function () {
             _this.layer = result.layer;
             _this.service.updateFeature = function (feature) { return manager.updateFeature(layerId, feature, {}, function () { }); };
             _this.service.addFeature = function (feature) { return manager.addFeature(layerId, feature, {}, function () { }); };
-            _this.service.updateLog = function (featureId, logs) {
-                return manager.updateLogs(layerId, featureId, logs, {}, function () { });
-            };
+            _this.service.updateLog = function (featureId, logs) { return manager.updateLogs(layerId, featureId, logs, {}, function () { }); };
             _this.service.layer = _this.layer;
             _this.service.activateRule = function (ruleId) { return _this.activateRule(ruleId); };
             _this.service.deactivateRule = function (ruleId) { return _this.deactivateRule(ruleId); };

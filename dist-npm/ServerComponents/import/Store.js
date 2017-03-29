@@ -1,6 +1,7 @@
 "use strict";
-var fs = require('fs');
-var path = require('path');
+Object.defineProperty(exports, "__esModule", { value: true });
+var fs = require("fs");
+var path = require("path");
 var Utils = require("../helpers/Utils");
 var FileStore = (function () {
     function FileStore(opt) {

@@ -1,11 +1,11 @@
 "use strict";
 var Utils = require("../helpers/Utils");
-var stream = require('stream');
+var stream = require("stream");
 var GeoJsonFeaturesTransformer = (function () {
     //create?(opt?: ITransformFactoryOptions[]): stream.Readable | stream.Writable | stream.Transform;
     function GeoJsonFeaturesTransformer(title) {
         this.title = title;
-        this.type = "GeoJsonFeaturesTransformer";
+        this.type = 'GeoJsonFeaturesTransformer';
         this.headers = null;
         this.id = Utils.newGuid();
         //this.description = description;
@@ -18,12 +18,12 @@ var GeoJsonFeaturesTransformer = (function () {
         /*stream.Transform.call(t);*/
         var split = -1;
         var headers = this.headers;
-        t.setEncoding("utf8");
+        t.setEncoding('utf8');
         t._transform = function (chunk, encoding, done) {
             /*console.log(chunk.toString("utf8"));*/
-            var line = chunk.toString("utf8");
-            if (!line || line.trim() == "") {
-                console.log("Empty line, ignore");
+            var line = chunk.toString('utf8');
+            if (!line || line.trim() === '') {
+                console.log('Empty line, ignore');
                 done();
                 return;
             }
@@ -33,7 +33,7 @@ var GeoJsonFeaturesTransformer = (function () {
                 var geoJson = JSON.parse(line);
             }
             catch (err) {
-                console.error("Error parsing input feature:" + err);
+                console.error('Error parsing input feature:' + err);
                 done();
                 return;
             }

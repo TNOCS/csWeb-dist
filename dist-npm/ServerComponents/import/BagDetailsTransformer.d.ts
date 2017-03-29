@@ -1,4 +1,5 @@
-import transform = require("./ITransform");
+/// <reference types="node" />
+import transform = require('./ITransform');
 import ConfigurationService = require('../configuration/ConfigurationService');
 declare class BagDetailsTransformer implements transform.ITransform {
     title: string;

@@ -1,9 +1,15 @@
 "use strict";
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * Transition grouping to faciliate fluent api
  * @class Transitions<T>
@@ -20,7 +26,7 @@ var Transitions = (function () {
     Transitions.prototype.to = function () {
         var states = [];
         for (var _i = 0; _i < arguments.length; _i++) {
-            states[_i - 0] = arguments[_i];
+            states[_i] = arguments[_i];
         }
         this.toStates = states;
         return this.fsm.addTransitions(this);
@@ -60,8 +66,9 @@ exports.TransitionFunction = TransitionFunction;
 var TransitionFunctions = (function (_super) {
     __extends(TransitionFunctions, _super);
     function TransitionFunctions(fsm) {
-        _super.call(this);
-        this.fsm = fsm;
+        var _this = _super.call(this) || this;
+        _this.fsm = fsm;
+        return _this;
     }
     TransitionFunctions.prototype.on = function (trigger, callback) {
         var _this = this;
@@ -174,7 +181,7 @@ var FiniteStateMachine = (function () {
     FiniteStateMachine.prototype.from = function () {
         var states = [];
         for (var _i = 0; _i < arguments.length; _i++) {
-            states[_i - 0] = arguments[_i];
+            states[_i] = arguments[_i];
         }
         var _transition = new Transitions(this);
         _transition.fromStates = states;

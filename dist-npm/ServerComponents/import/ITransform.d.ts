@@ -1,3 +1,4 @@
+/// <reference types="node" />
 import stream = require('stream');
 import IImport = require('./IImport');
 import ConfigurationService = require('../configuration/ConfigurationService');

@@ -1,3 +1,4 @@
+/// <reference types="node" />
 import transform = require('./ITransform');
 declare class CsvSaveTransformer implements transform.ITransform {
     title: string;

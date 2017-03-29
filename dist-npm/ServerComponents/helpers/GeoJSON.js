@@ -1,5 +1,6 @@
 "use strict";
-var Utils = require('./Utils');
+Object.defineProperty(exports, "__esModule", { value: true });
+var Utils = require("./Utils");
 /**
  * Simple helper class to easily create a GeoJSON file.
  */

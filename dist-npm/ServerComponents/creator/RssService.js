@@ -1,6 +1,6 @@
 "use strict";
-var request = require('request');
-var xml2js = require('xml2js');
+var request = require("request");
+var xml2js = require("xml2js");
 var RssGeoJSON = require("../helpers/RssGeoJSON");
 /* Multiple storage engine supported, e.g. file system, mongo  */
 var RssService = (function () {

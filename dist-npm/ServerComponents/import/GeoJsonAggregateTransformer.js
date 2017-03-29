@@ -1,23 +1,23 @@
 "use strict";
 var Utils = require("../helpers/Utils");
-var stream = require('stream');
+var stream = require("stream");
 var request = require("request");
-var turf = require("turf");
+var turf = require('turf');
 var GeoJsonAggregateTransformer = (function () {
     function GeoJsonAggregateTransformer(title) {
         this.title = title;
-        this.type = "GeoJsonAggregateTransformer";
+        this.type = 'GeoJsonAggregateTransformer';
         this.id = Utils.newGuid();
         //this.description = description;
     }
     GeoJsonAggregateTransformer.prototype.initialize = function (opt, callback) {
         var _this = this;
-        request({ url: "http://localhost:3456/data/wijk-empty.geojson" }, function (error, response, body) {
+        request({ url: 'http://localhost:3456/data/wijk-empty.geojson' }, function (error, response, body) {
             if (error) {
                 callback(error);
                 return;
             }
-            console.log("Gemeente geojson loaded");
+            console.log('Gemeente geojson loaded');
             _this.geometry = JSON.parse(body);
             callback(null);
         });
@@ -28,7 +28,7 @@ var GeoJsonAggregateTransformer = (function () {
         /*stream.Transform.call(t);*/
         var baseGeo;
         var accumulator = {};
-        t.setEncoding("utf8");
+        t.setEncoding('utf8');
         t._transform = function (chunk, encoding, done) {
             // var startTs = new Date();
             // console.log((new Date().getTime() - startTs.getTime()) + ": start");
@@ -70,10 +70,10 @@ var GeoJsonAggregateTransformer = (function () {
         };
         t._flush = function (done) {
             try {
-                console.log("#### start GJAT flush");
+                console.log('#### start GJAT flush');
                 for (var wijkCode in accumulator) {
                     var wijkAcc = accumulator[wijkCode];
-                    console.log("#### push wijk");
+                    console.log('#### push wijk');
                     console.log(wijkAcc);
                     wijkAcc.feature.properties.total = wijkAcc.sum;
                     t.push(JSON.stringify(wijkAcc.feature));

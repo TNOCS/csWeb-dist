@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 var Utils = require("../helpers/Utils");
 var RepeatEnum = require("./RepeatEnum");
 var BaseImport = (function () {

@@ -1,3 +1,4 @@
+/// <reference types="node" />
 import ApiManager = require('./ApiManager');
 import ApiMeta = ApiManager.ApiMeta;
 import BaseConnector = require('./BaseConnector');

@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 /**
  *  Handle returned when subscribing to a topic
  */
@@ -57,8 +58,8 @@ var MessageBusService = (function () {
             }
         });
     };
-    MessageBusService.cache = {};
     return MessageBusService;
 }());
+MessageBusService.cache = {};
 exports.MessageBusService = MessageBusService;
 //# sourceMappingURL=MessageBus.js.map

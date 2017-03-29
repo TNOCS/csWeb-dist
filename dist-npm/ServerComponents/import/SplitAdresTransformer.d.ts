@@ -1,4 +1,5 @@
-import transform = require("./ITransform");
+/// <reference types="node" />
+import transform = require('./ITransform');
 declare class SplitAdresTransformer implements transform.ITransform {
     title: string;
     id: string;

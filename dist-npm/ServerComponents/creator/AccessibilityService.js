@@ -1,5 +1,6 @@
 "use strict";
-var request = require('request');
+Object.defineProperty(exports, "__esModule", { value: true });
+var request = require("request");
 var AccessibilityService = (function () {
     function AccessibilityService() {
     }

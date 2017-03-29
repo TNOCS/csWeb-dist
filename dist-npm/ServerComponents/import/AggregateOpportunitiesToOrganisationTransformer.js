@@ -1,24 +1,24 @@
 "use strict";
 var Utils = require("../helpers/Utils");
-var stream = require('stream');
+var stream = require("stream");
 var request = require("request");
 var AggregateOpportunitiesToOrganisationTransformer = (function () {
     function AggregateOpportunitiesToOrganisationTransformer(title) {
         this.title = title;
-        this.type = "AggregateOpportunitiesToOrganisationTransformer";
+        this.type = 'AggregateOpportunitiesToOrganisationTransformer';
         this.id = Utils.newGuid();
         //this.description = description;
     }
     AggregateOpportunitiesToOrganisationTransformer.prototype.initialize = function (opt, callback) {
         var _this = this;
-        var urlParameter = opt.parameters.filter(function (p) { return p.type.title == "opportunitiesUrl"; })[0];
+        var urlParameter = opt.parameters.filter(function (p) { return p.type.title === 'opportunitiesUrl'; })[0];
         if (!urlParameter) {
-            callback("opportunitiesUrl missing");
+            callback('opportunitiesUrl missing');
             return;
         }
-        var parameter = opt.parameters.filter(function (p) { return p.type.title == "keyProperty"; })[0];
+        var parameter = opt.parameters.filter(function (p) { return p.type.title === 'keyProperty'; })[0];
         if (!parameter) {
-            callback("keyProperty missing");
+            callback('keyProperty missing');
             return;
         }
         this.keyProperty = parameter.value;
@@ -28,7 +28,7 @@ var AggregateOpportunitiesToOrganisationTransformer = (function () {
                 return;
             }
             _this.geometry = JSON.parse(body);
-            console.log("Opportunity Geojson loaded: " + _this.geometry.features.length + " features");
+            console.log('Opportunity Geojson loaded: ' + _this.geometry.features.length + ' features');
             callback(null);
         });
     };
@@ -37,19 +37,19 @@ var AggregateOpportunitiesToOrganisationTransformer = (function () {
         var t = new stream.Transform();
         /*stream.Transform.call(t);*/
         var index = 0;
-        t.setEncoding("utf8");
+        t.setEncoding('utf8');
         t._transform = function (chunk, encoding, done) {
             var startTs = new Date();
             /*console.log((new Date().getTime() - startTs.getTime()) + ": start");*/
             /*console.log("##### GJAT #####");*/
             if (!_this.geometry) {
-                console.log("No target geometry found");
+                console.log('No target geometry found');
                 done();
                 return;
             }
             var feature = JSON.parse(chunk);
-            console.log("Start aggregation");
-            var organisatieOpportunities = _this.geometry.features.filter(function (f) { return f.properties[_this.keyProperty] == feature.properties[_this.keyProperty]; });
+            console.log('Start aggregation');
+            var organisatieOpportunities = _this.geometry.features.filter(function (f) { return f.properties[_this.keyProperty] === feature.properties[_this.keyProperty]; });
             var aggregateProperties = organisatieOpportunities.map(function (value, index, array) {
                 var brutoOmvang = value.properties.brutoOmvang;
                 var kans = value.properties.kans;
@@ -91,7 +91,7 @@ var AggregateOpportunitiesToOrganisationTransformer = (function () {
             aggregatedOpportunities.kans_gemiddeld = aggregatedOpportunities.kans_totaal / aggregatedOpportunities.aantalOpportunities;
             aggregatedOpportunities.brutoOmvang_gemiddeld = aggregatedOpportunities.brutoOmvang_totaal / aggregatedOpportunities.aantalOpportunities;
             aggregatedOpportunities.nettoOmvang_gemiddeld = aggregatedOpportunities.nettoOmvang_totaal / aggregatedOpportunities.aantalOpportunities;
-            console.log("Aggregation finished");
+            console.log('Aggregation finished');
             console.log(aggregatedOpportunities);
             for (var field in aggregatedOpportunities) {
                 feature.properties[field] = aggregatedOpportunities[field];

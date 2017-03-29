@@ -1,28 +1,35 @@
 "use strict";
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
-var ApiManager = require('./ApiManager');
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var ApiManager = require("./ApiManager");
 var ApiResult = ApiManager.ApiResult;
 var mqtt = require("mqtt");
 var mqttrouter = require("mqtt-router");
-var BaseConnector = require('./BaseConnector');
-var Winston = require('winston');
+var BaseConnector = require("./BaseConnector");
+var Winston = require("winston");
 var MqttAPI = (function (_super) {
     __extends(MqttAPI, _super);
     function MqttAPI(server, port, layerPrefix, keyPrefix) {
         if (port === void 0) { port = 1883; }
         if (layerPrefix === void 0) { layerPrefix = "layers"; }
         if (keyPrefix === void 0) { keyPrefix = "keys"; }
-        _super.call(this);
-        this.server = server;
-        this.port = port;
-        this.layerPrefix = layerPrefix;
-        this.keyPrefix = keyPrefix;
-        this.isInterface = true;
-        this.receiveCopy = false;
+        var _this = _super.call(this) || this;
+        _this.server = server;
+        _this.port = port;
+        _this.layerPrefix = layerPrefix;
+        _this.keyPrefix = keyPrefix;
+        _this.isInterface = true;
+        _this.receiveCopy = false;
+        return _this;
     }
     MqttAPI.prototype.init = function (layerManager, options, callback) {
         var _this = this;

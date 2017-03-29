@@ -2,13 +2,15 @@ import express = require('express');
 import ConfigurationService = require('../configuration/ConfigurationService');
 import Location = require('./Location');
 import IBagOptions = require('../database/IBagOptions');
+import IAddressSource = require('../database/IAddressSource');
 /**
  * Export a connection to the BAG database.
  */
-export declare class BagDatabase {
+export declare class BagDatabase implements IAddressSource.IAddressSource {
     private connectionString;
     private isInitialized;
     private pg;
+    name: string;
     constructor(config: ConfigurationService.ConfigurationService);
     init(): void;
     /**

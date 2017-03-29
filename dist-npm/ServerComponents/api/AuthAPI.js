@@ -1,22 +1,28 @@
 "use strict";
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
-var qs = require('querystring');
-var bcrypt = require('bcryptjs');
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var qs = require("querystring");
+var bcrypt = require("bcryptjs");
 // import colors = require('colors');
-var cors = require('cors');
-var jwt = require('jwt-simple');
+var cors = require("cors");
+var jwt = require("jwt-simple");
 // import moment = require('moment');
 // import mongoose = require('mongoose');
-var request = require('request');
-var Winston = require('winston');
-var ApiManager = require('./ApiManager');
+var request = require("request");
+var Winston = require("winston");
+var ApiManager = require("./ApiManager");
 var Feature = ApiManager.Feature;
 var ApiResult = ApiManager.ApiResult;
-var config = require('./config');
+var config = require("./config");
 var dateExt = require('../helpers/DateUtils');
 /**
  * Authentication API based on Satellizer, which uses a JSON Web Token for access control.
@@ -73,9 +79,9 @@ var AuthAPI = (function () {
     }
     /** Read user details */
     AuthAPI.prototype.getUser = function (req, res) {
-        User.findById(req.params.teamId, req.user, function (err, user) {
+        User.findById(req.params.teamId, req['user'], function (err, user) {
             if (err) {
-                Winston.error('Error: couldn\'t find user: team ' + req.params.teamId, ', user ' + req.user);
+                Winston.error('Error: couldn\'t find user: team ' + req.params.teamId, ', user ' + req['user']);
                 return res.status(401).send({ message: 'Couldn\'t find user.' });
             }
             else {
@@ -85,9 +91,9 @@ var AuthAPI = (function () {
     };
     /** Update user details */
     AuthAPI.prototype.updateUser = function (req, res) {
-        User.findById(req.params.teamId, req.user, function (err, user) {
+        User.findById(req.params.teamId, req['user'], function (err, user) {
             if (!user) {
-                Winston.warn('Updating user not possible. User not found: Team ' + req.params.teamId, ', user ' + req.user);
+                Winston.warn('Updating user not possible. User not found: Team ' + req.params.teamId, ', user ' + req['user']);
                 return res.status(400).send({ message: 'User not found' });
             }
             user.displayName = req.body.displayName || user.displayName;
@@ -153,7 +159,7 @@ var AuthAPI = (function () {
         if (payload.exp <= Date.now()) {
             return res.status(401).send({ message: 'Token has expired' });
         }
-        req.user = payload.sub;
+        req['user'] = payload.sub;
         //Winston.error('Passed ensureAuthenticated...')
         next();
     };
@@ -174,7 +180,7 @@ var AuthAPI = (function () {
         if (providers.indexOf(provider) === -1) {
             return res.status(400).send({ message: 'Unknown OAuth Provider' });
         }
-        User.findById(req.params.teamId, req.user, function (err, user) {
+        User.findById(req.params.teamId, req['user'], function (err, user) {
             if (!user) {
                 return res.status(400).send({ message: 'User Not Found' });
             }
@@ -758,18 +764,19 @@ exports.AuthAPI = AuthAPI;
 var User = (function (_super) {
     __extends(User, _super);
     function User(user) {
-        _super.call(this);
-        this.properties = {};
+        var _this = _super.call(this) || this;
+        _this.properties = {};
         if (user) {
-            this.email = user.email;
-            this.password = user.password;
-            this.displayName = user.displayName;
+            _this.email = user.email;
+            _this.password = user.password;
+            _this.displayName = user.displayName;
             if (user.roles)
-                this.roles = user.roles;
+                _this.roles = user.roles;
             if (user.picture)
-                this.picture = user.picture;
+                _this.picture = user.picture;
         }
         ;
+        return _this;
     }
     Object.defineProperty(User.prototype, "password", {
         // TODO Do we need to emove the pwd from the User object, even though it is hashed?
@@ -916,6 +923,7 @@ var User = (function (_super) {
         User.manager.addFeature(teamId, this, { source: 'auth' }, function (cb) {
             if (cb.result === ApiResult.OK) {
                 callback('');
+                //User.manager.updateFeature()
             }
             else {
                 callback(cb.error);

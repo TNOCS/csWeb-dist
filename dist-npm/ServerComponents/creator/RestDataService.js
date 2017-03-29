@@ -1,12 +1,13 @@
 "use strict";
-var Winston = require('winston');
-var request = require('request');
-var moment = require('moment');
-var path = require('path');
-var fs = require('fs-extra');
-var _ = require('underscore');
-var GeoJSONHelper = require('../helpers/GeoJSON');
-var Api = require('../api/ApiManager');
+Object.defineProperty(exports, "__esModule", { value: true });
+var Winston = require("winston");
+var request = require("request");
+var moment = require("moment");
+var path = require("path");
+var fs = require("fs-extra");
+var _ = require("underscore");
+var GeoJSONHelper = require("../helpers/GeoJSON");
+var Api = require("../api/ApiManager");
 /** REST datasource
  *  Provides an endpoint for obtaining features from a REST source. The features can be provided in many forms,
  *  as they will be converted by a specific converter-JavaScript file. The converter takes care of the conversion

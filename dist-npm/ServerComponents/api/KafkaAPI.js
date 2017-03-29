@@ -1,23 +1,29 @@
 "use strict";
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
-var ApiManager = require('./ApiManager');
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var ApiManager = require("./ApiManager");
 var ApiResult = ApiManager.ApiResult;
-var BaseConnector = require('./BaseConnector');
-var Winston = require('winston');
-var kafka = require('kafka-node');
-var xml2js = require('xml2js');
-var _ = require('underscore');
+var BaseConnector = require("./BaseConnector");
+var Winston = require("winston");
+var kafka = require("kafka-node");
+var xml2js = require("xml2js");
+var _ = require("underscore");
 var MAX_TRIES_SEND = 5;
+var KafkaCompression;
 (function (KafkaCompression) {
     KafkaCompression[KafkaCompression["NoCompression"] = 0] = "NoCompression";
     KafkaCompression[KafkaCompression["GZip"] = 1] = "GZip";
     KafkaCompression[KafkaCompression["snappy"] = 2] = "snappy";
-})(exports.KafkaCompression || (exports.KafkaCompression = {}));
-var KafkaCompression = exports.KafkaCompression;
+})(KafkaCompression = exports.KafkaCompression || (exports.KafkaCompression = {}));
 var KafkaOptions = (function () {
     function KafkaOptions() {
     }
@@ -30,25 +36,26 @@ var KafkaAPI = (function (_super) {
         if (port === void 0) { port = 8082; }
         if (layerPrefix === void 0) { layerPrefix = 'layers'; }
         if (keyPrefix === void 0) { keyPrefix = 'keys'; }
-        _super.call(this);
-        this.server = server;
-        this.port = port;
-        this.kafkaOptions = kafkaOptions;
-        this.layerPrefix = layerPrefix;
-        this.keyPrefix = keyPrefix;
-        this.producerReady = false;
-        this.offsetReady = false;
-        this.layersWaitingToBeSent = [];
-        this.isInterface = true;
-        this.receiveCopy = false;
-        this.consumer = kafkaOptions.consumer || 'csweb-consumer';
-        this.xmlBuilder = new xml2js.Builder({
+        var _this = _super.call(this) || this;
+        _this.server = server;
+        _this.port = port;
+        _this.kafkaOptions = kafkaOptions;
+        _this.layerPrefix = layerPrefix;
+        _this.keyPrefix = keyPrefix;
+        _this.producerReady = false;
+        _this.offsetReady = false;
+        _this.layersWaitingToBeSent = [];
+        _this.isInterface = true;
+        _this.receiveCopy = false;
+        _this.consumer = kafkaOptions.consumer || 'csweb-consumer';
+        _this.xmlBuilder = new xml2js.Builder({
             headless: false
         });
-        this.xmlParser = new xml2js.Parser({
+        _this.xmlParser = new xml2js.Parser({
             ignoreAttrs: true,
             explicitArray: false
         });
+        return _this;
     }
     KafkaAPI.prototype.addProducer = function (topic) {
         if (!this.kafkaOptions.producers) {
@@ -188,6 +195,7 @@ var KafkaAPI = (function (_super) {
                     data: message.value,
                     type: 'grid'
                 };
+                // esri grid
             }
             else if (message.value === '') {
                 // There is no update for this layer
@@ -235,6 +243,7 @@ var KafkaAPI = (function (_super) {
         var subscriptions = this.kafkaOptions.consumers || 'arnoud-test6';
         if (typeof subscriptions === 'string') {
             this.subscribeLayer(subscriptions);
+            //this.client.subscribe(subscriptions);
         }
         else {
             _.each(subscriptions, function (val, key) {
@@ -322,6 +331,7 @@ var KafkaAPI = (function (_super) {
     };
     KafkaAPI.prototype.addFeature = function (layerId, feature, meta, callback) {
         if (meta.source !== this.id) {
+            // this.client.publish(`${this.layerPrefix}${layerId}/feature/${feature.id}`, JSON.stringify(feature));
         }
         callback({
             result: ApiResult.OK
@@ -345,6 +355,10 @@ var KafkaAPI = (function (_super) {
                 Winston.info("kafka: update layer " + layer.id + " ('delayed')");
                 this.layersWaitingToBeSent.push(layer);
             }
+            // Send the layer definition to everyone
+            //      this.client.publish(this.layerPrefix, JSON.stringify(def));
+            // And place all the data only on the specific layer channel
+            //     this.client.publish(this.layerPrefix + layer.id, JSON.stringify(layer));
         }
         callback({
             result: ApiResult.OK
@@ -421,6 +435,7 @@ var KafkaAPI = (function (_super) {
     KafkaAPI.prototype.sendFeature = function (layerId, featureId) {
         this.manager.findFeature(layerId, featureId, function (r) {
             if (r.result === ApiResult.OK) {
+                //          this.client.publish(this.layerPrefix + layerId, JSON.stringify(r.feature));
             }
         });
     };

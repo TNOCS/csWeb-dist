@@ -1,26 +1,26 @@
 "use strict";
 var Utils = require("../helpers/Utils");
-var stream = require('stream');
+var stream = require("stream");
 var request = require("request");
-var turf = require("turf");
+var turf = require('turf');
 var BushalteAggregateTransformer = (function () {
     function BushalteAggregateTransformer(title) {
         this.title = title;
-        this.type = "BushalteAggregateTransformer";
+        this.type = 'BushalteAggregateTransformer';
         this.id = Utils.newGuid();
         //this.description = description;
     }
     BushalteAggregateTransformer.prototype.initialize = function (opt, callback) {
         var _this = this;
-        var urlParameter = opt.parameters.filter(function (p) { return p.type.title == "aggregateShapeUrl"; })[0];
+        var urlParameter = opt.parameters.filter(function (p) { return p.type.title === 'aggregateShapeUrl'; })[0];
         if (!urlParameter) {
-            callback("aggregateShapeUrl missing");
+            callback('aggregateShapeUrl missing');
             return;
         }
         this.aggregateShapeUrl = urlParameter.value;
-        var parameter = opt.parameters.filter(function (p) { return p.type.title == "aggregateShapeKeyProperty"; })[0];
+        var parameter = opt.parameters.filter(function (p) { return p.type.title === 'aggregateShapeKeyProperty'; })[0];
         if (!parameter) {
-            callback("aggregateShapeKeyProperty missing");
+            callback('aggregateShapeKeyProperty missing');
             return;
         }
         this.aggregateShapeKeyProperty = parameter.value;
@@ -30,7 +30,7 @@ var BushalteAggregateTransformer = (function () {
                 return;
             }
             _this.geometry = JSON.parse(body);
-            console.log("Geojson loaded: " + _this.geometry.features.length + " features");
+            console.log('Geojson loaded: ' + _this.geometry.features.length + ' features');
             callback(null);
         });
     };
@@ -41,13 +41,13 @@ var BushalteAggregateTransformer = (function () {
         var baseGeo;
         var accumulator = {};
         var index = 0;
-        t.setEncoding("utf8");
+        t.setEncoding('utf8');
         t._transform = function (chunk, encoding, done) {
             var startTs = new Date();
             /*console.log((new Date().getTime() - startTs.getTime()) + ": start");*/
             /*console.log("##### GJAT #####");*/
             if (!_this.geometry) {
-                console.log("No target geometry found");
+                console.log('No target geometry found');
                 done();
                 return;
             }
@@ -76,15 +76,15 @@ var BushalteAggregateTransformer = (function () {
                     var accEntry = accumulator[f.properties[_this.aggregateShapeKeyProperty]];
                     // console.log(accEntry);
                     if (accEntry) {
-                        var currRoutes = parseInt(feature.properties["number_of_routes_at_stop"]);
-                        if (accEntry["number_of_routes_at_stop_max"] < currRoutes) {
-                            accEntry["number_of_routes_at_stop_max"] = currRoutes;
+                        var currRoutes = parseInt(feature.properties['number_of_routes_at_stop'], 10);
+                        if (accEntry['number_of_routes_at_stop_max'] < currRoutes) {
+                            accEntry['number_of_routes_at_stop_max'] = currRoutes;
                         }
-                        accEntry["number_of_routes_at_stop_total"] += currRoutes;
-                        accEntry["number_of_routes_at_stop_count"]++;
-                        var strRoutes = feature.properties["routes at stop"].toString(); // if a single route is a number it will be parsed as a number, we need routes as string
+                        accEntry['number_of_routes_at_stop_total'] += currRoutes;
+                        accEntry['number_of_routes_at_stop_count']++;
+                        var strRoutes = feature.properties['routes at stop'].toString(); // if a single route is a number it will be parsed as a number, we need routes as string
                         var routes = strRoutes.split(/;/g);
-                        var accRoutes = accEntry["routes"];
+                        var accRoutes = accEntry['routes'];
                         /*console.log("before: " + accEntry["routes"]);*/
                         /*console.log("add " + routes);*/
                         routes.filter(function (value, index, arr) { return accRoutes.indexOf(value) < 0; }).forEach(function (r) { return accRoutes.push(r); });
@@ -96,19 +96,19 @@ var BushalteAggregateTransformer = (function () {
                             feature: f,
                             nFeatures: 1
                         };
-                        accEntry["number_of_routes_at_stop_max"] = parseInt(feature.properties["number_of_routes_at_stop"]);
-                        accEntry["number_of_routes_at_stop_total"] = parseInt(feature.properties["number_of_routes_at_stop"]);
-                        accEntry["number_of_routes_at_stop_count"] = 1;
-                        var strRoutes = feature.properties["routes at stop"].toString();
+                        accEntry['number_of_routes_at_stop_max'] = parseInt(feature.properties['number_of_routes_at_stop'], 10);
+                        accEntry['number_of_routes_at_stop_total'] = parseInt(feature.properties['number_of_routes_at_stop'], 10);
+                        accEntry['number_of_routes_at_stop_count'] = 1;
+                        var strRoutes = feature.properties['routes at stop'].toString();
                         var routes = strRoutes.split(/;/g);
-                        accEntry["routes"] = routes;
+                        accEntry['routes'] = routes;
                         accumulator[f.properties[_this.aggregateShapeKeyProperty]] = accEntry;
                     }
                     found = true;
                 }
             });
             if (!found) {
-                console.log("feature " + feature.properties.name + " could not be aggregated, town: " + feature.properties.town + ". " + feature.geometry.coordinates);
+                console.log('feature ' + feature.properties.name + ' could not be aggregated, town: ' + feature.properties.town + '. ' + feature.geometry.coordinates);
             }
             // console.log("=== After:");
             // console.log(feature);
@@ -124,11 +124,11 @@ var BushalteAggregateTransformer = (function () {
                     var featureAcc = accumulator[key];
                     /*console.log ("#### push feature");*/
                     /*console.log(featureAcc);*/
-                    featureAcc.feature.properties["routes"] = featureAcc["routes"].join(";");
-                    featureAcc.feature.properties["routes_in_wijk"] = featureAcc["routes"].length;
-                    featureAcc.feature.properties["bushaltes"] = featureAcc.nFeatures;
-                    featureAcc.feature.properties["number_of_routes_at_stop_average"] = featureAcc["number_of_routes_at_stop_total"] / featureAcc["number_of_routes_at_stop_count"];
-                    featureAcc.feature.properties["number_of_routes_at_stop_max"] = featureAcc["number_of_routes_at_stop_max"];
+                    featureAcc.feature.properties['routes'] = featureAcc['routes'].join(';');
+                    featureAcc.feature.properties['routes_in_wijk'] = featureAcc['routes'].length;
+                    featureAcc.feature.properties['bushaltes'] = featureAcc.nFeatures;
+                    featureAcc.feature.properties['number_of_routes_at_stop_average'] = featureAcc['number_of_routes_at_stop_total'] / featureAcc['number_of_routes_at_stop_count'];
+                    featureAcc.feature.properties['number_of_routes_at_stop_max'] = featureAcc['number_of_routes_at_stop_max'];
                     t.push(JSON.stringify(featureAcc.feature));
                 }
                 done();

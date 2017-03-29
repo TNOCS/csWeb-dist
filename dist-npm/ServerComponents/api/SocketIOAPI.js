@@ -1,24 +1,31 @@
 "use strict";
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
-var ApiManager = require('./ApiManager');
-var ClientConnection = require('./../dynamic/ClientConnection');
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var ApiManager = require("./ApiManager");
+var ClientConnection = require("./../dynamic/ClientConnection");
 var ProjectUpdateAction = ClientConnection.ProjectUpdateAction;
 var LayerUpdateAction = ClientConnection.LayerUpdateAction;
 var KeyUpdateAction = ClientConnection.KeyUpdateAction;
 var ApiResult = ApiManager.ApiResult;
-var BaseConnector = require('./BaseConnector');
-var Winston = require('winston');
+var BaseConnector = require("./BaseConnector");
+var Winston = require("winston");
 var SocketIOAPI = (function (_super) {
     __extends(SocketIOAPI, _super);
     function SocketIOAPI(connection) {
-        _super.call(this);
-        this.connection = connection;
-        this.id = 'socketio';
-        this.isInterface = true;
+        var _this = _super.call(this) || this;
+        _this.connection = connection;
+        _this.id = 'socketio';
+        _this.isInterface = true;
+        return _this;
     }
     SocketIOAPI.prototype.init = function (layerManager, options, callback) {
         var _this = this;

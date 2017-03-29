@@ -1,3 +1,4 @@
+/// <reference types="node" />
 import ApiManager = require('./ApiManager');
 import Layer = ApiManager.Layer;
 import Log = ApiManager.Log;

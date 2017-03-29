@@ -1,24 +1,31 @@
 "use strict";
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
-var ApiManager = require('./ApiManager');
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var ApiManager = require("./ApiManager");
 var Layer = ApiManager.Layer;
 var ApiResult = ApiManager.ApiResult;
-var mongodb = require('mongodb');
-var BaseConnector = require('./BaseConnector');
-var Winston = require('winston');
+var mongodb = require("mongodb");
+var BaseConnector = require("./BaseConnector");
+var Winston = require("winston");
 /**
  * Contains the MongoDB operations.
  */
 var MongoDBStorage = (function (_super) {
     __extends(MongoDBStorage, _super);
     function MongoDBStorage(server, port) {
-        _super.call(this);
-        this.server = server;
-        this.port = port;
+        var _this = _super.call(this) || this;
+        _this.server = server;
+        _this.port = port;
+        return _this;
     }
     MongoDBStorage.prototype.initLayer = function (layer) {
     };
@@ -423,7 +430,8 @@ var MongoDBStorage = (function (_super) {
                         }
                     }
                 }
-            }], function (e, response) {
+            }
+        ], function (e, response) {
             if (e) {
                 callback({ result: ApiResult.Error, error: e });
             }

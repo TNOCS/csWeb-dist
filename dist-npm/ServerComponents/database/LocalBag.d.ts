@@ -1,12 +1,16 @@
-import Location = require('./Location');
 import IBagOptions = require('../database/IBagOptions');
+import IAddressSource = require('../database/IAddressSource');
 /**
  * Export a connection to the BAG database.
  */
-export declare class LocalBag {
+export declare class LocalBag implements IAddressSource.IAddressSource {
     private connectionString;
     private db;
+    name: string;
     constructor(path: string);
+    init(): void;
+    searchAddress(query: string, limit: number, callback: (searchResults) => void): void;
+    searchGemeente(query: string, limit: number, callback: (searchResults) => void): void;
     /**
      * Format the zip code so spaces are removed and the letters are all capitals.
      */
@@ -27,10 +31,11 @@ export declare class LocalBag {
      * Format the housenumber addition and in uppercase.
      */
     private formatHouseNumberAddition(input);
-    lookupBagArea(bounds: string, callback: (areas: Location[]) => void): void;
+    lookupBagArea(bounds: string, isArea: boolean, callback: Function): void;
+    lookupBagBuurt(bounds: string, isArea: boolean, callback: Function): void;
     /**
      * Lookup the address from the BAG.
      */
-    lookupBagAddress(zip: string, houseNumber: string, bagOptions: IBagOptions, callback: (addresses: Location[]) => void): void;
+    lookupBagAddress(zip: string, houseNumber: string, bagOptions: IBagOptions, callback: Function): void;
     private indexes(source, find);
 }

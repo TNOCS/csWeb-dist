@@ -1,25 +1,32 @@
 "use strict";
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
-var events = require('events');
-var fs = require('fs');
-var utils = require('../helpers/Utils');
-var ApiManager = require('../api/ApiManager');
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var events = require("events");
+var fs = require("fs");
+var utils = require("../helpers/Utils");
+var ApiManager = require("../api/ApiManager");
 var Layer = ApiManager.Layer;
 var DynamicLayer = (function (_super) {
     __extends(DynamicLayer, _super);
     function DynamicLayer(manager, layerId, file, server, messageBus, connection) {
-        _super.call(this);
-        this.manager = manager;
-        this.layerId = layerId;
-        this.geojson = new Layer();
-        this.file = file;
-        this.server = server;
-        this.messageBus = messageBus;
-        this.connection = connection;
+        var _this = _super.call(this) || this;
+        _this.manager = manager;
+        _this.layerId = layerId;
+        _this.geojson = new Layer();
+        _this.file = file;
+        _this.server = server;
+        _this.messageBus = messageBus;
+        _this.connection = connection;
+        return _this;
     }
     DynamicLayer.prototype.getLayer = function (req, res) {
         res.send(JSON.stringify(this.geojson));
@@ -115,6 +122,8 @@ var DynamicLayer = (function (_super) {
                 f.logs[key].push(l);
                 f.properties[key] = l.value;
             });
+            // send them to other clients
+            //this.connection.updateFeature(this.layerId, msgBody, 'logs-update', client);
         }
         console.log('Log update' + featureId);
         if (notify) {

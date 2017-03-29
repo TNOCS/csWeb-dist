@@ -1,3 +1,4 @@
+/// <reference types="node" />
 import AuthApi = require('./AuthAPI');
 import events = require('events');
 /**
@@ -200,6 +201,7 @@ export interface ILayer extends StorageObject {
     hasSensorData?: boolean;
     quickRefresh?: boolean;
     confirmUpdate?: boolean;
+    geometryTypeId?: string;
 }
 /**
  * Geojson Layer definition
@@ -374,7 +376,7 @@ export declare class ApiManager extends events.EventEmitter {
      */
     saveLayersDelay: (layer: ILayer) => void;
     /**
-     * Store layer config file
+     * Store project config file
      */
     saveProjectConfig(): void;
     /**
@@ -417,7 +419,7 @@ export declare class ApiManager extends events.EventEmitter {
      */
     findProject(projectId: string): Project;
     /**
-     * Find layer for a specific layerId (can return null)
+     * Find key for a specific keyId (can return null)
      */
     findKey(keyId: string): Key;
     /**
@@ -463,7 +465,11 @@ export declare class ApiManager extends events.EventEmitter {
     createLayer(layer: ILayer, meta: ApiMeta, callback: (result: CallbackResult) => void): void;
     addUpdateLayer(layer: ILayer, meta: ApiMeta, callback: Function): void;
     clearProject(projectId: string, meta: ApiMeta, callback: Function): void;
-    updateProjectTitle(projectTitle: string, projectId: string, meta: ApiMeta, callback: Function): void;
+    updateProjectProperties(props: {
+        title: string;
+        logo: string;
+        description: string;
+    }, projectId: string, meta: ApiMeta, callback: Function): void;
     updateProject(project: Project, meta: ApiMeta, callback: Function): void;
     deleteLayer(layerId: string, meta: ApiMeta, callback: Function): void;
     deleteProject(projectId: string, meta: ApiMeta, callback: Function): void;

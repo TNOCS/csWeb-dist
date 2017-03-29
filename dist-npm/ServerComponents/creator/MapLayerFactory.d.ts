@@ -1,6 +1,6 @@
 import express = require('express');
 import MessageBus = require('../bus/MessageBus');
-import BagDatabase = require('../database/BagDatabase');
+import IAddressSource = require('../database/IAddressSource');
 import IGeoJsonFeature = require('./IGeoJsonFeature');
 import Api = require('../api/ApiManager');
 import IProperty = Api.IProperty;
@@ -63,7 +63,9 @@ export interface ILayerTemplate {
     properties: IProperty[];
     sensors?: IProperty[];
     projectId?: string;
+    projectLogo?: string;
     iconBase64?: string;
+    logoBase64?: string;
 }
 export interface IBagContourRequest {
     bounds?: string;
@@ -76,16 +78,16 @@ export interface IBagSearchRequest {
 }
 /** A factory class to create new map layers based on input, e.g. from Excel */
 export declare class MapLayerFactory {
-    private bag;
+    private addressSources;
     private messageBus;
     private workingDir;
     templateFiles: IProperty[];
     featuresNotFound: any;
     apiManager: Api.ApiManager;
-    constructor(bag: BagDatabase.BagDatabase, messageBus: MessageBus.MessageBusService, apiManager: Api.ApiManager, workingDir?: string);
+    constructor(addressSources: IAddressSource.IAddressSource[], messageBus: MessageBus.MessageBusService, apiManager: Api.ApiManager, workingDir?: string);
     process(req: express.Request, res: express.Response): void;
     private splitJson(data);
-    sendIconThroughApiManager(b64: string, path: string): void;
+    sendIconThroughApiManager(b64: string, folder: string, filePath: string): void;
     sendResourceThroughApiManager(data: any, resourceId: string): void;
     sendLayerThroughApiManager(data: any): void;
     processBagContours(req: express.Request, res: express.Response): void;
@@ -96,6 +98,10 @@ export declare class MapLayerFactory {
         featureTypes: {};
         features: IGeoJsonFeature[];
     };
+    addGeometryRequest(req: express.Request, res: express.Response): void;
+    private addGeometry(ld, template, geojson, callback);
+    private getPolygonType(ld, props);
+    private determineType(props, label);
     /**
      * This function extracts the timestamps and sensorvalues from the
      * template.propertyTypes. Every sensorvalue is parsed as propertyType in
@@ -105,6 +111,7 @@ export declare class MapLayerFactory {
      */
     private convertTimebasedPropertyData(template);
     private createPolygonFeature(templateName, templateKey, par1, inclTemplProps, features, properties, propertyTypes, sensors, callback);
+    private createInternationalFeature(queryString, features, properties, sensors, callback);
     private createLatLonFeature(latString, lonString, features, properties, sensors, callback);
     /**
      * Convert the RD coordinate to WGS84.

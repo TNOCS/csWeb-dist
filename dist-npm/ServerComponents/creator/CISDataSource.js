@@ -1,10 +1,11 @@
 "use strict";
-var Winston = require('winston');
-var BodyParser = require('body-parser');
-var request = require('request');
-var xml2js = require('xml2js');
-var _ = require('underscore');
-var Utils = require('../helpers/Utils');
+Object.defineProperty(exports, "__esModule", { value: true });
+var Winston = require("winston");
+var BodyParser = require("body-parser");
+var request = require("request");
+var xml2js = require("xml2js");
+var _ = require("underscore");
+var Utils = require("../helpers/Utils");
 /** CIS datasource
  *  Provides an endpoint for obtaining and sending CIS messages
  */

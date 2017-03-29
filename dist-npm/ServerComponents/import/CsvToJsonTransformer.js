@@ -1,29 +1,29 @@
 "use strict";
 var Utils = require("../helpers/Utils");
-var stream = require('stream');
-var splitStream = require("split");
+var stream = require("stream");
+var splitStream = require('split');
 var CsvToJsonTransformer = (function () {
     function CsvToJsonTransformer(title) {
         this.title = title;
-        this.type = "CsvToJsonTransformer";
+        this.type = 'CsvToJsonTransformer';
         this.headers = null;
         this.id = Utils.newGuid();
         //this.description = description;
     }
     CsvToJsonTransformer.prototype.initialize = function (opt, callback) {
-        var propertyParameter = opt.parameters.filter(function (p) { return p.type.title == "fieldDelimiter"; })[0];
+        var propertyParameter = opt.parameters.filter(function (p) { return p.type.title === 'fieldDelimiter'; })[0];
         if (propertyParameter) {
             this.fieldDelimiter = propertyParameter.value;
         }
-        propertyParameter = opt.parameters.filter(function (p) { return p.type.title == "textQualifier"; })[0];
+        propertyParameter = opt.parameters.filter(function (p) { return p.type.title === 'textQualifier'; })[0];
         if (propertyParameter) {
             this.textQualifier = propertyParameter.value;
         }
-        propertyParameter = opt.parameters.filter(function (p) { return p.type.title == "latField"; })[0];
+        propertyParameter = opt.parameters.filter(function (p) { return p.type.title === 'latField'; })[0];
         if (propertyParameter) {
             this.latField = propertyParameter.value;
         }
-        propertyParameter = opt.parameters.filter(function (p) { return p.type.title == "longField"; })[0];
+        propertyParameter = opt.parameters.filter(function (p) { return p.type.title === 'longField'; })[0];
         if (propertyParameter) {
             this.longField = propertyParameter.value;
         }
@@ -35,17 +35,17 @@ var CsvToJsonTransformer = (function () {
         /*stream.Transform.call(t);*/
         var split = -1;
         var headers;
-        t.setEncoding("utf8");
+        t.setEncoding('utf8');
         t._transform = function (chunk, encoding, done) {
-            /*console.log("##### CTJT #####");*/
-            // console.log(chunk.toString("utf8"));
-            var line = chunk.toString("utf8");
-            if (!line || line.trim() == "") {
-                console.log("Empty line, ignore");
+            /*console.log('##### CTJT #####');*/
+            // console.log(chunk.toString('utf8'));
+            var line = chunk.toString('utf8');
+            if (!line || line.trim() === '') {
+                console.log('Empty line, ignore');
                 done();
                 return;
             }
-            var textQualifierRegExp = new RegExp("(?:\\s*(?:" + _this.textQualifier + "([^" + _this.textQualifier + "]*)" + _this.textQualifier + "|([^" + _this.fieldDelimiter + "]+))?\\s*" + _this.fieldDelimiter + "?)+?", "g");
+            var textQualifierRegExp = new RegExp('(?:\\s*(?:' + _this.textQualifier + '([^' + _this.textQualifier + ']*)' + _this.textQualifier + '|([^' + _this.fieldDelimiter + ']+))?\\s*' + _this.fieldDelimiter + '?)+?', 'g');
             var fields = [];
             var result;
             var prevIndex = -1;
@@ -57,7 +57,7 @@ var CsvToJsonTransformer = (function () {
                 else if (result[2] && result[2].length > 0) {
                     strValue = result[2];
                 }
-                //console.log("Number: '" + strValue + "': " + /^\-?[0-9]*(,|\.)?[0-9]+$/.test(strValue));
+                //console.log('Number: '' + strValue + '': ' + /^\-?[0-9]*(,|\.)?[0-9]+$/.test(strValue));
                 if (/^\-?[0-9]*(,|\.)?[0-9]+$/.test(strValue)) {
                     fields.push(parseFloat(strValue.replace(/,/, '.')));
                 }
@@ -70,7 +70,7 @@ var CsvToJsonTransformer = (function () {
             // console.log(line);
             if (!headers) {
                 headers = [];
-                fields.filter(function (f) { return f && f != ''; }).forEach(function (f) {
+                fields.filter(function (f) { return f && f !== ''; }).forEach(function (f) {
                     headers.push(f.toString());
                 });
                 console.log(headers);
@@ -78,7 +78,7 @@ var CsvToJsonTransformer = (function () {
                 return;
             }
             else {
-                var obj = { type: "Feature", properties: {} };
+                var obj = { type: 'Feature', properties: {} };
                 headers.forEach(function (h) {
                     var hIndex = headers.indexOf(h);
                     obj.properties[h] = fields[hIndex];
@@ -89,15 +89,15 @@ var CsvToJsonTransformer = (function () {
                     var strLat:string = obj.properties[this.longField];
                     var strLong:string = obj.properties[this.latField];
       
-                    console.log("lat: " + strLat);
+                    console.log('lat: ' + strLat);
                     strLat = strLat.replace(/,/g,'.');
                     strLong = strLong.replace(/,/g,'.');
                     */
                     var lat = obj.properties[_this.longField];
                     var long = obj.properties[_this.latField];
-                    /*console.log(lat + " - " + long);*/
+                    /*console.log(lat + ' - ' + long);*/
                     obj.geometry = {
-                        type: "Point",
+                        type: 'Point',
                         coordinates: [lat, long]
                     };
                 }

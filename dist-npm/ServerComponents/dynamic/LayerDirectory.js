@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 var chokidar = require('chokidar');
 var LayerDirectory;
 (function (LayerDirectory_1) {

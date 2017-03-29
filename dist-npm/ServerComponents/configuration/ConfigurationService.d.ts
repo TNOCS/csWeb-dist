@@ -10,7 +10,7 @@ export declare class ConfigurationService implements IConfiguration {
     /**
      * Create a configuration service based on a configuration file.
      */
-    constructor(configurationFile?: string);
+    constructor(configurationFile?: string | Object);
     initialize(init: {
         key: string;
         value: string;

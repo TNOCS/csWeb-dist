@@ -12,6 +12,7 @@ export * from './ServerComponents/api/ApiServiceManager';
 export * from './ServerComponents/bus/MessageBus';
 export * from './ServerComponents/api/MqttAPI';
 export * from './ServerComponents/database/BagDatabase';
+export * from './ServerComponents/database/NominatimSource';
 export * from './ServerComponents/dynamic/ClientConnection';
 export * from './ServerComponents/dynamic/DataSource';
 export * from './ServerComponents/dynamic/LayerDirectory';

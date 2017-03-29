@@ -771,6 +771,16 @@ body,
     height: 50px;
 }
 
+.credits-title {
+    margin-top: 16px;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.no-margin {
+    margin: 0;
+}
+
 .project-logo
 {
     height: 40px;
@@ -880,6 +890,7 @@ body,
    display: table;
    width: 100%;
    table-layout: fixed;
+   padding: 8px 4px 8px 4px;
 }
 .legendCellLeft {
     display: table-cell;
@@ -2407,7 +2418,7 @@ input[type="checkbox"] {
     right: 0;
     bottom:0;
     top: 0;
-    z-index: 2;
+    z-index: 9999;
 }
 #rightpanelTabPanes {
     @include box-shadow(-2px,0,10px,rgba(0,0,0,.2));
@@ -2697,7 +2708,6 @@ input[type="checkbox"] {
     padding: 0;
 }
 .ng-binding {
-    padding-left: 0;
 }
 .children ul {
     margin-left: 0;
@@ -3375,3 +3385,11 @@ margin-left: -10px;
 
 /* dc-charts */
 .dc-chart g.row text {fill: black;}
+
+.profile-tab-form {
+    margin: 5px 5px 0px 25px;
+}
+
+.profile-tab-label {
+    width: 72px;
+}
