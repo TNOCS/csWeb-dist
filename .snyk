@@ -1,8 +1,19 @@
 # Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
-version: v1.7.0
+version: v1.7.1
 ignore: {}
 # patches apply the minimum changes required to fix a vulnerability
 patch:
   'npm:ws:20160104':
     - hypertimer > ws:
         patched: '2017-02-18T10:10:26.563Z'
+  'npm:ms:20170412':
+    - hypertimer > debug > ms:
+        patched: '2017-05-27T01:14:06.247Z'
+    - socket.io > socket.io-adapter > socket.io-parser > debug > ms:
+        patched: '2017-05-27T01:14:06.247Z'
+    - hypertimer > body-parser > debug > ms:
+        patched: '2017-05-27T01:14:06.247Z'
+    - socket.io > socket.io-adapter > debug > ms:
+        patched: '2017-05-27T01:14:06.247Z'
+    - socket.io > socket.io-client > debug > ms:
+        patched: '2017-05-27T01:14:06.247Z'
