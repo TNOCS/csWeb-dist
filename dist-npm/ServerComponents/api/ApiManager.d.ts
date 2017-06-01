@@ -105,7 +105,9 @@ export interface IConnector {
     deleteProject(projectId: string, meta: ApiMeta, callback: Function): any;
     allGroups(projectId: string, meta: ApiMeta, callback: Function): any;
     /** Add a resource type file to the store. */
-    addResource(reource: ResourceFile, meta: ApiMeta, callback: Function): any;
+    addResource(resource: ResourceFile, meta: ApiMeta, callback: Function): any;
+    /** Update a resource type file to the store. */
+    addPropertyTypes(resourceId: string, data: IPropertyType[], meta: ApiMeta, callback: Function): any;
     /** Get a resource file  */
     getResource(resourceId: string, meta: ApiMeta, callback: Function): any;
     /** Add a file to the store, e.g. an icon or other media. */
@@ -283,6 +285,7 @@ export declare class Log {
     value: any;
 }
 export declare class FeatureType {
+    propertyTypeKeys?: string;
 }
 export declare class PropertyType {
 }
@@ -393,6 +396,7 @@ export declare class ApiManager extends events.EventEmitter {
      * Update/add a resource and save it to file
      */
     addResource(resource: ResourceFile, replace: boolean, meta: ApiMeta, callback: Function): void;
+    addPropertyTypes(resourceId: string, data: IPropertyType[], meta: ApiMeta, callback: Function): void;
     getResource(id: string, meta: ApiMeta, callback: Function): void;
     addLayerToProject(projectId: string, groupId: string, layerId: string, meta: ApiMeta, callback: Function): void;
     removeLayerFromProject(projectId: string, groupId: string, layerId: string, meta: ApiMeta, callback: Function): void;

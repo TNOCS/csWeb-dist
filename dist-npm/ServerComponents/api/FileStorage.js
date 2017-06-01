@@ -675,6 +675,26 @@ var FileStorage = (function (_super) {
         this.saveResourcesDelay(res);
         callback({ result: ApiResult.OK });
     };
+    FileStorage.prototype.addPropertyTypes = function (resourceId, data, meta, callback) {
+        if (!this.resources.hasOwnProperty(resourceId) || !data || !_.isArray(data)) {
+            callback({ result: ApiResult.ResourceNotFound });
+            return;
+        }
+        var resource = this.resources[resourceId];
+        var ptKeys = '';
+        data.forEach(function (pt) {
+            if (resource.propertyTypeData.hasOwnProperty(pt.label))
+                return;
+            resource.propertyTypeData[pt.label] = pt;
+            ptKeys += ";" + pt.label;
+        });
+        _.each(resource.featureTypes, function (ft) {
+            if (ft.propertyTypeKeys)
+                ft.propertyTypeKeys += ptKeys;
+        });
+        this.saveResourcesDelay(resource);
+        callback({ result: ApiResult.OK });
+    };
     /** Get a resource file  */
     FileStorage.prototype.getResource = function (resourceId, meta, callback) {
         if (this.resources.hasOwnProperty(resourceId)) {

@@ -424,6 +424,26 @@ var ApiManager = (function (_super) {
             }
         }
     };
+    ApiManager.prototype.addPropertyTypes = function (resourceId, data, meta, callback) {
+        if (!this.resources.hasOwnProperty(resourceId)) {
+            callback({ result: ApiResult.ResourceAlreadyExists, error: 'Resource already exists' });
+            return;
+        }
+        var resource = this.resources[resourceId];
+        var s = this.findStorage(resource);
+        this.getInterfaces(meta).forEach(function (i) {
+            i.addPropertyTypes(resourceId, data, meta, function () { });
+        });
+        // store resource
+        if (s) {
+            s.addPropertyTypes(resourceId, data, meta, function (r) {
+                callback({ result: ApiResult.OK, error: 'Resource updated' });
+            });
+        }
+        else {
+            callback({ result: ApiResult.OK });
+        }
+    };
     ApiManager.prototype.getResource = function (id, meta, callback) {
         if (this.resources.hasOwnProperty(id)) {
             var s = this.findStorage(this.resources[id]);

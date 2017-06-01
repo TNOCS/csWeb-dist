@@ -48,6 +48,7 @@ var BaseConnector = (function () {
     BaseConnector.prototype.deleteProject = function (projectId, meta, callback) { };
     BaseConnector.prototype.addFile = function (base64, folder, file, meta, callback) { };
     BaseConnector.prototype.addResource = function (resource, meta, callback) { };
+    BaseConnector.prototype.addPropertyTypes = function (resourceId, data, meta, callback) { };
     /** Get a resource file  */
     BaseConnector.prototype.getResource = function (resourceId, meta, callback) { };
     /** Get a specific key */

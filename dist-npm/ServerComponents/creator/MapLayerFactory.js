@@ -433,7 +433,7 @@ var MapLayerFactory = (function () {
         console.log('Received layer template. Adding geometry...');
         var layer = req.body.layer;
         var features = [];
-        var template = { properties: layer.data.properties, propertyTypes: [] };
+        var template = { properties: layer.data.properties, propertyTypes: layer.data.propertyTypes || [] };
         this.addGeometry(layer.data.layerDefinition, template, layer, function () {
             console.log('Finished adding geometry...');
             delete layer.data.properties;
@@ -445,6 +445,7 @@ var MapLayerFactory = (function () {
         });
     };
     MapLayerFactory.prototype.addGeometry = function (ld, template, geojson, callback) {
+        var _this = this;
         var features = geojson.features;
         switch (ld.geometryType) {
             case 'Postcode6_en_huisnummer':
@@ -574,7 +575,12 @@ var MapLayerFactory = (function () {
                     return;
                 }
                 this.getPolygonType(ld, template.properties);
-                this.createPolygonFeature(ld.geometryFile, ld.geometryKey, ld.parameter1, ld.includeOriginalProperties, features, template.properties, template.propertyTypes, template.sensors || [], function () { callback(geojson); });
+                this.createPolygonFeature(ld.geometryFile, ld.geometryKey, ld.parameter1, ld.includeOriginalProperties, features, template.properties, template.propertyTypes, template.sensors || [], function () {
+                    _this.apiManager.addPropertyTypes(ld['featureTypeId'], template.propertyTypes, {}, function () {
+                        console.log('Added propertytypes to resources');
+                    });
+                    callback(geojson);
+                });
                 break;
         }
     };
@@ -592,6 +598,20 @@ var MapLayerFactory = (function () {
                 }
                 break;
             case 'Gemeente':
+            case 'CBS_Gemeente_2015':
+            case 'CBS_Gemeente':
+                ld.geometryFile = 'CBS_Gemeente_2015';
+                if (type === 'both') {
+                    ld.geometryKey = 'GM_CODE';
+                }
+                else if (type === 'name') {
+                    ld.geometryKey = 'Name';
+                }
+                else {
+                    //todo: convert to GM_CODE
+                }
+                break;
+            case 'Gemeente(2014)':
                 ld.geometryFile = 'CBS_Gemeente';
                 if (type === 'both') {
                     ld.geometryKey = 'GM_CODE';
@@ -632,7 +652,7 @@ var MapLayerFactory = (function () {
             }
         });
         var results = [{ key: 'name', val: nrNames }, { key: 'number', val: nrNumbers }, { key: 'both', val: nrBoth }];
-        results = _.sortBy(results, function (obj) { return obj.val; });
+        results = _.sortBy(results, function (obj) { return -1 * obj.val; });
         return _.first(results).key;
     };
     /**

@@ -1790,6 +1790,13 @@ declare module csComp.Helpers {
         median: number;
         q3: number;
     };
+    function octiles(data: number[]): {
+        q1: number;
+        o3: number;
+        median: number;
+        o5: number;
+        q3: number;
+    };
     /**
      * Generates the title for the feature tooltip. A string format can be
      * defined in the featureType parameter 'tooltipStringFormat'.
@@ -4070,58 +4077,6 @@ declare module Search {
     }
 }
 
-declare module ProfileHeader {
-    interface IProfileHeaderScope extends ng.IScope {
-        vm: ProfileHeaderCtrl;
-        enabled: boolean;
-    }
-    class ProfileHeaderCtrl {
-        private $scope;
-        private $localStorageService;
-        private $layerService;
-        private $mapService;
-        private $messageBus;
-        profileService: csComp.Services.ProfileService;
-        static $inject: string[];
-        startLogin(): void;
-        logout(): void;
-        constructor($scope: IProfileHeaderScope, $localStorageService: ng.localStorage.ILocalStorageService, $layerService: csComp.Services.LayerService, $mapService: csComp.Services.MapService, $messageBus: csComp.Services.MessageBusService, profileService: csComp.Services.ProfileService);
-    }
-    /**
-      * Module
-      */
-    var myModule: any;
-}
-
-declare module ProfileTab {
-    interface IProfileTabScope extends ng.IScope {
-        vm: ProfileTabCtrl;
-        enabled: boolean;
-        showRegisterForm: boolean;
-    }
-    class ProfileTabCtrl {
-        private $scope;
-        private $localStorageService;
-        private $layerService;
-        private $mapService;
-        private $messageBus;
-        profileService: csComp.Services.ProfileService;
-        static $inject: string[];
-        name: string;
-        userName: string;
-        userPassword: string;
-        startLogin(): void;
-        validateUser(): void;
-        signupUser(): void;
-        logout(): void;
-        constructor($scope: IProfileTabScope, $localStorageService: ng.localStorage.ILocalStorageService, $layerService: csComp.Services.LayerService, $mapService: csComp.Services.MapService, $messageBus: csComp.Services.MessageBusService, profileService: csComp.Services.ProfileService);
-    }
-    /**
-      * Module
-      */
-    var myModule: any;
-}
-
 declare module OfflineSearch {
     /**
       * Module
@@ -4268,6 +4223,58 @@ declare module OfflineSearch {
         onSelect(selectedItem: OfflineSearchResultViewModel): void;
         private selectFeature(layerId, featureIndex);
     }
+}
+
+declare module ProfileHeader {
+    interface IProfileHeaderScope extends ng.IScope {
+        vm: ProfileHeaderCtrl;
+        enabled: boolean;
+    }
+    class ProfileHeaderCtrl {
+        private $scope;
+        private $localStorageService;
+        private $layerService;
+        private $mapService;
+        private $messageBus;
+        profileService: csComp.Services.ProfileService;
+        static $inject: string[];
+        startLogin(): void;
+        logout(): void;
+        constructor($scope: IProfileHeaderScope, $localStorageService: ng.localStorage.ILocalStorageService, $layerService: csComp.Services.LayerService, $mapService: csComp.Services.MapService, $messageBus: csComp.Services.MessageBusService, profileService: csComp.Services.ProfileService);
+    }
+    /**
+      * Module
+      */
+    var myModule: any;
+}
+
+declare module ProfileTab {
+    interface IProfileTabScope extends ng.IScope {
+        vm: ProfileTabCtrl;
+        enabled: boolean;
+        showRegisterForm: boolean;
+    }
+    class ProfileTabCtrl {
+        private $scope;
+        private $localStorageService;
+        private $layerService;
+        private $mapService;
+        private $messageBus;
+        profileService: csComp.Services.ProfileService;
+        static $inject: string[];
+        name: string;
+        userName: string;
+        userPassword: string;
+        startLogin(): void;
+        validateUser(): void;
+        signupUser(): void;
+        logout(): void;
+        constructor($scope: IProfileTabScope, $localStorageService: ng.localStorage.ILocalStorageService, $layerService: csComp.Services.LayerService, $mapService: csComp.Services.MapService, $messageBus: csComp.Services.MessageBusService, profileService: csComp.Services.ProfileService);
+    }
+    /**
+      * Module
+      */
+    var myModule: any;
 }
 
 declare module ProjectHeaderSelection {
@@ -4589,6 +4596,163 @@ declare module Voting {
 }
 
 declare module csComp.Services {
+    interface IMessageBusCallback {
+        (title: string, data?: any): any;
+    }
+    class ClientMessage {
+        action: string;
+        data: any;
+        constructor(action: string, data: any);
+    }
+    class MessageBusHandle {
+        constructor(topic: string, callback: IMessageBusCallback);
+        topic: string;
+        callback: IMessageBusCallback;
+    }
+    interface IBaseEvent {
+        add(listener: () => void): void;
+        remove(listener: () => void): void;
+        trigger(...a: any[]): void;
+    }
+    class TypedEvent implements IBaseEvent {
+        private _listeners;
+        add(listener: () => void): void;
+        remove(listener?: () => void): void;
+        trigger(...a: any[]): void;
+    }
+    interface IMessageEvent extends IBaseEvent {
+        add(listener: (message: string) => void): void;
+        remove(listener: (message: string) => void): void;
+        trigger(message: string): void;
+    }
+    class Connection {
+        id: string;
+        url: string;
+        bus: MessageBusService;
+        isConnected: boolean;
+        isConnecting: boolean;
+        cache: {
+            [topic: string]: Array<IMessageBusCallback>;
+        };
+        subscriptions: {
+            [id: string]: ServerSubscription;
+        };
+        socket: any;
+        events: IMessageEvent;
+        constructor(id: string, url: string, bus: MessageBusService);
+        unsubscribe(id: string, callback: IMessageBusCallback): void;
+        reSubscribeAll(): void;
+        disconnectAll(): void;
+        subscribe(target: string, type: string, callback: IMessageBusCallback): ServerSubscription;
+        connect(callback: Function): void;
+        disconnect(): void;
+    }
+    enum NotifyLocation {
+        BottomRight = 0,
+        BottomLeft = 1,
+        TopRight = 2,
+        TopLeft = 3,
+        TopBar = 4,
+    }
+    enum NotifyType {
+        Normal = 0,
+        Info = 1,
+        Error = 2,
+        Success = 3,
+    }
+    class ServerSubscription {
+        target: string;
+        type: string;
+        callbacks: Array<IMessageBusCallback>;
+        id: string;
+        serverCallback: any;
+        constructor(target: string, type: string);
+    }
+    /**
+     * Simple message bus service, used for subscribing and unsubsubscribing to topics.
+     * @see {@link https://gist.github.com/floatingmonkey/3384419}
+     */
+    class MessageBusService {
+        private $translate;
+        private static cache;
+        static $inject: string[];
+        private connections;
+        private notifications;
+        private confirms;
+        constructor($translate: ng.translate.ITranslateService);
+        getConnection(id: string): Connection;
+        initConnection(id: string, url: string, callback: Function): void;
+        serverPublish(topic: string, message: any, serverId?: string): any;
+        serverSendMessage(msg: ClientMessage, serverId?: string): any;
+        serverSendMessageAction(action: string, data: any, serverId?: string): void;
+        serverSubscribe(target: string, type: string, callback: IMessageBusCallback, serverId?: string): MessageBusHandle;
+        serverUnsubscribe(handle: MessageBusHandle, serverId?: string): any;
+        /**
+         * Publish a notification that needs to be translated
+         * @title:              the translation key of the notification's title
+         * @text:               the translation key of the notification's content
+         * @variableReplacement the key to replace in the content translation (see: https://angular-translate.github.io/docs/#/guide/06_variable-replacement)
+         * @location:           the location on the screen where the notification is shown (default bottom right)
+         */
+        notifyWithTranslation(title: string, text: string, variableReplacement?: {
+            [key: string]: string;
+        }, location?: NotifyLocation, type?: NotifyType, duration?: number): void;
+        notifyError(title: string, text: string): void;
+        /**
+         * Publish a notification
+         * @title:       the title of the notification
+         * @text:        the contents of the notification
+         * @location:    the location on the screen where the notification is shown (default bottom right)
+         * @notifyType:  the type of notification
+         */
+        notify(title: string, text: string, location?: NotifyLocation, notifyType?: NotifyType, duration?: number): any;
+        confirmButtons(title: string, text: string, buttons: string[], callback: (result: string) => any): any;
+        /**
+         * Show a confirm dialog
+         * @title           : the title of the notification
+         * @text            : the contents of the notification
+         * @callback        : the callback that will be called after the confirmation has been answered.
+         */
+        confirm(title: string, text: string, callback: (result: boolean) => any, allowDuplicate?: boolean): any;
+        notifyBottom(title: string, text: string): void;
+        /**
+         * Publish a notification
+         * @title: the title of the notification
+         * @text:  the contents of the notification
+         */
+        notifyData(data: any): void;
+        /**
+         * Publish to a topic
+         */
+        publish(topic: string, title: string, data?: any): void;
+        /**
+         * Subscribe to a topic
+         * @param {string} topic The desired topic of the message.
+         * @param {IMessageBusCallback} callback The callback to call.
+         */
+        subscribe(topic: string, callback: IMessageBusCallback): MessageBusHandle;
+        /**
+         * Unsubscribe to a topic by providing its handle
+         */
+        unsubscribe(handle: MessageBusHandle): void;
+    }
+    class EventObj {
+        myEvents: any;
+        bind(event: any, fct: any): void;
+        unbind(event: any, fct: any): void;
+        unbindEvent(event: any): void;
+        unbindAll(): void;
+        trigger(event: any, ...args: any[]): void;
+        registerEvent(evtname: string): void;
+        registerEvents(evtnames: Array<string>): void;
+    }
+    /**
+      * Module
+      */
+    var myModule: any;
+}
+
+declare module csComp.Services {
     interface IButtonActionOptions {
         layerId?: string;
         groupId?: string;
@@ -4770,163 +4934,6 @@ declare module csComp.Services {
         private updateChart(layer);
         stop(): void;
     }
-}
-
-declare module csComp.Services {
-    interface IMessageBusCallback {
-        (title: string, data?: any): any;
-    }
-    class ClientMessage {
-        action: string;
-        data: any;
-        constructor(action: string, data: any);
-    }
-    class MessageBusHandle {
-        constructor(topic: string, callback: IMessageBusCallback);
-        topic: string;
-        callback: IMessageBusCallback;
-    }
-    interface IBaseEvent {
-        add(listener: () => void): void;
-        remove(listener: () => void): void;
-        trigger(...a: any[]): void;
-    }
-    class TypedEvent implements IBaseEvent {
-        private _listeners;
-        add(listener: () => void): void;
-        remove(listener?: () => void): void;
-        trigger(...a: any[]): void;
-    }
-    interface IMessageEvent extends IBaseEvent {
-        add(listener: (message: string) => void): void;
-        remove(listener: (message: string) => void): void;
-        trigger(message: string): void;
-    }
-    class Connection {
-        id: string;
-        url: string;
-        bus: MessageBusService;
-        isConnected: boolean;
-        isConnecting: boolean;
-        cache: {
-            [topic: string]: Array<IMessageBusCallback>;
-        };
-        subscriptions: {
-            [id: string]: ServerSubscription;
-        };
-        socket: any;
-        events: IMessageEvent;
-        constructor(id: string, url: string, bus: MessageBusService);
-        unsubscribe(id: string, callback: IMessageBusCallback): void;
-        reSubscribeAll(): void;
-        disconnectAll(): void;
-        subscribe(target: string, type: string, callback: IMessageBusCallback): ServerSubscription;
-        connect(callback: Function): void;
-        disconnect(): void;
-    }
-    enum NotifyLocation {
-        BottomRight = 0,
-        BottomLeft = 1,
-        TopRight = 2,
-        TopLeft = 3,
-        TopBar = 4,
-    }
-    enum NotifyType {
-        Normal = 0,
-        Info = 1,
-        Error = 2,
-        Success = 3,
-    }
-    class ServerSubscription {
-        target: string;
-        type: string;
-        callbacks: Array<IMessageBusCallback>;
-        id: string;
-        serverCallback: any;
-        constructor(target: string, type: string);
-    }
-    /**
-     * Simple message bus service, used for subscribing and unsubsubscribing to topics.
-     * @see {@link https://gist.github.com/floatingmonkey/3384419}
-     */
-    class MessageBusService {
-        private $translate;
-        private static cache;
-        static $inject: string[];
-        private connections;
-        private notifications;
-        private confirms;
-        constructor($translate: ng.translate.ITranslateService);
-        getConnection(id: string): Connection;
-        initConnection(id: string, url: string, callback: Function): void;
-        serverPublish(topic: string, message: any, serverId?: string): any;
-        serverSendMessage(msg: ClientMessage, serverId?: string): any;
-        serverSendMessageAction(action: string, data: any, serverId?: string): void;
-        serverSubscribe(target: string, type: string, callback: IMessageBusCallback, serverId?: string): MessageBusHandle;
-        serverUnsubscribe(handle: MessageBusHandle, serverId?: string): any;
-        /**
-         * Publish a notification that needs to be translated
-         * @title:              the translation key of the notification's title
-         * @text:               the translation key of the notification's content
-         * @variableReplacement the key to replace in the content translation (see: https://angular-translate.github.io/docs/#/guide/06_variable-replacement)
-         * @location:           the location on the screen where the notification is shown (default bottom right)
-         */
-        notifyWithTranslation(title: string, text: string, variableReplacement?: {
-            [key: string]: string;
-        }, location?: NotifyLocation, type?: NotifyType, duration?: number): void;
-        notifyError(title: string, text: string): void;
-        /**
-         * Publish a notification
-         * @title:       the title of the notification
-         * @text:        the contents of the notification
-         * @location:    the location on the screen where the notification is shown (default bottom right)
-         * @notifyType:  the type of notification
-         */
-        notify(title: string, text: string, location?: NotifyLocation, notifyType?: NotifyType, duration?: number): any;
-        confirmButtons(title: string, text: string, buttons: string[], callback: (result: string) => any): any;
-        /**
-         * Show a confirm dialog
-         * @title           : the title of the notification
-         * @text            : the contents of the notification
-         * @callback        : the callback that will be called after the confirmation has been answered.
-         */
-        confirm(title: string, text: string, callback: (result: boolean) => any, allowDuplicate?: boolean): any;
-        notifyBottom(title: string, text: string): void;
-        /**
-         * Publish a notification
-         * @title: the title of the notification
-         * @text:  the contents of the notification
-         */
-        notifyData(data: any): void;
-        /**
-         * Publish to a topic
-         */
-        publish(topic: string, title: string, data?: any): void;
-        /**
-         * Subscribe to a topic
-         * @param {string} topic The desired topic of the message.
-         * @param {IMessageBusCallback} callback The callback to call.
-         */
-        subscribe(topic: string, callback: IMessageBusCallback): MessageBusHandle;
-        /**
-         * Unsubscribe to a topic by providing its handle
-         */
-        unsubscribe(handle: MessageBusHandle): void;
-    }
-    class EventObj {
-        myEvents: any;
-        bind(event: any, fct: any): void;
-        unbind(event: any, fct: any): void;
-        unbindEvent(event: any): void;
-        unbindAll(): void;
-        trigger(event: any, ...args: any[]): void;
-        registerEvent(evtname: string): void;
-        registerEvents(evtnames: Array<string>): void;
-    }
-    /**
-      * Module
-      */
-    var myModule: any;
 }
 
 declare module csComp.Services {
@@ -5720,6 +5727,7 @@ declare module csComp.Services {
         validateUser(userName?: string, userPassword?: string): void;
         signupUser(name?: string, userName?: string, userPassword?: string): void;
         logoutUser(): void;
+        isLoggedIn(): boolean;
         /**
          * Returns the JSON Web Token, if available.
          *
@@ -7054,6 +7062,126 @@ declare module IFrameWidget {
     }
 }
 
+declare module Indicators {
+    /**
+      * Module
+      */
+    var myModule: any;
+    interface IVisualInput {
+        type: string;
+        default: Object;
+    }
+    interface IVisualType {
+        id: string;
+        title: string;
+        input: any;
+    }
+    interface IIndicatorsEditCtrl extends ng.IScope {
+        vm: IndicatorsEditCtrl;
+        data: IndicatorData;
+    }
+    class IndicatorsEditCtrl {
+        private $scope;
+        private $timeout;
+        private $compile;
+        private $layerService;
+        private $templateCache;
+        private $messageBus;
+        private $mapService;
+        private $dashboardService;
+        private scope;
+        private widget;
+        private selectedIndicatorVisual;
+        indicatorVisuals: {
+            [key: string]: IVisualType;
+        };
+        private featureType;
+        private propertyTypes;
+        private propertyTypeData;
+        static $inject: string[];
+        constructor($scope: IIndicatorsEditCtrl, $timeout: ng.ITimeoutService, $compile: any, $layerService: csComp.Services.LayerService, $templateCache: any, $messageBus: csComp.Services.MessageBusService, $mapService: csComp.Services.MapService, $dashboardService: csComp.Services.DashboardService);
+        colorUpdated(c: any, i: any): void;
+        updatePropertyTypes(indic: Indicator): void;
+        moveUp(i: Indicator): void;
+        deleteIndicator(i: string): void;
+        updateIndicator(i: Indicator): void;
+        initIndicator(i: Indicator): void;
+        updateVisual(i: Indicator): void;
+        addIndicator(): void;
+        sensorChanged(i: Indicator): void;
+    }
+}
+
+declare module Indicators {
+    /**
+      * Module
+      */
+    var myModule: any;
+}
+
+declare module Indicators {
+    class IndicatorData {
+        title: string;
+        orientation: string;
+        indicators: Indicator[];
+    }
+    class Indicator {
+        title: string;
+        visual: string;
+        type: string;
+        featureTypeName: string;
+        propertyTypes: string[];
+        propertyTypeTitles: string[];
+        data: string;
+        indicatorWidth: number;
+        property: string;
+        sensor: string;
+        _sensorSet: csComp.Services.SensorSet;
+        layer: string;
+        /** Dashboard to select after click */
+        dashboard: string;
+        source: string;
+        isActive: boolean;
+        id: string;
+        color: string;
+        indexValue: number;
+        _focusTime: number;
+        _toggleUpdate: boolean;
+        _value: any;
+        inputs: {
+            [key: string]: any;
+        };
+        _result: {
+            [key: string]: any;
+        };
+        constructor();
+    }
+    interface IIndicatorsScope extends ng.IScope {
+        vm: IndicatorsCtrl;
+        data: IndicatorData;
+    }
+    class IndicatorsCtrl implements csComp.Services.IWidgetCtrl {
+        private $scope;
+        private $timeout;
+        private $layerService;
+        private $messageBus;
+        private $mapService;
+        private $dashboardService;
+        private $translate;
+        private scope;
+        private widget;
+        static $inject: string[];
+        constructor($scope: IIndicatorsScope, $timeout: ng.ITimeoutService, $layerService: csComp.Services.LayerService, $messageBus: csComp.Services.MessageBusService, $mapService: csComp.Services.MapService, $dashboardService: csComp.Services.DashboardService, $translate: ng.translate.ITranslateService);
+        forceUpdateIndicator(i: Indicator, value: any): void;
+        updateIndicator(i: Indicator): void;
+        startEdit(): void;
+        private checkLayers();
+        selectIndicator(i: Indicator): void;
+        indicatorInit(i: Indicator, scope: any): void;
+        private selectFeature(f, i);
+    }
+}
+
 declare module LocationWidget {
     /** Module */
     var myModule: any;
@@ -7205,62 +7333,6 @@ declare module MarkdownWidget {
     }
 }
 
-declare module MCAWidget {
-    /**
-      * Module
-      */
-    var myModule: any;
-}
-
-declare module MCAWidget {
-    class MCAWidgetData {
-        title: string;
-        /**
-         * If provided, indicates the layer that needs to be enabled in order to show the widget.
-         */
-        layerId: string;
-        /**
-         * The available mca's
-         */
-        availableMcas: Mca.Models.Mca[];
-        /**
-         * Instead of listing all available mca's, filter those that have a featureId that equals the
-         * defaultFeatureType of an enabled layer.
-         */
-        filterByDefaultFeatureType: boolean;
-        /**
-         * When the widget is loaded, automatically apply the style for the first MCA to all features.
-         */
-        autoApplyStyle: boolean;
-    }
-    interface IMCAWidgetScope extends ng.IScope {
-        vm: MCAWidgetCtrl;
-        data: MCAWidgetData;
-    }
-    class MCAWidgetCtrl {
-        private $scope;
-        private $timeout;
-        private $controller;
-        private $layerService;
-        private $messageBus;
-        private $mapService;
-        private scope;
-        private widget;
-        private parentWidget;
-        private mcaScope;
-        private layer;
-        selectedMCA: string;
-        mBusHandles: csComp.Services.MessageBusHandle[];
-        static $inject: string[];
-        constructor($scope: IMCAWidgetScope, $timeout: ng.ITimeoutService, $controller: ng.IControllerService, $layerService: csComp.Services.LayerService, $messageBus: csComp.Services.MessageBusService, $mapService: csComp.Services.MapService);
-        stop(): void;
-        private activateLayer(layer);
-        private getMcaScope();
-        private setStyleForProperty();
-        private setMcaAsStyle(mcaId);
-    }
-}
-
 declare module MarvelWidget {
     /**
       * Module
@@ -7326,123 +7398,59 @@ declare module MarvelWidget {
     }
 }
 
-declare module Indicators {
-    /**
-      * Module
-      */
-    var myModule: any;
-    interface IVisualInput {
-        type: string;
-        default: Object;
-    }
-    interface IVisualType {
-        id: string;
-        title: string;
-        input: any;
-    }
-    interface IIndicatorsEditCtrl extends ng.IScope {
-        vm: IndicatorsEditCtrl;
-        data: IndicatorData;
-    }
-    class IndicatorsEditCtrl {
-        private $scope;
-        private $timeout;
-        private $compile;
-        private $layerService;
-        private $templateCache;
-        private $messageBus;
-        private $mapService;
-        private $dashboardService;
-        private scope;
-        private widget;
-        private selectedIndicatorVisual;
-        indicatorVisuals: {
-            [key: string]: IVisualType;
-        };
-        private featureType;
-        private propertyTypes;
-        private propertyTypeData;
-        static $inject: string[];
-        constructor($scope: IIndicatorsEditCtrl, $timeout: ng.ITimeoutService, $compile: any, $layerService: csComp.Services.LayerService, $templateCache: any, $messageBus: csComp.Services.MessageBusService, $mapService: csComp.Services.MapService, $dashboardService: csComp.Services.DashboardService);
-        colorUpdated(c: any, i: any): void;
-        updatePropertyTypes(indic: Indicator): void;
-        moveUp(i: Indicator): void;
-        deleteIndicator(i: string): void;
-        updateIndicator(i: Indicator): void;
-        initIndicator(i: Indicator): void;
-        updateVisual(i: Indicator): void;
-        addIndicator(): void;
-        sensorChanged(i: Indicator): void;
-    }
-}
-
-declare module Indicators {
+declare module MCAWidget {
     /**
       * Module
       */
     var myModule: any;
 }
 
-declare module Indicators {
-    class IndicatorData {
+declare module MCAWidget {
+    class MCAWidgetData {
         title: string;
-        orientation: string;
-        indicators: Indicator[];
+        /**
+         * If provided, indicates the layer that needs to be enabled in order to show the widget.
+         */
+        layerId: string;
+        /**
+         * The available mca's
+         */
+        availableMcas: Mca.Models.Mca[];
+        /**
+         * Instead of listing all available mca's, filter those that have a featureId that equals the
+         * defaultFeatureType of an enabled layer.
+         */
+        filterByDefaultFeatureType: boolean;
+        /**
+         * When the widget is loaded, automatically apply the style for the first MCA to all features.
+         */
+        autoApplyStyle: boolean;
     }
-    class Indicator {
-        title: string;
-        visual: string;
-        type: string;
-        featureTypeName: string;
-        propertyTypes: string[];
-        propertyTypeTitles: string[];
-        data: string;
-        indicatorWidth: number;
-        property: string;
-        sensor: string;
-        _sensorSet: csComp.Services.SensorSet;
-        layer: string;
-        /** Dashboard to select after click */
-        dashboard: string;
-        source: string;
-        isActive: boolean;
-        id: string;
-        color: string;
-        indexValue: number;
-        _focusTime: number;
-        _toggleUpdate: boolean;
-        _value: any;
-        inputs: {
-            [key: string]: any;
-        };
-        _result: {
-            [key: string]: any;
-        };
-        constructor();
+    interface IMCAWidgetScope extends ng.IScope {
+        vm: MCAWidgetCtrl;
+        data: MCAWidgetData;
     }
-    interface IIndicatorsScope extends ng.IScope {
-        vm: IndicatorsCtrl;
-        data: IndicatorData;
-    }
-    class IndicatorsCtrl implements csComp.Services.IWidgetCtrl {
+    class MCAWidgetCtrl {
         private $scope;
         private $timeout;
+        private $controller;
         private $layerService;
         private $messageBus;
         private $mapService;
-        private $dashboardService;
-        private $translate;
         private scope;
         private widget;
+        private parentWidget;
+        private mcaScope;
+        private layer;
+        selectedMCA: string;
+        mBusHandles: csComp.Services.MessageBusHandle[];
         static $inject: string[];
-        constructor($scope: IIndicatorsScope, $timeout: ng.ITimeoutService, $layerService: csComp.Services.LayerService, $messageBus: csComp.Services.MessageBusService, $mapService: csComp.Services.MapService, $dashboardService: csComp.Services.DashboardService, $translate: ng.translate.ITranslateService);
-        forceUpdateIndicator(i: Indicator, value: any): void;
-        updateIndicator(i: Indicator): void;
-        startEdit(): void;
-        private checkLayers();
-        selectIndicator(i: Indicator): void;
-        indicatorInit(i: Indicator, scope: any): void;
-        private selectFeature(f, i);
+        constructor($scope: IMCAWidgetScope, $timeout: ng.ITimeoutService, $controller: ng.IControllerService, $layerService: csComp.Services.LayerService, $messageBus: csComp.Services.MessageBusService, $mapService: csComp.Services.MapService);
+        stop(): void;
+        private activateLayer(layer);
+        private getMcaScope();
+        private setStyleForProperty();
+        private setMcaAsStyle(mcaId);
     }
 }
 

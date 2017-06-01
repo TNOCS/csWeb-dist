@@ -95,6 +95,7 @@ export declare class FileStorage extends BaseConnector.BaseConnector {
     /** Add a file: images go to the iconPath folder, others to the blob folder */
     addFile(base64: string, folder: string, file: string, meta: ApiMeta, callback: Function): void;
     addResource(res: ResourceFile, meta: ApiMeta, callback: Function): void;
+    addPropertyTypes(resourceId: string, data: IPropertyType[], meta: ApiMeta, callback: Function): void;
     /** Get a resource file  */
     getResource(resourceId: string, meta: ApiMeta, callback: Function): void;
     addKey(key: Key, meta: ApiMeta, callback: Function): void;
