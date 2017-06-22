@@ -24,6 +24,7 @@ export interface ILayerDefinition {
     selectedStrokeColor: string;
     strokeWidth: number;
     isEnabled: boolean;
+    fitToMap: boolean;
     clusterLevel: number;
     useClustering: boolean;
     opacity: number;

@@ -218,6 +218,7 @@ export declare class Layer implements StorageObject, ILayer {
     useLog: boolean;
     updated: number;
     enabled: boolean;
+    fitToMap: boolean;
     opacity: number;
     id: string;
     type: string;

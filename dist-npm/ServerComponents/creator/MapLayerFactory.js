@@ -85,6 +85,7 @@ var MapLayerFactory = (function () {
                 group: ld.group,
                 geojson: geojson,
                 enabled: ld.isEnabled,
+                fitToMap: ld.fitToMap,
                 iconBase64: template.iconBase64,
                 logoBase64: template.logoBase64,
                 geometryFile: ld.geometryFile,
@@ -169,8 +170,10 @@ var MapLayerFactory = (function () {
             description: data.description,
             id: data.reference,
             enabled: data.enabled,
+            fitToMap: data.fitToMap,
             defaultFeatureType: data.defaultFeatureType,
             typeUrl: 'data/api/resourceTypes/' + data.reference + '.json',
+            url: 'api/layers/' + data.reference,
             opacity: data.opacity,
             dynamicResource: true
         });
@@ -605,7 +608,7 @@ var MapLayerFactory = (function () {
                     ld.geometryKey = 'GM_CODE';
                 }
                 else if (type === 'name') {
-                    ld.geometryKey = 'Name';
+                    ld.geometryKey = 'GM_NAAM';
                 }
                 else {
                     //todo: convert to GM_CODE
