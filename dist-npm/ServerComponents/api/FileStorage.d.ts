@@ -15,9 +15,7 @@ export declare class FileStorage extends BaseConnector.BaseConnector {
     rootpath: string;
     private ignoreInitial;
     manager: ApiManager.ApiManager;
-    layers: {
-        [key: string]: Layer;
-    };
+    layers: string[];
     projects: {
         [key: string]: Project;
     };
@@ -68,6 +66,7 @@ export declare class FileStorage extends BaseConnector.BaseConnector {
     private closeKeyFile(fileName);
     private closeResourceFile(fileName);
     private closeProjectFile(fileName);
+    private fetchLayer(layerId);
     private openLayerFile(fileName);
     private openKeyFile(fileName);
     private openResourceFile(fileName);

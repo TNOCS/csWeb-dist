@@ -311,12 +311,12 @@ var BagDatabase = (function () {
     BagDatabase.prototype.lookupAddress = function (req, res) {
         var zipCode = this.formatZipCode(req.params.zip);
         if (!zipCode) {
-            res.send(400, 'zip code is missing');
+            res.status(400).send('zip code is missing');
             return;
         }
         var houseNumber = this.formatHouseNumber(req.params.number);
         if (!houseNumber) {
-            res.send(400, 'house number is missing');
+            res.status(400).send('house number is missing');
             return;
         }
         this.pg.connect(this.connectionString, function (err, client, done) {

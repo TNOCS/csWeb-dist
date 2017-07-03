@@ -7655,7 +7655,7 @@ var FeatureProps;
                                 _this.addProperty(mi, feature, infoCallOutSection, linkCallOutSection);
                         }
                     });
-                    if (feature.fType.showAllProperties || this.mapservice.isAdminExpert) {
+                    if (feature.fType.showAllProperties) {
                         for (var key in feature.properties) {
                             var mi = csComp.Helpers.getPropertyType(feature, key);
                             this.addProperty(mi, feature, infoCallOutSection, linkCallOutSection, true);
@@ -7677,8 +7677,8 @@ var FeatureProps;
             }
             if (infoCallOutSection.properties.length > 0) {
                 this.hasInfoSection = true;
-                this.sections['Aaa Info'] = infoCallOutSection; // The AAA is added as the sections are sorted alphabetically (not anymore in angular 1.4!!!)
-                this.sectionKeys.push('Aaa Info');
+                this.sections['AAA Info'] = infoCallOutSection; // The AAA is added as the sections are sorted alphabetically (not anymore in angular 1.4!!!)
+                this.sectionKeys.push('AAA Info');
             }
             else {
                 this.hasInfoSection = false;
@@ -11727,8 +11727,8 @@ var LayersDirective;
 var Legend;
 (function (Legend) {
     /**
-      * Config
-      */
+     * Config
+     */
     var moduleName = 'csComp';
     try {
         Legend.myModule = angular.module(moduleName);
@@ -11738,9 +11738,14 @@ var Legend;
         Legend.myModule = angular.module(moduleName, []);
     }
     /**
-      * Directive to display a legend in a widget.
-      */
-    Legend.myModule.directive('legendDirective', [
+     * Directive to display a legend in a widget.
+     */
+    Legend.myModule.filter('reverse', function () {
+        return function (items) {
+            return items.slice().reverse();
+        };
+    })
+        .directive('legendDirective', [
         '$compile',
         function ($compile) {
             return {
@@ -11791,7 +11796,7 @@ var Legend;
             $scope.vm = this;
             var par = $scope.$parent;
             this.widget = (par.widget);
-            this.parentWidget = $('#' + this.widget.elementId).parent();
+            this.parentWidget = $('#' + (this.widget.elementId + "-parent"));
             //console.log(JSON.stringify(this.widget.data));
             //$scope.title = this.widget.title;
             //$scope.timestamp = '19:45';
@@ -11911,11 +11916,11 @@ var Legend;
                 });
             }
             else {
-                leg.legendEntries.push(this.createLegendEntry(activeStyle, ptd, activeStyle.info.min));
-                leg.legendEntries.push(this.createLegendEntry(activeStyle, ptd, (activeStyle.info.min + activeStyle.info.max) / 4));
-                leg.legendEntries.push(this.createLegendEntry(activeStyle, ptd, 2 * (activeStyle.info.min + activeStyle.info.max) / 4));
-                leg.legendEntries.push(this.createLegendEntry(activeStyle, ptd, 3 * (activeStyle.info.min + activeStyle.info.max) / 4));
-                leg.legendEntries.push(this.createLegendEntry(activeStyle, ptd, activeStyle.info.max));
+                leg.legendEntries.push(this.createLegendEntry(activeStyle, ptd, activeStyle.info.userMin));
+                leg.legendEntries.push(this.createLegendEntry(activeStyle, ptd, (activeStyle.info.userMin + activeStyle.info.userMax) / 4));
+                leg.legendEntries.push(this.createLegendEntry(activeStyle, ptd, 2 * (activeStyle.info.userMin + activeStyle.info.userMax) / 4));
+                leg.legendEntries.push(this.createLegendEntry(activeStyle, ptd, 3 * (activeStyle.info.userMin + activeStyle.info.userMax) / 4));
+                leg.legendEntries.push(this.createLegendEntry(activeStyle, ptd, activeStyle.info.userMax));
                 leg.legendEntries = leg.legendEntries.sort(function (a, b) { return (a.value - b.value); });
             }
             return leg;
@@ -13949,6 +13954,99 @@ var Mca;
     Mca.McaEditorCtrl = McaEditorCtrl;
 })(Mca || (Mca = {}));
 //# sourceMappingURL=McaEditorCtrl.js.map
+var Mobile;
+(function (Mobile) {
+    /**
+      * Config
+      */
+    var moduleName = 'csComp';
+    try {
+        Mobile.myModule = angular.module(moduleName);
+    }
+    catch (err) {
+        // named module does not exist, so create one
+        Mobile.myModule = angular.module(moduleName, []);
+    }
+    /**
+      * Directive to display the available map layers.
+      */
+    Mobile.myModule.directive('mobile', [
+        '$window', '$compile',
+        function ($window, $compile) {
+            return {
+                terminal: true,
+                restrict: 'E',
+                scope: {},
+                templateUrl: 'directives/Mobile/Mobile.tpl.html',
+                link: function (scope, element, attrs) { },
+                replace: false,
+                transclude: false,
+                controller: Mobile.MobileCtrl
+            };
+        }
+    ]);
+})(Mobile || (Mobile = {}));
+//# sourceMappingURL=Mobile.js.map
+var Mobile;
+(function (Mobile) {
+    var MobileCtrl = (function () {
+        // dependencies are injected via AngularJS $injector
+        // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
+        function MobileCtrl($scope, $layerService, $messageBus, localStorageService, geoService) {
+            var _this = this;
+            this.$scope = $scope;
+            this.$layerService = $layerService;
+            this.$messageBus = $messageBus;
+            this.localStorageService = localStorageService;
+            this.geoService = geoService;
+            $scope.vm = this;
+            this.$messageBus.subscribe('project', function (a, p) {
+                if (a === 'loaded') {
+                    _this.availableLayers = [];
+                    p.groups.forEach((function (g) {
+                        g.layers.forEach(function (l) {
+                            if (l.tags && l.tags.indexOf('mobile') >= 0)
+                                _this.availableLayers.push(l);
+                        });
+                    }));
+                    // find mobile layer
+                    console.log('available layers');
+                    console.log(_this.availableLayers);
+                }
+            });
+            $messageBus.subscribe("geo", function (action, loc) {
+                switch (action) {
+                    case "pos":
+                        var f = new csComp.Services.Feature();
+                        //f.layerId = layer.id;
+                        f.geometry = {
+                            type: 'Point', coordinates: []
+                        };
+                        f.geometry.coordinates = [loc.coords.longitude, loc.coords.latitude];
+                        f.properties = { "Name": "test" };
+                        //layer.data.features.push(f);
+                        //this.$layerService.initFeature(f, layer);
+                        _this.$layerService.activeMapRenderer.addFeature(f);
+                        _this.$layerService.saveFeature(f);
+                        break;
+                }
+            });
+            this.geoService.start({});
+        }
+        return MobileCtrl;
+    }());
+    // $inject annotation.
+    // It provides $injector with information about dependencies to be injected into constructor
+    // it is better to have it close to the constructor, because the parameters must match in count and type.
+    // See http://docs.angularjs.org/guide/di
+    MobileCtrl.$inject = [
+        '$scope',
+        'layerService',
+        'messageBusService', 'localStorageService', 'geoService'
+    ];
+    Mobile.MobileCtrl = MobileCtrl;
+})(Mobile || (Mobile = {}));
+//# sourceMappingURL=MobileCtrl.js.map
 var Navigate;
 (function (Navigate) {
     /**
@@ -14350,99 +14448,6 @@ var Search;
     Search.NavigateState = NavigateState;
 })(Search || (Search = {}));
 //# sourceMappingURL=SearchClasses.js.map
-var Mobile;
-(function (Mobile) {
-    /**
-      * Config
-      */
-    var moduleName = 'csComp';
-    try {
-        Mobile.myModule = angular.module(moduleName);
-    }
-    catch (err) {
-        // named module does not exist, so create one
-        Mobile.myModule = angular.module(moduleName, []);
-    }
-    /**
-      * Directive to display the available map layers.
-      */
-    Mobile.myModule.directive('mobile', [
-        '$window', '$compile',
-        function ($window, $compile) {
-            return {
-                terminal: true,
-                restrict: 'E',
-                scope: {},
-                templateUrl: 'directives/Mobile/Mobile.tpl.html',
-                link: function (scope, element, attrs) { },
-                replace: false,
-                transclude: false,
-                controller: Mobile.MobileCtrl
-            };
-        }
-    ]);
-})(Mobile || (Mobile = {}));
-//# sourceMappingURL=Mobile.js.map
-var Mobile;
-(function (Mobile) {
-    var MobileCtrl = (function () {
-        // dependencies are injected via AngularJS $injector
-        // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
-        function MobileCtrl($scope, $layerService, $messageBus, localStorageService, geoService) {
-            var _this = this;
-            this.$scope = $scope;
-            this.$layerService = $layerService;
-            this.$messageBus = $messageBus;
-            this.localStorageService = localStorageService;
-            this.geoService = geoService;
-            $scope.vm = this;
-            this.$messageBus.subscribe('project', function (a, p) {
-                if (a === 'loaded') {
-                    _this.availableLayers = [];
-                    p.groups.forEach((function (g) {
-                        g.layers.forEach(function (l) {
-                            if (l.tags && l.tags.indexOf('mobile') >= 0)
-                                _this.availableLayers.push(l);
-                        });
-                    }));
-                    // find mobile layer
-                    console.log('available layers');
-                    console.log(_this.availableLayers);
-                }
-            });
-            $messageBus.subscribe("geo", function (action, loc) {
-                switch (action) {
-                    case "pos":
-                        var f = new csComp.Services.Feature();
-                        //f.layerId = layer.id;
-                        f.geometry = {
-                            type: 'Point', coordinates: []
-                        };
-                        f.geometry.coordinates = [loc.coords.longitude, loc.coords.latitude];
-                        f.properties = { "Name": "test" };
-                        //layer.data.features.push(f);
-                        //this.$layerService.initFeature(f, layer);
-                        _this.$layerService.activeMapRenderer.addFeature(f);
-                        _this.$layerService.saveFeature(f);
-                        break;
-                }
-            });
-            this.geoService.start({});
-        }
-        return MobileCtrl;
-    }());
-    // $inject annotation.
-    // It provides $injector with information about dependencies to be injected into constructor
-    // it is better to have it close to the constructor, because the parameters must match in count and type.
-    // See http://docs.angularjs.org/guide/di
-    MobileCtrl.$inject = [
-        '$scope',
-        'layerService',
-        'messageBusService', 'localStorageService', 'geoService'
-    ];
-    Mobile.MobileCtrl = MobileCtrl;
-})(Mobile || (Mobile = {}));
-//# sourceMappingURL=MobileCtrl.js.map
 var OfflineSearch;
 (function (OfflineSearch) {
     /**
@@ -15372,6 +15377,7 @@ var StyleList;
             this.$timeout = $timeout;
             this.$layerService = $layerService;
             this.messageBus = messageBus;
+            this.initWizard = _.debounce(this.initWizardDebounced, 500);
             $scope.vm = this;
             this.activeStyles = [];
             messageBus.subscribe('layer', function (title) {
@@ -15414,7 +15420,7 @@ var StyleList;
                 $('#styles_properties').collapse('show'); //.attr('aria-expanded', 'true');
             }, 100);
         };
-        StyleListCtrl.prototype.initWizard = function () {
+        StyleListCtrl.prototype.initWizardDebounced = function () {
             console.log('init wizard');
             this.selectedSection = null;
             this.selectedGroup = null;
@@ -16309,6 +16315,585 @@ var Voting;
     ]);
 })(Voting || (Voting = {}));
 //# sourceMappingURL=Voting.js.map
+var csComp;
+(function (csComp) {
+    var Services;
+    (function (Services) {
+        // Interface for message bus callbacks, i.e. (data: any) => any,
+        // so you can supply a single data argument of any type, and it may return any type.
+        var ClientMessage = (function () {
+            function ClientMessage(action, data) {
+                this.action = action;
+                this.data = data;
+            }
+            return ClientMessage;
+        }());
+        Services.ClientMessage = ClientMessage;
+        // Handle returned when subscribing to a topic
+        var MessageBusHandle = (function () {
+            function MessageBusHandle(topic, callback) {
+                this.topic = topic;
+                this.callback = callback;
+            }
+            return MessageBusHandle;
+        }());
+        Services.MessageBusHandle = MessageBusHandle;
+        var TypedEvent = (function () {
+            function TypedEvent() {
+                // Private member vars
+                this._listeners = [];
+            }
+            TypedEvent.prototype.add = function (listener) {
+                /// <summary>Registers a new listener for the event.</summary>
+                /// <param name='listener'>The callback function to register.</param>
+                this._listeners.push(listener);
+            };
+            TypedEvent.prototype.remove = function (listener) {
+                /// <summary>Unregisters a listener from the event.</summary>
+                /// <param name='listener'>The callback function that was registered. If missing then all listeners will be removed.</param>
+                if (typeof listener === 'function') {
+                    for (var i = 0, l = this._listeners.length; i < l; l++) {
+                        if (this._listeners[i] === listener) {
+                            this._listeners.splice(i, 1);
+                            break;
+                        }
+                    }
+                }
+                else {
+                    this._listeners = [];
+                }
+            };
+            TypedEvent.prototype.trigger = function () {
+                var a = [];
+                for (var _i = 0; _i < arguments.length; _i++) {
+                    a[_i] = arguments[_i];
+                }
+                /// <summary>Invokes all of the listeners for this event.</summary>
+                /// <param name='args'>Optional set of arguments to pass to listners.</param>
+                var context = {};
+                var listeners = this._listeners.slice(0);
+                for (var i = 0, l = listeners.length; i < l; i++) {
+                    listeners[i].apply(context, a || []);
+                }
+            };
+            return TypedEvent;
+        }());
+        Services.TypedEvent = TypedEvent;
+        var Connection = (function () {
+            function Connection(id, url, bus) {
+                this.id = id;
+                this.url = url;
+                this.bus = bus;
+                this.cache = {};
+                this.subscriptions = {};
+                // Events
+                this.events = new TypedEvent();
+            }
+            Connection.prototype.unsubscribe = function (id, callback) {
+                if (this.subscriptions.hasOwnProperty(id)) {
+                    var s = this.subscriptions[id];
+                    s.callbacks = s.callbacks.filter(function (f) { return f !== callback; });
+                    if (s.callbacks.length === 0) {
+                        this.socket.emit(id, { action: 'unsubscribe' });
+                        this.socket.removeListener(id, s.serverCallback);
+                        s.serverCallback = null;
+                        delete this.subscriptions[id];
+                    }
+                }
+            };
+            Connection.prototype.reSubscribeAll = function () {
+                console.log('resubscribing...');
+                for (var s in this.subscriptions) {
+                    console.log('reconnecting ' + s);
+                    var sub = this.subscriptions[s];
+                    this.socket.emit('subscribe', { id: sub.id, target: sub.target, type: sub.type });
+                }
+            };
+            Connection.prototype.disconnectAll = function () {
+                console.log('resubscribing...');
+                for (var s in this.subscriptions) {
+                    var sub = this.subscriptions[s];
+                    sub.callbacks.forEach(function (cb) { return cb(sub.id, { action: 'unsubscribed' }); });
+                }
+            };
+            Connection.prototype.subscribe = function (target, type, callback) {
+                var _this = this;
+                if (!this.socket)
+                    return;
+                var sub;
+                var subs = [];
+                for (var s in this.subscriptions) {
+                    if (this.subscriptions[s].target === target && this.subscriptions[s].type === type)
+                        subs.push(this.subscriptions[s]);
+                }
+                if (subs == null || subs.length === 0) {
+                    sub = new ServerSubscription(target, type);
+                    this.socket.emit('subscribe', { id: sub.id, target: sub.target, type: sub.type });
+                    sub.callbacks.push(callback);
+                    this.subscriptions[sub.id] = sub;
+                    sub.serverCallback = function (r) {
+                        if (type === 'key') {
+                            _this.bus.publish('keyupdate', target, r);
+                        }
+                        //console.log(r.action);
+                        sub.callbacks.forEach(function (cb) { return cb(sub.id, r); });
+                    };
+                    this.socket.on(sub.id, sub.serverCallback);
+                }
+                else {
+                    sub = subs[0];
+                    sub.callbacks.push(callback);
+                }
+                return sub;
+            };
+            Connection.prototype.connect = function (callback) {
+                var _this = this;
+                if (this.isConnected || this.isConnecting || typeof io === 'undefined') {
+                    console.log((typeof io === 'undefined') ? 'SocketIO is not defined!' : 'SocketIO already connected');
+                    callback();
+                    return;
+                }
+                this.socket = io();
+                this.isConnecting = true;
+                this.socket.on('connect', function () {
+                    //console.log(JSON.stringify(this.socket));
+                    console.log('socket.io connected');
+                    _this.isConnecting = false;
+                    _this.isConnected = true;
+                    _this.events.trigger('connected');
+                    _this.reSubscribeAll();
+                    callback();
+                });
+                this.socket.on('disconnect', function () {
+                    _this.isConnecting = false;
+                    _this.isConnected = false;
+                    _this.disconnectAll();
+                    _this.events.trigger('disconnected');
+                });
+                this.socket.on('reconnect_attempt', function () {
+                    console.log('socket.io reconnect attempt');
+                    _this.isConnecting = true;
+                    _this.isConnected = false;
+                });
+                this.socket.on('reconnect_failed', function () {
+                    console.log('socket.io reconnect failed');
+                    _this.isConnecting = false;
+                });
+            };
+            Connection.prototype.disconnect = function () { return; };
+            return Connection;
+        }());
+        Services.Connection = Connection;
+        var NotifyLocation;
+        (function (NotifyLocation) {
+            NotifyLocation[NotifyLocation["BottomRight"] = 0] = "BottomRight";
+            NotifyLocation[NotifyLocation["BottomLeft"] = 1] = "BottomLeft";
+            NotifyLocation[NotifyLocation["TopRight"] = 2] = "TopRight";
+            NotifyLocation[NotifyLocation["TopLeft"] = 3] = "TopLeft";
+            NotifyLocation[NotifyLocation["TopBar"] = 4] = "TopBar";
+        })(NotifyLocation = Services.NotifyLocation || (Services.NotifyLocation = {}));
+        var NotifyType;
+        (function (NotifyType) {
+            NotifyType[NotifyType["Normal"] = 0] = "Normal";
+            NotifyType[NotifyType["Info"] = 1] = "Info";
+            NotifyType[NotifyType["Error"] = 2] = "Error";
+            NotifyType[NotifyType["Success"] = 3] = "Success";
+        })(NotifyType = Services.NotifyType || (Services.NotifyType = {}));
+        var ServerSubscription = (function () {
+            function ServerSubscription(target, type) {
+                this.target = target;
+                this.type = type;
+                this.callbacks = [];
+                this.id = csComp.Helpers.getGuid();
+            }
+            return ServerSubscription;
+        }());
+        Services.ServerSubscription = ServerSubscription;
+        /**
+         * Simple message bus service, used for subscribing and unsubsubscribing to topics.
+         * @see {@link https://gist.github.com/floatingmonkey/3384419}
+         */
+        var MessageBusService = (function () {
+            function MessageBusService($translate) {
+                this.$translate = $translate;
+                this.connections = {};
+                this.notifications = [];
+                this.confirms = [];
+                PNotify.prototype.options.styling = 'fontawesome';
+            }
+            MessageBusService.prototype.getConnection = function (id) {
+                if (this.connections.hasOwnProperty(id))
+                    return this.connections[id];
+                return null;
+            };
+            MessageBusService.prototype.initConnection = function (id, url, callback) {
+                if (id == null)
+                    id = '';
+                var c = this.getConnection(id);
+                if (c == null) {
+                    c = new Connection(id, url, this);
+                    this.connections[c.id] = c;
+                }
+                this.connections[id].connect(function () {
+                    //for (var topic in c.cache) {
+                    //    c.socket.on(topic,(r) => {
+                    //        c.cache[topic].forEach(cb => cb(topic, r));
+                    //    });
+                    //}
+                    callback();
+                });
+            };
+            MessageBusService.prototype.serverPublish = function (topic, message, serverId) {
+                if (serverId === void 0) { serverId = ''; }
+                var c = this.getConnection(serverId);
+                if (c == null)
+                    return null;
+                c.socket.emit(topic, message);
+            };
+            MessageBusService.prototype.serverSendMessage = function (msg, serverId) {
+                if (serverId === void 0) { serverId = ''; }
+                var c = this.getConnection(serverId);
+                if (c == null || c.socket == null)
+                    return null;
+                c.socket.emit('msg', msg);
+            };
+            MessageBusService.prototype.serverSendMessageAction = function (action, data, serverId) {
+                if (serverId === void 0) { serverId = ''; }
+                var cm = new ClientMessage(action, data);
+                this.serverSendMessage(cm, serverId);
+            };
+            MessageBusService.prototype.serverSubscribe = function (target, type, callback, serverId) {
+                if (serverId === void 0) { serverId = ''; }
+                var c = this.getConnection(serverId);
+                if (c == null)
+                    return null;
+                var sub = c.subscribe(target, type, callback);
+                if (sub)
+                    return new MessageBusHandle(sub.id, callback);
+                return null;
+            };
+            MessageBusService.prototype.serverUnsubscribe = function (handle, serverId) {
+                if (serverId === void 0) { serverId = ''; }
+                if (!handle)
+                    return;
+                var c = this.getConnection(serverId);
+                if (c == null)
+                    return null;
+                c.unsubscribe(handle.topic, handle.callback);
+            };
+            /**
+             * Publish a notification that needs to be translated
+             * @title:              the translation key of the notification's title
+             * @text:               the translation key of the notification's content
+             * @variableReplacement the key to replace in the content translation (see: https://angular-translate.github.io/docs/#/guide/06_variable-replacement)
+             * @location:           the location on the screen where the notification is shown (default bottom right)
+             */
+            MessageBusService.prototype.notifyWithTranslation = function (title, text, variableReplacement, location, type, duration) {
+                var _this = this;
+                if (variableReplacement === void 0) { variableReplacement = null; }
+                if (location === void 0) { location = NotifyLocation.BottomRight; }
+                if (type === void 0) { type = NotifyType.Normal; }
+                if (duration === void 0) { duration = 4000; }
+                this.$translate(title).then(function (translatedTitle) {
+                    _this.$translate(text, variableReplacement).then(function (translatedText) {
+                        _this.notify(translatedTitle, translatedText, location, type, duration);
+                    }).catch(function (err) {
+                        _this.notify(translatedTitle || title, text, location, type, duration);
+                    });
+                }).catch(function (err) {
+                    _this.notify(title, text, location, type, duration);
+                });
+            };
+            MessageBusService.prototype.notifyError = function (title, text) {
+                this.notify(title, text, NotifyLocation.TopBar, NotifyType.Error);
+            };
+            /**
+             * Publish a notification
+             * @title:       the title of the notification
+             * @text:        the contents of the notification
+             * @location:    the location on the screen where the notification is shown (default bottom right)
+             * @notifyType:  the type of notification
+             */
+            MessageBusService.prototype.notify = function (title, text, location, notifyType, duration) {
+                if (location === void 0) { location = NotifyLocation.TopBar; }
+                if (notifyType === void 0) { notifyType = NotifyType.Normal; }
+                if (duration === void 0) { duration = 4000; }
+                //Check if a notication with the same title exists. If so, update existing, if not, add new notification.
+                if (this.notifications) {
+                    this.notifications = this.notifications.filter(function (n) { return (n.state && n.state !== 'closed'); });
+                    var updatedText;
+                    this.notifications.some(function (n) {
+                        if (n.state === 'closed')
+                            return false;
+                        if (n.options.title === title) {
+                            var foundText = false;
+                            var splittedText = n.options.text.split('\n');
+                            splittedText.some(function (textLine, index, _splittedText) {
+                                if (textLine.replace(/(\ \<\d+\>$)/, '') === text) {
+                                    var txt = textLine.replace(/(\ \<\d+\>$)/, '');
+                                    var nrWithBrackets = textLine.match(/(\ \<\d+\>$)/);
+                                    var nr;
+                                    nr = (!nrWithBrackets) ? 2 : +(nrWithBrackets[0].match(/\d+/)) + 1;
+                                    _splittedText[index] = txt + ' <' + nr + '>';
+                                    foundText = true;
+                                    return true;
+                                }
+                                return false;
+                            });
+                            if (!foundText) {
+                                splittedText.push(text);
+                            }
+                            updatedText = splittedText.join('\n');
+                            n.update({ text: updatedText });
+                            return true;
+                        }
+                        else {
+                            return false;
+                        }
+                    });
+                    if (updatedText) {
+                        return;
+                    }
+                }
+                var opts = {
+                    title: title,
+                    text: text,
+                    cornerclass: 'ui-pnotify-sharp',
+                    shadow: false,
+                    addclass: "csNotify",
+                    width: "500px",
+                    animation: "fade",
+                    mouse_reset: true,
+                    animate_speed: "slow",
+                    nonblock: {
+                        nonblock: true,
+                        nonblock_opacity: .2
+                    },
+                    buttons: {
+                        closer: true,
+                        sticker: false
+                    },
+                    hide: true
+                };
+                if (typeof duration != 'undefined')
+                    opts['delay'] = duration;
+                if (notifyType != NotifyType.Normal)
+                    opts['type'] = NotifyType[notifyType].toLowerCase();
+                var PNot = new PNotify(opts);
+                this.notifications.push(PNot);
+                return PNot;
+            };
+            MessageBusService.prototype.confirmButtons = function (title, text, buttons, callback) {
+                var c = [];
+                // buttons.forEach(b=>{
+                //     c.push({ text: c, addClass: "", promptTrigger: true, click: (notice, value) =>{ notice.remove(); notice.get().trigger("pnotify.confirm", [notice, value]); } })
+                // })
+                var options = {
+                    title: title,
+                    text: text,
+                    addclass: "csNotify",
+                    width: "500px",
+                    animation: "fade",
+                    hide: false,
+                    confirm: {
+                        confirm: true,
+                        buttons: c
+                    },
+                    buttons: {
+                        closer: false,
+                        sticker: false
+                    },
+                    history: {
+                        history: false
+                    },
+                    icon: 'fa fa-question-circle',
+                    cornerclass: 'ui-pnotify-sharp'
+                };
+                var pn = new PNotify(options).get()
+                    .on('pnotify.confirm', function (notice, value) {
+                    callback("ok");
+                })
+                    .on('pnotify.cancel', function () { callback(null); });
+                return pn;
+            };
+            /**
+             * Show a confirm dialog
+             * @title           : the title of the notification
+             * @text            : the contents of the notification
+             * @callback        : the callback that will be called after the confirmation has been answered.
+             */
+            MessageBusService.prototype.confirm = function (title, text, callback, allowDuplicate) {
+                if (allowDuplicate === void 0) { allowDuplicate = true; }
+                if (!allowDuplicate && this.confirms && _.any(this.confirms, function (n) { return (!n.options.closed && n.options.title === title && n.options.text === text); }))
+                    return;
+                var options = {
+                    title: title,
+                    text: text,
+                    addclass: "csNotify",
+                    width: "500px",
+                    animation: "fade",
+                    hide: false,
+                    closed: false,
+                    confirm: {
+                        confirm: true
+                    },
+                    buttons: {
+                        closer: true,
+                        sticker: true
+                    },
+                    history: {
+                        history: false
+                    },
+                    icon: 'fa fa-question-circle',
+                    cornerclass: 'ui-pnotify-sharp',
+                    duration: 60000
+                };
+                var pn = new PNotify(options).get()
+                    .on('pnotify.confirm', function (n) {
+                    options.closed = true;
+                    callback(true);
+                })
+                    .on('pnotify.cancel', function (n) { options.closed = true; callback(false); });
+                pn.options = options;
+                this.confirms.push(pn);
+                return pn;
+            };
+            MessageBusService.prototype.notifyBottom = function (title, text) {
+                var stack_bar_bottom = { 'dir1': 'up', 'dir2': 'right', 'spacing1': 0, 'spacing2': 0 };
+                var options = {
+                    title: 'Over Here',
+                    text: 'Check me out. I\'m in a different stack.',
+                    addclass: 'stack-bar-bottom',
+                    cornerclass: '',
+                    width: '70%',
+                    stack: stack_bar_bottom
+                };
+                var pn = new PNotify(options);
+            };
+            /**
+             * Publish a notification
+             * @title: the title of the notification
+             * @text:  the contents of the notification
+             */
+            MessageBusService.prototype.notifyData = function (data) {
+                var pn = new PNotify(data);
+                //this.publish('notify', '', data);
+            };
+            /**
+             * Publish to a topic
+             */
+            MessageBusService.prototype.publish = function (topic, title, data) {
+                //window.console.log('publish: ' + topic + ', ' + title);
+                if (!MessageBusService.cache[topic])
+                    return;
+                MessageBusService.cache[topic].forEach(function (cb) { return cb(title, data); });
+            };
+            //public publish(topic: string, title: string, data?: any): void {
+            //	MessageBusService.publish(topic, title, data);
+            //}
+            /**
+             * Subscribe to a topic
+             * @param {string} topic The desired topic of the message.
+             * @param {IMessageBusCallback} callback The callback to call.
+             */
+            MessageBusService.prototype.subscribe = function (topic, callback) {
+                if (!MessageBusService.cache[topic])
+                    MessageBusService.cache[topic] = new Array();
+                MessageBusService.cache[topic].push(callback);
+                return new MessageBusHandle(topic, callback);
+            };
+            /**
+             * Unsubscribe to a topic by providing its handle
+             */
+            MessageBusService.prototype.unsubscribe = function (handle) {
+                var topic = handle.topic;
+                var callback = handle.callback;
+                if (!MessageBusService.cache[topic])
+                    return;
+                MessageBusService.cache[topic].forEach(function (cb, idx) {
+                    if (cb === callback) {
+                        MessageBusService.cache[topic].splice(idx, 1);
+                        return;
+                    }
+                });
+            };
+            return MessageBusService;
+        }());
+        MessageBusService.cache = {};
+        MessageBusService.$inject = [
+            '$translate'
+        ];
+        Services.MessageBusService = MessageBusService;
+        var EventObj = (function () {
+            function EventObj() {
+            }
+            // Events primitives ======================
+            EventObj.prototype.bind = function (event, fct) {
+                this.myEvents = this.myEvents || {};
+                this.myEvents[event] = this.myEvents[event] || [];
+                this.myEvents[event].push(fct);
+            };
+            EventObj.prototype.unbind = function (event, fct) {
+                this.myEvents = this.myEvents || {};
+                if (event in this.myEvents === false)
+                    return;
+                this.myEvents[event].splice(this.myEvents[event].indexOf(fct), 1);
+            };
+            EventObj.prototype.unbindEvent = function (event) {
+                this.myEvents = this.myEvents || {};
+                this.myEvents[event] = [];
+            };
+            EventObj.prototype.unbindAll = function () {
+                this.myEvents = this.myEvents || {};
+                for (var event in this.myEvents)
+                    this.myEvents[event] = false;
+            };
+            EventObj.prototype.trigger = function (event) {
+                var args = [];
+                for (var _i = 1; _i < arguments.length; _i++) {
+                    args[_i - 1] = arguments[_i];
+                }
+                this.myEvents = this.myEvents || {};
+                if (event in this.myEvents === false)
+                    return;
+                for (var i = 0; i < this.myEvents[event].length; i++) {
+                    this.myEvents[event][i].apply(this, Array.prototype.slice.call(arguments, 1));
+                }
+            };
+            EventObj.prototype.registerEvent = function (evtname) {
+                this[evtname] = function (callback, replace) {
+                    if (typeof callback === 'function') {
+                        if (replace)
+                            this.unbindEvent(evtname);
+                        this.bind(evtname, callback);
+                    }
+                    return this;
+                };
+            };
+            EventObj.prototype.registerEvents = function (evtnames) {
+                var _this = this;
+                evtnames.forEach(function (evtname) {
+                    _this.registerEvent(evtname);
+                });
+            };
+            return EventObj;
+        }());
+        Services.EventObj = EventObj;
+        /**
+          * Register service
+          */
+        var moduleName = 'csComp';
+        try {
+            Services.myModule = angular.module(moduleName);
+        }
+        catch (err) {
+            // named module does not exist, so create one
+            Services.myModule = angular.module(moduleName, []);
+        }
+        Services.myModule.service('messageBusService', csComp.Services.MessageBusService);
+    })(Services = csComp.Services || (csComp.Services = {}));
+})(csComp || (csComp = {}));
+//# sourceMappingURL=MessageBus.js.map
 var csComp;
 (function (csComp) {
     var Services;
@@ -17761,585 +18346,6 @@ var csComp;
 (function (csComp) {
     var Services;
     (function (Services) {
-        // Interface for message bus callbacks, i.e. (data: any) => any,
-        // so you can supply a single data argument of any type, and it may return any type.
-        var ClientMessage = (function () {
-            function ClientMessage(action, data) {
-                this.action = action;
-                this.data = data;
-            }
-            return ClientMessage;
-        }());
-        Services.ClientMessage = ClientMessage;
-        // Handle returned when subscribing to a topic
-        var MessageBusHandle = (function () {
-            function MessageBusHandle(topic, callback) {
-                this.topic = topic;
-                this.callback = callback;
-            }
-            return MessageBusHandle;
-        }());
-        Services.MessageBusHandle = MessageBusHandle;
-        var TypedEvent = (function () {
-            function TypedEvent() {
-                // Private member vars
-                this._listeners = [];
-            }
-            TypedEvent.prototype.add = function (listener) {
-                /// <summary>Registers a new listener for the event.</summary>
-                /// <param name='listener'>The callback function to register.</param>
-                this._listeners.push(listener);
-            };
-            TypedEvent.prototype.remove = function (listener) {
-                /// <summary>Unregisters a listener from the event.</summary>
-                /// <param name='listener'>The callback function that was registered. If missing then all listeners will be removed.</param>
-                if (typeof listener === 'function') {
-                    for (var i = 0, l = this._listeners.length; i < l; l++) {
-                        if (this._listeners[i] === listener) {
-                            this._listeners.splice(i, 1);
-                            break;
-                        }
-                    }
-                }
-                else {
-                    this._listeners = [];
-                }
-            };
-            TypedEvent.prototype.trigger = function () {
-                var a = [];
-                for (var _i = 0; _i < arguments.length; _i++) {
-                    a[_i] = arguments[_i];
-                }
-                /// <summary>Invokes all of the listeners for this event.</summary>
-                /// <param name='args'>Optional set of arguments to pass to listners.</param>
-                var context = {};
-                var listeners = this._listeners.slice(0);
-                for (var i = 0, l = listeners.length; i < l; i++) {
-                    listeners[i].apply(context, a || []);
-                }
-            };
-            return TypedEvent;
-        }());
-        Services.TypedEvent = TypedEvent;
-        var Connection = (function () {
-            function Connection(id, url, bus) {
-                this.id = id;
-                this.url = url;
-                this.bus = bus;
-                this.cache = {};
-                this.subscriptions = {};
-                // Events
-                this.events = new TypedEvent();
-            }
-            Connection.prototype.unsubscribe = function (id, callback) {
-                if (this.subscriptions.hasOwnProperty(id)) {
-                    var s = this.subscriptions[id];
-                    s.callbacks = s.callbacks.filter(function (f) { return f !== callback; });
-                    if (s.callbacks.length === 0) {
-                        this.socket.emit(id, { action: 'unsubscribe' });
-                        this.socket.removeListener(id, s.serverCallback);
-                        s.serverCallback = null;
-                        delete this.subscriptions[id];
-                    }
-                }
-            };
-            Connection.prototype.reSubscribeAll = function () {
-                console.log('resubscribing...');
-                for (var s in this.subscriptions) {
-                    console.log('reconnecting ' + s);
-                    var sub = this.subscriptions[s];
-                    this.socket.emit('subscribe', { id: sub.id, target: sub.target, type: sub.type });
-                }
-            };
-            Connection.prototype.disconnectAll = function () {
-                console.log('resubscribing...');
-                for (var s in this.subscriptions) {
-                    var sub = this.subscriptions[s];
-                    sub.callbacks.forEach(function (cb) { return cb(sub.id, { action: 'unsubscribed' }); });
-                }
-            };
-            Connection.prototype.subscribe = function (target, type, callback) {
-                var _this = this;
-                if (!this.socket)
-                    return;
-                var sub;
-                var subs = [];
-                for (var s in this.subscriptions) {
-                    if (this.subscriptions[s].target === target && this.subscriptions[s].type === type)
-                        subs.push(this.subscriptions[s]);
-                }
-                if (subs == null || subs.length === 0) {
-                    sub = new ServerSubscription(target, type);
-                    this.socket.emit('subscribe', { id: sub.id, target: sub.target, type: sub.type });
-                    sub.callbacks.push(callback);
-                    this.subscriptions[sub.id] = sub;
-                    sub.serverCallback = function (r) {
-                        if (type === 'key') {
-                            _this.bus.publish('keyupdate', target, r);
-                        }
-                        //console.log(r.action);
-                        sub.callbacks.forEach(function (cb) { return cb(sub.id, r); });
-                    };
-                    this.socket.on(sub.id, sub.serverCallback);
-                }
-                else {
-                    sub = subs[0];
-                    sub.callbacks.push(callback);
-                }
-                return sub;
-            };
-            Connection.prototype.connect = function (callback) {
-                var _this = this;
-                if (this.isConnected || this.isConnecting || typeof io === 'undefined') {
-                    console.log((typeof io === 'undefined') ? 'SocketIO is not defined!' : 'SocketIO already connected');
-                    callback();
-                    return;
-                }
-                this.socket = io();
-                this.isConnecting = true;
-                this.socket.on('connect', function () {
-                    //console.log(JSON.stringify(this.socket));
-                    console.log('socket.io connected');
-                    _this.isConnecting = false;
-                    _this.isConnected = true;
-                    _this.events.trigger('connected');
-                    _this.reSubscribeAll();
-                    callback();
-                });
-                this.socket.on('disconnect', function () {
-                    _this.isConnecting = false;
-                    _this.isConnected = false;
-                    _this.disconnectAll();
-                    _this.events.trigger('disconnected');
-                });
-                this.socket.on('reconnect_attempt', function () {
-                    console.log('socket.io reconnect attempt');
-                    _this.isConnecting = true;
-                    _this.isConnected = false;
-                });
-                this.socket.on('reconnect_failed', function () {
-                    console.log('socket.io reconnect failed');
-                    _this.isConnecting = false;
-                });
-            };
-            Connection.prototype.disconnect = function () { return; };
-            return Connection;
-        }());
-        Services.Connection = Connection;
-        var NotifyLocation;
-        (function (NotifyLocation) {
-            NotifyLocation[NotifyLocation["BottomRight"] = 0] = "BottomRight";
-            NotifyLocation[NotifyLocation["BottomLeft"] = 1] = "BottomLeft";
-            NotifyLocation[NotifyLocation["TopRight"] = 2] = "TopRight";
-            NotifyLocation[NotifyLocation["TopLeft"] = 3] = "TopLeft";
-            NotifyLocation[NotifyLocation["TopBar"] = 4] = "TopBar";
-        })(NotifyLocation = Services.NotifyLocation || (Services.NotifyLocation = {}));
-        var NotifyType;
-        (function (NotifyType) {
-            NotifyType[NotifyType["Normal"] = 0] = "Normal";
-            NotifyType[NotifyType["Info"] = 1] = "Info";
-            NotifyType[NotifyType["Error"] = 2] = "Error";
-            NotifyType[NotifyType["Success"] = 3] = "Success";
-        })(NotifyType = Services.NotifyType || (Services.NotifyType = {}));
-        var ServerSubscription = (function () {
-            function ServerSubscription(target, type) {
-                this.target = target;
-                this.type = type;
-                this.callbacks = [];
-                this.id = csComp.Helpers.getGuid();
-            }
-            return ServerSubscription;
-        }());
-        Services.ServerSubscription = ServerSubscription;
-        /**
-         * Simple message bus service, used for subscribing and unsubsubscribing to topics.
-         * @see {@link https://gist.github.com/floatingmonkey/3384419}
-         */
-        var MessageBusService = (function () {
-            function MessageBusService($translate) {
-                this.$translate = $translate;
-                this.connections = {};
-                this.notifications = [];
-                this.confirms = [];
-                PNotify.prototype.options.styling = 'fontawesome';
-            }
-            MessageBusService.prototype.getConnection = function (id) {
-                if (this.connections.hasOwnProperty(id))
-                    return this.connections[id];
-                return null;
-            };
-            MessageBusService.prototype.initConnection = function (id, url, callback) {
-                if (id == null)
-                    id = '';
-                var c = this.getConnection(id);
-                if (c == null) {
-                    c = new Connection(id, url, this);
-                    this.connections[c.id] = c;
-                }
-                this.connections[id].connect(function () {
-                    //for (var topic in c.cache) {
-                    //    c.socket.on(topic,(r) => {
-                    //        c.cache[topic].forEach(cb => cb(topic, r));
-                    //    });
-                    //}
-                    callback();
-                });
-            };
-            MessageBusService.prototype.serverPublish = function (topic, message, serverId) {
-                if (serverId === void 0) { serverId = ''; }
-                var c = this.getConnection(serverId);
-                if (c == null)
-                    return null;
-                c.socket.emit(topic, message);
-            };
-            MessageBusService.prototype.serverSendMessage = function (msg, serverId) {
-                if (serverId === void 0) { serverId = ''; }
-                var c = this.getConnection(serverId);
-                if (c == null || c.socket == null)
-                    return null;
-                c.socket.emit('msg', msg);
-            };
-            MessageBusService.prototype.serverSendMessageAction = function (action, data, serverId) {
-                if (serverId === void 0) { serverId = ''; }
-                var cm = new ClientMessage(action, data);
-                this.serverSendMessage(cm, serverId);
-            };
-            MessageBusService.prototype.serverSubscribe = function (target, type, callback, serverId) {
-                if (serverId === void 0) { serverId = ''; }
-                var c = this.getConnection(serverId);
-                if (c == null)
-                    return null;
-                var sub = c.subscribe(target, type, callback);
-                if (sub)
-                    return new MessageBusHandle(sub.id, callback);
-                return null;
-            };
-            MessageBusService.prototype.serverUnsubscribe = function (handle, serverId) {
-                if (serverId === void 0) { serverId = ''; }
-                if (!handle)
-                    return;
-                var c = this.getConnection(serverId);
-                if (c == null)
-                    return null;
-                c.unsubscribe(handle.topic, handle.callback);
-            };
-            /**
-             * Publish a notification that needs to be translated
-             * @title:              the translation key of the notification's title
-             * @text:               the translation key of the notification's content
-             * @variableReplacement the key to replace in the content translation (see: https://angular-translate.github.io/docs/#/guide/06_variable-replacement)
-             * @location:           the location on the screen where the notification is shown (default bottom right)
-             */
-            MessageBusService.prototype.notifyWithTranslation = function (title, text, variableReplacement, location, type, duration) {
-                var _this = this;
-                if (variableReplacement === void 0) { variableReplacement = null; }
-                if (location === void 0) { location = NotifyLocation.BottomRight; }
-                if (type === void 0) { type = NotifyType.Normal; }
-                if (duration === void 0) { duration = 4000; }
-                this.$translate(title).then(function (translatedTitle) {
-                    _this.$translate(text, variableReplacement).then(function (translatedText) {
-                        _this.notify(translatedTitle, translatedText, location, type, duration);
-                    }).catch(function (err) {
-                        _this.notify(translatedTitle || title, text, location, type, duration);
-                    });
-                }).catch(function (err) {
-                    _this.notify(title, text, location, type, duration);
-                });
-            };
-            MessageBusService.prototype.notifyError = function (title, text) {
-                this.notify(title, text, NotifyLocation.TopBar, NotifyType.Error);
-            };
-            /**
-             * Publish a notification
-             * @title:       the title of the notification
-             * @text:        the contents of the notification
-             * @location:    the location on the screen where the notification is shown (default bottom right)
-             * @notifyType:  the type of notification
-             */
-            MessageBusService.prototype.notify = function (title, text, location, notifyType, duration) {
-                if (location === void 0) { location = NotifyLocation.TopBar; }
-                if (notifyType === void 0) { notifyType = NotifyType.Normal; }
-                if (duration === void 0) { duration = 4000; }
-                //Check if a notication with the same title exists. If so, update existing, if not, add new notification.
-                if (this.notifications) {
-                    this.notifications = this.notifications.filter(function (n) { return (n.state && n.state !== 'closed'); });
-                    var updatedText;
-                    this.notifications.some(function (n) {
-                        if (n.state === 'closed')
-                            return false;
-                        if (n.options.title === title) {
-                            var foundText = false;
-                            var splittedText = n.options.text.split('\n');
-                            splittedText.some(function (textLine, index, _splittedText) {
-                                if (textLine.replace(/(\ \<\d+\>$)/, '') === text) {
-                                    var txt = textLine.replace(/(\ \<\d+\>$)/, '');
-                                    var nrWithBrackets = textLine.match(/(\ \<\d+\>$)/);
-                                    var nr;
-                                    nr = (!nrWithBrackets) ? 2 : +(nrWithBrackets[0].match(/\d+/)) + 1;
-                                    _splittedText[index] = txt + ' <' + nr + '>';
-                                    foundText = true;
-                                    return true;
-                                }
-                                return false;
-                            });
-                            if (!foundText) {
-                                splittedText.push(text);
-                            }
-                            updatedText = splittedText.join('\n');
-                            n.update({ text: updatedText });
-                            return true;
-                        }
-                        else {
-                            return false;
-                        }
-                    });
-                    if (updatedText) {
-                        return;
-                    }
-                }
-                var opts = {
-                    title: title,
-                    text: text,
-                    cornerclass: 'ui-pnotify-sharp',
-                    shadow: false,
-                    addclass: "csNotify",
-                    width: "500px",
-                    animation: "fade",
-                    mouse_reset: true,
-                    animate_speed: "slow",
-                    nonblock: {
-                        nonblock: true,
-                        nonblock_opacity: .2
-                    },
-                    buttons: {
-                        closer: true,
-                        sticker: false
-                    },
-                    hide: true
-                };
-                if (typeof duration != 'undefined')
-                    opts['delay'] = duration;
-                if (notifyType != NotifyType.Normal)
-                    opts['type'] = NotifyType[notifyType].toLowerCase();
-                var PNot = new PNotify(opts);
-                this.notifications.push(PNot);
-                return PNot;
-            };
-            MessageBusService.prototype.confirmButtons = function (title, text, buttons, callback) {
-                var c = [];
-                // buttons.forEach(b=>{
-                //     c.push({ text: c, addClass: "", promptTrigger: true, click: (notice, value) =>{ notice.remove(); notice.get().trigger("pnotify.confirm", [notice, value]); } })
-                // })
-                var options = {
-                    title: title,
-                    text: text,
-                    addclass: "csNotify",
-                    width: "500px",
-                    animation: "fade",
-                    hide: false,
-                    confirm: {
-                        confirm: true,
-                        buttons: c
-                    },
-                    buttons: {
-                        closer: false,
-                        sticker: false
-                    },
-                    history: {
-                        history: false
-                    },
-                    icon: 'fa fa-question-circle',
-                    cornerclass: 'ui-pnotify-sharp'
-                };
-                var pn = new PNotify(options).get()
-                    .on('pnotify.confirm', function (notice, value) {
-                    callback("ok");
-                })
-                    .on('pnotify.cancel', function () { callback(null); });
-                return pn;
-            };
-            /**
-             * Show a confirm dialog
-             * @title           : the title of the notification
-             * @text            : the contents of the notification
-             * @callback        : the callback that will be called after the confirmation has been answered.
-             */
-            MessageBusService.prototype.confirm = function (title, text, callback, allowDuplicate) {
-                if (allowDuplicate === void 0) { allowDuplicate = true; }
-                if (!allowDuplicate && this.confirms && _.any(this.confirms, function (n) { return (!n.options.closed && n.options.title === title && n.options.text === text); }))
-                    return;
-                var options = {
-                    title: title,
-                    text: text,
-                    addclass: "csNotify",
-                    width: "500px",
-                    animation: "fade",
-                    hide: false,
-                    closed: false,
-                    confirm: {
-                        confirm: true
-                    },
-                    buttons: {
-                        closer: true,
-                        sticker: true
-                    },
-                    history: {
-                        history: false
-                    },
-                    icon: 'fa fa-question-circle',
-                    cornerclass: 'ui-pnotify-sharp',
-                    duration: 60000
-                };
-                var pn = new PNotify(options).get()
-                    .on('pnotify.confirm', function (n) {
-                    options.closed = true;
-                    callback(true);
-                })
-                    .on('pnotify.cancel', function (n) { options.closed = true; callback(false); });
-                pn.options = options;
-                this.confirms.push(pn);
-                return pn;
-            };
-            MessageBusService.prototype.notifyBottom = function (title, text) {
-                var stack_bar_bottom = { 'dir1': 'up', 'dir2': 'right', 'spacing1': 0, 'spacing2': 0 };
-                var options = {
-                    title: 'Over Here',
-                    text: 'Check me out. I\'m in a different stack.',
-                    addclass: 'stack-bar-bottom',
-                    cornerclass: '',
-                    width: '70%',
-                    stack: stack_bar_bottom
-                };
-                var pn = new PNotify(options);
-            };
-            /**
-             * Publish a notification
-             * @title: the title of the notification
-             * @text:  the contents of the notification
-             */
-            MessageBusService.prototype.notifyData = function (data) {
-                var pn = new PNotify(data);
-                //this.publish('notify', '', data);
-            };
-            /**
-             * Publish to a topic
-             */
-            MessageBusService.prototype.publish = function (topic, title, data) {
-                //window.console.log('publish: ' + topic + ', ' + title);
-                if (!MessageBusService.cache[topic])
-                    return;
-                MessageBusService.cache[topic].forEach(function (cb) { return cb(title, data); });
-            };
-            //public publish(topic: string, title: string, data?: any): void {
-            //	MessageBusService.publish(topic, title, data);
-            //}
-            /**
-             * Subscribe to a topic
-             * @param {string} topic The desired topic of the message.
-             * @param {IMessageBusCallback} callback The callback to call.
-             */
-            MessageBusService.prototype.subscribe = function (topic, callback) {
-                if (!MessageBusService.cache[topic])
-                    MessageBusService.cache[topic] = new Array();
-                MessageBusService.cache[topic].push(callback);
-                return new MessageBusHandle(topic, callback);
-            };
-            /**
-             * Unsubscribe to a topic by providing its handle
-             */
-            MessageBusService.prototype.unsubscribe = function (handle) {
-                var topic = handle.topic;
-                var callback = handle.callback;
-                if (!MessageBusService.cache[topic])
-                    return;
-                MessageBusService.cache[topic].forEach(function (cb, idx) {
-                    if (cb === callback) {
-                        MessageBusService.cache[topic].splice(idx, 1);
-                        return;
-                    }
-                });
-            };
-            return MessageBusService;
-        }());
-        MessageBusService.cache = {};
-        MessageBusService.$inject = [
-            '$translate'
-        ];
-        Services.MessageBusService = MessageBusService;
-        var EventObj = (function () {
-            function EventObj() {
-            }
-            // Events primitives ======================
-            EventObj.prototype.bind = function (event, fct) {
-                this.myEvents = this.myEvents || {};
-                this.myEvents[event] = this.myEvents[event] || [];
-                this.myEvents[event].push(fct);
-            };
-            EventObj.prototype.unbind = function (event, fct) {
-                this.myEvents = this.myEvents || {};
-                if (event in this.myEvents === false)
-                    return;
-                this.myEvents[event].splice(this.myEvents[event].indexOf(fct), 1);
-            };
-            EventObj.prototype.unbindEvent = function (event) {
-                this.myEvents = this.myEvents || {};
-                this.myEvents[event] = [];
-            };
-            EventObj.prototype.unbindAll = function () {
-                this.myEvents = this.myEvents || {};
-                for (var event in this.myEvents)
-                    this.myEvents[event] = false;
-            };
-            EventObj.prototype.trigger = function (event) {
-                var args = [];
-                for (var _i = 1; _i < arguments.length; _i++) {
-                    args[_i - 1] = arguments[_i];
-                }
-                this.myEvents = this.myEvents || {};
-                if (event in this.myEvents === false)
-                    return;
-                for (var i = 0; i < this.myEvents[event].length; i++) {
-                    this.myEvents[event][i].apply(this, Array.prototype.slice.call(arguments, 1));
-                }
-            };
-            EventObj.prototype.registerEvent = function (evtname) {
-                this[evtname] = function (callback, replace) {
-                    if (typeof callback === 'function') {
-                        if (replace)
-                            this.unbindEvent(evtname);
-                        this.bind(evtname, callback);
-                    }
-                    return this;
-                };
-            };
-            EventObj.prototype.registerEvents = function (evtnames) {
-                var _this = this;
-                evtnames.forEach(function (evtname) {
-                    _this.registerEvent(evtname);
-                });
-            };
-            return EventObj;
-        }());
-        Services.EventObj = EventObj;
-        /**
-          * Register service
-          */
-        var moduleName = 'csComp';
-        try {
-            Services.myModule = angular.module(moduleName);
-        }
-        catch (err) {
-            // named module does not exist, so create one
-            Services.myModule = angular.module(moduleName, []);
-        }
-        Services.myModule.service('messageBusService', csComp.Services.MessageBusService);
-    })(Services = csComp.Services || (csComp.Services = {}));
-})(csComp || (csComp = {}));
-//# sourceMappingURL=MessageBus.js.map
-var csComp;
-(function (csComp) {
-    var Services;
-    (function (Services) {
         'use strict';
         var Coordinates = (function () {
             function Coordinates() {
@@ -19236,8 +19242,17 @@ var csComp;
                 console.log('updating sensorlinks');
                 for (var l in this.loadedLayers) {
                     var layer = this.loadedLayers[l];
-                    this.updateLayerSensorLink(layer);
-                    console.log(layer.title);
+                    if (layer.hasSensorData) {
+                        this.updateLayerSensorLink(layer);
+                        if (layer.typeUrl && layer.defaultFeatureType) {
+                            var featureTypeName = layer.typeUrl + '#' + layer.defaultFeatureType;
+                            var fType = this.getFeatureTypeById(featureTypeName);
+                            var fTypes = {};
+                            fTypes[featureTypeName] = fType;
+                            this.evaluateLayerExpressions(layer, fTypes);
+                        }
+                        console.log(layer.title);
+                    }
                 }
                 ;
             };
@@ -20855,7 +20870,7 @@ var csComp;
                             gs.colorScales[ptd.title] = ['purple', 'purple'];
                         }
                         if (ft.style && ft.style.fillColor) {
-                            gs.colors = ['white', '#FF5500'];
+                            gs.colors = ['white', 'blue'];
                         }
                         else {
                             gs.colors = ['red', 'white', 'blue'];
@@ -22112,11 +22127,13 @@ var csComp;
                 var sumOfSquares = 0;
                 group.layers.forEach(function (l) {
                     if (l.enabled) {
+                        var values_1 = [];
                         _this.project.features.forEach(function (f) {
                             if (f.layerId === l.id && f.properties.hasOwnProperty(property)) {
                                 var v = Number(+f.properties[property]);
                                 if (isNaN(v))
                                     return;
+                                values_1.push(v);
                                 r.count++;
                                 sumOfElements += v;
                                 sumOfSquares += v * v;
@@ -22126,6 +22143,10 @@ var csComp;
                                     r.min = v;
                             }
                         });
+                        var quartiles = csComp.Helpers.quartiles(values_1);
+                        r.median = quartiles.median;
+                        r.q1 = quartiles.q1;
+                        r.q3 = quartiles.q3;
                     }
                 });
                 if (!isNaN(sumOfElements) && r.count !== 0) {
@@ -22137,6 +22158,11 @@ var csComp;
                     var mid = this.propertyTypeData[property];
                     r.userMin = mid.min;
                     r.userMax = mid.max;
+                    if (!r.userMax && !r.userMin) {
+                        var iqr = Math.abs(r.q3 - r.q1);
+                        r.userMin = r.median - (1.5 * iqr);
+                        r.userMax = r.median + (1.5 * iqr);
+                    }
                 }
                 return r;
             };
@@ -23720,7 +23746,7 @@ var Dashboard;
                 return;
             var legendWidgetPresent = false;
             d.widgets.forEach(function (w) {
-                if (w.id === 'Legend')
+                if (w.directive === 'legend-directive')
                     legendWidgetPresent = true;
             });
             if (!legendWidgetPresent) {
@@ -23731,6 +23757,7 @@ var Dashboard;
                 w.elementId = 'widget-' + w.id;
                 w.parentDashboard = d;
                 w.title = 'Legend';
+                w.position = 'dashboard';
                 w.data = { mode: 'lastSelectedStyle' };
                 w.left = '20px';
                 w.customStyle = { background: 'White', borderColor: 'Black', borderWidth: '1px' };
@@ -26272,7 +26299,7 @@ var CompareWidget;
             });
             keys = _.uniq(keys);
             var fType = JSON.parse(JSON.stringify(this.$layerService.getFeatureType(fts[0])));
-            this.$scope.featureTypeTitle = fType.name.toLowerCase();
+            this.$scope.featureTypeTitle = (fType.name) ? fType.name.toLowerCase() : 'items';
             fType.propertyTypeKeys = keys.join(';');
             var propTypes = csComp.Helpers.getPropertyTypes(fType, this.$layerService.propertyTypeData);
             if (this.$scope.data.numbersOnly) {
@@ -31923,6 +31950,54 @@ var csComp;
 (function (csComp) {
     var Services;
     (function (Services) {
+        var GeometryTemplateStore = (function () {
+            function GeometryTemplateStore($http) {
+                this.$http = $http;
+                this.TEMPLATE_URL = 'api/templates';
+                this.templateList = {};
+            }
+            /* Make sure the geometry is loaded. Calls back true if ok, false if the geometry could not be loaded */
+            GeometryTemplateStore.prototype.loadGeometry = function (name, cb) {
+                var _this = this;
+                if (!name) {
+                    cb(null);
+                    return;
+                }
+                if (this.templateList.hasOwnProperty(name)) {
+                    cb(true);
+                    return;
+                }
+                var template = this.getTemplateFromServer(name, function (data) {
+                    if (!data) {
+                        cb(null);
+                        return;
+                    }
+                    _this.templateList[name] = data;
+                    cb(true);
+                });
+            };
+            GeometryTemplateStore.prototype.getTemplate = function (name) {
+                return this.templateList[name];
+            };
+            GeometryTemplateStore.prototype.getTemplateFromServer = function (name, cb) {
+                this.$http.get(this.TEMPLATE_URL)
+                    .then(function (res) {
+                    cb(res.data);
+                })
+                    .catch(function (msg) {
+                    console.warn("Could not load " + name + " from server");
+                });
+            };
+            return GeometryTemplateStore;
+        }());
+        Services.GeometryTemplateStore = GeometryTemplateStore;
+    })(Services = csComp.Services || (csComp.Services = {}));
+})(csComp || (csComp = {}));
+//# sourceMappingURL=GeometryTemplate.js.map
+var csComp;
+(function (csComp) {
+    var Services;
+    (function (Services) {
         'use strict';
         var DatabaseSource = (function () {
             function DatabaseSource(service) {
@@ -32175,6 +32250,7 @@ var csComp;
                 this.title = 'geojson';
                 this.requiresLayer = false;
                 this.$http = $http;
+                this.geometryStore = new Services.GeometryTemplateStore(this.$http);
             }
             GeoJsonSource.prototype.refreshLayer = function (layer, newLayer) {
                 var _this = this;
@@ -32328,6 +32404,18 @@ var csComp;
                 this.layer = layer;
                 async.series([
                     function (cb) {
+                        // find geometries for the features if they don't have any
+                        if (layer.dataSourceParameters && layer.dataSourceParameters.geometryTemplate) {
+                            var geometryTemplate = layer.dataSourceParameters.geometryTemplate;
+                            var geometryName_1 = geometryTemplate.name;
+                            _this.geometryStore.loadGeometry(geometryName_1, function (success) {
+                                if (!success)
+                                    console.warn("Could not load geomtery template for " + geometryName_1);
+                                cb(null, null);
+                            });
+                        }
+                    },
+                    function (cb) {
                         layer.renderType = 'geojson';
                         // already got data (propably from drop action)
                         if (data) {
@@ -32399,6 +32487,11 @@ var csComp;
                     }
                 ]);
             };
+            GeoJsonSource.prototype.addGeometry = function (geom, layer) {
+                if (!geom)
+                    return;
+                console.log('Adding geometry to datalayer');
+            };
             GeoJsonSource.prototype.initLayer = function (data, layer) {
                 var _this = this;
                 // if this is a topojson layer, convert to geojson first
@@ -32411,6 +32504,11 @@ var csComp;
                         data = layer.data;
                         layer = processedLayer;
                     });
+                }
+                // find geometries for the features if they don't have any
+                if (layer.dataSourceParameters && layer.dataSourceParameters.geometryTemplate) {
+                    var geom = this.geometryStore.getTemplate(layer.dataSourceParameters.geometryTemplate.key);
+                    this.addGeometry(geom, layer);
                 }
                 // add featuretypes to global featuretype list
                 if (data.featureTypes)

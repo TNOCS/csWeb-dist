@@ -29,14 +29,14 @@ var FileStorage = (function (_super) {
         var _this = _super.call(this) || this;
         _this.rootpath = rootpath;
         _this.ignoreInitial = ignoreInitial;
-        _this.layers = {};
+        _this.layers = [];
         _this.projects = {};
         _this.keys = {};
         _this.resources = {};
         _this.layerDebounceFunctions = {};
         _this.saveProjectDelay = _.debounce(function (project) {
             _this.saveProjectFile(project);
-        }, 5000);
+        }, 2000);
         _this.saveResourcesDelay = _.debounce(function (res) {
             _this.saveResourceFile(res);
         }, 25);
@@ -97,7 +97,7 @@ var FileStorage = (function (_super) {
                     //this.addLayer(path);
                 }
             }));
-        }, 1000);
+        }, 1500);
     };
     FileStorage.prototype.getDirectories = function (srcpath) {
         return fs.readdirSync(srcpath).filter(function (file) {
@@ -175,7 +175,7 @@ var FileStorage = (function (_super) {
                     }
                 }
             }));
-        }, 1000);
+        }, 2500);
     };
     FileStorage.prototype.watchResourcesFolder = function () {
         var _this = this;
@@ -196,7 +196,7 @@ var FileStorage = (function (_super) {
                 if (action === 'change') {
                 }
             }));
-        }, 1000);
+        }, 2000);
     };
     // Create a debounce function for each layer
     FileStorage.prototype.saveLayerDelay = function (layer) {
@@ -336,35 +336,52 @@ var FileStorage = (function (_super) {
         var id = this.getProjectId(fileName);
         this.manager.deleteProject(id, {}, function () { });
     };
+    FileStorage.prototype.fetchLayer = function (layerId) {
+        var fileName = this.getLayerFilename(layerId);
+        var data = fs.readFileSync(fileName, 'utf8');
+        if (!data) {
+            Winston.warn("Error reading file " + fileName);
+            return null;
+        }
+        var layer;
+        try {
+            layer = JSON.parse(data);
+        }
+        catch (e) {
+            Winston.warn("Error parsing file: " + fileName + ". Skipped. (Data length: " + ((data) ? data.length : 0) + ")");
+            return null;
+        }
+        layer.storage = this.id;
+        layer.id = layerId;
+        return layer;
+    };
     FileStorage.prototype.openLayerFile = function (fileName) {
         var _this = this;
         if ((fileName.indexOf('.backup')) > 0)
             return;
         var id = this.getLayerId(fileName);
         Winston.info('filestore: openfile ' + id);
-        if (!this.layers.hasOwnProperty(id)) {
-            fs.readFile(fileName, 'utf8', function (err, data) {
-                if (!err) {
-                    var layer;
-                    try {
-                        layer = JSON.parse(data);
-                    }
-                    catch (e) {
-                        Winston.warn("Error parsing file: " + fileName + ". Skipped. (Data length: " + ((data) ? data.length : 0) + ")");
-                        return;
-                    }
-                    layer.storage = _this.id;
-                    layer.id = id;
-                    _this.layers[id] = layer;
-                    //layer.title = id;
-                    layer.storage = _this.id;
-                    //layer.type = "geojson";
-                    layer.url = '/api/layers/' + id;
-                    (layer.storage) ? Winston.debug('storage ' + layer.storage) : Winston.warn("No storage found for " + layer);
-                    _this.manager && _this.manager.addUpdateLayer(layer, {}, function () { });
+        fs.readFile(fileName, 'utf8', function (err, data) {
+            if (!err) {
+                var layer;
+                try {
+                    layer = JSON.parse(data);
                 }
-            });
-        }
+                catch (e) {
+                    Winston.warn("Error parsing file: " + fileName + ". Skipped. (Data length: " + ((data) ? data.length : 0) + ")");
+                    return;
+                }
+                layer.storage = _this.id;
+                layer.id = id;
+                // this.layers[id] = layer;
+                //layer.title = id;
+                layer.storage = _this.id;
+                //layer.type = "geojson";
+                layer.url = '/api/layers/' + id;
+                (layer.storage) ? Winston.debug('storage ' + layer.storage) : Winston.warn("No storage found for " + layer);
+                _this.manager && _this.manager.addUpdateLayer(layer, {}, function () { });
+            }
+        });
         if (path.basename(fileName) === 'project.json')
             return;
     };
@@ -442,8 +459,8 @@ var FileStorage = (function (_super) {
      * Find layer for a specific layerId (can return null)
      */
     FileStorage.prototype.findLayer = function (layerId) {
-        if (this.layers.hasOwnProperty(layerId)) {
-            return this.layers[layerId];
+        if (this.layers.indexOf(layerId) >= 0) {
+            return this.fetchLayer(layerId);
         }
         else {
             return null;
@@ -495,7 +512,9 @@ var FileStorage = (function (_super) {
     // layer methods first, in crud order.
     FileStorage.prototype.addLayer = function (layer, meta, callback) {
         try {
-            this.layers[layer.id] = layer;
+            if (this.layers.indexOf(layer.id) < 0) {
+                this.layers.push(layer.id);
+            }
             this.saveLayerDelay(layer);
             callback({ result: ApiResult.OK });
         }
@@ -504,16 +523,20 @@ var FileStorage = (function (_super) {
         }
     };
     FileStorage.prototype.getLayer = function (layerId, meta, callback) {
-        if (this.layers.hasOwnProperty(layerId)) {
-            callback({ result: ApiResult.OK, layer: this.layers[layerId] });
+        if (this.layers.indexOf(layerId) >= 0) {
+            var l = this.fetchLayer(layerId);
+            if (l) {
+                callback({ result: ApiResult.OK, layer: l });
+                return;
+            }
+            else {
+                Winston.warn("Layer " + layerId + " is empty");
+            }
         }
-        else {
-            callback({ result: ApiResult.LayerNotFound });
-        }
+        callback({ result: ApiResult.LayerNotFound });
     };
     FileStorage.prototype.updateLayer = function (layer, meta, callback) {
-        if (this.layers.hasOwnProperty(layer.id)) {
-            this.layers[layer.id] = layer;
+        if (this.layers.indexOf(layer.id) >= 0) {
             this.saveLayerDelay(layer);
             Winston.info('FileStorage: updated layer ' + layer.id);
             callback({ result: ApiResult.OK, layer: null });
@@ -524,7 +547,7 @@ var FileStorage = (function (_super) {
     };
     FileStorage.prototype.deleteLayer = function (layerId, meta, callback) {
         if (this.layers.hasOwnProperty(layerId)) {
-            delete this.layers[layerId];
+            this.layers = this.layers.filter(function (l) { return l !== layerId; });
             var fn = this.getLayerFilename(layerId);
             fs.unlink(fn, function (err) {
                 if (err) {
@@ -600,14 +623,17 @@ var FileStorage = (function (_super) {
         callback({ result: ApiResult.OK, layer: null });
     };
     FileStorage.prototype.getFeature = function (layerId, featureId, meta, callback) {
-        var l = this.layers[layerId];
         var found = false;
-        l.features.forEach(function (f) {
-            if (f.id === featureId) {
-                found = true;
-                callback({ result: ApiResult.OK, feature: f });
-            }
-        });
+        var l = this.findLayer(layerId);
+        if (l) {
+            l.features.some(function (f) {
+                if (f.id === featureId) {
+                    found = true;
+                    callback({ result: ApiResult.OK, feature: f });
+                    return true;
+                }
+            });
+        }
         if (!found)
             callback({ result: ApiResult.Error });
     };
