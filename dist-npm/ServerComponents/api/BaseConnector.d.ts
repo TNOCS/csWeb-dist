@@ -42,6 +42,7 @@ export declare class BaseConnector implements ApiManager.IConnector {
     updateProject(project: Project, meta: ApiMeta, callback: Function): void;
     deleteProject(projectId: any, meta: ApiMeta, callback: Function): void;
     addFile(base64: string, folder: string, file: string, meta: ApiMeta, callback: Function): void;
+    getFile(file: string, meta: ApiMeta, callback: Function): void;
     addResource(resource: ApiManager.ResourceFile, meta: ApiMeta, callback: Function): void;
     addPropertyTypes(resourceId: string, data: IPropertyType[], meta: ApiMeta, callback: Function): void;
     /** Get a resource file  */

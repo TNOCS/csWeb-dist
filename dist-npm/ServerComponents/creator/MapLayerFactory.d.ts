@@ -120,6 +120,7 @@ export declare class MapLayerFactory {
     private createRDFeature(rdX, rdY, features, properties, sensors, callback);
     private mergeHouseNumber(zipCode, houseNumber, letter, addition, properties);
     private createPointFeature(zipCode, houseNumber, bagOptions, features, properties, propertyTypes, sensors, callback);
+    private createFeatureWithoutGeometry(properties, sensors?);
     private createFeature(lon, lat, properties, sensors?);
     private createPropertyType(propertyTypes, name, section?);
     private convertTime(date, time);

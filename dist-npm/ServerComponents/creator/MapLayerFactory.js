@@ -52,8 +52,8 @@ var MapLayerFactory = (function () {
     }
     MapLayerFactory.prototype.process = function (req, res) {
         var _this = this;
-        res.writeHead(200, { 'Content-Type': 'text/html' });
-        res.end('');
+        // res.writeHead(200, { 'Content-Type': 'text/html' });
+        // res.end('');
         console.log('Received project template. Processing...');
         this.featuresNotFound = {};
         var template = req.body;
@@ -101,6 +101,7 @@ var MapLayerFactory = (function () {
                 }
                 console.log('-------------------------------------');
             }
+            res.send(200 /* OK */, JSON.stringify(_this.featuresNotFound));
             console.log('New map created: publishing...');
             _this.messageBus.publish('dynamic_project_layer', 'created', data);
             var combinedjson = _this.splitJson(data);
@@ -437,13 +438,13 @@ var MapLayerFactory = (function () {
         var layer = req.body.layer;
         var features = [];
         var template = { properties: layer.data.properties, propertyTypes: layer.data.propertyTypes || [] };
+        this.featuresNotFound = {};
         this.addGeometry(layer.data.layerDefinition, template, layer, function () {
             console.log('Finished adding geometry...');
             delete layer.data.properties;
             delete layer.data.features;
             _this.apiManager.addUpdateLayer(layer, { source: 'maplayerfactory' }, function (result) {
-                console.log(result);
-                res.sendStatus(result.result);
+                res.send(result.result, JSON.stringify({ 'notFound': _this.featuresNotFound }));
             });
         });
     };
@@ -582,6 +583,13 @@ var MapLayerFactory = (function () {
                     _this.apiManager.addPropertyTypes(ld['featureTypeId'], template.propertyTypes, {}, function () {
                         console.log('Added propertytypes to resources');
                     });
+                    geojson.dataSourceParameters = {
+                        geometryTemplate: {
+                            key: ld.geometryKey,
+                            name: ld.geometryFile,
+                            featureProp: ld.parameter1
+                        }
+                    };
                     callback(geojson);
                 });
                 break;
@@ -600,18 +608,29 @@ var MapLayerFactory = (function () {
                     ld.geometryKey = 'Name';
                 }
                 break;
+            case 'Gemeente(2016)':
+                ld.geometryFile = 'CBS_Gemeente_2016';
+                if (type === 'name') {
+                    ld.geometryKey = 'GM_NAAM';
+                }
+                else {
+                    ld.geometryKey = 'GM_CODE';
+                }
+                break;
             case 'Gemeente':
+            case 'Gemeente(2015)':
             case 'CBS_Gemeente_2015':
             case 'CBS_Gemeente':
                 ld.geometryFile = 'CBS_Gemeente_2015';
                 if (type === 'both') {
-                    ld.geometryKey = 'GM_CODE';
+                    ld.geometryKey = 'CODE';
                 }
                 else if (type === 'name') {
-                    ld.geometryKey = 'GM_NAAM';
+                    ld.geometryKey = 'NAAM';
                 }
                 else {
                     //todo: convert to GM_CODE
+                    ld.geometryKey = 'CODE';
                 }
                 break;
             case 'Gemeente(2014)':
@@ -624,12 +643,22 @@ var MapLayerFactory = (function () {
                 }
                 break;
             case 'Buurt':
-                ld.geometryFile = 'CBS_Buurt';
-                if (type === 'both') {
-                    ld.geometryKey = 'BU_CODE';
+            case 'Buurt(2016)':
+                ld.geometryFile = 'CBS_Buurt_2016';
+                if (type === 'name') {
+                    ld.geometryKey = 'BU_NAAM';
                 }
                 else {
+                    ld.geometryKey = 'BU_CODE';
+                }
+                break;
+            case 'Buurt(2014)':
+                ld.geometryFile = 'CBS_Buurt_2014';
+                if (type === 'name') {
                     ld.geometryKey = 'BU_NAAM';
+                }
+                else {
+                    ld.geometryKey = 'BU_CODE';
                 }
                 break;
             default:
@@ -755,10 +784,13 @@ var MapLayerFactory = (function () {
         }
         var fts = templateJson.features;
         properties.forEach(function (p, index) {
-            var foundFeature = false;
-            fts.some(function (f) {
+            var foundFeature = fts.some(function (f) {
+                var featureJson = { type: 'Feature', properties: null };
+                if (sensors.length > 0) {
+                    featureJson['sensors'] = sensors[index];
+                }
                 if (f.properties[templateKey] == p[par1]) {
-                    console.log(p[par1]);
+                    // console.log(p[par1]);
                     if (inclTemplProps) {
                         for (var key in f.properties) {
                             if (!p.hasOwnProperty(key) && key !== templateKey) {
@@ -766,25 +798,19 @@ var MapLayerFactory = (function () {
                             }
                         }
                     }
-                    var featureJson = {
-                        type: 'Feature',
-                        geometry: f.geometry,
-                        properties: p
-                    };
-                    if (sensors.length > 0) {
-                        featureJson['sensors'] = sensors[index];
-                    }
+                    featureJson.properties = p;
                     features.push(featureJson);
-                    foundFeature = true;
                     return true;
-                }
-                else {
-                    return false;
                 }
             });
             if (!foundFeature) {
                 console.log('Warning: Could not find: ' + p[par1]);
                 _this.featuresNotFound["" + p[par1]] = { zip: "" + p[par1], number: '' };
+                var featureJson = { type: 'Feature', properties: p }; // Also add feature if a geometry was not found
+                features.push(featureJson);
+            }
+            if (index % 25 === 0) {
+                console.log("Parsed feature " + (index + 1) + ": " + p[par1]);
             }
         });
         callback();
@@ -804,11 +830,11 @@ var MapLayerFactory = (function () {
                                     zip: "" + q,
                                     number: "0"
                                 };
+                                features.push(_this.createFeatureWithoutGeometry(prop, sensors[index] || {}));
                                 innercallback();
                             }
                             else {
-                                console.log('Found location (international)');
-                                console.log(locations[0].lon + ", " + locations[0].lat);
+                                // console.log(`Found location (international) ${locations[0].lon}, ${locations[0].lat}`);
                                 features.push(_this.createFeature(+locations[0].lon, +locations[0].lat, prop, sensors[index] || {}));
                                 innercallback();
                             }
@@ -917,6 +943,7 @@ var MapLayerFactory = (function () {
                                     zip: "" + zip,
                                     number: "" + nmb
                                 };
+                                features.push(asyncthis.createFeatureWithoutGeometry(prop, sensors[index] || {}));
                             }
                             else {
                                 for (var key in locations[0]) {
@@ -951,6 +978,11 @@ var MapLayerFactory = (function () {
         }, function (err) {
             callback();
         });
+    };
+    MapLayerFactory.prototype.createFeatureWithoutGeometry = function (properties, sensors) {
+        var geom = this.createFeature(0, 0, properties, sensors);
+        delete geom.geometry;
+        return geom;
     };
     MapLayerFactory.prototype.createFeature = function (lon, lat, properties, sensors) {
         var gjson = {

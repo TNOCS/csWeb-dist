@@ -112,6 +112,7 @@ export interface IConnector {
     getResource(resourceId: string, meta: ApiMeta, callback: Function): any;
     /** Add a file to the store, e.g. an icon or other media. */
     addFile(base64: string, folder: string, file: string, meta: ApiMeta, callback: Function): any;
+    getFile(file: string, meta: ApiMeta, callback: Function): any;
     /** Get a specific key */
     getKey(keyId: string, meta: ApiMeta, callback: Function): any;
     /** Get a list of available keys */
@@ -393,6 +394,8 @@ export declare class ApiManager extends events.EventEmitter {
     initResources(resourcesPath: string): void;
     /** Add a file to the store, e.g. an icon or other media. */
     addFile(base64: string, folder: string, file: string, meta: ApiMeta, callback: Function): void;
+    /** Add a file to the store, e.g. an icon or other media. */
+    getFile(file: string, meta: ApiMeta, callback: Function): void;
     /**
      * Update/add a resource and save it to file
      */

@@ -275,6 +275,11 @@ var RestAPI = (function (_super) {
             res.send(result);
         });
     };
+    RestAPI.prototype.getTheFile = function (req, res) {
+        this.manager.getFile(req.params.fileName, { source: 'rest' }, function (result) {
+            res.send(result);
+        });
+    };
     RestAPI.prototype.addTheLogs = function (req, res) {
         var logs;
         logs = req.body;
@@ -383,6 +388,8 @@ var RestAPI = (function (_super) {
             .post(function (req, res) { return _this.updateTheKey(req, res); });
         router.route(this.filesUrl + ':folderId/:fileName')
             .post(function (req, res) { return _this.addTheFile(req, res); });
+        router.route(this.filesUrl + ':folderId/:fileName')
+            .get(function (req, res) { return _this.getTheFile(req, res); });
         router.route(this.proxyUrl)
             .get(function (req, res) { return _this.proxyTheUrl(req, res); });
         this.server.use(this.baseUrl, router);

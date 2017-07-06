@@ -1793,13 +1793,6 @@ declare module csComp.Helpers {
         median: number;
         q3: number;
     };
-    function octiles(data: number[]): {
-        q1: number;
-        o3: number;
-        median: number;
-        o5: number;
-        q3: number;
-    };
     /**
      * Generates the title for the feature tooltip. A string format can be
      * defined in the featureType parameter 'tooltipStringFormat'.
@@ -8369,7 +8362,7 @@ declare module csComp.Services {
         private templateList;
         constructor($http: ng.IHttpService);
         loadGeometry(name: string, cb: Function): void;
-        getTemplate(name: string): _.Dictionary<IGeoJsonGeometry>;
+        getTemplate(name: string): ProjectLayer;
         private getTemplateFromServer(name, cb);
     }
 }
@@ -8413,7 +8406,11 @@ declare module csComp.Services {
         fitTimeline(layer: ProjectLayer): void;
         layerMenuOptions(layer: ProjectLayer): [[string, Function]];
         protected baseAddLayer(layer: ProjectLayer, callback: (layer: ProjectLayer) => void, data?: any): void;
-        private addGeometry(geom, layer);
+        /**
+         *  Loops over all layer features and adds geometry based on a geometry template layer.
+         *  Existing geometries take precedence over template geometries.
+         */
+        private addGeometry(template, geomKey, featureProp, layer);
         protected initLayer(data: any, layer: ProjectLayer): void;
         removeLayer(layer: ProjectLayer): void;
         private processAccessibilityReply(data, layer, clbk);

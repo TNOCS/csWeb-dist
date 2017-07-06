@@ -47,6 +47,7 @@ var BaseConnector = (function () {
     BaseConnector.prototype.updateProject = function (project, meta, callback) { };
     BaseConnector.prototype.deleteProject = function (projectId, meta, callback) { };
     BaseConnector.prototype.addFile = function (base64, folder, file, meta, callback) { };
+    BaseConnector.prototype.getFile = function (file, meta, callback) { };
     BaseConnector.prototype.addResource = function (resource, meta, callback) { };
     BaseConnector.prototype.addPropertyTypes = function (resourceId, data, meta, callback) { };
     /** Get a resource file  */

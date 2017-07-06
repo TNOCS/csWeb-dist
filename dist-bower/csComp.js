@@ -2825,21 +2825,6 @@ var csComp;
             return { q1: q1, median: median, q3: q3 };
         }
         Helpers.quartiles = quartiles;
-        function octiles(data) {
-            if (!data || !_.isArray(data))
-                return null;
-            var sorted = data.sort(function (a, b) { return +a - +b; });
-            var q1 = d3.quantile(sorted, 0.25);
-            var o3 = d3.quantile(sorted, 0.375);
-            var median = d3.quantile(sorted, 0.50);
-            var o5 = d3.quantile(sorted, 0.625);
-            var q3 = d3.quantile(sorted, 0.75);
-            if (q3 < q1) {
-                throw Error("Third quartile cannot be smaller than first quartile (Q1: " + q1 + ", Q3: " + q3 + ", median: " + median + ")");
-            }
-            return { q1: q1, o3: o3, median: median, o5: o5, q3: q3 };
-        }
-        Helpers.octiles = octiles;
         /**
          * Generates the title for the feature tooltip. A string format can be
          * defined in the featureType parameter 'tooltipStringFormat'.
@@ -6818,11 +6803,11 @@ var DataTable;
                     var text;
                     meta.forEach(function (mi) {
                         if (mi.label === 'Lat') {
-                            (f.geometry.type === 'Point') ? displayValue = f.geometry.coordinates[1] : displayValue = '';
+                            (f.geometry && f.geometry.type === 'Point') ? displayValue = f.geometry.coordinates[1] : displayValue = '';
                             text = displayValue;
                         }
                         else if (mi.label === 'Lon') {
-                            (f.geometry.type === 'Point') ? displayValue = f.geometry.coordinates[0] : displayValue = '';
+                            (f.geometry && f.geometry.type === 'Point') ? displayValue = f.geometry.coordinates[0] : displayValue = '';
                             text = displayValue;
                         }
                         else {
@@ -7655,7 +7640,7 @@ var FeatureProps;
                                 _this.addProperty(mi, feature, infoCallOutSection, linkCallOutSection);
                         }
                     });
-                    if (feature.fType.showAllProperties) {
+                    if (feature.fType.showAllProperties || this.mapservice.isAdminExpert) {
                         for (var key in feature.properties) {
                             var mi = csComp.Helpers.getPropertyType(feature, key);
                             this.addProperty(mi, feature, infoCallOutSection, linkCallOutSection, true);
@@ -13558,7 +13543,7 @@ var Mca;
         };
         McaCtrl.prototype.getLegend = function (mca) {
             var legend;
-            var type = mca.legendType || 'dynamic';
+            var type = mca.legendType || 'static';
             if (type === 'static' && mca.legend) {
                 legend = mca.legend;
             }
@@ -13573,20 +13558,18 @@ var Mca;
         };
         McaCtrl.prototype.getDynamicLegend = function (mca) {
             var scores = this.getFeatureScores(mca.label);
-            var octiles = csComp.Helpers.octiles(scores);
-            var iqr = octiles.q3 - octiles.q1;
+            var quartiles = csComp.Helpers.quartiles(scores);
+            var iqr = quartiles.q3 - quartiles.q1;
             var legendKeyValues = [
                 { key: '100', val: 100 },
-                { key: '1.5*IQR', val: Math.min(octiles.q3 + 1.5 * iqr, 99) },
-                { key: 'Q3', val: octiles.q3 },
-                { key: 'O5', val: octiles.o5 },
-                { key: 'median', val: octiles.median },
-                { key: 'O3', val: octiles.o3 },
-                { key: 'Q1', val: octiles.q1 },
-                { key: '-1.5*IQR', val: Math.max(octiles.q1 - 1.5 * iqr, 1) },
+                { key: '1.5*IQR', val: Math.min(quartiles.q3 + 1.5 * iqr, 99) },
+                { key: 'Q3', val: quartiles.q3 },
+                { key: 'median', val: quartiles.median },
+                { key: 'Q1', val: quartiles.q1 },
+                { key: '-1.5*IQR', val: Math.max(quartiles.q1 - 1.5 * iqr, 1) },
                 { key: '0', val: 0 }
             ];
-            var legend = csComp.Helpers.createDiscreteLegend(mca.getTitle(), legendKeyValues, mca.id, ['darkgreen', 'green', 'yellow', 'red']);
+            var legend = csComp.Helpers.createDiscreteLegend(mca.getTitle(), legendKeyValues, mca.id);
             legend.defaultLabel = 'Incomplete';
             legend.legendEntries.push({ label: 'Incomplete', color: '#555555', sortKey: 'ZZ' });
             return legend;
@@ -19242,17 +19225,8 @@ var csComp;
                 console.log('updating sensorlinks');
                 for (var l in this.loadedLayers) {
                     var layer = this.loadedLayers[l];
-                    if (layer.hasSensorData) {
-                        this.updateLayerSensorLink(layer);
-                        if (layer.typeUrl && layer.defaultFeatureType) {
-                            var featureTypeName = layer.typeUrl + '#' + layer.defaultFeatureType;
-                            var fType = this.getFeatureTypeById(featureTypeName);
-                            var fTypes = {};
-                            fTypes[featureTypeName] = fType;
-                            this.evaluateLayerExpressions(layer, fTypes);
-                        }
-                        console.log(layer.title);
-                    }
+                    this.updateLayerSensorLink(layer);
+                    console.log(layer.title);
                 }
                 ;
             };
@@ -19827,6 +19801,17 @@ var csComp;
                     });
                     // upon deactivation of the layer? (but other layers can also have active styles)
                     this.mb.publish('updatelegend', 'title', property);
+                }
+                else if (property.indexOf('#') >= 0) {
+                    var key_1 = property.split('#').pop();
+                    this.project.features.some(function (f) {
+                        if (f.layerId === layer.id && f.properties.hasOwnProperty(key_1)) {
+                            var pt = _this.getPropertyType(f, key_1);
+                            _this.setStyle({ feature: f, property: key_1, key: pt.title || key_1 });
+                            return true;
+                        }
+                        return false;
+                    });
                 }
                 else {
                     //when no layer is defined, set the given propertytype as styled property (and trigger creating a dynamic legend subsequently)
@@ -20474,6 +20459,9 @@ var csComp;
                                                     s.fillColor = res.color;
                                                     s.fillOpacity = res.opacity;
                                                 }
+                                                else {
+                                                    s.fillColor = '#ffffff';
+                                                }
                                             }
                                             feature._gui['style'][gs.property] = s.fillColor;
                                             if (feature.geometry && feature.geometry.type && feature.geometry.type.toLowerCase() === 'linestring') {
@@ -20502,6 +20490,9 @@ var csComp;
                                                 if (res) {
                                                     s.fillColor = res.color;
                                                     s.fillOpacity = res.opacity;
+                                                }
+                                                else {
+                                                    s.fillColor = '#ffffff';
                                                 }
                                             }
                                             feature._gui['style'][gs.property] = s.fillColor;
@@ -20870,7 +20861,7 @@ var csComp;
                             gs.colorScales[ptd.title] = ['purple', 'purple'];
                         }
                         if (ft.style && ft.style.fillColor) {
-                            gs.colors = ['white', 'blue'];
+                            gs.colors = ['white', '#FF5500'];
                         }
                         else {
                             gs.colors = ['red', 'white', 'blue'];
@@ -31953,7 +31944,7 @@ var csComp;
         var GeometryTemplateStore = (function () {
             function GeometryTemplateStore($http) {
                 this.$http = $http;
-                this.TEMPLATE_URL = 'api/templates';
+                this.TEMPLATE_URL = 'api/layers';
                 this.templateList = {};
             }
             /* Make sure the geometry is loaded. Calls back true if ok, false if the geometry could not be loaded */
@@ -31980,7 +31971,7 @@ var csComp;
                 return this.templateList[name];
             };
             GeometryTemplateStore.prototype.getTemplateFromServer = function (name, cb) {
-                this.$http.get(this.TEMPLATE_URL)
+                this.$http.get((this.TEMPLATE_URL + "/" + name).toLowerCase())
                     .then(function (res) {
                     cb(res.data);
                 })
@@ -32350,7 +32341,9 @@ var csComp;
             /** zoom to boundaries of layer */
             GeoJsonSource.prototype.fitMap = function (layer) {
                 var b = csComp.Helpers.GeoExtensions.getBoundingBox(layer.data);
-                this.service.$messageBusService.publish('map', 'setextent', b);
+                if (b && b.northEast && b.northEast[0] != undefined) {
+                    this.service.$messageBusService.publish('map', 'setextent', b);
+                }
             };
             /** zoom to boundaries of layer */
             GeoJsonSource.prototype.fitTimeline = function (layer) {
@@ -32414,6 +32407,9 @@ var csComp;
                                 cb(null, null);
                             });
                         }
+                        else {
+                            cb(null, null);
+                        }
                     },
                     function (cb) {
                         layer.renderType = 'geojson';
@@ -32436,7 +32432,7 @@ var csComp;
                             // Open a layer URL
                             layer.isLoading = true;
                             // get data
-                            var u = layer.url.replace('[BBOX]', layer.BBOX);
+                            var u = (layer.url) ? layer.url.replace('[BBOX]', layer.BBOX) : "/api/layers/" + layer.id;
                             // check proxy
                             if (layer.useProxy)
                                 u = '/api/proxy?url=' + u;
@@ -32487,10 +32483,32 @@ var csComp;
                     }
                 ]);
             };
-            GeoJsonSource.prototype.addGeometry = function (geom, layer) {
-                if (!geom)
+            /**
+             *  Loops over all layer features and adds geometry based on a geometry template layer.
+             *  Existing geometries take precedence over template geometries.
+             */
+            GeoJsonSource.prototype.addGeometry = function (template, geomKey, featureProp, layer) {
+                if (!template || !featureProp)
                     return;
                 console.log('Adding geometry to datalayer');
+                var geom = template['features'];
+                var notFound = [];
+                layer.data.features.forEach(function (f) {
+                    if (f.geometry && f.geometry.coordinates)
+                        return;
+                    if (!f.properties || !f.properties.hasOwnProperty(featureProp))
+                        return;
+                    var val = f.properties[featureProp];
+                    var entry = _.find(geom, function (g) { return g.properties[geomKey] === val; });
+                    if (entry) {
+                        f.geometry = entry.geometry;
+                    }
+                    else {
+                        notFound.push(val);
+                    }
+                });
+                if (!_.isEmpty(notFound))
+                    console.log("Could not find " + notFound.length + " geometries");
             };
             GeoJsonSource.prototype.initLayer = function (data, layer) {
                 var _this = this;
@@ -32504,11 +32522,6 @@ var csComp;
                         data = layer.data;
                         layer = processedLayer;
                     });
-                }
-                // find geometries for the features if they don't have any
-                if (layer.dataSourceParameters && layer.dataSourceParameters.geometryTemplate) {
-                    var geom = this.geometryStore.getTemplate(layer.dataSourceParameters.geometryTemplate.key);
-                    this.addGeometry(geom, layer);
                 }
                 // add featuretypes to global featuretype list
                 if (data.featureTypes)
@@ -32532,6 +32545,11 @@ var csComp;
                     var featuresWithoutId = layer.data.features.filter(function (f) { return !f.hasOwnProperty('id'); }); // Allow all features without id
                     if (featuresWithoutId.length !== layer.data.features.length) {
                         layer.data.features = featuresWithoutId.concat(_.uniq(layer.data.features, false, function (f) { return f.id; }));
+                    }
+                    // find geometries for the features if they don't have any
+                    if (layer.dataSourceParameters && layer.dataSourceParameters.geometryTemplate) {
+                        var geom = this.geometryStore.getTemplate(layer.dataSourceParameters.geometryTemplate.name);
+                        this.addGeometry(geom, layer.dataSourceParameters.geometryTemplate.key, layer.dataSourceParameters.geometryTemplate.featureProp, layer);
                     }
                     if (!_.isUndefined(layer.data.features)) {
                         layer.data.features.forEach(function (f) {

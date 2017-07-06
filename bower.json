@@ -1,6 +1,6 @@
 {
     "name": "csweb",
-    "version": "0.3.10",
+    "version": "0.3.11",
     "authors": ["Arnoud de Jong <damylen@gmail.com>", "Erik Vullings <erik.vullings@gmail.com>"],
     "main": "dist-bower/csComp.js",
     "ignore": [

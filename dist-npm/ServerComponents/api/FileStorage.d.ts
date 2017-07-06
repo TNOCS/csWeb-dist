@@ -57,6 +57,8 @@ export declare class FileStorage extends BaseConnector.BaseConnector {
     private saveProjectFile(project);
     /** save media file */
     private saveBase64(media);
+    /** read media file */
+    private readFile(file, cb);
     private saveLayerFile(layer);
     private getProjectId(fileName);
     private getKeyId(fileName);
@@ -93,6 +95,8 @@ export declare class FileStorage extends BaseConnector.BaseConnector {
     deleteFeature(layerId: string, featureId: string, meta: ApiMeta, callback: Function): void;
     /** Add a file: images go to the iconPath folder, others to the blob folder */
     addFile(base64: string, folder: string, file: string, meta: ApiMeta, callback: Function): void;
+    /** Get a file: images get from the iconPath folder, others to the blob folder */
+    getFile(file: string, meta: ApiMeta, callback: Function): void;
     addResource(res: ResourceFile, meta: ApiMeta, callback: Function): void;
     addPropertyTypes(resourceId: string, data: IPropertyType[], meta: ApiMeta, callback: Function): void;
     /** Get a resource file  */

@@ -392,6 +392,18 @@ var ApiManager = (function (_super) {
             callback({ result: ApiResult.Error, error: 'Failed to add resource.' });
         }
     };
+    /** Add a file to the store, e.g. an icon or other media. */
+    ApiManager.prototype.getFile = function (file, meta, callback) {
+        var s = this.connectors.hasOwnProperty('file') ? this.connectors['file'] : null;
+        if (s) {
+            s.getFile(file, meta, function (result) {
+                callback(result);
+            });
+        }
+        else {
+            callback({ result: ApiResult.Error, error: 'Failed to get file.' });
+        }
+    };
     /**
      * Update/add a resource and save it to file
      */

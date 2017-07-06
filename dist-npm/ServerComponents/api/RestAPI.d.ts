@@ -48,6 +48,7 @@ export declare class RestAPI extends BaseConnector.BaseConnector {
     private getTheKeys(req, res);
     private getTheKey(req, res);
     private addTheFile(req, res);
+    private getTheFile(req, res);
     private addTheLogs(req, res);
     private addTheLog(req, res);
     private getTheLog(req, res);
