@@ -25,8 +25,8 @@ var NominatimSource = (function () {
         }, '');
         console.log("Find nominatim: " + url);
         request.get(url, function (error, response, body) {
-            if (error || response.statusCode !== 200) {
-                console.log("Error in nominatim search: code " + response.statusCode + "; " + error);
+            if (error || !response || response.statusCode !== 200) {
+                console.log("Error in nominatim search: code " + (response ? response.statusCode : 'null') + "; " + error);
                 callback(null);
                 return;
             }

@@ -861,7 +861,7 @@ var MapLayerFactory = (function () {
             }
         });
     };
-    MapLayerFactory.prototype.createLatLonFeature = function (latString, lonString, features, properties, sensors, callback) {
+    MapLayerFactory.prototype.createLatLonFeature = function (lonString, latString, features, properties, sensors, callback) {
         var _this = this;
         if (!properties) {
             callback();

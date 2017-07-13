@@ -80,6 +80,7 @@ export declare class FileStorage extends BaseConnector.BaseConnector {
     addProject(project: Project, meta: ApiMeta, callback: Function): void;
     getProject(projectId: string, meta: ApiMeta, callback: Function): void;
     updateProject(project: Project, meta: ApiMeta, callback: Function): void;
+    deleteProject(projectId: string, meta: ApiMeta, callback: Function): void;
     addLayer(layer: Layer, meta: ApiMeta, callback: Function): void;
     getLayer(layerId: string, meta: ApiMeta, callback: Function): void;
     updateLayer(layer: Layer, meta: ApiMeta, callback: Function): void;

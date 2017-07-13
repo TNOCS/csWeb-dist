@@ -1970,6 +1970,7 @@ declare module csComp.Helpers {
      * the current value (e.g. assuming that the current property contains a color).
      */
     function getColorFromStringValue(v: string, gs: csComp.Services.GroupStyle): string;
+    function validateCSSColor(col: string): boolean;
     function getImageUri(ft: csComp.Services.IFeatureType): string;
     function getColorAndOpacityFromRgbaString(v: string): {
         color: string;
@@ -7179,56 +7180,6 @@ declare module Indicators {
     }
 }
 
-declare module LocationWidget {
-    /** Module */
-    var myModule: any;
-    interface ILocationWidgetScope extends ng.IScope {
-        vm: LocationWidgetCtrl;
-        data: ILocationData;
-    }
-    interface ILocationWidget {
-        id: string;
-        name: string;
-    }
-    interface ILocationData {
-        /** Street view API key: https://developers.google.com/maps/documentation/streetview/get-api-key#get-an-api-key */
-        streetViewApiKey: string;
-        /** Optionally, specify the StreetView url, e.g. https://maps.googleapis.com/maps/api/streetview */
-        streetViewUrl: string;
-        showCoordinates: boolean;
-        showSunMoonRise: boolean;
-    }
-    interface LocationInfo {
-        title?: string;
-        address?: string;
-        postcode?: string;
-        city?: string;
-        neighbourhood?: string;
-        sunrise?: string;
-        sunset?: string;
-        locations?: string[];
-        defaultLocation?: string;
-        streetViewUrlThumb?: string;
-        streetViewUrlFull?: string;
-    }
-    class LocationWidgetCtrl {
-        private $scope;
-        private $http;
-        layerService: csComp.Services.LayerService;
-        private messageBusService;
-        private actionService;
-        private $timeout;
-        private streetViewUrl;
-        private parentWidget;
-        private location;
-        private selectedLocationFormat;
-        static $inject: string[];
-        constructor($scope: ILocationWidgetScope, $http: ng.IHttpService, layerService: csComp.Services.LayerService, messageBusService: csComp.Services.MessageBusService, actionService: csComp.Services.ActionService, $timeout: ng.ITimeoutService);
-        private updateWidget(data);
-        private close();
-    }
-}
-
 declare module Markdown {
     /**
       * Module
@@ -7327,6 +7278,56 @@ declare module MarkdownWidget {
         private selectFeature(feature);
         private replaceKeys();
         private exportToPDF();
+    }
+}
+
+declare module LocationWidget {
+    /** Module */
+    var myModule: any;
+    interface ILocationWidgetScope extends ng.IScope {
+        vm: LocationWidgetCtrl;
+        data: ILocationData;
+    }
+    interface ILocationWidget {
+        id: string;
+        name: string;
+    }
+    interface ILocationData {
+        /** Street view API key: https://developers.google.com/maps/documentation/streetview/get-api-key#get-an-api-key */
+        streetViewApiKey: string;
+        /** Optionally, specify the StreetView url, e.g. https://maps.googleapis.com/maps/api/streetview */
+        streetViewUrl: string;
+        showCoordinates: boolean;
+        showSunMoonRise: boolean;
+    }
+    interface LocationInfo {
+        title?: string;
+        address?: string;
+        postcode?: string;
+        city?: string;
+        neighbourhood?: string;
+        sunrise?: string;
+        sunset?: string;
+        locations?: string[];
+        defaultLocation?: string;
+        streetViewUrlThumb?: string;
+        streetViewUrlFull?: string;
+    }
+    class LocationWidgetCtrl {
+        private $scope;
+        private $http;
+        layerService: csComp.Services.LayerService;
+        private messageBusService;
+        private actionService;
+        private $timeout;
+        private streetViewUrl;
+        private parentWidget;
+        private location;
+        private selectedLocationFormat;
+        static $inject: string[];
+        constructor($scope: ILocationWidgetScope, $http: ng.IHttpService, layerService: csComp.Services.LayerService, messageBusService: csComp.Services.MessageBusService, actionService: csComp.Services.ActionService, $timeout: ng.ITimeoutService);
+        private updateWidget(data);
+        private close();
     }
 }
 

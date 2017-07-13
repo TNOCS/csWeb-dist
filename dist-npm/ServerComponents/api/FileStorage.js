@@ -529,6 +529,24 @@ var FileStorage = (function (_super) {
             callback({ result: ApiResult.Error });
         }
     };
+    FileStorage.prototype.deleteProject = function (projectId, meta, callback) {
+        if (this.projects.hasOwnProperty(projectId)) {
+            delete this.projects[projectId];
+            var fn = this.getProjectFilename(projectId);
+            fs.unlink(fn, function (err) {
+                if (err) {
+                    Winston.error('File: Error deleting ' + fn + ' (' + err.message + ')');
+                }
+                else {
+                    Winston.info('File: deleted: ' + fn);
+                }
+            });
+            callback({ result: ApiResult.OK, layer: null });
+        }
+        else {
+            callback({ result: ApiResult.Error });
+        }
+    };
     // layer methods first, in crud order.
     FileStorage.prototype.addLayer = function (layer, meta, callback) {
         try {

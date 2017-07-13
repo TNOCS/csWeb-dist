@@ -4133,8 +4133,8 @@ var csComp;
          * the current value (e.g. assuming that the current property contains a color).
          */
         function getColorFromStringValue(v, gs) {
+            var defaultcolor = '#000000';
             if (gs.activeLegend) {
-                var defaultcolor = '#000000';
                 var l = gs.activeLegend;
                 var s = l.id;
                 var n = l.legendEntries.length;
@@ -4153,9 +4153,27 @@ var csComp;
                 //}
                 //return defaultcolor;
             }
-            return v;
+            if (v && v.indexOf('#') === 0) {
+                return v;
+            }
+            else {
+                // Validate color
+                if (this.validateCSSColor(v)) {
+                    return v;
+                }
+                else {
+                    return defaultcolor;
+                }
+            }
         }
         Helpers.getColorFromStringValue = getColorFromStringValue;
+        function validateCSSColor(col) {
+            var ele = document.createElement('div');
+            ele.style.color = col;
+            var str = ele.style.color.split(/\s+/).join('').toLowerCase();
+            return (str) ? true : false;
+        }
+        Helpers.validateCSSColor = validateCSSColor;
         function getImageUri(ft) {
             if (!ft)
                 return;
@@ -6865,8 +6883,11 @@ var DataTable;
                 if (a[headerIndex].type === 'number' || a[headerIndex].type === 'date') {
                     order = a[headerIndex].originalValue > b[headerIndex].originalValue;
                 }
-                else {
+                else if (a[headerIndex].originalValue && b[headerIndex].originalValue) {
                     order = a[headerIndex].originalValue.toLowerCase() > b[headerIndex].originalValue.toLowerCase();
+                }
+                else {
+                    order = false;
                 }
                 return order === reverseOrder
                     ? 1
@@ -31212,6 +31233,54 @@ var TableWidget;
     TableWidget.TableWidgetCtrl = TableWidgetCtrl;
 })(TableWidget || (TableWidget = {}));
 //# sourceMappingURL=TableWidgetCtrl.js.map
+var csComp;
+(function (csComp) {
+    var Services;
+    (function (Services) {
+        var GeometryTemplateStore = (function () {
+            function GeometryTemplateStore($http) {
+                this.$http = $http;
+                this.TEMPLATE_URL = 'api/layers';
+                this.templateList = {};
+            }
+            /* Make sure the geometry is loaded. Calls back true if ok, false if the geometry could not be loaded */
+            GeometryTemplateStore.prototype.loadGeometry = function (name, cb) {
+                var _this = this;
+                if (!name) {
+                    cb(null);
+                    return;
+                }
+                if (this.templateList.hasOwnProperty(name)) {
+                    cb(true);
+                    return;
+                }
+                var template = this.getTemplateFromServer(name, function (data) {
+                    if (!data) {
+                        cb(null);
+                        return;
+                    }
+                    _this.templateList[name] = data;
+                    cb(true);
+                });
+            };
+            GeometryTemplateStore.prototype.getTemplate = function (name) {
+                return this.templateList[name];
+            };
+            GeometryTemplateStore.prototype.getTemplateFromServer = function (name, cb) {
+                this.$http.get((this.TEMPLATE_URL + "/" + name).toLowerCase())
+                    .then(function (res) {
+                    cb(res.data);
+                })
+                    .catch(function (msg) {
+                    console.warn("Could not load " + name + " from server");
+                });
+            };
+            return GeometryTemplateStore;
+        }());
+        Services.GeometryTemplateStore = GeometryTemplateStore;
+    })(Services = csComp.Services || (csComp.Services = {}));
+})(csComp || (csComp = {}));
+//# sourceMappingURL=GeometryTemplate.js.map
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -31937,54 +32006,6 @@ var csComp;
     })(Services = csComp.Services || (csComp.Services = {}));
 })(csComp || (csComp = {}));
 //# sourceMappingURL=OpenCageDataSearchAction.js.map
-var csComp;
-(function (csComp) {
-    var Services;
-    (function (Services) {
-        var GeometryTemplateStore = (function () {
-            function GeometryTemplateStore($http) {
-                this.$http = $http;
-                this.TEMPLATE_URL = 'api/layers';
-                this.templateList = {};
-            }
-            /* Make sure the geometry is loaded. Calls back true if ok, false if the geometry could not be loaded */
-            GeometryTemplateStore.prototype.loadGeometry = function (name, cb) {
-                var _this = this;
-                if (!name) {
-                    cb(null);
-                    return;
-                }
-                if (this.templateList.hasOwnProperty(name)) {
-                    cb(true);
-                    return;
-                }
-                var template = this.getTemplateFromServer(name, function (data) {
-                    if (!data) {
-                        cb(null);
-                        return;
-                    }
-                    _this.templateList[name] = data;
-                    cb(true);
-                });
-            };
-            GeometryTemplateStore.prototype.getTemplate = function (name) {
-                return this.templateList[name];
-            };
-            GeometryTemplateStore.prototype.getTemplateFromServer = function (name, cb) {
-                this.$http.get((this.TEMPLATE_URL + "/" + name).toLowerCase())
-                    .then(function (res) {
-                    cb(res.data);
-                })
-                    .catch(function (msg) {
-                    console.warn("Could not load " + name + " from server");
-                });
-            };
-            return GeometryTemplateStore;
-        }());
-        Services.GeometryTemplateStore = GeometryTemplateStore;
-    })(Services = csComp.Services || (csComp.Services = {}));
-})(csComp || (csComp = {}));
-//# sourceMappingURL=GeometryTemplate.js.map
 var csComp;
 (function (csComp) {
     var Services;
