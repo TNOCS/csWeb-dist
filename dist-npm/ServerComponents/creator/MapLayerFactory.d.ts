@@ -113,7 +113,7 @@ export declare class MapLayerFactory {
     private convertTimebasedPropertyData(template);
     private createPolygonFeature(templateName, templateKey, par1, inclTemplProps, features, properties, propertyTypes, sensors, callback);
     private createInternationalFeature(queryString, features, properties, sensors, callback);
-    private createLatLonFeature(lonString, latString, features, properties, sensors, callback);
+    private createLatLonFeature(latString, lonString, features, properties, sensors, callback);
     /**
      * Convert the RD coordinate to WGS84.
      */

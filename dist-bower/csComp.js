@@ -20366,6 +20366,61 @@ var csComp;
                     });
                 }
             };
+            /** remove feature batch */
+            LayerService.prototype.removeFeatureBatch = function (featureIds, layer) {
+                var _this = this;
+                var toRemove = this.project.features.filter(function (f) { return featureIds.indexOf(f.id) >= 0; });
+                this.project.features = this.project.features.filter(function (f) { return featureIds.indexOf(f.id) < 0; });
+                layer.data.features = layer.data.features.filter(function (f) { return featureIds.indexOf(f.id) < 0; });
+                if (layer.group.filterResult)
+                    layer.group.filterResult = layer.group.filterResult.filter(function (f) { return featureIds.indexOf(f.id) < 0; });
+                layer.group.ndx.remove(toRemove);
+                this.activeMapRenderer.removeFeatureBatch(toRemove, layer);
+                toRemove.forEach(function (feature) {
+                    if (feature.isSelected) {
+                        _this.lastSelectedFeature = null;
+                        _this.selectedFeatures.some(function (f, ind, arr) {
+                            if (f.id === feature.id) {
+                                arr.splice(ind, 1);
+                                return true;
+                            }
+                        });
+                        _this.$messageBusService.publish('feature', 'onFeatureDeselect', feature);
+                    }
+                });
+            };
+            /** remove feature batch */
+            LayerService.prototype.removeAllFeatures = function () {
+                var _this = this;
+                var toRemove = this.project.features.slice(0);
+                this.project.groups.forEach(function (g) {
+                    if (!g.layers)
+                        return;
+                    g.layers.forEach(function (layer) {
+                        if (layer.data && layer.data.features) {
+                            layer.data.features.length = 0;
+                            if (layer.group.filterResult)
+                                layer.group.filterResult.length = 0;
+                            layer.group.ndx.remove(_this.project.features);
+                            layer.mapLayer.clearLayers();
+                            _this.activeMapRenderer.removeFeatureBatch(_this.project.features, layer);
+                        }
+                    });
+                });
+                toRemove.forEach(function (feature) {
+                    if (feature.isSelected) {
+                        _this.lastSelectedFeature = null;
+                        _this.selectedFeatures.some(function (f, ind, arr) {
+                            if (f.id === feature.id) {
+                                arr.splice(ind, 1);
+                                return true;
+                            }
+                        });
+                        _this.$messageBusService.publish('feature', 'onFeatureDeselect', feature);
+                    }
+                });
+                this.project.features.length = 0;
+            };
             /**
             * Calculate the effective feature style.
             */
@@ -31233,54 +31288,6 @@ var TableWidget;
     TableWidget.TableWidgetCtrl = TableWidgetCtrl;
 })(TableWidget || (TableWidget = {}));
 //# sourceMappingURL=TableWidgetCtrl.js.map
-var csComp;
-(function (csComp) {
-    var Services;
-    (function (Services) {
-        var GeometryTemplateStore = (function () {
-            function GeometryTemplateStore($http) {
-                this.$http = $http;
-                this.TEMPLATE_URL = 'api/layers';
-                this.templateList = {};
-            }
-            /* Make sure the geometry is loaded. Calls back true if ok, false if the geometry could not be loaded */
-            GeometryTemplateStore.prototype.loadGeometry = function (name, cb) {
-                var _this = this;
-                if (!name) {
-                    cb(null);
-                    return;
-                }
-                if (this.templateList.hasOwnProperty(name)) {
-                    cb(true);
-                    return;
-                }
-                var template = this.getTemplateFromServer(name, function (data) {
-                    if (!data) {
-                        cb(null);
-                        return;
-                    }
-                    _this.templateList[name] = data;
-                    cb(true);
-                });
-            };
-            GeometryTemplateStore.prototype.getTemplate = function (name) {
-                return this.templateList[name];
-            };
-            GeometryTemplateStore.prototype.getTemplateFromServer = function (name, cb) {
-                this.$http.get((this.TEMPLATE_URL + "/" + name).toLowerCase())
-                    .then(function (res) {
-                    cb(res.data);
-                })
-                    .catch(function (msg) {
-                    console.warn("Could not load " + name + " from server");
-                });
-            };
-            return GeometryTemplateStore;
-        }());
-        Services.GeometryTemplateStore = GeometryTemplateStore;
-    })(Services = csComp.Services || (csComp.Services = {}));
-})(csComp || (csComp = {}));
-//# sourceMappingURL=GeometryTemplate.js.map
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -32006,6 +32013,54 @@ var csComp;
     })(Services = csComp.Services || (csComp.Services = {}));
 })(csComp || (csComp = {}));
 //# sourceMappingURL=OpenCageDataSearchAction.js.map
+var csComp;
+(function (csComp) {
+    var Services;
+    (function (Services) {
+        var GeometryTemplateStore = (function () {
+            function GeometryTemplateStore($http) {
+                this.$http = $http;
+                this.TEMPLATE_URL = 'api/layers';
+                this.templateList = {};
+            }
+            /* Make sure the geometry is loaded. Calls back true if ok, false if the geometry could not be loaded */
+            GeometryTemplateStore.prototype.loadGeometry = function (name, cb) {
+                var _this = this;
+                if (!name) {
+                    cb(null);
+                    return;
+                }
+                if (this.templateList.hasOwnProperty(name)) {
+                    cb(true);
+                    return;
+                }
+                var template = this.getTemplateFromServer(name, function (data) {
+                    if (!data) {
+                        cb(null);
+                        return;
+                    }
+                    _this.templateList[name] = data;
+                    cb(true);
+                });
+            };
+            GeometryTemplateStore.prototype.getTemplate = function (name) {
+                return this.templateList[name];
+            };
+            GeometryTemplateStore.prototype.getTemplateFromServer = function (name, cb) {
+                this.$http.get((this.TEMPLATE_URL + "/" + name).toLowerCase())
+                    .then(function (res) {
+                    cb(res.data);
+                })
+                    .catch(function (msg) {
+                    console.warn("Could not load " + name + " from server");
+                });
+            };
+            return GeometryTemplateStore;
+        }());
+        Services.GeometryTemplateStore = GeometryTemplateStore;
+    })(Services = csComp.Services || (csComp.Services = {}));
+})(csComp || (csComp = {}));
+//# sourceMappingURL=GeometryTemplate.js.map
 var csComp;
 (function (csComp) {
     var Services;
@@ -35487,6 +35542,9 @@ var csComp;
                     _this.viewer.entities.remove(entity);
                 });
             };
+            CesiumRenderer.prototype.removeFeatureBatch = function (features, layer) {
+                this.removeFeatures(features);
+            };
             CesiumRenderer.prototype.removeFeatures = function (features) {
                 var _this = this;
                 var dfd = jQuery.Deferred();
@@ -36053,6 +36111,32 @@ var csComp;
                 //     feature.layer.mapLayer.removeLayer(marker);
                 //     delete feature.layer.group.markers[feature.id];
                 // }
+            };
+            LeafletRenderer.prototype.removeFeatureBatch = function (features, layer) {
+                switch (layer.renderType) {
+                    case 'geojson':
+                        var g = layer.group;
+                        if (g.clustering) {
+                            var m = g._cluster;
+                            try {
+                                features.forEach(function (feature) {
+                                    m.removeLayer(layer.group.markers[feature.id]);
+                                    delete layer.group.markers[feature.id];
+                                });
+                            }
+                            catch (error) { }
+                        }
+                        else {
+                            features.forEach(function (feature) {
+                                if (layer.group.markers.hasOwnProperty(feature.id)) {
+                                    layer.mapLayer.removeLayer(layer.group.markers[feature.id]);
+                                    layer.group._vectors.removeLayer(layer.group.markers[feature.id]);
+                                    delete layer.group.markers[feature.id];
+                                }
+                            });
+                        }
+                        break;
+                }
             };
             LeafletRenderer.prototype.updateFeature = function (feature) {
                 if (feature.layer.group == null)

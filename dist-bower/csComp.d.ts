@@ -1164,6 +1164,7 @@ declare module csComp.Services {
         removeGroup(group: ProjectGroup): any;
         createFeature(feature: IFeature): any;
         removeFeature(feature: IFeature): any;
+        removeFeatureBatch(features: IFeature[], layer: IProjectLayer): any;
         updateFeature(feature: IFeature): any;
         selectFeature(feature: IFeature): any;
         addFeature(feature: IFeature): any;
@@ -5292,6 +5293,10 @@ declare module csComp.Services {
         cleanSensorData(feature: IFeature, s: string): void;
         /** remove feature */
         removeFeature(feature: IFeature, save?: boolean): void;
+        /** remove feature batch */
+        removeFeatureBatch(featureIds: string[], layer: IProjectLayer): void;
+        /** remove feature batch */
+        removeAllFeatures(): void;
         /**
         * Calculate the effective feature style.
         */
@@ -7180,6 +7185,56 @@ declare module Indicators {
     }
 }
 
+declare module LocationWidget {
+    /** Module */
+    var myModule: any;
+    interface ILocationWidgetScope extends ng.IScope {
+        vm: LocationWidgetCtrl;
+        data: ILocationData;
+    }
+    interface ILocationWidget {
+        id: string;
+        name: string;
+    }
+    interface ILocationData {
+        /** Street view API key: https://developers.google.com/maps/documentation/streetview/get-api-key#get-an-api-key */
+        streetViewApiKey: string;
+        /** Optionally, specify the StreetView url, e.g. https://maps.googleapis.com/maps/api/streetview */
+        streetViewUrl: string;
+        showCoordinates: boolean;
+        showSunMoonRise: boolean;
+    }
+    interface LocationInfo {
+        title?: string;
+        address?: string;
+        postcode?: string;
+        city?: string;
+        neighbourhood?: string;
+        sunrise?: string;
+        sunset?: string;
+        locations?: string[];
+        defaultLocation?: string;
+        streetViewUrlThumb?: string;
+        streetViewUrlFull?: string;
+    }
+    class LocationWidgetCtrl {
+        private $scope;
+        private $http;
+        layerService: csComp.Services.LayerService;
+        private messageBusService;
+        private actionService;
+        private $timeout;
+        private streetViewUrl;
+        private parentWidget;
+        private location;
+        private selectedLocationFormat;
+        static $inject: string[];
+        constructor($scope: ILocationWidgetScope, $http: ng.IHttpService, layerService: csComp.Services.LayerService, messageBusService: csComp.Services.MessageBusService, actionService: csComp.Services.ActionService, $timeout: ng.ITimeoutService);
+        private updateWidget(data);
+        private close();
+    }
+}
+
 declare module Markdown {
     /**
       * Module
@@ -7278,56 +7333,6 @@ declare module MarkdownWidget {
         private selectFeature(feature);
         private replaceKeys();
         private exportToPDF();
-    }
-}
-
-declare module LocationWidget {
-    /** Module */
-    var myModule: any;
-    interface ILocationWidgetScope extends ng.IScope {
-        vm: LocationWidgetCtrl;
-        data: ILocationData;
-    }
-    interface ILocationWidget {
-        id: string;
-        name: string;
-    }
-    interface ILocationData {
-        /** Street view API key: https://developers.google.com/maps/documentation/streetview/get-api-key#get-an-api-key */
-        streetViewApiKey: string;
-        /** Optionally, specify the StreetView url, e.g. https://maps.googleapis.com/maps/api/streetview */
-        streetViewUrl: string;
-        showCoordinates: boolean;
-        showSunMoonRise: boolean;
-    }
-    interface LocationInfo {
-        title?: string;
-        address?: string;
-        postcode?: string;
-        city?: string;
-        neighbourhood?: string;
-        sunrise?: string;
-        sunset?: string;
-        locations?: string[];
-        defaultLocation?: string;
-        streetViewUrlThumb?: string;
-        streetViewUrlFull?: string;
-    }
-    class LocationWidgetCtrl {
-        private $scope;
-        private $http;
-        layerService: csComp.Services.LayerService;
-        private messageBusService;
-        private actionService;
-        private $timeout;
-        private streetViewUrl;
-        private parentWidget;
-        private location;
-        private selectedLocationFormat;
-        static $inject: string[];
-        constructor($scope: ILocationWidgetScope, $http: ng.IHttpService, layerService: csComp.Services.LayerService, messageBusService: csComp.Services.MessageBusService, actionService: csComp.Services.ActionService, $timeout: ng.ITimeoutService);
-        private updateWidget(data);
-        private close();
     }
 }
 
@@ -8894,6 +8899,7 @@ declare module csComp.Services {
         addGroup(group: ProjectGroup): void;
         removeGroup(group: ProjectGroup): void;
         removeFeature(feature: IFeature): void;
+        removeFeatureBatch(features: IFeature[], layer: IProjectLayer): void;
         removeFeatures(features: IFeature[]): JQueryPromise<{}>;
         updateFeature(feature: IFeature): void;
         /**
@@ -8948,6 +8954,7 @@ declare module csComp.Services {
         updateMapFilter(group: ProjectGroup): void;
         removeGroup(group: ProjectGroup): void;
         removeFeature(feature: IFeature): void;
+        removeFeatureBatch(features: IFeature[], layer: IProjectLayer): void;
         updateFeature(feature: IFeature): void;
         selectFeature(feature: any): void;
         addFeature(feature: IFeature): any;
