@@ -2359,8 +2359,8 @@ declare module Helpers.ContextMenu {
 
 declare module DataTable {
     /**
-      * Module
-      */
+     * Module
+     */
     var myModule: any;
 }
 
@@ -2438,6 +2438,7 @@ declare module DataTable {
         downloadGeoJson(): void;
         downloadCsv(): void;
         private selectAll();
+        restoreSorting(): void;
         /**
          * Convert to trusted html string.
          */

@@ -4990,7 +4990,8 @@ var Translations;
         EMAIL: 'E-mail',
         YES: 'Yes',
         NO: 'No',
-        LOGIN_OR_OUT: 'Login or logout'
+        LOGIN_OR_OUT: 'Login or logout',
+        DOWNLOAD_SELECTION_AS: 'Download selection as:'
     };
     Translations.English = English;
 })(Translations || (Translations = {}));
@@ -5232,7 +5233,8 @@ var Translations;
         EMAIL: 'E-mail',
         YES: 'Ja',
         NO: 'Nee',
-        LOGIN_OR_OUT: 'In- of uitloggen'
+        LOGIN_OR_OUT: 'In- of uitloggen',
+        DOWNLOAD_SELECTION_AS: 'Download selectie als:'
     };
     Translations.Dutch = Dutch;
 })(Translations || (Translations = {}));
@@ -6487,8 +6489,8 @@ var Helpers;
 var DataTable;
 (function (DataTable) {
     /**
-      * Config
-      */
+     * Config
+     */
     var moduleName = 'csComp';
     try {
         DataTable.myModule = angular.module(moduleName);
@@ -6498,11 +6500,11 @@ var DataTable;
         DataTable.myModule = angular.module(moduleName, []);
     }
     /**
-      * Directive to display a feature's properties in a panel.
-      *
-      * @seealso : http://www.youtube.com/watch?v=gjJ5vLRK8R8&list=UUGD_0i6L48hucTiiyhb5QzQ
-      * @seealso : http://plnkr.co/edit/HyBP9d?p=preview
-      */
+     * Directive to display a feature's properties in a panel.
+     *
+     * @seealso : http://www.youtube.com/watch?v=gjJ5vLRK8R8&list=UUGD_0i6L48hucTiiyhb5QzQ
+     * @seealso : http://plnkr.co/edit/HyBP9d?p=preview
+     */
     DataTable.myModule.directive('datatable', ['$compile',
         function ($compile) {
             return {
@@ -6513,6 +6515,52 @@ var DataTable;
                 replace: true,
                 transclude: true,
                 controller: DataTable.DataTableCtrl
+            };
+        }
+    ]);
+    DataTable.myModule.filter('filterRows', [function () {
+            return function (input, query) {
+                if (!query || typeof query !== 'string')
+                    return input;
+                var lcQuery = query.toLowerCase();
+                return input.filter(function (cols) {
+                    return cols.some(function (i) { return i && typeof i.displayValue === 'string' && i.displayValue.toLowerCase().indexOf(lcQuery) >= 0; });
+                });
+            };
+        }]);
+    DataTable.myModule.directive('fitRows', ['$window',
+        function ($window) {
+            return {
+                terminal: false,
+                // E = elements, A=attributes and C=css classes. Can be compined, e.g. EAC
+                restrict: 'A',
+                // Name if optional. Text Binding (Prefix: @), One-way Binding (Prefix: &), Two-way Binding (Prefix: =)
+                scope: {
+                    rowheight: '@',
+                    tablepadding: '@'
+                },
+                // Directives that want to modify the DOM typically use the link option.link takes a function with the following signature, function link(scope, element, attrs) { ... } where:
+                // * scope is an Angular scope object.
+                // * element is the jqLite wrapped element that this directive matches.
+                // * attrs is a hash object with key-value pairs of normalized attribute names and their corresponding attribute values.
+                link: function (scope, element, attrs) {
+                    scope.onResizeFunction = function () {
+                        if (scope.rowheight) {
+                            var windowHeight = $window.innerHeight;
+                            var tableHeight = windowHeight - +scope.tablepadding;
+                            if (scope.$parent && scope.$parent.$parent && scope.$parent.$parent.vm) {
+                                scope.$parent.$parent.vm.numberOfItems = (+tableHeight / +scope.rowheight).toFixed(0);
+                            }
+                        }
+                    };
+                    // Call to the function when the page is first loaded
+                    scope.onResizeFunction();
+                    // Listen to the resize event.
+                    angular.element($window).bind('resize', function () {
+                        scope.onResizeFunction();
+                        scope.$apply();
+                    });
+                }
             };
         }
     ]);
@@ -6788,6 +6836,7 @@ var DataTable;
                 this.headers.push(propertyTypeTitle);
             }
             this.rows = this.getRows();
+            this.restoreSorting();
         };
         DataTableCtrl.prototype.findLayerById = function (id) {
             for (var i = 0; i < this.$layerService.project.groups.length; i++) {
@@ -6927,7 +6976,7 @@ var DataTable;
             var csvRows = [];
             csvRows.push(this.headers.join(';'));
             for (var i = 0; i < this.rows.length; i++) {
-                csvRows.push(this.rows[i].map(function (f) { return f.displayValue; }).join(';'));
+                csvRows.push(this.rows[i].map(function (f) { return f.displayValue; }).join(';').replace(/\r?\n|\r/g, ''));
             }
             var csvString = csvRows.join('\r\n');
             var filename = this.mapLabel;
@@ -6996,6 +7045,12 @@ var DataTable;
                 this.rows = this.getRows();
             }
             this.selectAllBool = !this.selectAllBool;
+            this.restoreSorting();
+        };
+        DataTableCtrl.prototype.restoreSorting = function () {
+            if (this.$scope.hasOwnProperty('sortIndex') && this.$scope.hasOwnProperty('reverseSort')) {
+                this.orderBy(this.$scope.sortIndex, this.$scope.reverseSort);
+            }
         };
         /**
          * Convert to trusted html string.
