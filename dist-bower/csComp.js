@@ -517,41 +517,48 @@ var csComp;
                 var _this = this;
                 if ($injector === void 0) { $injector = null; }
                 this.layers = []; // add some layers here...
+                this.isLoading = true;
                 if ($injector == null) {
                     $injector = angular.injector(['ng']);
                 }
-                $injector.invoke(function ($http) {
+                $injector.invoke(function ($http, $timeout) {
                     $http.get(_this.owsurl)
-                        .then(function (res) { _this.parseXML(res.data); }, function (xml, status) {
+                        .then(function (res) {
+                        _this.parseXML(res.data, $timeout);
+                        _this.isLoading = false;
+                    }, function (xml, status) {
                         console.log('Unable to load OWSurl: ' + _this.owsurl);
                         console.log('          HTTP status: ' + status);
+                        _this.isLoading = false;
                     });
                 });
             };
-            ProjectGroup.prototype.parseXML = function (xml) {
+            ProjectGroup.prototype.parseXML = function (xml, $timeout) {
                 var theGroup = this;
                 var baseurl = this.owsurl.split('?')[0];
-                $(xml).find('Layer').each(function () {
-                    // DO NOT use arrow notation (=>) as it will break this !!!
-                    var layerName = $(this).children('Name').text();
-                    if (layerName != null && layerName !== '') {
-                        var title = $(this).children('Title').text();
-                        // If <KeywordList> element has an element <keyword vocabulary="defaultFeatureType">featureType</keyword>
-                        // use featureType as defaultFeatureType
-                        var featureType = $(this).children('KeywordList').children('[vocabulary="defaultFeatureType"]').text();
-                        var resourceURL = $(this).children('KeywordList').children('[vocabulary="typeResourceURL"]').text();
-                        // TODO: should be using layerService.initLayer(theGroup, layer);
-                        // But I don't know how to 'inject' layerService :(
-                        var layer = theGroup.buildLayer(baseurl, title, layerName);
-                        if (featureType !== '') {
-                            layer.defaultFeatureType = featureType;
-                            layer.typeUrl = 'data/resourceTypes/resources.json';
+                $(xml).find('Layer').each(function (index, elem) {
+                    // run each evaluation asynchronously, otherwise parsing may lock the browser.
+                    $timeout(function () {
+                        var layerName = $(elem).children('Name').text();
+                        if (layerName != null && layerName !== '') {
+                            var title = $(elem).children('Title').text();
+                            // If <KeywordList> element has an element <keyword vocabulary="defaultFeatureType">featureType</keyword>
+                            // use featureType as defaultFeatureType
+                            var featureType = $(elem).children('KeywordList').children('[vocabulary="defaultFeatureType"]').text();
+                            var resourceURL = $(elem).children('KeywordList').children('[vocabulary="typeResourceURL"]').text();
+                            // TODO: should be using layerService.initLayer(theGroup, layer);
+                            // But I don't know how to 'inject' layerService :(
+                            var layer = theGroup.buildLayer(baseurl, title, layerName);
+                            if (featureType !== '') {
+                                layer.defaultFeatureType = featureType;
+                                layer.typeUrl = 'data/resourceTypes/resources.json';
+                            }
+                            if (resourceURL !== '') {
+                                layer.typeUrl = resourceURL;
+                            }
+                            theGroup.layers.push(layer);
                         }
-                        if (resourceURL !== '') {
-                            layer.typeUrl = resourceURL;
-                        }
-                        theGroup.layers.push(layer);
-                    }
+                    });
                 });
             };
             ProjectGroup.prototype.buildLayer = function (baseurl, title, layerName) {
@@ -11290,7 +11297,7 @@ var LayersDirective;
             ;
         };
         LayersDirectiveCtrl.prototype.editGroup = function (group) {
-            var rpt = csComp.Helpers.createRightPanelTab('edit', 'groupsettings', group, 'Group Settings', 'Group Settings', 'cog', true, true);
+            var rpt = csComp.Helpers.createRightPanelTab('edit', 'groupedit', group, 'Group Settings', 'Group Settings', 'cog', true, true);
             this.$messageBusService.publish('rightpanel', 'activate', rpt);
         };
         LayersDirectiveCtrl.prototype.layerSettings = function (layer) {
@@ -11961,6 +11968,9 @@ var Legend;
             }
             if (!activeStyle)
                 return leg;
+            if (activeStyle.activeLegend) {
+                leg = angular.merge(leg, activeStyle.activeLegend);
+            }
             var ptd = this.$layerService.propertyTypeData[activeStyle.property];
             this.$scope.activeStyleProperty = ptd;
             if (!ptd)
@@ -11970,13 +11980,9 @@ var Legend;
             leg.id = ptd.label + 'legendcolors';
             leg.legendKind = 'interpolated';
             leg.description = ptd.title;
-            leg.legendEntries = [];
-            if (activeStyle.activeLegend && activeStyle.activeLegend.legendEntries) {
-                activeStyle.activeLegend.legendEntries.forEach(function (le) {
-                    leg.legendEntries.push(le);
-                });
-            }
-            else {
+            if (!leg.legendEntries)
+                leg.legendEntries = [];
+            if (leg.legendEntries.length == 0 && activeStyle.info.min !== activeStyle.info.max) {
                 leg.legendEntries.push(this.createLegendEntry(activeStyle, ptd, activeStyle.info.userMin));
                 leg.legendEntries.push(this.createLegendEntry(activeStyle, ptd, (activeStyle.info.userMin + activeStyle.info.userMax) / 4));
                 leg.legendEntries.push(this.createLegendEntry(activeStyle, ptd, 2 * (activeStyle.info.userMin + activeStyle.info.userMax) / 4));
@@ -14106,6 +14112,343 @@ var Mobile;
     Mobile.MobileCtrl = MobileCtrl;
 })(Mobile || (Mobile = {}));
 //# sourceMappingURL=MobileCtrl.js.map
+var OfflineSearch;
+(function (OfflineSearch) {
+    /**
+      * Config
+      */
+    var moduleName = 'csComp';
+    try {
+        OfflineSearch.myModule = angular.module(moduleName);
+    }
+    catch (err) {
+        // named module does not exist, so create one
+        OfflineSearch.myModule = angular.module(moduleName, []);
+    }
+    /**
+      * Directive to display the available map layers.
+      */
+    OfflineSearch.myModule.directive('offlineSearch', [
+        '$compile',
+        function ($compile) {
+            return {
+                terminal: true,
+                restrict: 'E',
+                scope: {},
+                templateUrl: 'directives/OfflineSearch/OfflineSearch.tpl.html',
+                compile: function (el) {
+                    var fn = $compile(el);
+                    return function (scope) {
+                        fn(scope);
+                    };
+                },
+                replace: true,
+                transclude: true,
+                controller: OfflineSearch.OfflineSearchCtrl
+            };
+        }
+    ]);
+})(OfflineSearch || (OfflineSearch = {}));
+//# sourceMappingURL=OfflineSearch.js.map
+var OfflineSearch;
+(function (OfflineSearch) {
+    var Layer = (function () {
+        function Layer(groupTitle, index, id, title, path, type) {
+            this.groupTitle = groupTitle;
+            this.index = index;
+            this.id = id;
+            this.title = title;
+            this.path = path;
+            this.type = type;
+            /**
+             * Names of all the features.
+             * @type {string[]}
+             */
+            this.featureNames = [];
+        }
+        return Layer;
+    }());
+    OfflineSearch.Layer = Layer;
+    /**
+     * An index entry that contains a search result.
+     */
+    var Entry = (function () {
+        function Entry(layerIndexOrArray, featureIndex, propertyIndex) {
+            this.v = Array(2);
+            if (typeof layerIndexOrArray === 'number') {
+                this.v[0] = layerIndexOrArray;
+                this.v[1] = featureIndex;
+            }
+            else {
+                this.v = layerIndexOrArray;
+            }
+        }
+        Object.defineProperty(Entry.prototype, "layerIndex", {
+            get: function () { return this.v[0]; },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(Entry.prototype, "featureIndex", {
+            get: function () { return this.v[1]; },
+            enumerable: true,
+            configurable: true
+        });
+        /**
+         * This function is called when serializing the Entry object to JSON, which is
+         * much less verbose than the default JSON. In the constructor, I've used a
+         * Union type to deserialize it again.
+         */
+        Entry.prototype.toJSON = function () {
+            return this.v;
+        };
+        return Entry;
+    }());
+    OfflineSearch.Entry = Entry;
+    var KeywordIndex = (function () {
+        function KeywordIndex() {
+        }
+        return KeywordIndex;
+    }());
+    OfflineSearch.KeywordIndex = KeywordIndex;
+    var OfflineSearchResult = (function () {
+        function OfflineSearchResult(project, options) {
+            this.project = project;
+            this.options = options;
+            this.layers = [];
+            this.keywordIndex = {};
+        }
+        return OfflineSearchResult;
+    }());
+    OfflineSearch.OfflineSearchResult = OfflineSearchResult;
+})(OfflineSearch || (OfflineSearch = {}));
+//# sourceMappingURL=OfflineSearchClasses.js.map
+var OfflineSearch;
+(function (OfflineSearch) {
+    var OfflineSearchResultViewModel = (function () {
+        function OfflineSearchResultViewModel(title, layerTitle, groupTitle, entry) {
+            this.title = title;
+            this.layerTitle = layerTitle;
+            this.groupTitle = groupTitle;
+            this.entry = entry;
+            this.firstInGroup = false;
+        }
+        OfflineSearchResultViewModel.prototype.toString = function () {
+            return this.title;
+        };
+        Object.defineProperty(OfflineSearchResultViewModel.prototype, "fullTitle", {
+            get: function () {
+                return this.groupTitle + ' >> ' + this.layerTitle + ' >> ' + this.title;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        return OfflineSearchResultViewModel;
+    }());
+    OfflineSearch.OfflineSearchResultViewModel = OfflineSearchResultViewModel;
+    var OfflineSearchCtrl = (function () {
+        // dependencies are injected via AngularJS $injector
+        // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
+        function OfflineSearchCtrl($scope, $http, $layerService, $mapService, $messageBus) {
+            var _this = this;
+            this.$scope = $scope;
+            this.$http = $http;
+            this.$layerService = $layerService;
+            this.$mapService = $mapService;
+            this.$messageBus = $messageBus;
+            this.isReady = false;
+            $scope.vm = this;
+            $messageBus.subscribe('project', function (title) {
+                switch (title) {
+                    case 'loaded':
+                        var offlineSearchResultUrl = $layerService.projectUrl.url.replace('project.json', 'offline_search_result.json');
+                        _this.loadSearchResults(offlineSearchResultUrl);
+                        break;
+                }
+            });
+            $messageBus.subscribe('language', function (title, language) {
+                switch (title) {
+                    case 'newLanguage':
+                        // TODO switch language!
+                        break;
+                }
+            });
+        }
+        /**
+         * Load the offline search results (json file).
+         */
+        OfflineSearchCtrl.prototype.loadSearchResults = function (url) {
+            var _this = this;
+            this.$http.get(url)
+                .then(function (res) {
+                var offlineSearchResult = res.data;
+                _this.offlineSearchResult = offlineSearchResult;
+                var kwi = offlineSearchResult.keywordIndex;
+                var keywordIndex = {};
+                for (var key in kwi) {
+                    if (!kwi.hasOwnProperty(key))
+                        continue;
+                    kwi[key].forEach(function (entry) {
+                        if (!keywordIndex.hasOwnProperty(key))
+                            keywordIndex[key] = [];
+                        keywordIndex[key].push(new OfflineSearch.Entry(entry));
+                    });
+                }
+                _this.offlineSearchResult.keywordIndex = keywordIndex;
+                _this.isReady = true;
+            })
+                .catch(function () { console.log("OfflineSearch: error with $http "); });
+        };
+        /**
+         * Get the locations based on the entered text.
+         */
+        OfflineSearchCtrl.prototype.getLocation = function (text, resultCount) {
+            if (resultCount === void 0) { resultCount = 15; }
+            if (!this.isReady || text === null || text.length < 3)
+                return [];
+            var searchWords = text.toLowerCase().split(' ');
+            // test if last word in text might be a (part of) a stopword, if so remove it
+            var lastSearchTerm = searchWords[searchWords.length - 1];
+            var possibleStopWords = this.offlineSearchResult.options.stopWords.filter(function (stopword) { return stopword.indexOf(lastSearchTerm) > -1; });
+            if (possibleStopWords.length > 0) {
+                searchWords.splice(searchWords.length - 1, 1);
+            }
+            // remove all exact stopwords
+            this.offlineSearchResult.options.stopWords.forEach(function (stopWord) {
+                while (searchWords.indexOf(stopWord) > -1) {
+                    searchWords.splice(searchWords.indexOf(stopWord), 1);
+                }
+            });
+            var totResults;
+            for (var j in searchWords) {
+                var result = this.getKeywordHits(searchWords[j]);
+                totResults = !totResults
+                    ? result
+                    : this.mergeResults(totResults, result);
+            }
+            var searchResults = [];
+            var layers = this.offlineSearchResult.layers;
+            var count = resultCount;
+            var resultIndex = 0;
+            while (count > 0 && resultIndex < totResults.length) {
+                var r = totResults[resultIndex++];
+                var subCount = Math.min(count, r.entries.length);
+                for (var i = 0; i < subCount; i++) {
+                    var entry = r.entries[i];
+                    var layer = layers[entry.layerIndex];
+                    count--;
+                    searchResults.push(new OfflineSearchResultViewModel(layer.featureNames[entry.featureIndex], layer.title, layer.groupTitle, entry));
+                }
+            }
+            // Group search results by groupTitle | layerTitle
+            var groups = {};
+            searchResults.forEach(function (sr) {
+                var group = sr.groupTitle + ' >> ' + sr.layerTitle;
+                if (!groups.hasOwnProperty(group))
+                    groups[group] = [];
+                groups[group].push(sr);
+            });
+            searchResults = [];
+            for (var key in groups) {
+                if (!groups.hasOwnProperty(key))
+                    continue;
+                var firstInGroup = true;
+                groups[key].forEach(function (sr) {
+                    sr.firstInGroup = firstInGroup;
+                    searchResults.push(sr);
+                    firstInGroup = false;
+                });
+            }
+            return searchResults;
+        };
+        /**
+         * Merge the resuls of two keyword lookups by checking whether different entries refer
+         * to the same layer and feature.
+         * @result1 {ILookupResult[]}
+         * @result2 {ILookupResult[]}
+         */
+        OfflineSearchCtrl.prototype.mergeResults = function (result1, result2) {
+            var r = [];
+            result1.forEach(function (r1) {
+                result2.forEach(function (r2) {
+                    r1.entries.forEach(function (entry1) {
+                        r2.entries.forEach(function (entry2) {
+                            if (entry1.layerIndex === entry2.layerIndex && entry1.featureIndex === entry2.featureIndex)
+                                r.push({ score: r1.score * r2.score, key: r1.key + ' ' + r2.key, entries: [entry1] });
+                        });
+                    });
+                });
+            });
+            r = r.sort(function (a, b) { return b.score - a.score; });
+            return r;
+        };
+        /**
+         * Do a fuzzy keyword comparison between the entered text and the list of keywords,
+         * and return a subset.
+         * @text: {string}
+         */
+        OfflineSearchCtrl.prototype.getKeywordHits = function (text) {
+            var results = [];
+            var keywordIndex = this.offlineSearchResult.keywordIndex;
+            var keywords = Object.getOwnPropertyNames(keywordIndex);
+            keywords.forEach(function (key) {
+                var score = key.score(text, null);
+                if (score < 0.5)
+                    return;
+                results.push({ score: score, key: key, entries: keywordIndex[key] });
+            });
+            results = results.sort(function (a, b) { return b.score - a.score; });
+            return results;
+        };
+        /**
+         * When an item is selected, optionally open the layer and jump to the selected feature.
+         */
+        OfflineSearchCtrl.prototype.onSelect = function (selectedItem) {
+            var _this = this;
+            var layerIndex = selectedItem.entry.layerIndex;
+            var layer = this.offlineSearchResult.layers[layerIndex];
+            var projectLayer = this.$layerService.findLayer(layer.id);
+            console.log(selectedItem);
+            if (!projectLayer)
+                return;
+            if (projectLayer.enabled) {
+                this.selectFeature(layer.id, selectedItem.entry.featureIndex);
+                return;
+            }
+            else {
+                var handle = this.$messageBus.subscribe('layer', function (title, layer) {
+                    if (title !== 'activated' || projectLayer.url !== layer.url)
+                        return;
+                    _this.selectFeature(layer.id, selectedItem.entry.featureIndex);
+                    _this.$messageBus.unsubscribe(handle);
+                });
+                this.$layerService.addLayer(projectLayer);
+            }
+            var group = $("#layergroup_" + projectLayer.groupId);
+            group.collapse("show");
+        };
+        OfflineSearchCtrl.prototype.selectFeature = function (layerId, featureIndex) {
+            var feature = this.$layerService.findFeatureByIndex(layerId, featureIndex);
+            if (feature == null)
+                return;
+            this.$mapService.zoomTo(feature);
+            this.$layerService.selectFeature(feature);
+        };
+        return OfflineSearchCtrl;
+    }());
+    // $inject annotation.
+    // It provides $injector with information about dependencies to be injected into constructor
+    // it is better to have it close to the constructor, because the parameters must match in count and type.
+    // See http://docs.angularjs.org/guide/di
+    OfflineSearchCtrl.$inject = [
+        '$scope',
+        '$http',
+        'layerService',
+        'mapService',
+        'messageBusService'
+    ];
+    OfflineSearch.OfflineSearchCtrl = OfflineSearchCtrl;
+})(OfflineSearch || (OfflineSearch = {}));
+//# sourceMappingURL=OfflineSearchCtrl.js.map
 var Navigate;
 (function (Navigate) {
     /**
@@ -14507,343 +14850,6 @@ var Search;
     Search.NavigateState = NavigateState;
 })(Search || (Search = {}));
 //# sourceMappingURL=SearchClasses.js.map
-var OfflineSearch;
-(function (OfflineSearch) {
-    /**
-      * Config
-      */
-    var moduleName = 'csComp';
-    try {
-        OfflineSearch.myModule = angular.module(moduleName);
-    }
-    catch (err) {
-        // named module does not exist, so create one
-        OfflineSearch.myModule = angular.module(moduleName, []);
-    }
-    /**
-      * Directive to display the available map layers.
-      */
-    OfflineSearch.myModule.directive('offlineSearch', [
-        '$compile',
-        function ($compile) {
-            return {
-                terminal: true,
-                restrict: 'E',
-                scope: {},
-                templateUrl: 'directives/OfflineSearch/OfflineSearch.tpl.html',
-                compile: function (el) {
-                    var fn = $compile(el);
-                    return function (scope) {
-                        fn(scope);
-                    };
-                },
-                replace: true,
-                transclude: true,
-                controller: OfflineSearch.OfflineSearchCtrl
-            };
-        }
-    ]);
-})(OfflineSearch || (OfflineSearch = {}));
-//# sourceMappingURL=OfflineSearch.js.map
-var OfflineSearch;
-(function (OfflineSearch) {
-    var Layer = (function () {
-        function Layer(groupTitle, index, id, title, path, type) {
-            this.groupTitle = groupTitle;
-            this.index = index;
-            this.id = id;
-            this.title = title;
-            this.path = path;
-            this.type = type;
-            /**
-             * Names of all the features.
-             * @type {string[]}
-             */
-            this.featureNames = [];
-        }
-        return Layer;
-    }());
-    OfflineSearch.Layer = Layer;
-    /**
-     * An index entry that contains a search result.
-     */
-    var Entry = (function () {
-        function Entry(layerIndexOrArray, featureIndex, propertyIndex) {
-            this.v = Array(2);
-            if (typeof layerIndexOrArray === 'number') {
-                this.v[0] = layerIndexOrArray;
-                this.v[1] = featureIndex;
-            }
-            else {
-                this.v = layerIndexOrArray;
-            }
-        }
-        Object.defineProperty(Entry.prototype, "layerIndex", {
-            get: function () { return this.v[0]; },
-            enumerable: true,
-            configurable: true
-        });
-        Object.defineProperty(Entry.prototype, "featureIndex", {
-            get: function () { return this.v[1]; },
-            enumerable: true,
-            configurable: true
-        });
-        /**
-         * This function is called when serializing the Entry object to JSON, which is
-         * much less verbose than the default JSON. In the constructor, I've used a
-         * Union type to deserialize it again.
-         */
-        Entry.prototype.toJSON = function () {
-            return this.v;
-        };
-        return Entry;
-    }());
-    OfflineSearch.Entry = Entry;
-    var KeywordIndex = (function () {
-        function KeywordIndex() {
-        }
-        return KeywordIndex;
-    }());
-    OfflineSearch.KeywordIndex = KeywordIndex;
-    var OfflineSearchResult = (function () {
-        function OfflineSearchResult(project, options) {
-            this.project = project;
-            this.options = options;
-            this.layers = [];
-            this.keywordIndex = {};
-        }
-        return OfflineSearchResult;
-    }());
-    OfflineSearch.OfflineSearchResult = OfflineSearchResult;
-})(OfflineSearch || (OfflineSearch = {}));
-//# sourceMappingURL=OfflineSearchClasses.js.map
-var OfflineSearch;
-(function (OfflineSearch) {
-    var OfflineSearchResultViewModel = (function () {
-        function OfflineSearchResultViewModel(title, layerTitle, groupTitle, entry) {
-            this.title = title;
-            this.layerTitle = layerTitle;
-            this.groupTitle = groupTitle;
-            this.entry = entry;
-            this.firstInGroup = false;
-        }
-        OfflineSearchResultViewModel.prototype.toString = function () {
-            return this.title;
-        };
-        Object.defineProperty(OfflineSearchResultViewModel.prototype, "fullTitle", {
-            get: function () {
-                return this.groupTitle + ' >> ' + this.layerTitle + ' >> ' + this.title;
-            },
-            enumerable: true,
-            configurable: true
-        });
-        return OfflineSearchResultViewModel;
-    }());
-    OfflineSearch.OfflineSearchResultViewModel = OfflineSearchResultViewModel;
-    var OfflineSearchCtrl = (function () {
-        // dependencies are injected via AngularJS $injector
-        // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
-        function OfflineSearchCtrl($scope, $http, $layerService, $mapService, $messageBus) {
-            var _this = this;
-            this.$scope = $scope;
-            this.$http = $http;
-            this.$layerService = $layerService;
-            this.$mapService = $mapService;
-            this.$messageBus = $messageBus;
-            this.isReady = false;
-            $scope.vm = this;
-            $messageBus.subscribe('project', function (title) {
-                switch (title) {
-                    case 'loaded':
-                        var offlineSearchResultUrl = $layerService.projectUrl.url.replace('project.json', 'offline_search_result.json');
-                        _this.loadSearchResults(offlineSearchResultUrl);
-                        break;
-                }
-            });
-            $messageBus.subscribe('language', function (title, language) {
-                switch (title) {
-                    case 'newLanguage':
-                        // TODO switch language!
-                        break;
-                }
-            });
-        }
-        /**
-         * Load the offline search results (json file).
-         */
-        OfflineSearchCtrl.prototype.loadSearchResults = function (url) {
-            var _this = this;
-            this.$http.get(url)
-                .then(function (res) {
-                var offlineSearchResult = res.data;
-                _this.offlineSearchResult = offlineSearchResult;
-                var kwi = offlineSearchResult.keywordIndex;
-                var keywordIndex = {};
-                for (var key in kwi) {
-                    if (!kwi.hasOwnProperty(key))
-                        continue;
-                    kwi[key].forEach(function (entry) {
-                        if (!keywordIndex.hasOwnProperty(key))
-                            keywordIndex[key] = [];
-                        keywordIndex[key].push(new OfflineSearch.Entry(entry));
-                    });
-                }
-                _this.offlineSearchResult.keywordIndex = keywordIndex;
-                _this.isReady = true;
-            })
-                .catch(function () { console.log("OfflineSearch: error with $http "); });
-        };
-        /**
-         * Get the locations based on the entered text.
-         */
-        OfflineSearchCtrl.prototype.getLocation = function (text, resultCount) {
-            if (resultCount === void 0) { resultCount = 15; }
-            if (!this.isReady || text === null || text.length < 3)
-                return [];
-            var searchWords = text.toLowerCase().split(' ');
-            // test if last word in text might be a (part of) a stopword, if so remove it
-            var lastSearchTerm = searchWords[searchWords.length - 1];
-            var possibleStopWords = this.offlineSearchResult.options.stopWords.filter(function (stopword) { return stopword.indexOf(lastSearchTerm) > -1; });
-            if (possibleStopWords.length > 0) {
-                searchWords.splice(searchWords.length - 1, 1);
-            }
-            // remove all exact stopwords
-            this.offlineSearchResult.options.stopWords.forEach(function (stopWord) {
-                while (searchWords.indexOf(stopWord) > -1) {
-                    searchWords.splice(searchWords.indexOf(stopWord), 1);
-                }
-            });
-            var totResults;
-            for (var j in searchWords) {
-                var result = this.getKeywordHits(searchWords[j]);
-                totResults = !totResults
-                    ? result
-                    : this.mergeResults(totResults, result);
-            }
-            var searchResults = [];
-            var layers = this.offlineSearchResult.layers;
-            var count = resultCount;
-            var resultIndex = 0;
-            while (count > 0 && resultIndex < totResults.length) {
-                var r = totResults[resultIndex++];
-                var subCount = Math.min(count, r.entries.length);
-                for (var i = 0; i < subCount; i++) {
-                    var entry = r.entries[i];
-                    var layer = layers[entry.layerIndex];
-                    count--;
-                    searchResults.push(new OfflineSearchResultViewModel(layer.featureNames[entry.featureIndex], layer.title, layer.groupTitle, entry));
-                }
-            }
-            // Group search results by groupTitle | layerTitle
-            var groups = {};
-            searchResults.forEach(function (sr) {
-                var group = sr.groupTitle + ' >> ' + sr.layerTitle;
-                if (!groups.hasOwnProperty(group))
-                    groups[group] = [];
-                groups[group].push(sr);
-            });
-            searchResults = [];
-            for (var key in groups) {
-                if (!groups.hasOwnProperty(key))
-                    continue;
-                var firstInGroup = true;
-                groups[key].forEach(function (sr) {
-                    sr.firstInGroup = firstInGroup;
-                    searchResults.push(sr);
-                    firstInGroup = false;
-                });
-            }
-            return searchResults;
-        };
-        /**
-         * Merge the resuls of two keyword lookups by checking whether different entries refer
-         * to the same layer and feature.
-         * @result1 {ILookupResult[]}
-         * @result2 {ILookupResult[]}
-         */
-        OfflineSearchCtrl.prototype.mergeResults = function (result1, result2) {
-            var r = [];
-            result1.forEach(function (r1) {
-                result2.forEach(function (r2) {
-                    r1.entries.forEach(function (entry1) {
-                        r2.entries.forEach(function (entry2) {
-                            if (entry1.layerIndex === entry2.layerIndex && entry1.featureIndex === entry2.featureIndex)
-                                r.push({ score: r1.score * r2.score, key: r1.key + ' ' + r2.key, entries: [entry1] });
-                        });
-                    });
-                });
-            });
-            r = r.sort(function (a, b) { return b.score - a.score; });
-            return r;
-        };
-        /**
-         * Do a fuzzy keyword comparison between the entered text and the list of keywords,
-         * and return a subset.
-         * @text: {string}
-         */
-        OfflineSearchCtrl.prototype.getKeywordHits = function (text) {
-            var results = [];
-            var keywordIndex = this.offlineSearchResult.keywordIndex;
-            var keywords = Object.getOwnPropertyNames(keywordIndex);
-            keywords.forEach(function (key) {
-                var score = key.score(text, null);
-                if (score < 0.5)
-                    return;
-                results.push({ score: score, key: key, entries: keywordIndex[key] });
-            });
-            results = results.sort(function (a, b) { return b.score - a.score; });
-            return results;
-        };
-        /**
-         * When an item is selected, optionally open the layer and jump to the selected feature.
-         */
-        OfflineSearchCtrl.prototype.onSelect = function (selectedItem) {
-            var _this = this;
-            var layerIndex = selectedItem.entry.layerIndex;
-            var layer = this.offlineSearchResult.layers[layerIndex];
-            var projectLayer = this.$layerService.findLayer(layer.id);
-            console.log(selectedItem);
-            if (!projectLayer)
-                return;
-            if (projectLayer.enabled) {
-                this.selectFeature(layer.id, selectedItem.entry.featureIndex);
-                return;
-            }
-            else {
-                var handle = this.$messageBus.subscribe('layer', function (title, layer) {
-                    if (title !== 'activated' || projectLayer.url !== layer.url)
-                        return;
-                    _this.selectFeature(layer.id, selectedItem.entry.featureIndex);
-                    _this.$messageBus.unsubscribe(handle);
-                });
-                this.$layerService.addLayer(projectLayer);
-            }
-            var group = $("#layergroup_" + projectLayer.groupId);
-            group.collapse("show");
-        };
-        OfflineSearchCtrl.prototype.selectFeature = function (layerId, featureIndex) {
-            var feature = this.$layerService.findFeatureByIndex(layerId, featureIndex);
-            if (feature == null)
-                return;
-            this.$mapService.zoomTo(feature);
-            this.$layerService.selectFeature(feature);
-        };
-        return OfflineSearchCtrl;
-    }());
-    // $inject annotation.
-    // It provides $injector with information about dependencies to be injected into constructor
-    // it is better to have it close to the constructor, because the parameters must match in count and type.
-    // See http://docs.angularjs.org/guide/di
-    OfflineSearchCtrl.$inject = [
-        '$scope',
-        '$http',
-        'layerService',
-        'mapService',
-        'messageBusService'
-    ];
-    OfflineSearch.OfflineSearchCtrl = OfflineSearchCtrl;
-})(OfflineSearch || (OfflineSearch = {}));
-//# sourceMappingURL=OfflineSearchCtrl.js.map
 var ProfileHeader;
 (function (ProfileHeader) {
     var ProfileHeaderCtrl = (function () {
@@ -18876,6 +18882,11 @@ var csComp;
                     var reset = { title: 'Reset Layer', icon: 'reset' };
                     reset.callback = function (layer, layerService) {
                         console.log('Resetting layer: ' + layer.title);
+                        if (layer.data && layer.data.features) {
+                            layer.data.features.forEach(function (f) {
+                                layer.layerSource.service.removeFeature(f);
+                            });
+                        }
                         layer.data.features = [];
                         layer.layerSource.refreshLayer(layer);
                     };
@@ -20198,7 +20209,7 @@ var csComp;
                 this.calculateFeatureStyle(feature);
                 this.activeMapRenderer.updateFeature(feature);
                 if (feature === this.lastSelectedFeature) {
-                    this.$messageBusService.publish('feature', 'onFeatureUpdated');
+                    this.$messageBusService.publish('feature', 'onFeatureUpdated', feature);
                 }
             };
             LayerService.prototype.getSensorIndex = function (d, timestamps) {
@@ -20342,8 +20353,9 @@ var csComp;
                         feature.properties = {};
                     feature.index = layer.count++;
                     // make sure it has an id
-                    if (feature.id == null)
+                    if (feature.id == null || typeof feature.id === 'undefined') {
                         feature.id = csComp.Helpers.getGuid();
+                    }
                     feature.layerId = layer.id;
                     feature.layer = layer;
                     // add feature to global list of features
@@ -20872,7 +20884,9 @@ var csComp;
             LayerService.prototype.findFeatureByName = function (name) {
                 for (var i = 0; i < this.project.features.length; i++) {
                     var feature = this.project.features[i];
-                    if (feature.hasOwnProperty('Name') && name === feature.properties['Name'])
+                    if (feature.hasOwnProperty('properties') &&
+                        feature.properties.hasOwnProperty('Name') &&
+                        name === feature.properties['Name'])
                         return feature;
                 }
             };
@@ -21035,6 +21049,7 @@ var csComp;
                     group.styles.splice(pos, 1); // RS, 2015-04-04: why delete only one style? (what if oldStyles.length > 1)
                 }
                 group.styles.push(style);
+                this.$messageBusService.publish('updatelegend', 'updatedstyle');
             };
             /** checks if there are any filters available, used to show/hide filter tab leftpanel menu */
             LayerService.prototype.updateFilterAvailability = function () {
@@ -23636,7 +23651,7 @@ var Dashboard;
             this.$timeout(function () {
                 w._initialized = true;
                 var widgetElement;
-                var newScope = _this.$scope;
+                var newScope = _this.$scope.$new(true);
                 newScope.widget = w;
                 if (w.position === 'rightpanel') {
                     var rpt = csComp.Helpers.createRightPanelTab(w.id, w.directive, w.data, w.title, '{{"FEATURE_INFO" | translate}}', w.icon, true, false);
@@ -24945,9 +24960,9 @@ var LayerEditor;
                             fid = ft.name;
                         }
                         layer.data.features.push(f);
-                        _this.$messageBusService.publish("feature", "dropped", f);
                         _this.$layerService.initFeature(f, layer);
                         _this.$layerService.activeMapRenderer.addFeature(f);
+                        _this.$messageBusService.publish("feature", "dropped", f);
                         _this.$layerService.saveFeature(f);
                         _this.$layerService.editFeature(f, true);
                     }, 10);
@@ -25059,9 +25074,10 @@ var LayerSettings;
     var LayerSettingsCtrl = (function () {
         // dependencies are injected via AngularJS $injector
         // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
-        function LayerSettingsCtrl($scope, $http, $mapService, $layerService, $messageBusService, $dashboardService) {
+        function LayerSettingsCtrl($scope, $http, $timeout, $mapService, $layerService, $messageBusService, $dashboardService) {
             this.$scope = $scope;
             this.$http = $http;
+            this.$timeout = $timeout;
             this.$mapService = $mapService;
             this.$layerService = $layerService;
             this.$messageBusService = $messageBusService;
@@ -25106,14 +25122,12 @@ var LayerSettings;
         };
         LayerSettingsCtrl.prototype.getTypes = function () {
             var _this = this;
+            if (!this.layer.typeUrl)
+                return;
             this.$http.get(this.layer.typeUrl)
                 .then(function (res) {
                 var response = res.data;
-                setTimeout(function () {
-                    _this.availabeTypes = response.featureTypes;
-                    if (_this.$scope.$root.$$phase !== '$apply' && _this.$scope.$root.$$phase !== '$digest')
-                        _this.$scope.$apply();
-                }, 0);
+                _this.$timeout(function () { return _this.availabeTypes = response.featureTypes; });
             })
                 .catch(function () { console.log('LayerEditCtl.getTypes: error with $http'); });
         };
@@ -25127,6 +25141,7 @@ var LayerSettings;
     LayerSettingsCtrl.$inject = [
         '$scope',
         '$http',
+        '$timeout',
         'mapService',
         'layerService',
         'messageBusService',
@@ -34541,7 +34556,6 @@ var csComp;
 (function (csComp) {
     var Services;
     (function (Services) {
-        'use strict';
         var WmsSource = (function () {
             //service : LayerService;
             function WmsSource(service) {
@@ -34582,12 +34596,12 @@ var csComp;
                     opacity: layer.opacity / 100,
                     format: 'image/png',
                     transparent: true,
-                    attribution: layer.description
+                    attribution: layer.description,
+                    srs: 'EPSG:4326'
                 });
                 layer.renderType = 'wms';
                 layer._gui['wms'] = wms;
                 callback(layer);
-                //this.$rootScope.$apply();
             };
             WmsSource.prototype.updateTime = function (layer, date) {
                 if (layer._gui.hasOwnProperty('wms')) {
@@ -35221,6 +35235,27 @@ var csComp;
                         service.$rootScope.$apply();
                     }
                 });
+                if (!layer.group.owsgeojson) {
+                    var gs = new Services.GroupStyle(service.$translate);
+                    gs.id = csComp.Helpers.getGuid();
+                    gs.title = layer.title;
+                    gs.meta = null;
+                    gs.visualAspect = 'fillColor';
+                    gs.availableAspects = [];
+                    gs.enabled = true;
+                    gs.group = layer.group;
+                    gs.property = '';
+                    gs.canSelectColor = false;
+                    gs.colors = ['#00fbff', '#0400ff'];
+                    gs.activeLegend = {
+                        legendKind: 'image',
+                        description: gs.title,
+                        visualAspect: 'fillColor',
+                        imageUrl: layer.url + '?service=wms&request=GetLegendGraphic&version=1.1.1&layer=' + layer.wmsLayers + '&styles=&format=image/png',
+                        legendEntries: []
+                    };
+                    service.saveStyle(layer.group, gs);
+                }
                 layer.isLoading = true;
             };
             return WmsRenderer;

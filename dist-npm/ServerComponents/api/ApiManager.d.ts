@@ -514,5 +514,5 @@ export declare class ApiManager extends events.EventEmitter {
      * @param  {Function} callback Callback function that performs the cleanup
      * See also: http://stackoverflow.com/questions/14031763/doing-a-cleanup-action-just-before-node-js-exits
      */
-    cleanup(callback?: Function): void;
+    cleanup(callback?: (code: number) => void): void;
 }

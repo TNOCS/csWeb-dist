@@ -26,7 +26,7 @@ var ProjectRepositoryService = (function () {
             var project = req.body;
             console.log('Saving posted project file (project.json): ' + id);
             var filename = path.join(path.dirname(require.main.filename), 'public/data/projects', id, 'project.json');
-            if (fs.exists(filename)) {
+            if (fs.existsSync(filename)) {
                 var backupFilename = path.join(path.dirname(require.main.filename), 'public/data/projects', id, _this.yyyymmdd() + 'project.json');
                 var date = Date();
                 fs.rename(filename, backupFilename, function (err) {

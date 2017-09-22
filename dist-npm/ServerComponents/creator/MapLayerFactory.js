@@ -101,7 +101,7 @@ var MapLayerFactory = (function () {
                 }
                 console.log('-------------------------------------');
             }
-            res.send(200 /* OK */, JSON.stringify(_this.featuresNotFound));
+            res.status(200 /* OK */).send(JSON.stringify(_this.featuresNotFound));
             console.log('New map created: publishing...');
             _this.messageBus.publish('dynamic_project_layer', 'created', data);
             var combinedjson = _this.splitJson(data);
@@ -444,7 +444,7 @@ var MapLayerFactory = (function () {
             delete layer.data.properties;
             delete layer.data.features;
             _this.apiManager.addUpdateLayer(layer, { source: 'maplayerfactory' }, function (result) {
-                res.send(result.result, JSON.stringify({ 'notFound': _this.featuresNotFound }));
+                res.status(result.result).send(JSON.stringify({ 'notFound': _this.featuresNotFound }));
             });
         });
     };

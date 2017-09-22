@@ -1236,10 +1236,10 @@ var ApiManager = (function (_super) {
         // if no callback, it will still exit gracefully on Ctrl-C
         if (!callback)
             callback = function () { };
-        process.on('cleanup', callback);
+        process.on('beforeExit', callback);
         // do app specific cleaning before exiting
         process.on('exit', function () {
-            process.emit('cleanup');
+            process.emit('beforeExit', 0);
         });
         // catch ctrl+c event and exit normally
         process.on('SIGINT', function () {
