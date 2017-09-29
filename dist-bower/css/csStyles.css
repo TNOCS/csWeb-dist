@@ -813,26 +813,6 @@ body,
   .datatable-download-small {
     display: inline-block !important; } }
 
-.table-section-title {
-  padding: 8px 4px;
-  cursor: pointer;
-  font-weight: bold; }
-
-.table-section-title > .fa {
-  padding: 0px 6px; }
-
-.panel-group .collapsed .fa-caret-up {
-  display: none !important; }
-
-.panel-group .collapsed .fa-caret-down {
-  display: inline !important; }
-
-.panel-group .fa-caret-up {
-  display: inline; }
-
-.panel-group .fa-caret-down {
-  display: none; }
-
 .legendTable {
   display: table;
   width: 100%;

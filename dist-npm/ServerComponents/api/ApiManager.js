@@ -436,6 +436,31 @@ var ApiManager = (function (_super) {
             }
         }
     };
+    ApiManager.prototype.cloneResource = function (resourceId, newResourceId, meta, callback) {
+        var _this = this;
+        if (!this.resources.hasOwnProperty(resourceId)) {
+            callback({ result: ApiResult.ResourceNotFound, error: 'Resource not found' });
+            return;
+        }
+        if (this.resources.hasOwnProperty(newResourceId)) {
+            callback({ result: ApiResult.ResourceAlreadyExists, error: 'Resource already exists' });
+            return;
+        }
+        this.getResource(resourceId, {}, function (result) {
+            var resource = result.resource;
+            var resourceClone = JSON.parse(JSON.stringify(resource));
+            resourceClone.id = newResourceId;
+            resourceClone.url = resourceClone.url.replace(resourceId, newResourceId);
+            if (resourceClone._localFile) {
+                resourceClone._localFile = resourceClone._localFile.replace(resourceId, newResourceId);
+            }
+            if (resourceClone.featureTypes && resourceClone.featureTypes[resourceId]) {
+                resourceClone.featureTypes[newResourceId] = JSON.parse(JSON.stringify(resourceClone.featureTypes[resourceId]));
+                delete resourceClone.featureTypes[resourceId];
+            }
+            _this.addResource(resourceClone, true, { source: 'apimanager' }, callback);
+        });
+    };
     ApiManager.prototype.addPropertyTypes = function (resourceId, data, meta, callback) {
         if (!this.resources.hasOwnProperty(resourceId)) {
             callback({ result: ApiResult.ResourceAlreadyExists, error: 'Resource already exists' });
@@ -808,7 +833,7 @@ var ApiManager = (function (_super) {
             typeUrl: layer.typeUrl,
             quickRefresh: layer.quickRefresh,
             confirmUpdate: layer.confirmUpdate,
-            opacity: layer.opacity ? layer.opacity : 75,
+            opacity: layer.opacity ? layer.opacity : 100,
             type: layer.type,
             geometryTypeId: layer.geometryTypeId,
             // We are returning a definition, so remove the data
@@ -1002,6 +1027,67 @@ var ApiManager = (function (_super) {
                 _this.saveProjectDelay(project);
             }
         ]);
+    };
+    ApiManager.prototype.cloneProject = function (projectId, clonedProjectId, meta, callback) {
+        var _this = this;
+        var p = this.findProject(projectId);
+        var pClone = this.findProject(clonedProjectId);
+        if (!p) {
+            callback({ result: ApiResult.ProjectNotFound, error: 'Project not found' });
+            return;
+        }
+        if (!p.groups)
+            p.groups = [];
+        pClone = JSON.parse(JSON.stringify(p)); // Clone project
+        var groupsClone = JSON.parse(JSON.stringify(p.groups)); // Clone groups
+        pClone.groups.length = 0; // Remove groups from project
+        pClone.id = clonedProjectId;
+        async.eachSeries(groupsClone, function (g, groupCB) {
+            var layersClone = JSON.parse(JSON.stringify(g.layers));
+            g.layers.length = 0; // Remove layers from group
+            g.id = helpers.newGuid();
+            _this.addGroup(g, clonedProjectId, meta, function (result) {
+                if (result.result !== ApiResult.OK) {
+                    groupCB(result);
+                    return;
+                }
+                async.eachSeries(layersClone, function (layer, layerCB) {
+                    _this.getLayer(layer.id, {}, function (result) {
+                        var l = result.layer;
+                        var newLayerGuid = helpers.newGuid();
+                        l.url = l.url.replace(l.id, newLayerGuid);
+                        l.id = newLayerGuid;
+                        _this.addUpdateLayer(l, meta, function (result) {
+                            if (result.result !== ApiResult.OK) {
+                                layerCB(result);
+                                return;
+                            }
+                            var oldResId = l.typeUrl.split('/').pop();
+                            var newResId = helpers.newGuid();
+                            l.defaultFeatureType = l.defaultFeatureType.replace(oldResId, newResId);
+                            l.defaultLegendProperty = l.defaultLegendProperty.replace(oldResId, newResId);
+                            l.typeUrl = l.typeUrl.replace(oldResId, newResId);
+                            _this.cloneResource(oldResId, newResId, {}, function (result) {
+                                _this.addLayerToProject(clonedProjectId, g.id, l.id, {}, function (result) {
+                                    if (result.result !== ApiResult.OK) {
+                                        layerCB(result);
+                                        return;
+                                    }
+                                    layerCB();
+                                });
+                            });
+                        });
+                    });
+                }, function (err) {
+                    groupCB();
+                });
+            });
+        }, function (err) {
+            var res = new CallbackResult();
+            res.result = (err) ? ApiResult.Error : ApiResult.OK;
+            res.error = err;
+            callback(res);
+        });
     };
     ApiManager.prototype.deleteLayer = function (layerId, meta, callback) {
         var _this = this;

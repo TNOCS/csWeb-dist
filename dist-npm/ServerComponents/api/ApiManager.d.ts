@@ -104,6 +104,7 @@ export interface IConnector {
     updateProject(project: Project, meta: ApiMeta, callback: Function): any;
     deleteProject(projectId: string, meta: ApiMeta, callback: Function): any;
     allGroups(projectId: string, meta: ApiMeta, callback: Function): any;
+    cloneProject(projectId: string, clonedProjectId: string, meta: ApiMeta, callback: Function): any;
     /** Add a resource type file to the store. */
     addResource(resource: ResourceFile, meta: ApiMeta, callback: Function): any;
     /** Update a resource type file to the store. */
@@ -400,6 +401,7 @@ export declare class ApiManager extends events.EventEmitter {
      * Update/add a resource and save it to file
      */
     addResource(resource: ResourceFile, replace: boolean, meta: ApiMeta, callback: Function): void;
+    private cloneResource(resourceId, newResourceId, meta, callback);
     addPropertyTypes(resourceId: string, data: IPropertyType[], meta: ApiMeta, callback: Function): void;
     getResource(id: string, meta: ApiMeta, callback: Function): void;
     addLayerToProject(projectId: string, groupId: string, layerId: string, meta: ApiMeta, callback: Function): void;
@@ -479,6 +481,7 @@ export declare class ApiManager extends events.EventEmitter {
         description: string;
     }, projectId: string, meta: ApiMeta, callback: Function): void;
     updateProject(project: Project, meta: ApiMeta, callback: Function): void;
+    cloneProject(projectId: string, clonedProjectId: string, meta: ApiMeta, callback: Function): void;
     deleteLayer(layerId: string, meta: ApiMeta, callback: Function): void;
     deleteProject(projectId: string, meta: ApiMeta, callback: Function): void;
     getInterfaces(meta: ApiMeta): IConnector[];

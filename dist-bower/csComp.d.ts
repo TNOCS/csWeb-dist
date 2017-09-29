@@ -676,7 +676,7 @@ declare module csComp.Services {
          */
         static serializeableData(projectGroup: ProjectGroup): Object;
         static deserialize(input: Object): ProjectGroup;
-        loadLayersFromOWS($injector?: ng.auto.IInjectorService): void;
+        loadLayersFromOWS($injector?: ng.auto.IInjectorService, onSuccess?: () => void): void;
         private parseXML(xml, $timeout);
         private buildLayer(baseurl, title, layerName);
     }
@@ -2139,29 +2139,6 @@ declare module Translations {
     }
 }
 
-declare module BaseMapList {
-    /**
-      * Module
-      */
-    var myModule: any;
-}
-
-declare module BaseMapList {
-    interface IBaseMapScope extends ng.IScope {
-        vm: BaseMapListCtrl;
-    }
-    class BaseMapListCtrl {
-        private $scope;
-        private $layerService;
-        private $mapService;
-        private $messageBusService;
-        private scope;
-        static $inject: string[];
-        constructor($scope: IBaseMapScope, $layerService: csComp.Services.LayerService, $mapService: csComp.Services.MapService, $messageBusService: csComp.Services.MessageBusService);
-        selectBaseLayer(key: any): void;
-    }
-}
-
 declare module Accessibility {
     /**
       * Module
@@ -2227,122 +2204,26 @@ declare module Accessibility {
     }
 }
 
-declare module Charts {
+declare module BaseMapList {
     /**
       * Module
       */
     var myModule: any;
-    interface IBarchartScope extends ng.IScope {
-        data: number[];
-        update: boolean;
-    }
 }
 
-declare var bullet: any;
-declare module Charts {
-    /**
-      * Module
-      */
-    var myModule: any;
-    interface IBulletchartScope extends ng.IScope {
-        data: any;
-        update: boolean;
-        width: number;
-        height: number;
-        margin: number;
+declare module BaseMapList {
+    interface IBaseMapScope extends ng.IScope {
+        vm: BaseMapListCtrl;
     }
-}
-
-declare module Charts {
-    class ChartHelpers {
-        /**
-        * Returns the index and value of the maximum.
-        */
-        static max(arr: number[]): {
-            maxIndex: number;
-            max: number;
-        };
-        /**
-        * Returns the index and value of the minimum.
-        */
-        static min(arr: number[]): {
-            minIndex: number;
-            min: number;
-        };
-        /**
-        * Convert a timestamp to string.
-        */
-        static timestampToString(ts: number): any;
-        static timestampToTimeString(ts: number): any;
-        static windowResize(fun: any): void;
-        static initializeMargin(scope: any, attrs: any): void;
-        static getD3Selector(attrs: any, element: any): string;
-        static initializeLegendMargin(scope: any, attrs: any): void;
-        static defaultColor(): (d: any, i: any) => any;
-        static configureLegend(chart: any, scope: any, attrs: any): void;
-        static checkElementID(scope: any, attrs: any, element: any, chart: any, data: any): void;
-        static updateDimensions(scope: any, attrs: any, element: any, chart: any): void;
-    }
-}
-
-declare module Charts {
-    /**
-      * Module
-      */
-    var myModule: any;
-    interface ICircularchartScope extends ng.IScope {
-        value: number;
-        min: number;
-        max: number;
-        update: boolean;
-        color?: string;
-        titleClass: string;
-        title: string;
-        valueString: string;
-        valueClass: string;
-        animationDuration: number;
-        width?: number;
-        height?: number;
-        margin?: {
-            top: number;
-            right: number;
-            bottom: number;
-            left: number;
-        };
-    }
-}
-
-declare module Charts {
-    /**
-      * Module
-      */
-    var myModule: any;
-    interface ISingleValueScope extends ng.IScope {
-        value: number[];
-    }
-}
-
-declare module Charts {
-    /**
-      * Module
-      */
-    var myModule: any;
-    interface ISparklineScope extends ng.IScope {
-        timestamps: number[];
-        update: boolean;
-        sensor: number[];
-        property: string;
-        width?: number;
-        height?: number;
-        closed?: boolean;
-        smooth?: boolean;
-        margin?: {
-            top: number;
-            right: number;
-            bottom: number;
-            left: number;
-        };
-        showaxis?: boolean;
+    class BaseMapListCtrl {
+        private $scope;
+        private $layerService;
+        private $mapService;
+        private $messageBusService;
+        private scope;
+        static $inject: string[];
+        constructor($scope: IBaseMapScope, $layerService: csComp.Services.LayerService, $mapService: csComp.Services.MapService, $messageBusService: csComp.Services.MessageBusService);
+        selectBaseLayer(key: any): void;
     }
 }
 
@@ -3999,6 +3880,125 @@ declare module Mobile {
         private availableLayers;
         static $inject: string[];
         constructor($scope: IMobileScope, $layerService: csComp.Services.LayerService, $messageBus: csComp.Services.MessageBusService, localStorageService: ng.localStorage.ILocalStorageService, geoService: csComp.Services.GeoService);
+    }
+}
+
+declare module Charts {
+    /**
+      * Module
+      */
+    var myModule: any;
+    interface IBarchartScope extends ng.IScope {
+        data: number[];
+        update: boolean;
+    }
+}
+
+declare var bullet: any;
+declare module Charts {
+    /**
+      * Module
+      */
+    var myModule: any;
+    interface IBulletchartScope extends ng.IScope {
+        data: any;
+        update: boolean;
+        width: number;
+        height: number;
+        margin: number;
+    }
+}
+
+declare module Charts {
+    class ChartHelpers {
+        /**
+        * Returns the index and value of the maximum.
+        */
+        static max(arr: number[]): {
+            maxIndex: number;
+            max: number;
+        };
+        /**
+        * Returns the index and value of the minimum.
+        */
+        static min(arr: number[]): {
+            minIndex: number;
+            min: number;
+        };
+        /**
+        * Convert a timestamp to string.
+        */
+        static timestampToString(ts: number): any;
+        static timestampToTimeString(ts: number): any;
+        static windowResize(fun: any): void;
+        static initializeMargin(scope: any, attrs: any): void;
+        static getD3Selector(attrs: any, element: any): string;
+        static initializeLegendMargin(scope: any, attrs: any): void;
+        static defaultColor(): (d: any, i: any) => any;
+        static configureLegend(chart: any, scope: any, attrs: any): void;
+        static checkElementID(scope: any, attrs: any, element: any, chart: any, data: any): void;
+        static updateDimensions(scope: any, attrs: any, element: any, chart: any): void;
+    }
+}
+
+declare module Charts {
+    /**
+      * Module
+      */
+    var myModule: any;
+    interface ICircularchartScope extends ng.IScope {
+        value: number;
+        min: number;
+        max: number;
+        update: boolean;
+        color?: string;
+        titleClass: string;
+        title: string;
+        valueString: string;
+        valueClass: string;
+        animationDuration: number;
+        width?: number;
+        height?: number;
+        margin?: {
+            top: number;
+            right: number;
+            bottom: number;
+            left: number;
+        };
+    }
+}
+
+declare module Charts {
+    /**
+      * Module
+      */
+    var myModule: any;
+    interface ISingleValueScope extends ng.IScope {
+        value: number[];
+    }
+}
+
+declare module Charts {
+    /**
+      * Module
+      */
+    var myModule: any;
+    interface ISparklineScope extends ng.IScope {
+        timestamps: number[];
+        update: boolean;
+        sensor: number[];
+        property: string;
+        width?: number;
+        height?: number;
+        closed?: boolean;
+        smooth?: boolean;
+        margin?: {
+            top: number;
+            right: number;
+            bottom: number;
+            left: number;
+        };
+        showaxis?: boolean;
     }
 }
 
@@ -5783,6 +5783,59 @@ declare module csComp.Search {
     }
 }
 
+declare module Dashboard {
+    /**
+      * Module
+      */
+    var myModule: any;
+}
+
+declare module Dashboard {
+    interface IDashboardScope extends ng.IScope {
+        vm: DashboardCtrl;
+        dashboard: csComp.Services.Dashboard;
+        container: string;
+        param: any;
+        initDashboard: Function;
+        minus: Function;
+    }
+    interface IWidgetScope extends ng.IScope {
+        data: any;
+    }
+    class DashboardCtrl {
+        private $scope;
+        private $compile;
+        private $layerService;
+        private $mapService;
+        private $messageBusService;
+        private $dashboardService;
+        private $templateCache;
+        private $timeout;
+        private scope;
+        private project;
+        static $inject: string[];
+        constructor($scope: IDashboardScope, $compile: ng.ICompileService, $layerService: csComp.Services.LayerService, $mapService: csComp.Services.MapService, $messageBusService: csComp.Services.MessageBusService, $dashboardService: csComp.Services.DashboardService, $templateCache: any, $timeout: ng.ITimeoutService);
+        closeDashboard(): void;
+        updateWidgetPosition(widget: csComp.Services.IWidget): void;
+        toggleWidget(widget: csComp.Services.IWidget): void;
+        getOptions(widget: csComp.Services.IWidget): void;
+        triggerOption(o: any, w: csComp.Services.IWidget): void;
+        updateWidget(w: csComp.Services.IWidget): void;
+        toggleInteract(widget: csComp.Services.IWidget): void;
+        checkMap(): void;
+        checkDescription(): void;
+        checkLayers(): void;
+        checkViewbound(): void;
+        checkTimeline(): void;
+        private setValue(diff, value);
+        removeWidget(widget: csComp.Services.IWidget): void;
+        isReady(widget: csComp.Services.IWidget): void;
+        private checkLegend(d);
+        updateDashboard(): void;
+        private updateWidgetsThrottled(widgets, cb, count?);
+    }
+}
+
 declare module DashboarHeaderdSelection {
     /**
       * Module
@@ -5859,59 +5912,6 @@ declare module DashboardSelection {
         private publishDashboardUpdate();
         /** Select an active dashboard */
         selectDashboard(dashboard: csComp.Services.Dashboard): void;
-    }
-}
-
-declare module Dashboard {
-    /**
-      * Module
-      */
-    var myModule: any;
-}
-
-declare module Dashboard {
-    interface IDashboardScope extends ng.IScope {
-        vm: DashboardCtrl;
-        dashboard: csComp.Services.Dashboard;
-        container: string;
-        param: any;
-        initDashboard: Function;
-        minus: Function;
-    }
-    interface IWidgetScope extends ng.IScope {
-        data: any;
-    }
-    class DashboardCtrl {
-        private $scope;
-        private $compile;
-        private $layerService;
-        private $mapService;
-        private $messageBusService;
-        private $dashboardService;
-        private $templateCache;
-        private $timeout;
-        private scope;
-        private project;
-        static $inject: string[];
-        constructor($scope: IDashboardScope, $compile: ng.ICompileService, $layerService: csComp.Services.LayerService, $mapService: csComp.Services.MapService, $messageBusService: csComp.Services.MessageBusService, $dashboardService: csComp.Services.DashboardService, $templateCache: any, $timeout: ng.ITimeoutService);
-        closeDashboard(): void;
-        updateWidgetPosition(widget: csComp.Services.IWidget): void;
-        toggleWidget(widget: csComp.Services.IWidget): void;
-        getOptions(widget: csComp.Services.IWidget): void;
-        triggerOption(o: any, w: csComp.Services.IWidget): void;
-        updateWidget(w: csComp.Services.IWidget): void;
-        toggleInteract(widget: csComp.Services.IWidget): void;
-        checkMap(): void;
-        checkDescription(): void;
-        checkLayers(): void;
-        checkViewbound(): void;
-        checkTimeline(): void;
-        private setValue(diff, value);
-        removeWidget(widget: csComp.Services.IWidget): void;
-        isReady(widget: csComp.Services.IWidget): void;
-        private checkLegend(d);
-        updateDashboard(): void;
-        private updateWidgetsThrottled(widgets, cb, count?);
     }
 }
 
@@ -6209,6 +6209,125 @@ declare module PropertyTypes {
     }
 }
 
+declare module ButtonWidget {
+    /** Module */
+    var myModule: any;
+    interface IButtonWidgetMessage {
+        name: string;
+        httpMethod: {
+            name: string;
+        };
+        url: string;
+        message: string;
+        description: string;
+    }
+    interface ButtonWidgetEditorData {
+        messages: IButtonWidgetMessage[];
+        /** Set to true to show a smaller widget, with only the messages and an execute button */
+        smallSize: boolean;
+    }
+    interface IButtonWidgetEditScope extends ng.IScope {
+        vm: ButtonWidgetEditCtrl;
+        selectedMessage: IButtonWidgetMessage;
+        data: ButtonWidgetEditorData;
+        methods: [{
+            name: string;
+        }];
+    }
+    class ButtonWidgetEditCtrl {
+        private $scope;
+        private $timeout;
+        private $messageBus;
+        private $dashboardService;
+        private scope;
+        widget: csComp.Services.IWidget;
+        static $inject: string[];
+        constructor($scope: IButtonWidgetEditScope, $timeout: ng.ITimeoutService, $messageBus: csComp.Services.MessageBusService, $dashboardService: csComp.Services.DashboardService);
+        addMessage(): void;
+        deleteMessage(): void;
+    }
+}
+
+declare module ButtonWidget {
+    /** Module */
+    var myModule: any;
+    interface IButtonWidgetScope extends ng.IScope {
+        vm: ButtonWidgetCtrl;
+        data: IButtonData;
+        buttons: IButton[];
+        activeIndex: number;
+    }
+    interface IButtonWidget {
+        id: string;
+        name: string;
+    }
+    interface IButton {
+        title: string;
+        description: string;
+        moreInfo: string;
+        action: string;
+        buttongroup: string;
+        tag: string;
+        layer: string;
+        group: string;
+        timerange: string;
+        property: string;
+        showLegend: boolean;
+        image: string;
+        defaultEnabled: boolean;
+        zoomLevel: number;
+        _legend: csComp.Services.Legend;
+        _layer: csComp.Services.ProjectLayer;
+        _feature: csComp.Services.Feature;
+        _featureIcon: string;
+        _disabled: boolean;
+        _active: boolean;
+        _firstLegendLabel: string;
+        _lastLegendLabel: string;
+        _canEdit: boolean;
+        _visible: boolean;
+        _groupbuttons: IButton[];
+    }
+    interface IButtonData {
+        buttons: IButton[];
+        /** The minimal layout just displays a button, without a legend */
+        minimalLayout: boolean;
+        toggleMode: boolean;
+        /** Apply extended style information to image, e.g. add rounded corners */
+        extStyle: Object;
+        layerGroup: string;
+        featureLayer: string;
+    }
+    class ButtonWidgetCtrl {
+        private $scope;
+        private $http;
+        layerService: csComp.Services.LayerService;
+        private messageBusService;
+        private actionService;
+        private $timeout;
+        private $sce;
+        private activeGroups;
+        private activeGroupsCollection;
+        static $inject: string[];
+        constructor($scope: IButtonWidgetScope, $http: ng.IHttpService, layerService: csComp.Services.LayerService, messageBusService: csComp.Services.MessageBusService, actionService: csComp.Services.ActionService, $timeout: ng.ITimeoutService, $sce: ng.ISCEService);
+        private initButtons();
+        private initFeatureLayer();
+        private initLayerGroup();
+        switchButtonGroup(b: IButton): void;
+        private checkFeatureLayer();
+        private checkLayerGroup();
+        private checkBaselayer(b);
+        /** start or stop editing, when starting all features are editable */
+        toggleEditLayer(b: IButton): void;
+        private updateLegendLabels(b);
+        private checkLayer(b);
+        private checkStyle(b);
+        checkLegend(b: IButton): void;
+        click(b: IButton): void;
+        toggleFilter(le: csComp.Services.LegendEntry, group: string, prop: string): void;
+    }
+}
+
 declare module Agenda {
     /** Module */
     var myModule: any;
@@ -6355,125 +6474,6 @@ declare module ChartsWidget {
     }
 }
 
-declare module ButtonWidget {
-    /** Module */
-    var myModule: any;
-    interface IButtonWidgetMessage {
-        name: string;
-        httpMethod: {
-            name: string;
-        };
-        url: string;
-        message: string;
-        description: string;
-    }
-    interface ButtonWidgetEditorData {
-        messages: IButtonWidgetMessage[];
-        /** Set to true to show a smaller widget, with only the messages and an execute button */
-        smallSize: boolean;
-    }
-    interface IButtonWidgetEditScope extends ng.IScope {
-        vm: ButtonWidgetEditCtrl;
-        selectedMessage: IButtonWidgetMessage;
-        data: ButtonWidgetEditorData;
-        methods: [{
-            name: string;
-        }];
-    }
-    class ButtonWidgetEditCtrl {
-        private $scope;
-        private $timeout;
-        private $messageBus;
-        private $dashboardService;
-        private scope;
-        widget: csComp.Services.IWidget;
-        static $inject: string[];
-        constructor($scope: IButtonWidgetEditScope, $timeout: ng.ITimeoutService, $messageBus: csComp.Services.MessageBusService, $dashboardService: csComp.Services.DashboardService);
-        addMessage(): void;
-        deleteMessage(): void;
-    }
-}
-
-declare module ButtonWidget {
-    /** Module */
-    var myModule: any;
-    interface IButtonWidgetScope extends ng.IScope {
-        vm: ButtonWidgetCtrl;
-        data: IButtonData;
-        buttons: IButton[];
-        activeIndex: number;
-    }
-    interface IButtonWidget {
-        id: string;
-        name: string;
-    }
-    interface IButton {
-        title: string;
-        description: string;
-        moreInfo: string;
-        action: string;
-        buttongroup: string;
-        tag: string;
-        layer: string;
-        group: string;
-        timerange: string;
-        property: string;
-        showLegend: boolean;
-        image: string;
-        defaultEnabled: boolean;
-        zoomLevel: number;
-        _legend: csComp.Services.Legend;
-        _layer: csComp.Services.ProjectLayer;
-        _feature: csComp.Services.Feature;
-        _featureIcon: string;
-        _disabled: boolean;
-        _active: boolean;
-        _firstLegendLabel: string;
-        _lastLegendLabel: string;
-        _canEdit: boolean;
-        _visible: boolean;
-        _groupbuttons: IButton[];
-    }
-    interface IButtonData {
-        buttons: IButton[];
-        /** The minimal layout just displays a button, without a legend */
-        minimalLayout: boolean;
-        toggleMode: boolean;
-        /** Apply extended style information to image, e.g. add rounded corners */
-        extStyle: Object;
-        layerGroup: string;
-        featureLayer: string;
-    }
-    class ButtonWidgetCtrl {
-        private $scope;
-        private $http;
-        layerService: csComp.Services.LayerService;
-        private messageBusService;
-        private actionService;
-        private $timeout;
-        private $sce;
-        private activeGroups;
-        private activeGroupsCollection;
-        static $inject: string[];
-        constructor($scope: IButtonWidgetScope, $http: ng.IHttpService, layerService: csComp.Services.LayerService, messageBusService: csComp.Services.MessageBusService, actionService: csComp.Services.ActionService, $timeout: ng.ITimeoutService, $sce: ng.ISCEService);
-        private initButtons();
-        private initFeatureLayer();
-        private initLayerGroup();
-        switchButtonGroup(b: IButton): void;
-        private checkFeatureLayer();
-        private checkLayerGroup();
-        private checkBaselayer(b);
-        /** start or stop editing, when starting all features are editable */
-        toggleEditLayer(b: IButton): void;
-        private updateLegendLabels(b);
-        private checkLayer(b);
-        private checkStyle(b);
-        checkLegend(b: IButton): void;
-        click(b: IButton): void;
-        toggleFilter(le: csComp.Services.LegendEntry, group: string, prop: string): void;
-    }
-}
-
 declare module CompareWidget {
     /**
       * Module
@@ -6537,52 +6537,6 @@ declare module CompareWidget {
          * @todo {notice the strange syntax using a fat arrow =>, which is to preserve the this reference in a callback!}
          */
         private sidebarMessageReceived;
-    }
-}
-
-declare module FilterStyleWidget {
-    /**
-      * Module
-      */
-    var myModule: any;
-}
-
-declare module FilterStyleWidget {
-    class FilterStyleWidgetData {
-        title: string;
-    }
-    interface IFilterStyleWidgetScope extends ng.IScope {
-        vm: FilterStyleWidgetCtrl;
-        data: FilterStyleWidgetData;
-        style: csComp.Services.GroupStyle;
-        filter: csComp.Services.GroupFilter;
-        minimized: boolean;
-        selectedFeature: csComp.Services.IFeature;
-    }
-    class FilterStyleWidgetCtrl {
-        private $scope;
-        private $timeout;
-        private $translate;
-        private $layerService;
-        private $messageBus;
-        private $mapService;
-        private scope;
-        private widget;
-        private parentWidget;
-        private mBusHandles;
-        private exporterAvailable;
-        static $inject: string[];
-        constructor($scope: IFilterStyleWidgetScope, $timeout: ng.ITimeoutService, $translate: ng.translate.ITranslateService, $layerService: csComp.Services.LayerService, $messageBus: csComp.Services.MessageBusService, $mapService: csComp.Services.MapService);
-        private canMinimize();
-        private minimize();
-        private canClose();
-        private close();
-        stop(): void;
-        private selectFeature(feature);
-        private createChart();
-        private updateChart();
-        private updateRowFilterScope(gf);
-        exportToImage(): void;
     }
 }
 
@@ -6853,6 +6807,52 @@ declare module Filters {
         private updateFilter();
         updateRange(): void;
         remove(): void;
+        exportToImage(): void;
+    }
+}
+
+declare module FilterStyleWidget {
+    /**
+      * Module
+      */
+    var myModule: any;
+}
+
+declare module FilterStyleWidget {
+    class FilterStyleWidgetData {
+        title: string;
+    }
+    interface IFilterStyleWidgetScope extends ng.IScope {
+        vm: FilterStyleWidgetCtrl;
+        data: FilterStyleWidgetData;
+        style: csComp.Services.GroupStyle;
+        filter: csComp.Services.GroupFilter;
+        minimized: boolean;
+        selectedFeature: csComp.Services.IFeature;
+    }
+    class FilterStyleWidgetCtrl {
+        private $scope;
+        private $timeout;
+        private $translate;
+        private $layerService;
+        private $messageBus;
+        private $mapService;
+        private scope;
+        private widget;
+        private parentWidget;
+        private mBusHandles;
+        private exporterAvailable;
+        static $inject: string[];
+        constructor($scope: IFilterStyleWidgetScope, $timeout: ng.ITimeoutService, $translate: ng.translate.ITranslateService, $layerService: csComp.Services.LayerService, $messageBus: csComp.Services.MessageBusService, $mapService: csComp.Services.MapService);
+        private canMinimize();
+        private minimize();
+        private canClose();
+        private close();
+        stop(): void;
+        private selectFeature(feature);
+        private createChart();
+        private updateChart();
+        private updateRowFilterScope(gf);
         exportToImage(): void;
     }
 }
@@ -7948,22 +7948,6 @@ declare module TableWidget {
 }
 
 declare module csComp.Services {
-    interface IGeometryTemplate {
-        name: string;
-        key: string;
-    }
-    class GeometryTemplateStore {
-        $http: ng.IHttpService;
-        readonly TEMPLATE_URL: string;
-        private templateList;
-        constructor($http: ng.IHttpService);
-        loadGeometry(name: string, cb: Function): void;
-        getTemplate(name: string): ProjectLayer;
-        private getTemplateFromServer(name, cb);
-    }
-}
-
-declare module csComp.Services {
     /**
      * Describes the returned BING search result:
      * https://msdn.microsoft.com/en-us/library/ff701726.aspx
@@ -8378,86 +8362,19 @@ declare module csComp.Services {
     }
 }
 
-declare module L {
-    interface IUserDrawSettings {
-        /** Canvas element for drawing */
-        canvas: HTMLCanvasElement;
-        /** Bounds of the map in WGS84 */
-        bounds: L.Bounds;
-        /** Size of the map in pixels in x and y direction */
-        size: {
-            x: number;
-            y: number;
-        };
-        /** Zoom scale, e.g. 0.0026 */
-        zoomScale: number;
-        /** Zoom level, e.g. 12 */
-        zoom: number;
-        options: {
-            data: number[][];
-            noDataValue: number;
-            topLeftLat: number;
-            topLeftLon: number;
-            deltaLat: number;
-            deltaLon: number;
-            /** The minimum data value: below (<) this value, the cell is not drawn */
-            min?: number;
-            /** The maximum data value: above (>) this value, the cell is not drawn */
-            max?: number;
-            /** A value between 0 (transparent) and 1 (opaque) */
-            opacity?: number;
-            /** Define the color used to draw grid cells having the minimum value. */
-            minColor: string;
-            /** Define the color used to draw grid cells having the minimum value. */
-            maxColor: string;
-            /** Defines the contour levels of the grid layer */
-            levels: number[];
-            /** When true, forces a recalculatiion */
-            areColorsUpdated: boolean;
-            legend?: {
-                val: number;
-                color: string;
-            }[];
-            [key: string]: any;
-        };
-    }
-    function canvasOverlay(userDrawFunc: (overlay: any, layer: csComp.Services.IProjectLayer, settings: IUserDrawSettings) => void, layer: csComp.Services.IProjectLayer, options: Object): any;
-}
-
 declare module csComp.Services {
-    class GeojsonRenderer {
-        static render(service: LayerService, layer: ProjectLayer, mapRenderer: IMapRenderer): void;
-        static remove(service: LayerService, layer: ProjectLayer): void;
+    interface IGeometryTemplate {
+        name: string;
+        key: string;
     }
-}
-
-declare module csComp.Services {
-    class GridLayerRenderer {
-        static render(service: LayerService, layer: ProjectLayer): void;
-        static drawFunction(overlay: any, layer: ProjectLayer, settings: L.IUserDrawSettings): void;
-    }
-}
-
-declare module csComp.Services {
-    class HeatmapRenderer {
-        static render(service: LayerService, layer: ProjectLayer, mapRenderer: LeafletRenderer): void;
-    }
-}
-
-declare module csComp.Services {
-    class TileLayerRenderer {
-        static render(service: LayerService, layer: ProjectLayer): void;
-        /**
-         * Add a UTF Grid Layer to the tilelayer.
-         */
-        static addUtfGrid(service: LayerService, layer: ProjectLayer, utfGridLayerUrl: string): void;
-    }
-}
-
-declare module csComp.Services {
-    class WmsRenderer {
-        static getUrl(layer: ProjectLayer, date: Date): string;
-        static render(service: LayerService, layer: ProjectLayer): void;
+    class GeometryTemplateStore {
+        $http: ng.IHttpService;
+        readonly TEMPLATE_URL: string;
+        private templateList;
+        constructor($http: ng.IHttpService);
+        loadGeometry(name: string, cb: Function): void;
+        getTemplate(name: string): ProjectLayer;
+        private getTemplateFromServer(name, cb);
     }
 }
 
@@ -8864,6 +8781,89 @@ declare module csComp.Services {
         addLayer(layer: ProjectLayer, callback: Function, data?: any): void;
         updateTime(layer: ProjectLayer, date: Date): void;
         removeLayer(layer: ProjectLayer): void;
+    }
+}
+
+declare module L {
+    interface IUserDrawSettings {
+        /** Canvas element for drawing */
+        canvas: HTMLCanvasElement;
+        /** Bounds of the map in WGS84 */
+        bounds: L.Bounds;
+        /** Size of the map in pixels in x and y direction */
+        size: {
+            x: number;
+            y: number;
+        };
+        /** Zoom scale, e.g. 0.0026 */
+        zoomScale: number;
+        /** Zoom level, e.g. 12 */
+        zoom: number;
+        options: {
+            data: number[][];
+            noDataValue: number;
+            topLeftLat: number;
+            topLeftLon: number;
+            deltaLat: number;
+            deltaLon: number;
+            /** The minimum data value: below (<) this value, the cell is not drawn */
+            min?: number;
+            /** The maximum data value: above (>) this value, the cell is not drawn */
+            max?: number;
+            /** A value between 0 (transparent) and 1 (opaque) */
+            opacity?: number;
+            /** Define the color used to draw grid cells having the minimum value. */
+            minColor: string;
+            /** Define the color used to draw grid cells having the minimum value. */
+            maxColor: string;
+            /** Defines the contour levels of the grid layer */
+            levels: number[];
+            /** When true, forces a recalculatiion */
+            areColorsUpdated: boolean;
+            legend?: {
+                val: number;
+                color: string;
+            }[];
+            [key: string]: any;
+        };
+    }
+    function canvasOverlay(userDrawFunc: (overlay: any, layer: csComp.Services.IProjectLayer, settings: IUserDrawSettings) => void, layer: csComp.Services.IProjectLayer, options: Object): any;
+}
+
+declare module csComp.Services {
+    class GeojsonRenderer {
+        static render(service: LayerService, layer: ProjectLayer, mapRenderer: IMapRenderer): void;
+        static remove(service: LayerService, layer: ProjectLayer): void;
+    }
+}
+
+declare module csComp.Services {
+    class GridLayerRenderer {
+        static render(service: LayerService, layer: ProjectLayer): void;
+        static drawFunction(overlay: any, layer: ProjectLayer, settings: L.IUserDrawSettings): void;
+    }
+}
+
+declare module csComp.Services {
+    class HeatmapRenderer {
+        static render(service: LayerService, layer: ProjectLayer, mapRenderer: LeafletRenderer): void;
+    }
+}
+
+declare module csComp.Services {
+    class TileLayerRenderer {
+        static render(service: LayerService, layer: ProjectLayer): void;
+        /**
+         * Add a UTF Grid Layer to the tilelayer.
+         */
+        static addUtfGrid(service: LayerService, layer: ProjectLayer, utfGridLayerUrl: string): void;
+    }
+}
+
+declare module csComp.Services {
+    class WmsRenderer {
+        static getUrl(layer: ProjectLayer, date: Date): string;
+        static render(service: LayerService, layer: ProjectLayer): void;
     }
 }
 
