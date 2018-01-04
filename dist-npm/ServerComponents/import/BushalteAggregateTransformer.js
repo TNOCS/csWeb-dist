@@ -3,7 +3,7 @@ var Utils = require("../helpers/Utils");
 var stream = require("stream");
 var request = require("request");
 var turf = require('turf');
-var BushalteAggregateTransformer = (function () {
+var BushalteAggregateTransformer = /** @class */ (function () {
     function BushalteAggregateTransformer(title) {
         this.title = title;
         this.type = 'BushalteAggregateTransformer';

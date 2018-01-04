@@ -1,5 +1,5 @@
 "use strict";
-var Location = (function () {
+var Location = /** @class */ (function () {
     function Location() {
     }
     return Location;

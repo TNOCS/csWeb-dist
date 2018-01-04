@@ -5,7 +5,7 @@ var HyperTimer = require("hypertimer");
 var WorldState = require("./WorldState");
 var Rule = require("./Rule");
 var Api = require("../api/ApiManager");
-var RuleEngine = (function () {
+var RuleEngine = /** @class */ (function () {
     function RuleEngine(manager, layerId) {
         var _this = this;
         this.loadedScripts = []; // needed to restart

@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var fs = require("fs");
 var path = require("path");
 /* Multiple storage engine supported, e.g. file system, mongo  */
-var ProjectRepositoryService = (function () {
+var ProjectRepositoryService = /** @class */ (function () {
     function ProjectRepositoryService(store) {
         this.store = store;
     }

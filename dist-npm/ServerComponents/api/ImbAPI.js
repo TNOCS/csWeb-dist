@@ -15,7 +15,7 @@ var ApiResult = ApiManager.ApiResult;
 var ClientConnection = require("./../dynamic/ClientConnection");
 var BaseConnector = require("./BaseConnector");
 var Winston = require("winston");
-var ImbAPI = (function (_super) {
+var ImbAPI = /** @class */ (function (_super) {
     __extends(ImbAPI, _super);
     function ImbAPI(server, port, layerPrefix, keyPrefix) {
         if (port === void 0) { port = 1883; }

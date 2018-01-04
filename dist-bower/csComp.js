@@ -2,20 +2,20 @@ var csComp;
 (function (csComp) {
     var Services;
     (function (Services) {
-        var Widget = (function () {
+        var Widget = /** @class */ (function () {
             function Widget() {
             }
             return Widget;
         }());
         Services.Widget = Widget;
-        var WidgetStyle = (function () {
+        var WidgetStyle = /** @class */ (function () {
             function WidgetStyle() {
                 this.shadow = true;
             }
             return WidgetStyle;
         }());
         Services.WidgetStyle = WidgetStyle;
-        var BaseWidget = (function () {
+        var BaseWidget = /** @class */ (function () {
             //public static deserialize(input: IWidget): IWidget {
             //    var loader = new InstanceLoader(window);
             //    var w = <IWidget>loader.getInstance(widget.widgetType);
@@ -114,7 +114,7 @@ var csComp;
             return BaseWidget;
         }());
         Services.BaseWidget = BaseWidget;
-        var Dashboard = (function () {
+        var Dashboard = /** @class */ (function () {
             function Dashboard() {
                 this.mapWidth = '100%';
                 this.alignMapRight = false;
@@ -211,19 +211,19 @@ var csComp;
             return Dashboard;
         }());
         Services.Dashboard = Dashboard;
-        var Timeline = (function () {
+        var Timeline = /** @class */ (function () {
             function Timeline() {
             }
             return Timeline;
         }());
         Services.Timeline = Timeline;
-        var TimedDataSet = (function () {
+        var TimedDataSet = /** @class */ (function () {
             function TimedDataSet() {
             }
             return TimedDataSet;
         }());
         Services.TimedDataSet = TimedDataSet;
-        var DataSet = (function () {
+        var DataSet = /** @class */ (function () {
             function DataSet(id, title) {
                 this.id = id;
                 this.title = title;
@@ -239,7 +239,7 @@ var csComp;
 (function (csComp) {
     var Services;
     (function (Services) {
-        var SensorSet = (function () {
+        var SensorSet = /** @class */ (function () {
             function SensorSet() {
                 this.max = 100;
                 this.min = 0;
@@ -275,7 +275,7 @@ var csComp;
             return SensorSet;
         }());
         Services.SensorSet = SensorSet;
-        var DataSource = (function () {
+        var DataSource = /** @class */ (function () {
             function DataSource() {
                 this.sensors = {};
             }
@@ -347,14 +347,14 @@ var csComp;
 (function (csComp) {
     var Services;
     (function (Services) {
-        var Section = (function () {
+        var Section = /** @class */ (function () {
             function Section() {
                 this.properties = {};
             }
             return Section;
         }());
         Services.Section = Section;
-        var Log = (function () {
+        var Log = /** @class */ (function () {
             function Log() {
             }
             return Log;
@@ -365,7 +365,7 @@ var csComp;
          * Features are part of a layer and filtered and styled using group filters and styles
          *
          */
-        var Feature = (function () {
+        var Feature = /** @class */ (function () {
             function Feature() {
                 this.type = 'Feature';
                 this._gui = { included: true, insideBBOX: true };
@@ -449,7 +449,7 @@ var csComp;
 (function (csComp) {
     var Services;
     (function (Services) {
-        var Feed = (function (_super) {
+        var Feed = /** @class */ (function (_super) {
             __extends(Feed, _super);
             function Feed() {
                 return _super !== null && _super.apply(this, arguments) || this;
@@ -475,7 +475,7 @@ var csComp;
          * this filter is applied to all layers within this group.
          * If clustering is enabled all features in all layers are grouped together
          */
-        var ProjectGroup = (function () {
+        var ProjectGroup = /** @class */ (function () {
             function ProjectGroup() {
                 /**
                  * gui is used for setting temp. properties for rendering
@@ -590,7 +590,7 @@ var csComp;
         /**
          * Filters are used to select a subset of features within a group.
          */
-        var GroupFilter = (function () {
+        var GroupFilter = /** @class */ (function () {
             function GroupFilter() {
             }
             return GroupFilter;
@@ -599,7 +599,7 @@ var csComp;
         /**
          * Styles determine how features are shown on the map.
          */
-        var GroupStyle = (function () {
+        var GroupStyle = /** @class */ (function () {
             function GroupStyle($translate) {
                 var _this = this;
                 this.availableAspects = ['strokeColor', 'fillColor', 'strokeWidth', 'height'];
@@ -650,13 +650,13 @@ var csComp;
          * the Legend class provides a data structure that is used to map a value to a color
          * (see also the function getColor())
         */
-        var Legend = (function () {
+        var Legend = /** @class */ (function () {
             function Legend() {
             }
             return Legend;
         }());
         Services.Legend = Legend;
-        var LegendEntry = (function () {
+        var LegendEntry = /** @class */ (function () {
             function LegendEntry() {
             }
             return LegendEntry;
@@ -670,7 +670,7 @@ var csComp;
     var Services;
     (function (Services) {
         /** Layer information. a layer is described in a project file and is always part of a group */
-        var ProjectLayer = (function () {
+        var ProjectLayer = /** @class */ (function () {
             function ProjectLayer() {
                 /** Default true, but if set to false, do not notify the timeline of changes. */
                 this.timeAware = true;
@@ -734,7 +734,7 @@ var csComp;
             return ProjectLayer;
         }());
         Services.ProjectLayer = ProjectLayer;
-        var BaseLayer = (function () {
+        var BaseLayer = /** @class */ (function () {
             function BaseLayer() {
                 /**
                  * Max native zoom level:
@@ -781,7 +781,7 @@ var csComp;
             Expertise[Expertise["Expert"] = 3] = "Expert";
             Expertise[Expertise["Admin"] = 4] = "Admin";
         })(Expertise = Services.Expertise || (Services.Expertise = {}));
-        var VisualState = (function () {
+        var VisualState = /** @class */ (function () {
             function VisualState() {
                 this.leftPanelVisible = false;
                 this.rightPanelVisible = false;
@@ -805,7 +805,7 @@ var csComp;
         }());
         Services.VisualState = VisualState;
         //** class for describing time ranges for timeline, including focus time */
-        var DateRange = (function () {
+        var DateRange = /** @class */ (function () {
             function DateRange() {
                 var _this = this;
                 this.isExpanded = false;
@@ -889,7 +889,7 @@ var csComp;
          * This can be usefull when you want to have the same website, but with different content.
          * e.g. you could make it so that you can switch between different regions or different domains of interest.
          */
-        var Solution = (function () {
+        var Solution = /** @class */ (function () {
             function Solution() {
                 this.widgetStyles = {};
             }
@@ -897,7 +897,7 @@ var csComp;
         }());
         Services.Solution = Solution;
         /** Project within a solution file, refers to a project url*/
-        var SolutionProject = (function () {
+        var SolutionProject = /** @class */ (function () {
             function SolutionProject() {
             }
             return SolutionProject;
@@ -910,19 +910,13 @@ var csComp;
             authMethods[authMethods["custom"] = 2] = "custom";
         })(authMethods = Services.authMethods || (Services.authMethods = {}));
         /** project configuration. */
-        var Project = (function () {
+        var Project = /** @class */ (function () {
             function Project() {
                 this.expertMode = Expertise.Expert;
                 this.markers = {};
                 /** List of search providers to use, e.g. bag, offline, bing */
                 this.searchProviders = [];
             }
-            // /** If true (default false), indicates that we should load an offline search result. */
-            // useOfflineSearch: boolean = false;
-            // /** If true (default false), indicates that we should enable an online search engine. */
-            // useOnlineSearch: boolean = false;
-            // /** If useOnlineSearch = true define the url of the online search engine. */
-            // onlineSearchUrl: string;
             /**
              * Serialize the project to a JSON string.
              */
@@ -984,7 +978,8 @@ var csComp;
                     searchProviders: project.searchProviders,
                     hideLayerActions: project.hideLayerActions,
                     attributions: project.attributions,
-                    disableDrop: project.disableDrop
+                    disableDrop: project.disableDrop,
+                    featurePropsDirective: project.featurePropsDirective
                 };
             };
             Project.prototype.deserialize = function (input) {
@@ -1041,7 +1036,7 @@ var csComp;
     var Services;
     (function (Services) {
         /** Class containing references to feature & property types */
-        var TypeResource = (function () {
+        var TypeResource = /** @class */ (function () {
             function TypeResource() {
             }
             /**
@@ -1073,7 +1068,7 @@ var csComp;
 var ColorExt;
 (function (ColorExt) {
     /** Color utility class */
-    var Utils = (function () {
+    var Utils = /** @class */ (function () {
         function Utils() {
         }
         /**
@@ -1247,7 +1242,7 @@ var csComp;
          * MODIFICATIONS.
          */
         var EPSILON = 1e-10;
-        var ContourBuilder = (function () {
+        var ContourBuilder = /** @class */ (function () {
             function ContourBuilder(level) {
                 this.level = level;
                 this.count = 0;
@@ -1289,7 +1284,7 @@ var csComp;
                 // c is the case selector based on which of ma and/or mb are set
                 var c = ((ma != null) ? 1 : 0) | ((mb != null) ? 2 : 0);
                 switch (c) {
-                    case 0:
+                    case 0:// both unmatched, add as new sequence
                         var aa = { p: a, prev: null };
                         var bb = { p: b, next: null };
                         aa.next = bb;
@@ -1303,7 +1298,7 @@ var csComp;
                         this.s = ma;
                         ++this.count; // not essential - tracks number of unmerged sequences
                         break;
-                    case 1:
+                    case 1:// a matched, b did not - thus b extends sequence ma
                         var pp = { p: b };
                         if (prependA) {
                             pp.next = ma.head;
@@ -1318,7 +1313,7 @@ var csComp;
                             ma.tail = pp;
                         }
                         break;
-                    case 2:
+                    case 2:// b matched, a did not - thus a extends sequence mb
                         var pp = { p: a };
                         if (prependB) {
                             pp.next = mb.head;
@@ -1333,7 +1328,7 @@ var csComp;
                             mb.tail = pp;
                         }
                         break;
-                    case 3:
+                    case 3:// both matched, can merge sequences
                         // if the sequences are the same, do nothing, as we are simply closing this path (could set a flag)
                         if (ma === mb) {
                             var pp = { p: ma.tail.p, next: ma.head, prev: null };
@@ -1346,11 +1341,11 @@ var csComp;
                         // prependB will tell us which type of join is needed. For head/head and tail/tail joins
                         // one sequence needs to be reversed
                         switch ((prependA ? 1 : 0) | (prependB ? 2 : 0)) {
-                            case 0:
+                            case 0:// tail-tail
                                 // reverse ma and append to mb
                                 this.reverseList(ma);
                             // fall through to head/tail case
-                            case 1:
+                            case 1:// head-tail
                                 // ma is appended to mb and ma discarded
                                 mb.tail.next = ma.head;
                                 ma.head.prev = mb.tail;
@@ -1358,11 +1353,11 @@ var csComp;
                                 //discard ma sequence record
                                 this.remove_seq(ma);
                                 break;
-                            case 3:
+                            case 3:// head-head
                                 // reverse ma and append mb to it
                                 this.reverseList(ma);
                             // fall through to tail/head case
-                            case 2:
+                            case 2:// tail-head
                                 // mb is appended to ma and mb is discarded
                                 ma.tail.next = mb.head;
                                 mb.head.prev = ma.tail;
@@ -1420,7 +1415,7 @@ var csComp;
           *                               custom "contour builder", which populates the
           *                               contourList property.
           */
-        var Conrec = (function () {
+        var Conrec = /** @class */ (function () {
             /**
              * Create a new Conrec class, optionally specifying the function to use for drawing the contour line.
              * @param  {number} drawContour [description]
@@ -1573,55 +1568,55 @@ var csComp;
                                     case_value = castab[sh[m1] + 1][sh[m2] + 1][sh[m3] + 1];
                                     if (case_value != 0) {
                                         switch (case_value) {
-                                            case 1:
+                                            case 1:// Line between vertices 1 and 2
                                                 x1 = xh[m1];
                                                 y1 = yh[m1];
                                                 x2 = xh[m2];
                                                 y2 = yh[m2];
                                                 break;
-                                            case 2:
+                                            case 2:// Line between vertices 2 and 3
                                                 x1 = xh[m2];
                                                 y1 = yh[m2];
                                                 x2 = xh[m3];
                                                 y2 = yh[m3];
                                                 break;
-                                            case 3:
+                                            case 3:// Line between vertices 3 and 1
                                                 x1 = xh[m3];
                                                 y1 = yh[m3];
                                                 x2 = xh[m1];
                                                 y2 = yh[m1];
                                                 break;
-                                            case 4:
+                                            case 4:// Line between vertex 1 and side 2-3
                                                 x1 = xh[m1];
                                                 y1 = yh[m1];
                                                 x2 = xsect(m2, m3);
                                                 y2 = ysect(m2, m3);
                                                 break;
-                                            case 5:
+                                            case 5:// Line between vertex 2 and side 3-1
                                                 x1 = xh[m2];
                                                 y1 = yh[m2];
                                                 x2 = xsect(m3, m1);
                                                 y2 = ysect(m3, m1);
                                                 break;
-                                            case 6:
+                                            case 6://  Line between vertex 3 and side 1-2
                                                 x1 = xh[m3];
                                                 y1 = yh[m3];
                                                 x2 = xsect(m1, m2);
                                                 y2 = ysect(m1, m2);
                                                 break;
-                                            case 7:
+                                            case 7:// Line between sides 1-2 and 2-3
                                                 x1 = xsect(m1, m2);
                                                 y1 = ysect(m1, m2);
                                                 x2 = xsect(m2, m3);
                                                 y2 = ysect(m2, m3);
                                                 break;
-                                            case 8:
+                                            case 8:// Line between sides 2-3 and 3-1
                                                 x1 = xsect(m2, m3);
                                                 y1 = ysect(m2, m3);
                                                 x2 = xsect(m3, m1);
                                                 y2 = ysect(m3, m1);
                                                 break;
-                                            case 9:
+                                            case 9:// Line between sides 3-1 and 1-2
                                                 x1 = xsect(m3, m1);
                                                 y1 = ysect(m3, m1);
                                                 x2 = xsect(m1, m2);
@@ -1716,7 +1711,7 @@ var csComp;
 (function (csComp) {
     var Helpers;
     (function (Helpers) {
-        var Dictionary = (function () {
+        var Dictionary = /** @class */ (function () {
             function Dictionary() {
                 this.theKeys = [];
                 this.theValues = [];
@@ -1768,7 +1763,7 @@ var csComp;
 //# sourceMappingURL=Dictionary.js.map
 var esriJsonConverter;
 (function (esriJsonConverter_1) {
-    var esriJsonConverter = (function () {
+    var esriJsonConverter = /** @class */ (function () {
         function esriJsonConverter() {
             this.esriCon = {};
             /************************************************
@@ -2116,7 +2111,7 @@ var csComp;
         * A set of static geo tools
         * Source: http://www.csgnetwork.com/degreelenllavcalc.html
         */
-        var GeoExtensions = (function () {
+        var GeoExtensions = /** @class */ (function () {
             function GeoExtensions() {
             }
             GeoExtensions.getFeatureBounds = function (feature) {
@@ -2591,9 +2586,9 @@ var csComp;
                     height: height
                 };
             };
+            GeoExtensions.Rad2Deg = Math.PI / 180;
             return GeoExtensions;
         }());
-        GeoExtensions.Rad2Deg = Math.PI / 180;
         Helpers.GeoExtensions = GeoExtensions;
     })(Helpers = csComp.Helpers || (csComp.Helpers = {}));
 })(csComp || (csComp = {}));
@@ -3194,7 +3189,7 @@ var csComp;
                         ? String.format(pt.stringFormat, d)
                         : d.toLocaleString();
                     break;
-                case 'duration':
+                case 'duration'://in ms
                     if (!$.isNumeric(text)) {
                         displayValue = text;
                     }
@@ -3514,13 +3509,13 @@ var csComp;
 (function (csComp) {
     var Helpers;
     (function (Helpers) {
-        var PieData = (function () {
+        var PieData = /** @class */ (function () {
             function PieData() {
             }
             return PieData;
         }());
         Helpers.PieData = PieData;
-        var AsterPieData = (function (_super) {
+        var AsterPieData = /** @class */ (function (_super) {
             __extends(AsterPieData, _super);
             function AsterPieData() {
                 return _super !== null && _super.apply(this, arguments) || this;
@@ -3528,7 +3523,7 @@ var csComp;
             return AsterPieData;
         }(PieData));
         Helpers.AsterPieData = AsterPieData;
-        var Plot = (function () {
+        var Plot = /** @class */ (function () {
             function Plot() {
             }
             /**
@@ -3924,9 +3919,9 @@ var csComp;
                 if (svgElement)
                     svgElement.remove();
             };
+            Plot.pieColors = ["#fff7ec", "#fee8c8", "#fdd49e", "#fdbb84", "#fc8d59", "#ef6548", "#d7301f", "#b30000", "#7f0000"];
             return Plot;
         }());
-        Plot.pieColors = ["#fff7ec", "#fee8c8", "#fdd49e", "#fdbb84", "#fc8d59", "#ef6548", "#d7301f", "#b30000", "#7f0000"];
         Helpers.Plot = Plot;
     })(Helpers = csComp.Helpers || (csComp.Helpers = {}));
 })(csComp || (csComp = {}));
@@ -4358,7 +4353,7 @@ var FSM;
      * Transition grouping to faciliate fluent api
      * @class Transitions<T>
      */
-    var Transitions = (function () {
+    var Transitions = /** @class */ (function () {
         function Transitions(fsm) {
             this.fsm = fsm;
         }
@@ -4392,7 +4387,7 @@ var FSM;
      * Internal representation of a transition function
      * @class TransitionFunction<T>
      */
-    var TransitionFunction = (function () {
+    var TransitionFunction = /** @class */ (function () {
         // public events: {
         //     [trigger: number]: {
         //         callback: Function,
@@ -4407,7 +4402,7 @@ var FSM;
         return TransitionFunction;
     }());
     FSM.TransitionFunction = TransitionFunction;
-    var TransitionFunctions = (function (_super) {
+    var TransitionFunctions = /** @class */ (function (_super) {
         __extends(TransitionFunctions, _super);
         function TransitionFunctions(fsm) {
             var _this = _super.call(this) || this;
@@ -4430,7 +4425,7 @@ var FSM;
      * with an enumeration.
      * @class FiniteStateMachine<T>
      */
-    var FiniteStateMachine = (function () {
+    var FiniteStateMachine = /** @class */ (function () {
         /**
          * @constructor
          * @param startState {T} Intial starting state
@@ -4622,7 +4617,7 @@ var csComp;
         FileType[FileType["Js"] = 0] = "Js";
         FileType[FileType["Css"] = 1] = "Css";
     })(FileType = csComp.FileType || (csComp.FileType = {}));
-    var Utils = (function () {
+    var Utils = /** @class */ (function () {
         function Utils() {
         }
         Utils.twoDigitStr = function (v) {
@@ -4668,9 +4663,9 @@ var csComp;
                     break;
             }
         };
+        Utils.loadedFiles = [];
         return Utils;
     }());
-    Utils.loadedFiles = [];
     csComp.Utils = Utils;
 })(csComp || (csComp = {}));
 //# sourceMappingURL=Utils.js.map
@@ -4765,487 +4760,487 @@ var LayersDirective;
 //# sourceMappingURL=ValidationDirectives.js.map
 var Translations;
 (function (Translations) {
-    var English = (function () {
+    var English = /** @class */ (function () {
         function English() {
         }
+        English.locale = {
+            CANCEL_BTN: 'Cancel',
+            OK_BTN: 'OK',
+            CLOSE: 'Close',
+            FROM: 'from',
+            TO: 'to',
+            PREVIOUS: 'Previous',
+            NEXT: 'Next',
+            ZOOM_IN: 'Zoom in',
+            ZOOM_OUT: 'Zoom out',
+            ZOOM_LEVEL_LOW: 'Zoom level too low',
+            ZOOM_IN_FOR_CONTOURS: 'Zoom in to show contours',
+            NAVIGATE: {
+                TITLE: 'Search results'
+            },
+            CREATE_SCATTER: 'Create scatter with',
+            EXPAND_ALL: 'Expand all',
+            COLLAPSE_ALL: 'Collapse all',
+            SELECT_ALL: 'Select all',
+            DESELECT_ALL: 'Deselect all',
+            CHOOSE_DROPDOWN: 'Choose...',
+            ENABLE_LOCATION_FILTER: 'Enable location filter',
+            DISABLE_LOCATION_FILTER: 'Disable location filter',
+            SELECT_A_FEATURE: 'Select a feature',
+            SELECT_FEATURE_FOR_WIDGET: 'Please select a feature to show the widget.',
+            SELECT_FEATURE_FOR_STYLE: 'Please select a feature to before setting the style.',
+            SELECT_LAYER_GROUP: 'Select Layers',
+            SELECT_CATEGORY: 'Select Category',
+            SELECT_PROPERTIES: 'Select Properties',
+            NO_RELATIONS_FOUND: 'No relations can be shown for the selected feature. Either the zoom level is too low, there are too many features in the view or there are no relations defined.',
+            BASESTYLES: 'Baselayers',
+            MAP: 'Maps',
+            MAP_LABEL: 'Map',
+            TABLE_LABEL: 'Table',
+            LAYERS: 'Layers',
+            DIRECTORY: 'Available layers',
+            CREATELAYER: 'Create new layer',
+            ADDFEATURES: 'Add items',
+            ADDTYPE: 'Add new type',
+            DONE: 'done',
+            FILTERS: 'Filters',
+            FILTER_INFO: 'At the moment, no filters have been selected. In order to add a filter, click on an icon or area on the map, and click on the filter icon (<span class="fa fa-filter"></span>) in the right menu. This will create a filter for the selected property.',
+            STYLES: 'Styles',
+            STYLE_INFO: 'At the moment, no style has been selected. In order to add a style, click on an icon or area on the map, and click on the style icon (<span class="smallStyleIcon"></span>) in the right menu. This will create a filter for the selected property.',
+            FEATURES: 'Features',
+            LEGEND: 'Legend',
+            SEARCH: 'Search',
+            HIDE_PANEL: 'Hide this panel',
+            EDIT_INDICATORS: 'Edit indicators',
+            RELATED_FEATURES: 'Show related features',
+            FEATURE_INFO: 'Show information about the selected feature',
+            MAP_FEATURES: 'Map features',
+            NEARBY_FEATURES: 'Nearby features',
+            TOGGLE_MENU: 'Toggle menu visibility',
+            DASHBOARD_SELECTION: 'Dashboard selection',
+            SETTINGS: 'Settings',
+            SPEEDS_TAOUFIK: 'speed colors Taoufik',
+            SPEEDS_GOOGLEMAPS: 'speed colors Google Maps',
+            VERWARMINGSSYSTEEM: 'Heating system',
+            PERCENTAGES_V1: 'percentages v1',
+            ORANGE_RED: 'orange - red',
+            WHITE_RED: 'white - red',
+            RED_WHITE: 'red - white',
+            RED_WHITE_BLUE: 'red - white - blue',
+            GREEN_RED: 'green - red',
+            RED_GREEN: 'red - green',
+            BLUE_RED: 'blue - red',
+            RED_BLUE: 'red - blue',
+            WHITE_BLUE: 'white - blue',
+            BLUE_WHITE: 'blue - white',
+            WHITE_GREEN: 'white - green',
+            GREEN_WHITE: 'green - white',
+            WHITE_ORANGE: 'white - orange',
+            ORANGE_WHITE: 'orange - white',
+            SAVE: 'save',
+            CONFIG: 'config',
+            EDIT: 'edit',
+            APPLY: 'apply',
+            REMOVE: 'remove',
+            FOCUSTIME: {
+                OUT_OF_RANGE: 'The timerange is out of scope',
+                NOT_AVAILABLE: 'Currently no sensor data available',
+                LOADING: 'Sensor data is being loaded, please wait'
+            },
+            STATS: {
+                COUNT: '#',
+                COUNT_TOOLTIP: 'Count of selected items',
+                MIN: 'min',
+                MIN_TOOLTIP: 'Minimum of selected items',
+                MAX: 'max',
+                MAX_TOOLTIP: 'Maximum of selected items',
+                MEAN: 'µ',
+                MEAN_TOOLTIP: 'Mean of selected items',
+                SUM: 'Σ',
+                SUM_TOOLTIP: 'Sum of selected items'
+            },
+            UTILS: {
+                FILTER: 'Use this property as filter',
+                STYLE: 'Use this property as style',
+                STATS: 'Show property statistics',
+                CHART: 'Show property in time',
+                CONFIG: 'Configure property'
+            },
+            EXPERTMODE: {
+                BEGINNER: 'Novice',
+                INTERMEDIATE: 'Intermediate',
+                EXPERT: 'Expert',
+                ADMIN: 'Admin',
+                EXPLANATION: 'Select your expertise in order to unlock more functionality.'
+            },
+            LAYER_SERVICE: {
+                RELOAD_PROJECT_TITLE: 'Data is reloaded',
+                RELOAD_PROJECT_MSG: 'After switching the language, we need to reload all the map data. Our appologies for the inconvenience.'
+            },
+            HEATMAP: {
+                NAME: 'Heatmaps',
+                DESCRIPTION: '<h4>Heatmap</h4><p  style="text-align: left; margin-left:5px;">Heatmap highlights areas on the map that fulfill multiple selected criteria.',
+                INFO: 'At the moment, no map layers are loaded that contain a heatmap. Open another map layer to use it.',
+                INFO_EXPERT: 'At the moment, no map layers are loaded that contain a heatmap. Open another map layer to use it, or create a new heatmap using the wizard.',
+                SHOW_FEATURE_MSG: 'Select a feature on the map to see the heatmap.',
+                TOTAL_RESULT: 'Combined result',
+                DELETE_MSG: 'Delete "{0}"',
+                DELETE_MSG2: 'Are you sure?',
+                EDITOR_TITLE: 'Heatmap Editor',
+                MAIN_FEATURE: 'Select the main feature',
+                PROPERTIES: 'Select the properties',
+                INTENSITY_SCALE: 'Intensity scale',
+                RESOLUTION: 'Resolution',
+                TITLE: 'Title... *',
+                TITLE_TAG: 'Title',
+                SCALE_MIN_TITLE: '[Min. scale]',
+                SCALE_MAX_TITLE: '[Max. scale]',
+                MIN_MAX_ZOOM: 'Min./Max. zoom',
+                AT_LOCATION_VALUE: '[Weight at location]',
+                DISTANCE_MAX_VALUE: '[Ideal distance]',
+                LOST_INTEREST_VALUE: '[Lost interest distance]',
+                LINEAR_ASC_DESC: 'Linearly increasing, then decreasing function.',
+                ADD_HEATMAP: 'Add a new heatmap.',
+                DELETE_HEATMAP: 'Delete the heatmap.',
+                EDIT_HEATMAP: 'Edit the heatmap.',
+                EXPORT_HEATMAP: 'Export the heatmap.'
+            },
+            MCA: {
+                NAME: 'Multi-Criteria Analysis (MCA)',
+                DESCRIPTION: '<h4>Multi-Criteria Analysis</h4><p  style="text-align: left; margin-left:5px;">MCA, is a method that combines multiple properties of a feature on the map into a new property. It achieves this by:<ol><li>Scaling each property to a range between 0 (no value) and 1 (maximum value).</li><li>Weighing each property relative to the others, where a weight less than 0 indicates you wish to avoid it, 0 is ignored, and a value greater than 0 is prefered.</li></ol> In fact, it is a kind of linear regression.',
+                INFO: 'At the moment, no map layers are loaded that contain a multi-criteria analysis. Open another map layer to see it.',
+                INFO_EXPERT: 'At the moment, no map layers are loaded that contain a multi-criteria analysis. Open another map layer to use it, or create a new MCA using the wizard.',
+                SHOW_FEATURE_MSG: 'Select a feature on the map to see the effects of the Multi-Criteria Analysis (MCA).',
+                TOTAL_RESULT: 'Combined result',
+                DELETE_MSG: 'Delete "{0}"',
+                DELETE_MSG2: 'Are you sure?',
+                HAS_CATEGORY: '  Has category? ',
+                HAS_RANK: '  Include rank? ',
+                EDITOR_TITLE: 'MCA Editor',
+                MAIN_FEATURE: 'Select the main feature',
+                PROPERTIES: 'Select the properties',
+                INCLUDE_RANK: '  Show rank? ',
+                RANK_TITLE: '[Rank title...]',
+                TITLE: 'Title... *',
+                CATEGORY_MSG: '[Category...]',
+                TOGGLE_SPARKLINE: 'Show or hide bar charts and scoring function.',
+                SCALE_MIN_TITLE: '[Min. scale]',
+                SCALE_MAX_TITLE: '[Max. scale]',
+                MIN_VALUE: '[Minimum (\u03BC-2\u03C3)]',
+                MAX_VALUE: '[Maximum (\u03BC+2\u03C3)]',
+                MIN_CUTOFF_VALUE: '[Ignore when below this value]',
+                MAX_CUTOFF_VALUE: '[Ignore when above this value]',
+                LINEAR: 'Linearly increasing function between min and max.',
+                SIGMOID: 'Tangentially increasing function between min and max',
+                GAUSSIAN: 'Normal distribution increasing function between min and max.',
+                ADD_MCA: 'Add a new MCA.',
+                DELETE_MCA: 'Delete the MCA.',
+                EDIT_MCA: 'Edit the MCA.',
+                SET_STYLE: 'Set style'
+            },
+            PROJECTSETTINGS: {
+                TITLE: 'Project Settings',
+                DESCRIPTION: 'Settings'
+            },
+            CHOOSE_CATEGORY: 'Choose category...',
+            SHOW5: 'Show 5 items',
+            SHOW10: 'Show 10 items',
+            SHOW15: 'Show 15 items',
+            SHOW20: 'Show 20 items',
+            SHOW25: 'Show 25 items',
+            SHOW30: 'Show 30 items',
+            SHOW35: 'Show 35 items',
+            SHOW40: 'Show 40 items',
+            RISK_DIAGRAM_FOR: 'Risk-diagram for a ',
+            SAVE_FEATURE_DEPENDENCIES: 'Save dependencies to the selected feature only',
+            SAVE_FEATURETYPE_DEPENDENCIES: 'Save dependencies to all features of this type',
+            SAVE_MARVEL: 'Save ',
+            SAVE_EVERY_MARVEL: 'Save every ',
+            MARVEL_WATER_LEVEL: 'Water level [m]',
+            MARVEL_UPS_DURATION: 'UPS duration [mins]',
+            MARVEL_FEATURE_DEP: 'Depends on',
+            STATE: 'State',
+            EVENT_INFO: 'Show a list of events',
+            CLEAR_EVENTS: 'Clear event log',
+            SEARCH_PLACEHOLDER: 'Municipality, address, ...',
+            SAVE_AS_IMAGE: 'Save as image',
+            SAVE_AS_PDF: 'Save as PDF',
+            ROW_CHART_HELP: 'Click one or multiple rows to apply a filter for the selected property.',
+            CONVERT: 'Convert',
+            VIEW_PROJECT: 'View your project',
+            PASTE_HERE: 'Paste your data here',
+            DROP_HERE: 'Drop your data here',
+            OPTION: 'Option {{number}}',
+            PASSWORD: 'Password',
+            COMPARE_TAB: 'Compare',
+            STRINGFORMAT: 'Number format',
+            ADD: 'Add',
+            NEW: 'New',
+            SECTION: 'Section',
+            GROUP: 'Group',
+            LAYER_TITLE: 'Layer title',
+            LAYER_SETTINGS: 'Layer settings',
+            LAYER_SETTINGS_HELP: 'Change the settings of your map layer, like its title and the group it belongs to.',
+            PROPERTY_SETTINGS: 'Data properties',
+            PROPERTY_DESCRIPTION: 'Property description',
+            PROPERTY_TYPE: 'Property type',
+            PROPERTY_TITLE: 'Property title',
+            VISIBLE_IN_CALLOUT: 'Show property in menu',
+            DESCRIPTION: 'Description',
+            TYPE: 'Type',
+            TITLE: 'Title',
+            NAME: 'Name',
+            EMAIL: 'E-mail',
+            YES: 'Yes',
+            NO: 'No',
+            LOGIN_OR_OUT: 'Login or logout',
+            DOWNLOAD_SELECTION_AS: 'Download selection as:'
+        };
         return English;
     }());
-    English.locale = {
-        CANCEL_BTN: 'Cancel',
-        OK_BTN: 'OK',
-        CLOSE: 'Close',
-        FROM: 'from',
-        TO: 'to',
-        PREVIOUS: 'Previous',
-        NEXT: 'Next',
-        ZOOM_IN: 'Zoom in',
-        ZOOM_OUT: 'Zoom out',
-        ZOOM_LEVEL_LOW: 'Zoom level too low',
-        ZOOM_IN_FOR_CONTOURS: 'Zoom in to show contours',
-        NAVIGATE: {
-            TITLE: 'Search results'
-        },
-        CREATE_SCATTER: 'Create scatter with',
-        EXPAND_ALL: 'Expand all',
-        COLLAPSE_ALL: 'Collapse all',
-        SELECT_ALL: 'Select all',
-        DESELECT_ALL: 'Deselect all',
-        CHOOSE_DROPDOWN: 'Choose...',
-        ENABLE_LOCATION_FILTER: 'Enable location filter',
-        DISABLE_LOCATION_FILTER: 'Disable location filter',
-        SELECT_A_FEATURE: 'Select a feature',
-        SELECT_FEATURE_FOR_WIDGET: 'Please select a feature to show the widget.',
-        SELECT_FEATURE_FOR_STYLE: 'Please select a feature to before setting the style.',
-        SELECT_LAYER_GROUP: 'Select Layers',
-        SELECT_CATEGORY: 'Select Category',
-        SELECT_PROPERTIES: 'Select Properties',
-        NO_RELATIONS_FOUND: 'No relations can be shown for the selected feature. Either the zoom level is too low, there are too many features in the view or there are no relations defined.',
-        BASESTYLES: 'Baselayers',
-        MAP: 'Maps',
-        MAP_LABEL: 'Map',
-        TABLE_LABEL: 'Table',
-        LAYERS: 'Layers',
-        DIRECTORY: 'Available layers',
-        CREATELAYER: 'Create new layer',
-        ADDFEATURES: 'Add items',
-        ADDTYPE: 'Add new type',
-        DONE: 'done',
-        FILTERS: 'Filters',
-        FILTER_INFO: 'At the moment, no filters have been selected. In order to add a filter, click on an icon or area on the map, and click on the filter icon (<span class="fa fa-filter"></span>) in the right menu. This will create a filter for the selected property.',
-        STYLES: 'Styles',
-        STYLE_INFO: 'At the moment, no style has been selected. In order to add a style, click on an icon or area on the map, and click on the style icon (<span class="smallStyleIcon"></span>) in the right menu. This will create a filter for the selected property.',
-        FEATURES: 'Features',
-        LEGEND: 'Legend',
-        SEARCH: 'Search',
-        HIDE_PANEL: 'Hide this panel',
-        EDIT_INDICATORS: 'Edit indicators',
-        RELATED_FEATURES: 'Show related features',
-        FEATURE_INFO: 'Show information about the selected feature',
-        MAP_FEATURES: 'Map features',
-        NEARBY_FEATURES: 'Nearby features',
-        TOGGLE_MENU: 'Toggle menu visibility',
-        DASHBOARD_SELECTION: 'Dashboard selection',
-        SETTINGS: 'Settings',
-        SPEEDS_TAOUFIK: 'speed colors Taoufik',
-        SPEEDS_GOOGLEMAPS: 'speed colors Google Maps',
-        VERWARMINGSSYSTEEM: 'Heating system',
-        PERCENTAGES_V1: 'percentages v1',
-        ORANGE_RED: 'orange - red',
-        WHITE_RED: 'white - red',
-        RED_WHITE: 'red - white',
-        RED_WHITE_BLUE: 'red - white - blue',
-        GREEN_RED: 'green - red',
-        RED_GREEN: 'red - green',
-        BLUE_RED: 'blue - red',
-        RED_BLUE: 'red - blue',
-        WHITE_BLUE: 'white - blue',
-        BLUE_WHITE: 'blue - white',
-        WHITE_GREEN: 'white - green',
-        GREEN_WHITE: 'green - white',
-        WHITE_ORANGE: 'white - orange',
-        ORANGE_WHITE: 'orange - white',
-        SAVE: 'save',
-        CONFIG: 'config',
-        EDIT: 'edit',
-        APPLY: 'apply',
-        REMOVE: 'remove',
-        FOCUSTIME: {
-            OUT_OF_RANGE: 'The timerange is out of scope',
-            NOT_AVAILABLE: 'Currently no sensor data available',
-            LOADING: 'Sensor data is being loaded, please wait'
-        },
-        STATS: {
-            COUNT: '#',
-            COUNT_TOOLTIP: 'Count of selected items',
-            MIN: 'min',
-            MIN_TOOLTIP: 'Minimum of selected items',
-            MAX: 'max',
-            MAX_TOOLTIP: 'Maximum of selected items',
-            MEAN: 'µ',
-            MEAN_TOOLTIP: 'Mean of selected items',
-            SUM: 'Σ',
-            SUM_TOOLTIP: 'Sum of selected items'
-        },
-        UTILS: {
-            FILTER: 'Use this property as filter',
-            STYLE: 'Use this property as style',
-            STATS: 'Show property statistics',
-            CHART: 'Show property in time',
-            CONFIG: 'Configure property'
-        },
-        EXPERTMODE: {
-            BEGINNER: 'Novice',
-            INTERMEDIATE: 'Intermediate',
-            EXPERT: 'Expert',
-            ADMIN: 'Admin',
-            EXPLANATION: 'Select your expertise in order to unlock more functionality.'
-        },
-        LAYER_SERVICE: {
-            RELOAD_PROJECT_TITLE: 'Data is reloaded',
-            RELOAD_PROJECT_MSG: 'After switching the language, we need to reload all the map data. Our appologies for the inconvenience.'
-        },
-        HEATMAP: {
-            NAME: 'Heatmaps',
-            DESCRIPTION: '<h4>Heatmap</h4><p  style="text-align: left; margin-left:5px;">Heatmap highlights areas on the map that fulfill multiple selected criteria.',
-            INFO: 'At the moment, no map layers are loaded that contain a heatmap. Open another map layer to use it.',
-            INFO_EXPERT: 'At the moment, no map layers are loaded that contain a heatmap. Open another map layer to use it, or create a new heatmap using the wizard.',
-            SHOW_FEATURE_MSG: 'Select a feature on the map to see the heatmap.',
-            TOTAL_RESULT: 'Combined result',
-            DELETE_MSG: 'Delete "{0}"',
-            DELETE_MSG2: 'Are you sure?',
-            EDITOR_TITLE: 'Heatmap Editor',
-            MAIN_FEATURE: 'Select the main feature',
-            PROPERTIES: 'Select the properties',
-            INTENSITY_SCALE: 'Intensity scale',
-            RESOLUTION: 'Resolution',
-            TITLE: 'Title... *',
-            TITLE_TAG: 'Title',
-            SCALE_MIN_TITLE: '[Min. scale]',
-            SCALE_MAX_TITLE: '[Max. scale]',
-            MIN_MAX_ZOOM: 'Min./Max. zoom',
-            AT_LOCATION_VALUE: '[Weight at location]',
-            DISTANCE_MAX_VALUE: '[Ideal distance]',
-            LOST_INTEREST_VALUE: '[Lost interest distance]',
-            LINEAR_ASC_DESC: 'Linearly increasing, then decreasing function.',
-            ADD_HEATMAP: 'Add a new heatmap.',
-            DELETE_HEATMAP: 'Delete the heatmap.',
-            EDIT_HEATMAP: 'Edit the heatmap.',
-            EXPORT_HEATMAP: 'Export the heatmap.'
-        },
-        MCA: {
-            NAME: 'Multi-Criteria Analysis (MCA)',
-            DESCRIPTION: '<h4>Multi-Criteria Analysis</h4><p  style="text-align: left; margin-left:5px;">MCA, is a method that combines multiple properties of a feature on the map into a new property. It achieves this by:<ol><li>Scaling each property to a range between 0 (no value) and 1 (maximum value).</li><li>Weighing each property relative to the others, where a weight less than 0 indicates you wish to avoid it, 0 is ignored, and a value greater than 0 is prefered.</li></ol> In fact, it is a kind of linear regression.',
-            INFO: 'At the moment, no map layers are loaded that contain a multi-criteria analysis. Open another map layer to see it.',
-            INFO_EXPERT: 'At the moment, no map layers are loaded that contain a multi-criteria analysis. Open another map layer to use it, or create a new MCA using the wizard.',
-            SHOW_FEATURE_MSG: 'Select a feature on the map to see the effects of the Multi-Criteria Analysis (MCA).',
-            TOTAL_RESULT: 'Combined result',
-            DELETE_MSG: 'Delete "{0}"',
-            DELETE_MSG2: 'Are you sure?',
-            HAS_CATEGORY: '  Has category? ',
-            HAS_RANK: '  Include rank? ',
-            EDITOR_TITLE: 'MCA Editor',
-            MAIN_FEATURE: 'Select the main feature',
-            PROPERTIES: 'Select the properties',
-            INCLUDE_RANK: '  Show rank? ',
-            RANK_TITLE: '[Rank title...]',
-            TITLE: 'Title... *',
-            CATEGORY_MSG: '[Category...]',
-            TOGGLE_SPARKLINE: 'Show or hide bar charts and scoring function.',
-            SCALE_MIN_TITLE: '[Min. scale]',
-            SCALE_MAX_TITLE: '[Max. scale]',
-            MIN_VALUE: '[Minimum (\u03BC-2\u03C3)]',
-            MAX_VALUE: '[Maximum (\u03BC+2\u03C3)]',
-            MIN_CUTOFF_VALUE: '[Ignore when below this value]',
-            MAX_CUTOFF_VALUE: '[Ignore when above this value]',
-            LINEAR: 'Linearly increasing function between min and max.',
-            SIGMOID: 'Tangentially increasing function between min and max',
-            GAUSSIAN: 'Normal distribution increasing function between min and max.',
-            ADD_MCA: 'Add a new MCA.',
-            DELETE_MCA: 'Delete the MCA.',
-            EDIT_MCA: 'Edit the MCA.',
-            SET_STYLE: 'Set style'
-        },
-        PROJECTSETTINGS: {
-            TITLE: 'Project Settings',
-            DESCRIPTION: 'Settings'
-        },
-        CHOOSE_CATEGORY: 'Choose category...',
-        SHOW5: 'Show 5 items',
-        SHOW10: 'Show 10 items',
-        SHOW15: 'Show 15 items',
-        SHOW20: 'Show 20 items',
-        SHOW25: 'Show 25 items',
-        SHOW30: 'Show 30 items',
-        SHOW35: 'Show 35 items',
-        SHOW40: 'Show 40 items',
-        RISK_DIAGRAM_FOR: 'Risk-diagram for a ',
-        SAVE_FEATURE_DEPENDENCIES: 'Save dependencies to the selected feature only',
-        SAVE_FEATURETYPE_DEPENDENCIES: 'Save dependencies to all features of this type',
-        SAVE_MARVEL: 'Save ',
-        SAVE_EVERY_MARVEL: 'Save every ',
-        MARVEL_WATER_LEVEL: 'Water level [m]',
-        MARVEL_UPS_DURATION: 'UPS duration [mins]',
-        MARVEL_FEATURE_DEP: 'Depends on',
-        STATE: 'State',
-        EVENT_INFO: 'Show a list of events',
-        CLEAR_EVENTS: 'Clear event log',
-        SEARCH_PLACEHOLDER: 'Municipality, address, ...',
-        SAVE_AS_IMAGE: 'Save as image',
-        SAVE_AS_PDF: 'Save as PDF',
-        ROW_CHART_HELP: 'Click one or multiple rows to apply a filter for the selected property.',
-        CONVERT: 'Convert',
-        VIEW_PROJECT: 'View your project',
-        PASTE_HERE: 'Paste your data here',
-        DROP_HERE: 'Drop your data here',
-        OPTION: 'Option {{number}}',
-        PASSWORD: 'Password',
-        COMPARE_TAB: 'Compare',
-        STRINGFORMAT: 'Number format',
-        ADD: 'Add',
-        NEW: 'New',
-        SECTION: 'Section',
-        GROUP: 'Group',
-        LAYER_TITLE: 'Layer title',
-        LAYER_SETTINGS: 'Layer settings',
-        LAYER_SETTINGS_HELP: 'Change the settings of your map layer, like its title and the group it belongs to.',
-        PROPERTY_SETTINGS: 'Data properties',
-        PROPERTY_DESCRIPTION: 'Property description',
-        PROPERTY_TYPE: 'Property type',
-        PROPERTY_TITLE: 'Property title',
-        VISIBLE_IN_CALLOUT: 'Show property in menu',
-        DESCRIPTION: 'Description',
-        TYPE: 'Type',
-        TITLE: 'Title',
-        NAME: 'Name',
-        EMAIL: 'E-mail',
-        YES: 'Yes',
-        NO: 'No',
-        LOGIN_OR_OUT: 'Login or logout',
-        DOWNLOAD_SELECTION_AS: 'Download selection as:'
-    };
     Translations.English = English;
 })(Translations || (Translations = {}));
 //# sourceMappingURL=locale-en.js.map
 var Translations;
 (function (Translations) {
-    var Dutch = (function () {
+    var Dutch = /** @class */ (function () {
         function Dutch() {
         }
+        Dutch.locale = {
+            CANCEL_BTN: 'Annuleren',
+            OK_BTN: 'OK',
+            CLOSE: 'Sluit',
+            FROM: 'van',
+            TO: 'tot',
+            PREVIOUS: 'Vorige',
+            NEXT: 'Volgende',
+            ZOOM_IN: 'Inzoomen',
+            ZOOM_OUT: 'Uitzoomen',
+            ZOOM_LEVEL_LOW: 'Zoom niveau te laag',
+            ZOOM_IN_FOR_CONTOURS: 'Zoom in om de contouren te tonen',
+            NAVIGATE: {
+                TITLE: 'Zoekresultaten'
+            },
+            REMOVE: 'Verwijder',
+            CREATE_SCATTER: 'Creeer spreidingsdiagram',
+            EXPAND_ALL: 'Alles uitklappen',
+            COLLAPSE_ALL: 'Alles inklappen',
+            SELECT_ALL: 'Selecteer alles',
+            DESELECT_ALL: 'Deselecteer alles',
+            ENABLE_LOCATION_FILTER: 'Activeer locatiefilter',
+            SELECT_A_FEATURE: 'Selecteer een feature',
+            DISABLE_LOCATION_FILTER: 'Deactiveer locatiefilter',
+            SELECT_FEATURE_FOR_WIDGET: 'Selecteer een gebied om de widget te tonen.',
+            SELECT_FEATURE_FOR_STYLE: 'Selecteer eerst een gebied, dan pas kan de stijl geactiveerd worden.',
+            SELECT_LAYER_GROUP: 'Selecteer lagen',
+            SELECT_CATEGORY: 'Selecteer categorie',
+            SELECT_PROPERTIES: 'Selecteer eigenschappen',
+            NO_RELATIONS_FOUND: 'Geen relaties voor het geselecteerde item gevonden. Ofwel het zoomniveau is te laag, er zijn teveel items zichtbaar of er zijn geen relaties gedefiniëerd.',
+            CHOOSE_DROPDOWN: 'Kies...',
+            BASESTYLES: 'Basiskaarten',
+            MAP: 'Kaarten',
+            MAP_LABEL: 'Kaart',
+            TABLE_LABEL: 'Tabel',
+            LAYERS: 'Kaartlagen',
+            DIRECTORY: 'Beschikbare lagen',
+            CREATELAYER: 'Nieuwe laag maken',
+            ADDFEATURES: 'Objecten toevoegen',
+            ADDTYPE: 'Nieuwe type toevoegen',
+            FILTERS: 'Filters',
+            FILTER_INFO: 'Momenteel zijn er geen filters geselecteerd. Klik op een icoon of gebied op de kaart, en klik op het filter icoontje (<span class="fa fa-filter"></span>) in het rechter menu om een filter toe te voegen. Dan wordt er een filter aangemaakt voor de geselecteerde eigenschap.',
+            STYLES: 'Stijlen',
+            STYLE_INFO: 'Momenteel zijn er geen stijlen geselecteerd. Klik op een icoon of gebied op de kaart, en klik op het stijl icoontje (<span class="smallStyleIcon"></span>) in het rechter menu om een stijl toe te voegen. Dan wordt er een stijl aangemaakt voor de geselecteerde eigenschap.',
+            FEATURES: 'Features',
+            LEGEND: 'Legenda',
+            SEARCH: 'Zoeken',
+            HIDE_PANEL: 'Verberg dit paneel',
+            EDIT_INDICATORS: 'Wijzig indicatoren',
+            RELATED_FEATURES: 'Toon gerelateerde features',
+            FEATURE_INFO: 'Toon informatie over de geselecteerde feature',
+            MAP_FEATURES: 'Kaartfeatures',
+            NEARBY_FEATURES: 'Dichtbijgelegen features',
+            DASHBOARD_SELECTION: 'Dashboardselectie',
+            SETTINGS: 'Instellingen',
+            TOGGLE_MENU: 'Wissel de zichtbaarheid van het menu',
+            SPEEDS_TAOUFIK: 'snelheden legenda Taoufik',
+            SPEEDS_GOOGLEMAPS: 'snelheden legenda Google Maps',
+            VERWARMINGSSYSTEEM: 'Verwarmingssysteem',
+            PERCENTAGES_V1: 'percentages v1',
+            ORANGE_RED: 'oranje - rood',
+            WHITE_RED: 'wit - rood',
+            RED_WHITE_BLUE: 'rood - wit - blauw',
+            RED_WHITE: 'rood - wit',
+            GREEN_RED: 'groen - rood',
+            RED_GREEN: 'rood - groen',
+            BLUE_RED: 'blauw - rood',
+            RED_BLUE: 'rood - blauw',
+            WHITE_BLUE: 'wit - blauw',
+            BLUE_WHITE: 'wit - groen',
+            WHITE_GREEN: 'wit - groen',
+            GREEN_WHITE: 'groen - wit',
+            WHITE_ORANGE: 'wit - oranje',
+            ORANGE_WHITE: 'oranje - wit',
+            SAVE: 'opslaan',
+            APPLY: 'toepassen',
+            DONE: 'klaar',
+            CONFIG: 'config',
+            EDIT: 'aanpassen',
+            FOCUSTIME: {
+                OUT_OF_RANGE: 'De tijdscope is te groot. Gebruik de tijdbalk om deze te verkleinen',
+                NOT_AVAILABLE: 'Momenteel is er geen sensor data beschikbaar',
+                LOADING: 'Sensor data wordt geladen, even geduld'
+            },
+            STATS: {
+                COUNT: '#',
+                COUNT_TOOLTIP: 'Aantal geselecteerde items',
+                MIN: 'min',
+                MIN_TOOLTIP: 'Minimum van geselecteerde items',
+                MAX: 'max',
+                MAX_TOOLTIP: 'Maximum van geselecteerde items',
+                MEAN: 'µ',
+                MEAN_TOOLTIP: 'Gemiddelde van geselecteerde items',
+                SUM: 'Σ',
+                SUM_TOOLTIP: 'Som van geselecteerde items'
+            },
+            UTILS: {
+                FILTER: 'Gebruik dit kenmerk als filter',
+                STYLE: 'Gebruik dit kenmerk als stijl',
+                STATS: 'Toon de statistieken van dit kenmerk',
+                CHART: 'Toon het verloop van dit kenmerk in de tijd',
+                CONFIG: 'Configureer dit kenmerk'
+            },
+            EXPERTMODE: {
+                BEGINNER: 'Beginner',
+                INTERMEDIATE: 'Gevorderd',
+                EXPERT: 'Expert',
+                ADMIN: 'Admin',
+                EXPLANATION: 'Selecteer uw expertise om meer functionaliteit te kunnen gebruiken.'
+            },
+            LAYER_SERVICE: {
+                RELOAD_PROJECT_TITLE: 'Data wordt opnieuw geladen',
+                RELOAD_PROJECT_MSG: 'Na het wisselen van de taal moet de kaartdata opnieuw ingelezen worden. Excuses voor het ongemak.'
+            },
+            HEATMAP: {
+                NAME: 'Heatmaps',
+                DESCRIPTION: '<h4>Toelichting heatmap</h4><div style="text-align: left; margin-left:5px;"><p>Heatmap laat gebieden op de kaart oplichten die voldoen aan bepaalde criteria.',
+                INFO: 'Momenteel zijn er geen kaartlagen geopend die heatmaps bevatten.',
+                INFO_EXPERT: 'Momenteel zijn er geen kaartlagen geopend die heatmaps bevatten. Open een kaartlaag en maak een nieuwe heatmap aan met behulp van de wizard.',
+                SHOW_FEATURE_MSG: 'Selecteer een feature op de kaart om de heatmap resultaten in detail te bekijken.',
+                TOTAL_RESULT: 'Gecombineerd resultaat',
+                DELETE_MSG: 'Verwijder "{0}"',
+                DELETE_MSG2: 'Weet u het zeker?',
+                EDITOR_TITLE: 'Heatmap Editor',
+                MAIN_FEATURE: 'Selecteer het type feature',
+                PROPERTIES: 'Selecteer de eigenschappen',
+                RESOLUTION: 'Resolutie',
+                INTENSITY_SCALE: 'Intensiteitsschaal',
+                TITLE: 'Titel... *',
+                TITLE_TAG: 'Titel',
+                TOGGLE_SPARKLINE: 'Toon of verberg de histogram en score functie.',
+                SCALE_MIN_TITLE: '[Schaal max]',
+                SCALE_MAX_TITLE: '[Schaal min]',
+                MIN_MAX_ZOOM: 'Min./Max. zoom',
+                AT_LOCATION_VALUE: '[Waarde op locatie]',
+                DISTANCE_MAX_VALUE: '[Ideale afstand]',
+                LOST_INTEREST_VALUE: '[Negeer vanaf afstand]',
+                LINEAR_ASC_DESC: 'Linear toenemende, dan afnemende functie.',
+                ADD_HEATMAP: 'Maak een nieuwe heatmap.',
+                DELETE_HEATMAP: 'Verwijder de heatmap.',
+                EDIT_HEATMAP: 'Bewerk de heatmap.',
+                EXPORT_HEATMAP: 'Exporteer de heatmap.'
+            },
+            MCA: {
+                NAME: 'Multi-Criteria Analyse (MCA)',
+                DESCRIPTION: '<h4>Toelichting MCA</h4><div style="text-align: left; margin-left:5px;"><p>Multi-Criteria Analysis (MCA) is een methode die verschillende eigenschappen van een locatie of gebied op de kaart combineerd tot een nieuwe eigenschap. Dit gaat als volgt: <ol><li>Schaal iedere eigenschap tussen 0 (geen waarde) en 1 (maximum waarde).</li><li>Weeg iedere eigenschap relatief t.o.v. de andere gekozen eigenschappen, waar een gewicht onder 0 betekent dat je de eigenschap wil vermijden, 0 wordt genegeerd, en een waarde groter dan 0 betekent dat je dit wil bereiken.</li></ol>Met andere woorden, het is een vorm van lineare regressie.</p></div>',
+                INFO: 'Momenteel zijn er geen kaartlagen geopend die multi-criteria analyses bevatten. Open hiervoor een andere kaartlaag.',
+                INFO_EXPERT: 'Momenteel zijn er geen kaartlagen geopend die multi-criteria analyses bevatten. Open een kaartlaag en maak een nieuwe MCA aan met behulp van de wizard.',
+                SHOW_FEATURE_MSG: 'Selecteer een feature op de kaart om de Multi-Criteria Analyse (MCA) resultaten in detail te bekijken.',
+                TOTAL_RESULT: 'Gecombineerd resultaat',
+                DELETE_MSG: 'Verwijder "{0}"',
+                DELETE_MSG2: 'Weet u het zeker?',
+                HAS_CATEGORY: '  Specificeer categorie? ',
+                EDITOR_TITLE: 'MCA Editor',
+                MAIN_FEATURE: 'Selecteer het type feature',
+                PROPERTIES: 'Selecteer de eigenschappen',
+                INCLUDE_RANK: '  Toon een rangorde? ',
+                RANK_TITLE: '[Titel voor de rangorde]',
+                TITLE: 'Titel... *',
+                CATEGORY_MSG: '[Categorie...]',
+                TOGGLE_SPARKLINE: 'Toon of verberg de histogram en score functie.',
+                SCALE_MIN_TITLE: '[Schaal max]',
+                SCALE_MAX_TITLE: '[Schaal min]',
+                MIN_VALUE: '[Ondergrens (\u03BC-2\u03C3)]',
+                MAX_VALUE: '[Bovengrens (\u03BC+2\u03C3)]',
+                MIN_CUTOFF_VALUE: '[Niet meewegen onder]',
+                MAX_CUTOFF_VALUE: '[Niet meewegen boven]',
+                LINEAR: 'Linear toenemende functie tussen onder- en bovengrens.',
+                SIGMOID: 'Tangentieel toenemende functie tussen onder- en bovengrens.',
+                GAUSSIAN: 'Normale verdeling tussen onder- en bovengrens.',
+                ADD_MCA: 'Maak een nieuwe MCA.',
+                DELETE_MCA: 'Verwijder de MCA.',
+                EDIT_MCA: 'Bewerk de MCA.',
+                SET_STYLE: 'Activeer stijl'
+            },
+            PROJECTSETTINGS: {
+                TITLE: 'Project instellingen',
+                DESCRIPTION: 'Instellingen'
+            },
+            CHOOSE_CATEGORY: 'Kies categorie...',
+            SHOW5: 'Toon 5 regels',
+            SHOW10: 'Toon 10 regels',
+            SHOW15: 'Toon 15 regels',
+            SHOW20: 'Toon 20 regels',
+            SHOW25: 'Toon 25 regels',
+            SHOW30: 'Toon 30 regels',
+            SHOW35: 'Toon 35 regels',
+            SHOW40: 'Toon 40 regels',
+            RISK_DIAGRAM_FOR: 'Risicodiagram voor een ',
+            SAVE_FEATURE_DEPENDENCIES: 'Sla de afhankelijkheden op alléén voor het geselecteerde object',
+            SAVE_FEATURETYPE_DEPENDENCIES: 'Sla de afhankelijkheden op voor alle object van dit type',
+            SAVE_MARVEL: 'Bewaar ',
+            SAVE_EVERY_MARVEL: 'Bewaar ieder ',
+            MARVEL_WATER_LEVEL: 'Waterniveau [m]',
+            MARVEL_UPS_DURATION: 'Noodstroom duur [min]',
+            MARVEL_FEATURE_DEP: 'Afhankelijk van',
+            STATE: 'Status',
+            EVENT_INFO: 'Toon lijst van gebeurtenissen',
+            CLEAR_EVENTS: 'Lijst leegmaken',
+            SEARCH_PLACEHOLDER: 'Gemeente, adres, ...',
+            SAVE_AS_IMAGE: 'Opslaan als afbeelding',
+            SAVE_AS_PDF: 'Opslaan als PDF',
+            ROW_CHART_HELP: 'Klik op één of meerdere rijen om een filter toe te passen voor de geselecteerde eigenschap.',
+            CONVERT: 'Converteer',
+            VIEW_PROJECT: 'Bekijk je project',
+            PASTE_HERE: 'Plak hier uw data',
+            DROP_HERE: 'Sleep uw data hier naartoe',
+            OPTION: 'Optie {{number}}',
+            PASSWORD: 'Wachtwoord',
+            COMPARE_TAB: 'Vergelijk',
+            STRINGFORMAT: 'Nummer opmaak',
+            ADD: 'Voeg toe',
+            NEW: 'Nieuw',
+            SECTION: 'Sectie',
+            GROUP: 'Groep',
+            LAYER_TITLE: 'Kaartlaag titel',
+            LAYER_SETTINGS: 'Kaartlaag instellingen',
+            LAYER_SETTINGS_HELP: 'Wijzig hier de instellingen van je kaartlaag, zoals de titel en de groep waartoe de laag behoort.',
+            PROPERTY_SETTINGS: 'Data eigenschappen',
+            PROPERTY_DESCRIPTION: 'Eigenschap beschrijving',
+            PROPERTY_TYPE: 'Eigenschap type',
+            PROPERTY_TITLE: 'Eigenschap titel',
+            VISIBLE_IN_CALLOUT: 'Toon eigenschap in menu',
+            DESCRIPTION: 'Beschrijving',
+            TYPE: 'Type',
+            TITLE: 'Titel',
+            NAME: 'Naam',
+            EMAIL: 'E-mail',
+            YES: 'Ja',
+            NO: 'Nee',
+            LOGIN_OR_OUT: 'In- of uitloggen',
+            DOWNLOAD_SELECTION_AS: 'Download selectie als:'
+        };
         return Dutch;
     }());
-    Dutch.locale = {
-        CANCEL_BTN: 'Annuleren',
-        OK_BTN: 'OK',
-        CLOSE: 'Sluit',
-        FROM: 'van',
-        TO: 'tot',
-        PREVIOUS: 'Vorige',
-        NEXT: 'Volgende',
-        ZOOM_IN: 'Inzoomen',
-        ZOOM_OUT: 'Uitzoomen',
-        ZOOM_LEVEL_LOW: 'Zoom niveau te laag',
-        ZOOM_IN_FOR_CONTOURS: 'Zoom in om de contouren te tonen',
-        NAVIGATE: {
-            TITLE: 'Zoekresultaten'
-        },
-        REMOVE: 'Verwijder',
-        CREATE_SCATTER: 'Creeer spreidingsdiagram',
-        EXPAND_ALL: 'Alles uitklappen',
-        COLLAPSE_ALL: 'Alles inklappen',
-        SELECT_ALL: 'Selecteer alles',
-        DESELECT_ALL: 'Deselecteer alles',
-        ENABLE_LOCATION_FILTER: 'Activeer locatiefilter',
-        SELECT_A_FEATURE: 'Selecteer een feature',
-        DISABLE_LOCATION_FILTER: 'Deactiveer locatiefilter',
-        SELECT_FEATURE_FOR_WIDGET: 'Selecteer een gebied om de widget te tonen.',
-        SELECT_FEATURE_FOR_STYLE: 'Selecteer eerst een gebied, dan pas kan de stijl geactiveerd worden.',
-        SELECT_LAYER_GROUP: 'Selecteer lagen',
-        SELECT_CATEGORY: 'Selecteer categorie',
-        SELECT_PROPERTIES: 'Selecteer eigenschappen',
-        NO_RELATIONS_FOUND: 'Geen relaties voor het geselecteerde item gevonden. Ofwel het zoomniveau is te laag, er zijn teveel items zichtbaar of er zijn geen relaties gedefiniëerd.',
-        CHOOSE_DROPDOWN: 'Kies...',
-        BASESTYLES: 'Basiskaarten',
-        MAP: 'Kaarten',
-        MAP_LABEL: 'Kaart',
-        TABLE_LABEL: 'Tabel',
-        LAYERS: 'Kaartlagen',
-        DIRECTORY: 'Beschikbare lagen',
-        CREATELAYER: 'Nieuwe laag maken',
-        ADDFEATURES: 'Objecten toevoegen',
-        ADDTYPE: 'Nieuwe type toevoegen',
-        FILTERS: 'Filters',
-        FILTER_INFO: 'Momenteel zijn er geen filters geselecteerd. Klik op een icoon of gebied op de kaart, en klik op het filter icoontje (<span class="fa fa-filter"></span>) in het rechter menu om een filter toe te voegen. Dan wordt er een filter aangemaakt voor de geselecteerde eigenschap.',
-        STYLES: 'Stijlen',
-        STYLE_INFO: 'Momenteel zijn er geen stijlen geselecteerd. Klik op een icoon of gebied op de kaart, en klik op het stijl icoontje (<span class="smallStyleIcon"></span>) in het rechter menu om een stijl toe te voegen. Dan wordt er een stijl aangemaakt voor de geselecteerde eigenschap.',
-        FEATURES: 'Features',
-        LEGEND: 'Legenda',
-        SEARCH: 'Zoeken',
-        HIDE_PANEL: 'Verberg dit paneel',
-        EDIT_INDICATORS: 'Wijzig indicatoren',
-        RELATED_FEATURES: 'Toon gerelateerde features',
-        FEATURE_INFO: 'Toon informatie over de geselecteerde feature',
-        MAP_FEATURES: 'Kaartfeatures',
-        NEARBY_FEATURES: 'Dichtbijgelegen features',
-        DASHBOARD_SELECTION: 'Dashboardselectie',
-        SETTINGS: 'Instellingen',
-        TOGGLE_MENU: 'Wissel de zichtbaarheid van het menu',
-        SPEEDS_TAOUFIK: 'snelheden legenda Taoufik',
-        SPEEDS_GOOGLEMAPS: 'snelheden legenda Google Maps',
-        VERWARMINGSSYSTEEM: 'Verwarmingssysteem',
-        PERCENTAGES_V1: 'percentages v1',
-        ORANGE_RED: 'oranje - rood',
-        WHITE_RED: 'wit - rood',
-        RED_WHITE_BLUE: 'rood - wit - blauw',
-        RED_WHITE: 'rood - wit',
-        GREEN_RED: 'groen - rood',
-        RED_GREEN: 'rood - groen',
-        BLUE_RED: 'blauw - rood',
-        RED_BLUE: 'rood - blauw',
-        WHITE_BLUE: 'wit - blauw',
-        BLUE_WHITE: 'wit - groen',
-        WHITE_GREEN: 'wit - groen',
-        GREEN_WHITE: 'groen - wit',
-        WHITE_ORANGE: 'wit - oranje',
-        ORANGE_WHITE: 'oranje - wit',
-        SAVE: 'opslaan',
-        APPLY: 'toepassen',
-        DONE: 'klaar',
-        CONFIG: 'config',
-        EDIT: 'aanpassen',
-        FOCUSTIME: {
-            OUT_OF_RANGE: 'De tijdscope is te groot. Gebruik de tijdbalk om deze te verkleinen',
-            NOT_AVAILABLE: 'Momenteel is er geen sensor data beschikbaar',
-            LOADING: 'Sensor data wordt geladen, even geduld'
-        },
-        STATS: {
-            COUNT: '#',
-            COUNT_TOOLTIP: 'Aantal geselecteerde items',
-            MIN: 'min',
-            MIN_TOOLTIP: 'Minimum van geselecteerde items',
-            MAX: 'max',
-            MAX_TOOLTIP: 'Maximum van geselecteerde items',
-            MEAN: 'µ',
-            MEAN_TOOLTIP: 'Gemiddelde van geselecteerde items',
-            SUM: 'Σ',
-            SUM_TOOLTIP: 'Som van geselecteerde items'
-        },
-        UTILS: {
-            FILTER: 'Gebruik dit kenmerk als filter',
-            STYLE: 'Gebruik dit kenmerk als stijl',
-            STATS: 'Toon de statistieken van dit kenmerk',
-            CHART: 'Toon het verloop van dit kenmerk in de tijd',
-            CONFIG: 'Configureer dit kenmerk'
-        },
-        EXPERTMODE: {
-            BEGINNER: 'Beginner',
-            INTERMEDIATE: 'Gevorderd',
-            EXPERT: 'Expert',
-            ADMIN: 'Admin',
-            EXPLANATION: 'Selecteer uw expertise om meer functionaliteit te kunnen gebruiken.'
-        },
-        LAYER_SERVICE: {
-            RELOAD_PROJECT_TITLE: 'Data wordt opnieuw geladen',
-            RELOAD_PROJECT_MSG: 'Na het wisselen van de taal moet de kaartdata opnieuw ingelezen worden. Excuses voor het ongemak.'
-        },
-        HEATMAP: {
-            NAME: 'Heatmaps',
-            DESCRIPTION: '<h4>Toelichting heatmap</h4><div style="text-align: left; margin-left:5px;"><p>Heatmap laat gebieden op de kaart oplichten die voldoen aan bepaalde criteria.',
-            INFO: 'Momenteel zijn er geen kaartlagen geopend die heatmaps bevatten.',
-            INFO_EXPERT: 'Momenteel zijn er geen kaartlagen geopend die heatmaps bevatten. Open een kaartlaag en maak een nieuwe heatmap aan met behulp van de wizard.',
-            SHOW_FEATURE_MSG: 'Selecteer een feature op de kaart om de heatmap resultaten in detail te bekijken.',
-            TOTAL_RESULT: 'Gecombineerd resultaat',
-            DELETE_MSG: 'Verwijder "{0}"',
-            DELETE_MSG2: 'Weet u het zeker?',
-            EDITOR_TITLE: 'Heatmap Editor',
-            MAIN_FEATURE: 'Selecteer het type feature',
-            PROPERTIES: 'Selecteer de eigenschappen',
-            RESOLUTION: 'Resolutie',
-            INTENSITY_SCALE: 'Intensiteitsschaal',
-            TITLE: 'Titel... *',
-            TITLE_TAG: 'Titel',
-            TOGGLE_SPARKLINE: 'Toon of verberg de histogram en score functie.',
-            SCALE_MIN_TITLE: '[Schaal max]',
-            SCALE_MAX_TITLE: '[Schaal min]',
-            MIN_MAX_ZOOM: 'Min./Max. zoom',
-            AT_LOCATION_VALUE: '[Waarde op locatie]',
-            DISTANCE_MAX_VALUE: '[Ideale afstand]',
-            LOST_INTEREST_VALUE: '[Negeer vanaf afstand]',
-            LINEAR_ASC_DESC: 'Linear toenemende, dan afnemende functie.',
-            ADD_HEATMAP: 'Maak een nieuwe heatmap.',
-            DELETE_HEATMAP: 'Verwijder de heatmap.',
-            EDIT_HEATMAP: 'Bewerk de heatmap.',
-            EXPORT_HEATMAP: 'Exporteer de heatmap.'
-        },
-        MCA: {
-            NAME: 'Multi-Criteria Analyse (MCA)',
-            DESCRIPTION: '<h4>Toelichting MCA</h4><div style="text-align: left; margin-left:5px;"><p>Multi-Criteria Analysis (MCA) is een methode die verschillende eigenschappen van een locatie of gebied op de kaart combineerd tot een nieuwe eigenschap. Dit gaat als volgt: <ol><li>Schaal iedere eigenschap tussen 0 (geen waarde) en 1 (maximum waarde).</li><li>Weeg iedere eigenschap relatief t.o.v. de andere gekozen eigenschappen, waar een gewicht onder 0 betekent dat je de eigenschap wil vermijden, 0 wordt genegeerd, en een waarde groter dan 0 betekent dat je dit wil bereiken.</li></ol>Met andere woorden, het is een vorm van lineare regressie.</p></div>',
-            INFO: 'Momenteel zijn er geen kaartlagen geopend die multi-criteria analyses bevatten. Open hiervoor een andere kaartlaag.',
-            INFO_EXPERT: 'Momenteel zijn er geen kaartlagen geopend die multi-criteria analyses bevatten. Open een kaartlaag en maak een nieuwe MCA aan met behulp van de wizard.',
-            SHOW_FEATURE_MSG: 'Selecteer een feature op de kaart om de Multi-Criteria Analyse (MCA) resultaten in detail te bekijken.',
-            TOTAL_RESULT: 'Gecombineerd resultaat',
-            DELETE_MSG: 'Verwijder "{0}"',
-            DELETE_MSG2: 'Weet u het zeker?',
-            HAS_CATEGORY: '  Specificeer categorie? ',
-            EDITOR_TITLE: 'MCA Editor',
-            MAIN_FEATURE: 'Selecteer het type feature',
-            PROPERTIES: 'Selecteer de eigenschappen',
-            INCLUDE_RANK: '  Toon een rangorde? ',
-            RANK_TITLE: '[Titel voor de rangorde]',
-            TITLE: 'Titel... *',
-            CATEGORY_MSG: '[Categorie...]',
-            TOGGLE_SPARKLINE: 'Toon of verberg de histogram en score functie.',
-            SCALE_MIN_TITLE: '[Schaal max]',
-            SCALE_MAX_TITLE: '[Schaal min]',
-            MIN_VALUE: '[Ondergrens (\u03BC-2\u03C3)]',
-            MAX_VALUE: '[Bovengrens (\u03BC+2\u03C3)]',
-            MIN_CUTOFF_VALUE: '[Niet meewegen onder]',
-            MAX_CUTOFF_VALUE: '[Niet meewegen boven]',
-            LINEAR: 'Linear toenemende functie tussen onder- en bovengrens.',
-            SIGMOID: 'Tangentieel toenemende functie tussen onder- en bovengrens.',
-            GAUSSIAN: 'Normale verdeling tussen onder- en bovengrens.',
-            ADD_MCA: 'Maak een nieuwe MCA.',
-            DELETE_MCA: 'Verwijder de MCA.',
-            EDIT_MCA: 'Bewerk de MCA.',
-            SET_STYLE: 'Activeer stijl'
-        },
-        PROJECTSETTINGS: {
-            TITLE: 'Project instellingen',
-            DESCRIPTION: 'Instellingen'
-        },
-        CHOOSE_CATEGORY: 'Kies categorie...',
-        SHOW5: 'Toon 5 regels',
-        SHOW10: 'Toon 10 regels',
-        SHOW15: 'Toon 15 regels',
-        SHOW20: 'Toon 20 regels',
-        SHOW25: 'Toon 25 regels',
-        SHOW30: 'Toon 30 regels',
-        SHOW35: 'Toon 35 regels',
-        SHOW40: 'Toon 40 regels',
-        RISK_DIAGRAM_FOR: 'Risicodiagram voor een ',
-        SAVE_FEATURE_DEPENDENCIES: 'Sla de afhankelijkheden op alléén voor het geselecteerde object',
-        SAVE_FEATURETYPE_DEPENDENCIES: 'Sla de afhankelijkheden op voor alle object van dit type',
-        SAVE_MARVEL: 'Bewaar ',
-        SAVE_EVERY_MARVEL: 'Bewaar ieder ',
-        MARVEL_WATER_LEVEL: 'Waterniveau [m]',
-        MARVEL_UPS_DURATION: 'Noodstroom duur [min]',
-        MARVEL_FEATURE_DEP: 'Afhankelijk van',
-        STATE: 'Status',
-        EVENT_INFO: 'Toon lijst van gebeurtenissen',
-        CLEAR_EVENTS: 'Lijst leegmaken',
-        SEARCH_PLACEHOLDER: 'Gemeente, adres, ...',
-        SAVE_AS_IMAGE: 'Opslaan als afbeelding',
-        SAVE_AS_PDF: 'Opslaan als PDF',
-        ROW_CHART_HELP: 'Klik op één of meerdere rijen om een filter toe te passen voor de geselecteerde eigenschap.',
-        CONVERT: 'Converteer',
-        VIEW_PROJECT: 'Bekijk je project',
-        PASTE_HERE: 'Plak hier uw data',
-        DROP_HERE: 'Sleep uw data hier naartoe',
-        OPTION: 'Optie {{number}}',
-        PASSWORD: 'Wachtwoord',
-        COMPARE_TAB: 'Vergelijk',
-        STRINGFORMAT: 'Nummer opmaak',
-        ADD: 'Voeg toe',
-        NEW: 'Nieuw',
-        SECTION: 'Sectie',
-        GROUP: 'Groep',
-        LAYER_TITLE: 'Kaartlaag titel',
-        LAYER_SETTINGS: 'Kaartlaag instellingen',
-        LAYER_SETTINGS_HELP: 'Wijzig hier de instellingen van je kaartlaag, zoals de titel en de groep waartoe de laag behoort.',
-        PROPERTY_SETTINGS: 'Data eigenschappen',
-        PROPERTY_DESCRIPTION: 'Eigenschap beschrijving',
-        PROPERTY_TYPE: 'Eigenschap type',
-        PROPERTY_TITLE: 'Eigenschap titel',
-        VISIBLE_IN_CALLOUT: 'Toon eigenschap in menu',
-        DESCRIPTION: 'Beschrijving',
-        TYPE: 'Type',
-        TITLE: 'Titel',
-        NAME: 'Naam',
-        EMAIL: 'E-mail',
-        YES: 'Ja',
-        NO: 'Nee',
-        LOGIN_OR_OUT: 'In- of uitloggen',
-        DOWNLOAD_SELECTION_AS: 'Download selectie als:'
-    };
     Translations.Dutch = Dutch;
 })(Translations || (Translations = {}));
 //# sourceMappingURL=locale-nl.js.map
@@ -5285,7 +5280,7 @@ var Accessibility;
 //# sourceMappingURL=Accessibility.js.map
 var Accessibility;
 (function (Accessibility) {
-    var AccessibilityModel = (function () {
+    var AccessibilityModel = /** @class */ (function () {
         function AccessibilityModel() {
             this.id = 'accessibilityActions';
         }
@@ -5410,7 +5405,7 @@ var Accessibility;
         return AccessibilityModel;
     }());
     Accessibility.AccessibilityModel = AccessibilityModel;
-    var AccessibilityCtrl = (function () {
+    var AccessibilityCtrl = /** @class */ (function () {
         // dependencies are injected via AngularJS $injector
         // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
         function AccessibilityCtrl($scope, $http, $mapService, $layerService, $messageBusService, $dashboardService) {
@@ -5509,20 +5504,20 @@ var Accessibility;
                 this.$scope.$apply();
             }
         };
+        // $inject annotation.
+        // It provides $injector with information about dependencies to be injected into constructor
+        // it is better to have it close to the constructor, because the parameters must match in count and type.
+        // See http://docs.angularjs.org/guide/di
+        AccessibilityCtrl.$inject = [
+            '$scope',
+            '$http',
+            'mapService',
+            'layerService',
+            'messageBusService',
+            'dashboardService'
+        ];
         return AccessibilityCtrl;
     }());
-    // $inject annotation.
-    // It provides $injector with information about dependencies to be injected into constructor
-    // it is better to have it close to the constructor, because the parameters must match in count and type.
-    // See http://docs.angularjs.org/guide/di
-    AccessibilityCtrl.$inject = [
-        '$scope',
-        '$http',
-        'mapService',
-        'layerService',
-        'messageBusService',
-        'dashboardService'
-    ];
     Accessibility.AccessibilityCtrl = AccessibilityCtrl;
 })(Accessibility || (Accessibility = {}));
 //# sourceMappingURL=AccessibilityCtrl.js.map
@@ -5568,7 +5563,7 @@ var BaseMapList;
 //# sourceMappingURL=BaseMapList.js.map
 var BaseMapList;
 (function (BaseMapList) {
-    var BaseMapListCtrl = (function () {
+    var BaseMapListCtrl = /** @class */ (function () {
         // dependencies are injected via AngularJS $injector
         // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
         function BaseMapListCtrl($scope, $layerService, $mapService, $messageBusService) {
@@ -5583,18 +5578,18 @@ var BaseMapList;
             this.$layerService.activeMapRenderer.changeBaseLayer(layer);
             this.$layerService.$mapService.changeBaseLayer(key);
         };
+        // $inject annotation.
+        // It provides $injector with information about dependencies to be injected into constructor
+        // it is better to have it close to the constructor, because the parameters must match in count and type.
+        // See http://docs.angularjs.org/guide/di
+        BaseMapListCtrl.$inject = [
+            '$scope',
+            'layerService',
+            'mapService',
+            'messageBusService',
+        ];
         return BaseMapListCtrl;
     }());
-    // $inject annotation.
-    // It provides $injector with information about dependencies to be injected into constructor
-    // it is better to have it close to the constructor, because the parameters must match in count and type.
-    // See http://docs.angularjs.org/guide/di
-    BaseMapListCtrl.$inject = [
-        '$scope',
-        'layerService',
-        'mapService',
-        'messageBusService',
-    ];
     BaseMapList.BaseMapListCtrl = BaseMapListCtrl;
 })(BaseMapList || (BaseMapList = {}));
 //# sourceMappingURL=BaseMapListCtrl.js.map
@@ -5740,7 +5735,7 @@ var Charts;
 var Charts;
 (function (Charts) {
     'use strict';
-    var ChartHelpers = (function () {
+    var ChartHelpers = /** @class */ (function () {
         function ChartHelpers() {
         }
         /**
@@ -6582,7 +6577,7 @@ var DataTable;
      * Represents a field in the table.
      * The value is the actual displayValue shown, the type is the propertyType type (e.g. number or text, useful when aligning the data), and the header is used for sorting.
      */
-    var TableField = (function () {
+    var TableField = /** @class */ (function () {
         function TableField(displayValue, originalValue, type, header) {
             this.displayValue = displayValue;
             this.originalValue = originalValue;
@@ -6592,7 +6587,7 @@ var DataTable;
         return TableField;
     }());
     DataTable.TableField = TableField;
-    var DataTableCtrl = (function () {
+    var DataTableCtrl = /** @class */ (function () {
         // dependencies are injected via AngularJS $injector
         // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
         function DataTableCtrl($scope, $http, $sce, $translate, $timeout, $layerService, $localStorageService, $messageBusService) {
@@ -7076,22 +7071,22 @@ var DataTable;
                 return '';
             }
         };
+        // $inject annotation.
+        // It provides $injector with information about dependencies to be injected into constructor
+        // it is better to have it close to the constructor, because the parameters must match in count and type.
+        // See http://docs.angularjs.org/guide/di
+        DataTableCtrl.$inject = [
+            '$scope',
+            '$http',
+            '$sce',
+            '$translate',
+            '$timeout',
+            'layerService',
+            'localStorageService',
+            'messageBusService'
+        ];
         return DataTableCtrl;
     }());
-    // $inject annotation.
-    // It provides $injector with information about dependencies to be injected into constructor
-    // it is better to have it close to the constructor, because the parameters must match in count and type.
-    // See http://docs.angularjs.org/guide/di
-    DataTableCtrl.$inject = [
-        '$scope',
-        '$http',
-        '$sce',
-        '$translate',
-        '$timeout',
-        'layerService',
-        'localStorageService',
-        'messageBusService'
-    ];
     DataTable.DataTableCtrl = DataTableCtrl;
 })(DataTable || (DataTable = {}));
 //# sourceMappingURL=DataTableCtrl.js.map
@@ -7131,7 +7126,7 @@ var EventTab;
 //# sourceMappingURL=EventTab.js.map
 var EventTab;
 (function (EventTab) {
-    var EventTabCtrl = (function () {
+    var EventTabCtrl = /** @class */ (function () {
         // dependencies are injected via AngularJS $injector
         // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
         function EventTabCtrl($scope, $location, $sce, $mapService, $layerService, $messageBusService, $translate) {
@@ -7382,21 +7377,21 @@ var EventTab;
                 this.$mapService.zoomTo(foundFeature, this.$mapService.map.getZoom());
             }
         };
+        // $inject annotation.
+        // It provides $injector with information about dependencies to be injected into constructor
+        // it is better to have it close to the constructor, because the parameters must match in count and type.
+        // See http://docs.angularjs.org/guide/di
+        EventTabCtrl.$inject = [
+            '$scope',
+            '$location',
+            '$sce',
+            'mapService',
+            'layerService',
+            'messageBusService',
+            '$translate'
+        ];
         return EventTabCtrl;
     }());
-    // $inject annotation.
-    // It provides $injector with information about dependencies to be injected into constructor
-    // it is better to have it close to the constructor, because the parameters must match in count and type.
-    // See http://docs.angularjs.org/guide/di
-    EventTabCtrl.$inject = [
-        '$scope',
-        '$location',
-        '$sce',
-        'mapService',
-        'layerService',
-        'messageBusService',
-        '$translate'
-    ];
     EventTab.EventTabCtrl = EventTabCtrl;
 })(EventTab || (EventTab = {}));
 //# sourceMappingURL=EventTabCtrl.js.map
@@ -7465,7 +7460,7 @@ var ExpertMode;
 var ExpertMode;
 (function (ExpertMode) {
     var Expertise = csComp.Services.Expertise;
-    var ExpertModeCtrl = (function () {
+    var ExpertModeCtrl = /** @class */ (function () {
         function ExpertModeCtrl($scope, $localStorageService, $layerService, $mapService, $messageBus) {
             var _this = this;
             this.$scope = $scope;
@@ -7511,15 +7506,15 @@ var ExpertMode;
         ExpertModeCtrl.prototype.setExpertMode = function (expertMode) {
             this.$messageBus.publish('expertMode', 'newExpertise', expertMode);
         };
+        ExpertModeCtrl.$inject = [
+            '$scope',
+            'localStorageService',
+            'layerService',
+            'mapService',
+            'messageBusService'
+        ];
         return ExpertModeCtrl;
     }());
-    ExpertModeCtrl.$inject = [
-        '$scope',
-        'localStorageService',
-        'layerService',
-        'mapService',
-        'messageBusService'
-    ];
     ExpertMode.ExpertModeCtrl = ExpertModeCtrl;
 })(ExpertMode || (ExpertMode = {}));
 //# sourceMappingURL=ExpertModeCtrl.js.map
@@ -7572,7 +7567,7 @@ var FeatureList;
 //# sourceMappingURL=FeatureList.js.map
 var FeatureList;
 (function (FeatureList) {
-    var FeatureListCtrl = (function () {
+    var FeatureListCtrl = /** @class */ (function () {
         // dependencies are injected via AngularJS $injector
         // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
         function FeatureListCtrl($scope, $layerService, $mapService) {
@@ -7582,17 +7577,17 @@ var FeatureList;
             $scope.vm = this;
             $scope.numberOfItems = 10; // This is being reset in the directive upon receiving a resize.
         }
+        // $inject annotation.
+        // It provides $injector with information about dependencies to be injected into constructor
+        // it is better to have it close to the constructor, because the parameters must match in count and type.
+        // See http://docs.angularjs.org/guide/di
+        FeatureListCtrl.$inject = [
+            '$scope',
+            'layerService',
+            'mapService'
+        ];
         return FeatureListCtrl;
     }());
-    // $inject annotation.
-    // It provides $injector with information about dependencies to be injected into constructor
-    // it is better to have it close to the constructor, because the parameters must match in count and type.
-    // See http://docs.angularjs.org/guide/di
-    FeatureListCtrl.$inject = [
-        '$scope',
-        'layerService',
-        'mapService'
-    ];
     FeatureList.FeatureListCtrl = FeatureListCtrl;
 })(FeatureList || (FeatureList = {}));
 //# sourceMappingURL=FeatureListCtrl.js.map
@@ -7632,7 +7627,7 @@ var FeatureProps;
 //# sourceMappingURL=FeatureProps.js.map
 var FeatureProps;
 (function (FeatureProps) {
-    var FeaturePropsOptions = (function () {
+    var FeaturePropsOptions = /** @class */ (function () {
         function FeaturePropsOptions(position) {
             this.position = position;
             this.closeButton = true;
@@ -7640,7 +7635,7 @@ var FeatureProps;
         }
         return FeaturePropsOptions;
     }());
-    var CallOutProperty = (function () {
+    var CallOutProperty = /** @class */ (function () {
         function CallOutProperty(key, value, property, canFilter, canStyle, canShowStats, feature, isFilter, isSensor, description, propertyType, timestamps, sensor, isDraft) {
             this.key = key;
             this.value = value;
@@ -7662,7 +7657,7 @@ var FeatureProps;
         return CallOutProperty;
     }());
     FeatureProps.CallOutProperty = CallOutProperty;
-    var CallOutSection = (function () {
+    var CallOutSection = /** @class */ (function () {
         function CallOutSection(sectionIcon) {
             this.propertyTypes = {};
             this.properties = [];
@@ -7688,7 +7683,7 @@ var FeatureProps;
         return CallOutSection;
     }());
     FeatureProps.CallOutSection = CallOutSection;
-    var CallOut = (function () {
+    var CallOut = /** @class */ (function () {
         function CallOut(type, feature, propertyTypeData, layerservice, mapservice) {
             var _this = this;
             this.type = type;
@@ -7831,7 +7826,7 @@ var FeatureProps;
         return CallOut;
     }());
     FeatureProps.CallOut = CallOut;
-    var FeaturePropsCtrl = (function () {
+    var FeaturePropsCtrl = /** @class */ (function () {
         // dependencies are injected via AngularJS $injector
         // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
         function FeaturePropsCtrl($scope, $location, $sce, $mapService, $layerService, $messageBusService, $translate, $compile) {
@@ -8107,6 +8102,12 @@ var FeatureProps;
                     this.showMore.push(item.property);
                 var values = this.$layerService.getPropertyValues(item.feature.layer, item.property);
                 var d = item.property;
+                if (item.propertyType.type === 'number') {
+                    _.each(values, (function (val) {
+                        if (val[d])
+                            val[d] = +val[d];
+                    }));
+                }
                 var res = vg.util.summary(values, [item.property]);
                 item.stats = res[0];
                 item.stats.sum = item.stats.count * item.stats.mean;
@@ -8270,22 +8271,22 @@ var FeatureProps;
                 }
             });
         };
+        // $inject annotation.
+        // It provides $injector with information about dependencies to be injected into constructor
+        // it is better to have it close to the constructor, because the parameters must match in count and type.
+        // See http://docs.angularjs.org/guide/di
+        FeaturePropsCtrl.$inject = [
+            '$scope',
+            '$location',
+            '$sce',
+            'mapService',
+            'layerService',
+            'messageBusService',
+            '$translate',
+            '$compile'
+        ];
         return FeaturePropsCtrl;
     }());
-    // $inject annotation.
-    // It provides $injector with information about dependencies to be injected into constructor
-    // it is better to have it close to the constructor, because the parameters must match in count and type.
-    // See http://docs.angularjs.org/guide/di
-    FeaturePropsCtrl.$inject = [
-        '$scope',
-        '$location',
-        '$sce',
-        'mapService',
-        'layerService',
-        'messageBusService',
-        '$translate',
-        '$compile'
-    ];
     FeatureProps.FeaturePropsCtrl = FeaturePropsCtrl;
 })(FeatureProps || (FeatureProps = {}));
 //# sourceMappingURL=FeaturePropsCtrl.js.map
@@ -8325,7 +8326,7 @@ var FeatureRelations;
 //# sourceMappingURL=FeatureRelations.js.map
 var FeatureRelations;
 (function (FeatureRelations) {
-    var FeaturePropsOptions = (function () {
+    var FeaturePropsOptions = /** @class */ (function () {
         function FeaturePropsOptions(position) {
             this.position = position;
             this.closeButton = true;
@@ -8333,20 +8334,20 @@ var FeatureRelations;
         }
         return FeaturePropsOptions;
     }());
-    var RelationGroup = (function () {
+    var RelationGroup = /** @class */ (function () {
         function RelationGroup() {
             this.relations = [];
         }
         return RelationGroup;
     }());
     FeatureRelations.RelationGroup = RelationGroup;
-    var Relation = (function () {
+    var Relation = /** @class */ (function () {
         function Relation() {
         }
         return Relation;
     }());
     FeatureRelations.Relation = Relation;
-    var FeatureRelationsCtrl = (function () {
+    var FeatureRelationsCtrl = /** @class */ (function () {
         // dependencies are injected via AngularJS $injector
         // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
         function FeatureRelationsCtrl($scope, $location, $sce, $mapService, $layerService, $messageBusService, $translate) {
@@ -8549,21 +8550,21 @@ var FeatureRelations;
         FeatureRelationsCtrl.prototype.getRelations = function () {
             return this.relations;
         };
+        // $inject annotation.
+        // It provides $injector with information about dependencies to be injected into constructor
+        // it is better to have it close to the constructor, because the parameters must match in count and type.
+        // See http://docs.angularjs.org/guide/di
+        FeatureRelationsCtrl.$inject = [
+            '$scope',
+            '$location',
+            '$sce',
+            'mapService',
+            'layerService',
+            'messageBusService',
+            '$translate'
+        ];
         return FeatureRelationsCtrl;
     }());
-    // $inject annotation.
-    // It provides $injector with information about dependencies to be injected into constructor
-    // it is better to have it close to the constructor, because the parameters must match in count and type.
-    // See http://docs.angularjs.org/guide/di
-    FeatureRelationsCtrl.$inject = [
-        '$scope',
-        '$location',
-        '$sce',
-        'mapService',
-        'layerService',
-        'messageBusService',
-        '$translate'
-    ];
     FeatureRelations.FeatureRelationsCtrl = FeatureRelationsCtrl;
 })(FeatureRelations || (FeatureRelations = {}));
 //# sourceMappingURL=FeatureRelationsCtrl.js.map
@@ -8606,7 +8607,7 @@ var FilterList;
 //# sourceMappingURL=FilterList.js.map
 var FilterList;
 (function (FilterList) {
-    var FilterListCtrl = (function () {
+    var FilterListCtrl = /** @class */ (function () {
         // dependencies are injected via AngularJS $injector
         // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
         function FilterListCtrl($scope, $layerService, $messageBus) {
@@ -8636,17 +8637,17 @@ var FilterList;
                 this.$layerService.setLocationFilter(group);
             }
         };
+        // $inject annotation.
+        // It provides $injector with information about dependencies to be injected into constructor
+        // it is better to have it close to the constructor, because the parameters must match in count and type.
+        // See http://docs.angularjs.org/guide/di
+        FilterListCtrl.$inject = [
+            '$scope',
+            'layerService',
+            'messageBusService'
+        ];
         return FilterListCtrl;
     }());
-    // $inject annotation.
-    // It provides $injector with information about dependencies to be injected into constructor
-    // it is better to have it close to the constructor, because the parameters must match in count and type.
-    // See http://docs.angularjs.org/guide/di
-    FilterListCtrl.$inject = [
-        '$scope',
-        'layerService',
-        'messageBusService'
-    ];
     FilterList.FilterListCtrl = FilterListCtrl;
 })(FilterList || (FilterList = {}));
 //# sourceMappingURL=FilterListCtrl.js.map
@@ -8693,7 +8694,7 @@ var Heatmap;
 var Heatmap;
 (function (Heatmap) {
     'use strict';
-    var HeatmapCtrl = (function () {
+    var HeatmapCtrl = /** @class */ (function () {
         function HeatmapCtrl($scope, $modal, $translate, $timeout, $localStorageService, $layerService, $mapService, messageBusService) {
             var _this = this;
             this.$scope = $scope;
@@ -9009,18 +9010,18 @@ var Heatmap;
                 this.moveListenerInitialized = true;
             }
         };
+        HeatmapCtrl.$inject = [
+            '$scope',
+            '$uibModal',
+            '$translate',
+            '$timeout',
+            'localStorageService',
+            'layerService',
+            'mapService',
+            'messageBusService'
+        ];
         return HeatmapCtrl;
     }());
-    HeatmapCtrl.$inject = [
-        '$scope',
-        '$uibModal',
-        '$translate',
-        '$timeout',
-        'localStorageService',
-        'layerService',
-        'mapService',
-        'messageBusService'
-    ];
     Heatmap.HeatmapCtrl = HeatmapCtrl;
 })(Heatmap || (Heatmap = {}));
 /* Heatmap layers:
@@ -9038,7 +9039,7 @@ var Heatmap;
 var Heatmap;
 (function (Heatmap) {
     'use strict';
-    var HeatmapEditorCtrl = (function () {
+    var HeatmapEditorCtrl = /** @class */ (function () {
         function HeatmapEditorCtrl($scope, $modalInstance, $layerService, $translate, messageBusService, heatmap) {
             var _this = this;
             this.$scope = $scope;
@@ -9089,22 +9090,22 @@ var Heatmap;
             this.showItem = this.showItem == index ? -1 : index;
             console.log("Toggle item");
         };
+        HeatmapEditorCtrl.$inject = [
+            '$scope',
+            '$modalInstance',
+            'layerService',
+            '$translate',
+            'messageBusService',
+            'heatmap'
+        ];
         return HeatmapEditorCtrl;
     }());
-    HeatmapEditorCtrl.$inject = [
-        '$scope',
-        '$modalInstance',
-        'layerService',
-        '$translate',
-        'messageBusService',
-        'heatmap'
-    ];
     Heatmap.HeatmapEditorCtrl = HeatmapEditorCtrl;
 })(Heatmap || (Heatmap = {}));
 //# sourceMappingURL=HeatmapEditorCtrl.js.map
 var Heatmap;
 (function (Heatmap) {
-    var HeatmapItem = (function () {
+    var HeatmapItem = /** @class */ (function () {
         function HeatmapItem(title, featureType, weight, userWeight, isSelected, idealityMeasure, propertyTitle, propertyLabel, optionIndex) {
             if (weight === void 0) { weight = 0; }
             if (userWeight === void 0) { userWeight = 1; }
@@ -9292,15 +9293,15 @@ var Heatmap;
                 ? this.propertyTitle + '.' + this.title + ' (' + this.featureType.name + ')'
                 : this.title;
         };
+        HeatmapItem.twoPi = Math.PI * 2;
         return HeatmapItem;
     }());
-    HeatmapItem.twoPi = Math.PI * 2;
     Heatmap.HeatmapItem = HeatmapItem;
 })(Heatmap || (Heatmap = {}));
 //# sourceMappingURL=HeatmapItem.js.map
 var Heatmap;
 (function (Heatmap) {
-    var HeatmapModel = (function () {
+    var HeatmapModel = /** @class */ (function () {
         function HeatmapModel(title) {
             this.title = title;
             this.heatmapItems = [];
@@ -9540,7 +9541,7 @@ var Heatmap;
 //# sourceMappingURL=HeatMapModel.js.map
 var Heatmap;
 (function (Heatmap) {
-    var HeatmapSettings = (function () {
+    var HeatmapSettings = /** @class */ (function () {
         function HeatmapSettings(referenceList, minZoom, maxZoom, intensityScale, resolution) {
             if (referenceList === void 0) { referenceList = []; }
             if (minZoom === void 0) { minZoom = 10; }
@@ -9569,7 +9570,7 @@ var Heatmap;
     /**
      * A heat spot represents a point on the map with a certain intensity.
      */
-    var Heatspot = (function () {
+    var Heatspot = /** @class */ (function () {
         function Heatspot(i, j, intensity, contributor) {
             this.i = i;
             this.j = j;
@@ -9590,7 +9591,7 @@ var Heatmap;
     (function (ScoringFunctionType) {
         ScoringFunctionType[ScoringFunctionType["LinearAscendingDescending"] = 0] = "LinearAscendingDescending";
     })(ScoringFunctionType = Heatmap.ScoringFunctionType || (Heatmap.ScoringFunctionType = {}));
-    var ScoringFunction = (function () {
+    var ScoringFunction = /** @class */ (function () {
         function ScoringFunction(scoringFunctionType) {
             if (typeof scoringFunctionType != 'undefined' && scoringFunctionType != null)
                 this.type = scoringFunctionType;
@@ -9606,13 +9607,13 @@ var Heatmap;
         return ScoringFunction;
     }());
     Heatmap.ScoringFunction = ScoringFunction;
-    var ScoringFunctions = (function () {
+    var ScoringFunctions = /** @class */ (function () {
         function ScoringFunctions() {
         }
         return ScoringFunctions;
     }());
     Heatmap.ScoringFunctions = ScoringFunctions;
-    var IdealityMeasure = (function () {
+    var IdealityMeasure = /** @class */ (function () {
         function IdealityMeasure(idealDistance, atLocation, lostInterestDistance) {
             if (idealDistance === void 0) { idealDistance = 500; }
             if (atLocation === void 0) { atLocation = 0.1; }
@@ -9654,7 +9655,7 @@ var IdvEdit;
         // named module does not exist, so create one
         IdvEdit.myModule = angular.module(moduleName, []);
     }
-    var IdvEditCtrl = (function () {
+    var IdvEditCtrl = /** @class */ (function () {
         // dependencies are injected via AngularJS $injector
         // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
         function IdvEditCtrl($scope, $mapService, $layerService, $messageBusService) {
@@ -9679,14 +9680,14 @@ var IdvEdit;
         IdvEditCtrl.prototype.export = function () {
             this.scan.exportCsv();
         };
+        IdvEditCtrl.$inject = [
+            '$scope',
+            'mapService',
+            'layerService',
+            'messageBusService',
+        ];
         return IdvEditCtrl;
     }());
-    IdvEditCtrl.$inject = [
-        '$scope',
-        'mapService',
-        'layerService',
-        'messageBusService',
-    ];
     IdvEdit.IdvEditCtrl = IdvEditCtrl;
     /**
     * Directive to display the available map layers.
@@ -9712,7 +9713,7 @@ var IdvEdit;
 //# sourceMappingURL=IdvEdit.js.map
 var Idv;
 (function (Idv_1) {
-    var Idv = (function () {
+    var Idv = /** @class */ (function () {
         function Idv() {
             this.defaultWidth = 180;
         }
@@ -10463,11 +10464,11 @@ var Idv;
                     break;
             }
         };
+        Idv.days_nl = ["zondag", "maandag", "dinsdag", "woensdag", "donderdag", "vrijdag", "zaterdag"];
+        Idv.days_en = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saterday"];
+        Idv.months = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "okt", "nov", "dec"];
         return Idv;
     }());
-    Idv.days_nl = ["zondag", "maandag", "dinsdag", "woensdag", "donderdag", "vrijdag", "zaterdag"];
-    Idv.days_en = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saterday"];
-    Idv.months = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "okt", "nov", "dec"];
     Idv_1.Idv = Idv;
 })(Idv || (Idv = {}));
 //# sourceMappingURL=IdvHelper.js.map
@@ -10501,7 +10502,7 @@ var KanbanBoard;
             };
         }
     ]);
-    var KanbanBoardEditCtrl = (function () {
+    var KanbanBoardEditCtrl = /** @class */ (function () {
         function KanbanBoardEditCtrl($scope, $timeout, $compile, $layerService, $templateCache, $messageBus, $mapService, $dashboardService) {
             this.$scope = $scope;
             this.$timeout = $timeout;
@@ -10534,21 +10535,21 @@ var KanbanBoard;
         KanbanBoardEditCtrl.prototype.colorUpdated = function (c, i) {
             i.color = c;
         };
+        // $inject annotation.
+        // It provides $injector with information about dependencies to be injected into constructor
+        // it is better to have it close to the constructor, because the parameters must match in count and type.
+        // See http://docs.angularjs.org/guide/di
+        KanbanBoardEditCtrl.$inject = [
+            '$scope',
+            '$timeout',
+            '$compile',
+            'layerService',
+            '$templateCache',
+            'messageBusService',
+            'mapService', 'dashboardService'
+        ];
         return KanbanBoardEditCtrl;
     }());
-    // $inject annotation.
-    // It provides $injector with information about dependencies to be injected into constructor
-    // it is better to have it close to the constructor, because the parameters must match in count and type.
-    // See http://docs.angularjs.org/guide/di
-    KanbanBoardEditCtrl.$inject = [
-        '$scope',
-        '$timeout',
-        '$compile',
-        'layerService',
-        '$templateCache',
-        'messageBusService',
-        'mapService', 'dashboardService'
-    ];
     KanbanBoard.KanbanBoardEditCtrl = KanbanBoardEditCtrl;
 })(KanbanBoard || (KanbanBoard = {}));
 //# sourceMappingURL=KanbanBoard-edit.js.map
@@ -10585,13 +10586,13 @@ var KanbanColumn;
 //# sourceMappingURL=KanbanBoard.js.map
 var KanbanColumn;
 (function (KanbanColumn) {
-    var KanbanConfig = (function () {
+    var KanbanConfig = /** @class */ (function () {
         function KanbanConfig() {
         }
         return KanbanConfig;
     }());
     KanbanColumn.KanbanConfig = KanbanConfig;
-    var KanbanBoardCtrl = (function () {
+    var KanbanBoardCtrl = /** @class */ (function () {
         // dependencies are injected via AngularJS $injector
         // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
         function KanbanBoardCtrl($scope, $layerService, $messageBus) {
@@ -10656,17 +10657,17 @@ var KanbanColumn;
                 }
             }
         };
+        // $inject annotation.
+        // It provides $injector with information about dependencies to be injected into constructor
+        // it is better to have it close to the constructor, because the parameters must match in count and type.
+        // See http://docs.angularjs.org/guide/di
+        KanbanBoardCtrl.$inject = [
+            '$scope',
+            'layerService',
+            'messageBusService'
+        ];
         return KanbanBoardCtrl;
     }());
-    // $inject annotation.
-    // It provides $injector with information about dependencies to be injected into constructor
-    // it is better to have it close to the constructor, because the parameters must match in count and type.
-    // See http://docs.angularjs.org/guide/di
-    KanbanBoardCtrl.$inject = [
-        '$scope',
-        'layerService',
-        'messageBusService'
-    ];
     KanbanColumn.KanbanBoardCtrl = KanbanBoardCtrl;
 })(KanbanColumn || (KanbanColumn = {}));
 //# sourceMappingURL=KanbanBoardCtrl.js.map
@@ -10708,19 +10709,19 @@ var KanbanColumn;
 //# sourceMappingURL=KanbanColumn.js.map
 var KanbanColumn;
 (function (KanbanColumn) {
-    var ColumnFilter = (function () {
+    var ColumnFilter = /** @class */ (function () {
         function ColumnFilter() {
         }
         return ColumnFilter;
     }());
     KanbanColumn.ColumnFilter = ColumnFilter;
-    var Column = (function () {
+    var Column = /** @class */ (function () {
         function Column() {
         }
         return Column;
     }());
     KanbanColumn.Column = Column;
-    var KanbanColumnCtrl = (function () {
+    var KanbanColumnCtrl = /** @class */ (function () {
         // dependencies are injected via AngularJS $injector
         // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
         function KanbanColumnCtrl($scope, $layerService, $messageBus, mapService) {
@@ -10969,18 +10970,18 @@ var KanbanColumn;
                 this.$layerService.addLayer(this.layer, function (t) { });
             }
         };
+        // $inject annotation.
+        // It provides $injector with information about dependencies to be injected into constructor
+        // it is better to have it close to the constructor, because the parameters must match in count and type.
+        // See http://docs.angularjs.org/guide/di
+        KanbanColumnCtrl.$inject = [
+            '$scope',
+            'layerService',
+            'messageBusService',
+            'mapService'
+        ];
         return KanbanColumnCtrl;
     }());
-    // $inject annotation.
-    // It provides $injector with information about dependencies to be injected into constructor
-    // it is better to have it close to the constructor, because the parameters must match in count and type.
-    // See http://docs.angularjs.org/guide/di
-    KanbanColumnCtrl.$inject = [
-        '$scope',
-        'layerService',
-        'messageBusService',
-        'mapService'
-    ];
     KanbanColumn.KanbanColumnCtrl = KanbanColumnCtrl;
 })(KanbanColumn || (KanbanColumn = {}));
 //# sourceMappingURL=KanbanColumnCtrl.js.map
@@ -11028,7 +11029,7 @@ var LanguageSwitch;
 //# sourceMappingURL=LanguageSwitch.js.map
 var LanguageSwitch;
 (function (LanguageSwitch) {
-    var LanguageSwitchCtrl = (function () {
+    var LanguageSwitchCtrl = /** @class */ (function () {
         function LanguageSwitchCtrl($scope, $translate, $languages, $layerService, $messageBus) {
             this.$scope = $scope;
             this.$translate = $translate;
@@ -11050,22 +11051,22 @@ var LanguageSwitch;
             this.$translate.use(language.key);
             this.$messageBus.publish('language', 'newLanguage', language.key);
         };
+        LanguageSwitchCtrl.$inject = [
+            '$scope',
+            '$translate',
+            '$languages',
+            'layerService',
+            'messageBusService'
+        ];
         return LanguageSwitchCtrl;
     }());
-    LanguageSwitchCtrl.$inject = [
-        '$scope',
-        '$translate',
-        '$languages',
-        'layerService',
-        'messageBusService'
-    ];
     LanguageSwitch.LanguageSwitchCtrl = LanguageSwitchCtrl;
 })(LanguageSwitch || (LanguageSwitch = {}));
 //# sourceMappingURL=LanguageSwitchCtrl.js.map
 var LayersDirective;
 (function (LayersDirective) {
     'use strict';
-    var AddLayerCtrl = (function () {
+    var AddLayerCtrl = /** @class */ (function () {
         function AddLayerCtrl($scope, $http, $modalInstance, layerService, translate, messageBusService) {
             var _this = this;
             this.$scope = $scope;
@@ -11125,16 +11126,16 @@ var LayersDirective;
             console.log('cancel');
             this.$modalInstance.dismiss('cancel');
         };
+        AddLayerCtrl.$inject = [
+            '$scope',
+            '$http',
+            '$modalInstance',
+            'layerService',
+            '$translate',
+            'messageBusService'
+        ];
         return AddLayerCtrl;
     }());
-    AddLayerCtrl.$inject = [
-        '$scope',
-        '$http',
-        '$modalInstance',
-        'layerService',
-        '$translate',
-        'messageBusService'
-    ];
     LayersDirective.AddLayerCtrl = AddLayerCtrl;
 })(LayersDirective || (LayersDirective = {}));
 //# sourceMappingURL=AddLayerCtrl.js.map
@@ -11223,7 +11224,7 @@ var LayersDirective;
 //# sourceMappingURL=LayersDirective.js.map
 var LayersDirective;
 (function (LayersDirective) {
-    var LayersDirectiveCtrl = (function () {
+    var LayersDirectiveCtrl = /** @class */ (function () {
         // dependencies are injected via AngularJS $injector
         // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
         function LayersDirectiveCtrl($scope, $layerService, $messageBusService, $mapService, $dashboardService, $modal, $http) {
@@ -11777,21 +11778,21 @@ var LayersDirective;
         LayersDirectiveCtrl.prototype.filterHiddenGroups = function (group) {
             return group.title[0] !== '_' && group.id[0] !== '_';
         };
+        // $inject annotation.
+        // It provides $injector with information about dependencies to be injected into constructor
+        // it is better to have it close to the constructor, because the parameters must match in count and type.
+        // See http://docs.angularjs.org/guide/di
+        LayersDirectiveCtrl.$inject = [
+            '$scope',
+            'layerService',
+            'messageBusService',
+            'mapService',
+            'dashboardService',
+            '$uibModal',
+            '$http'
+        ];
         return LayersDirectiveCtrl;
     }());
-    // $inject annotation.
-    // It provides $injector with information about dependencies to be injected into constructor
-    // it is better to have it close to the constructor, because the parameters must match in count and type.
-    // See http://docs.angularjs.org/guide/di
-    LayersDirectiveCtrl.$inject = [
-        '$scope',
-        'layerService',
-        'messageBusService',
-        'mapService',
-        'dashboardService',
-        '$uibModal',
-        '$http'
-    ];
     LayersDirective.LayersDirectiveCtrl = LayersDirectiveCtrl;
 })(LayersDirective || (LayersDirective = {}));
 //# sourceMappingURL=LayersDirectiveCtrl.js.map
@@ -11849,13 +11850,13 @@ var Legend;
     // TODO3: positioning: from bottom up (using "bottom" in the project.json file didn't work)
     // TODO4: provide possibility to not show a legend at all. Either by a hide button (but how to show then)
     // or via a project/user setting
-    var LegendData = (function () {
+    var LegendData = /** @class */ (function () {
         function LegendData() {
         }
         return LegendData;
     }());
     Legend.LegendData = LegendData;
-    var LegendCtrl = (function () {
+    var LegendCtrl = /** @class */ (function () {
         // dependencies are injected via AngularJS $injector
         // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
         function LegendCtrl($scope, $layerService, $messageBus) {
@@ -12060,17 +12061,17 @@ var Legend;
                 $('#filter-tab').click();
             }
         };
+        // $inject annotation
+        // It provides $injector with information about dependencies to be injected into constructor
+        // it is better to have it close to the constructor, because the parameters must match in count and type.
+        // See http://docs.angularjs.org/guide/di
+        LegendCtrl.$inject = [
+            '$scope',
+            'layerService',
+            'messageBusService'
+        ];
         return LegendCtrl;
     }());
-    // $inject annotation
-    // It provides $injector with information about dependencies to be injected into constructor
-    // it is better to have it close to the constructor, because the parameters must match in count and type.
-    // See http://docs.angularjs.org/guide/di
-    LegendCtrl.$inject = [
-        '$scope',
-        'layerService',
-        'messageBusService'
-    ];
     Legend.LegendCtrl = LegendCtrl;
 })(Legend || (Legend = {}));
 //# sourceMappingURL=LegendCtrl.js.map
@@ -12113,7 +12114,7 @@ var LegendList;
 //# sourceMappingURL=LegendList.js.map
 var LegendList;
 (function (LegendList) {
-    var LegendListCtrl = (function () {
+    var LegendListCtrl = /** @class */ (function () {
         // dependencies are injected via AngularJS $injector
         // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
         function LegendListCtrl($scope, $sce, $timeout, layerService, mapService, messageBusService, expressionService) {
@@ -12336,21 +12337,21 @@ var LegendList;
                 return '';
             }
         };
+        // $inject annotation.
+        // It provides $injector with information about dependencies to be injected into constructor
+        // it is better to have it close to the constructor, because the parameters must match in count and type.
+        // See http://docs.angularjs.org/guide/di
+        LegendListCtrl.$inject = [
+            '$scope',
+            '$sce',
+            '$timeout',
+            'layerService',
+            'mapService',
+            'messageBusService',
+            'expressionService'
+        ];
         return LegendListCtrl;
     }());
-    // $inject annotation.
-    // It provides $injector with information about dependencies to be injected into constructor
-    // it is better to have it close to the constructor, because the parameters must match in count and type.
-    // See http://docs.angularjs.org/guide/di
-    LegendListCtrl.$inject = [
-        '$scope',
-        '$sce',
-        '$timeout',
-        'layerService',
-        'mapService',
-        'messageBusService',
-        'expressionService'
-    ];
     LegendList.LegendListCtrl = LegendListCtrl;
 })(LegendList || (LegendList = {}));
 //# sourceMappingURL=LegendListCtrl.js.map
@@ -12396,7 +12397,7 @@ var MapElement;
 //# sourceMappingURL=MapElement.js.map
 var MapElement;
 (function (MapElement) {
-    var MapElementCtrl = (function () {
+    var MapElementCtrl = /** @class */ (function () {
         // dependencies are injected via AngularJS $injector
         // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
         function MapElementCtrl($scope, $layerService, mapService, $messageBusService) {
@@ -12414,18 +12415,18 @@ var MapElement;
         MapElementCtrl.prototype.initMap = function () {
             this.$layerService.selectRenderer('leaflet');
         };
+        // $inject annotation.
+        // It provides $injector with information a'bout dependencies to be injected into constructor
+        // it is better to have it close to the constructor, because the parameters must match in count and type.
+        // See http://docs.angularjs.org/guide/di
+        MapElementCtrl.$inject = [
+            '$scope',
+            'layerService',
+            'mapService',
+            'messageBusService'
+        ];
         return MapElementCtrl;
     }());
-    // $inject annotation.
-    // It provides $injector with information a'bout dependencies to be injected into constructor
-    // it is better to have it close to the constructor, because the parameters must match in count and type.
-    // See http://docs.angularjs.org/guide/di
-    MapElementCtrl.$inject = [
-        '$scope',
-        'layerService',
-        'mapService',
-        'messageBusService'
-    ];
     MapElement.MapElementCtrl = MapElementCtrl;
 })(MapElement || (MapElement = {}));
 //# sourceMappingURL=MapElementCtrl.js.map
@@ -12456,7 +12457,7 @@ var Mca;
         /**
         * Scoring function creates a PLA of the scoring algorithm.
         */
-        var ScoringFunction = (function () {
+        var ScoringFunction = /** @class */ (function () {
             //get img(): string {
             //    return '/includes/images/plot' + csComp.StringExt.Utils.toUnderscore(ScoringFunctionType[this.type]) + '.png';
             //}
@@ -12514,13 +12515,13 @@ var Mca;
             return ScoringFunction;
         }());
         Models.ScoringFunction = ScoringFunction;
-        var ScoringFunctions = (function () {
+        var ScoringFunctions = /** @class */ (function () {
             function ScoringFunctions() {
             }
             return ScoringFunctions;
         }());
         Models.ScoringFunctions = ScoringFunctions;
-        var Criterion = (function () {
+        var Criterion = /** @class */ (function () {
             function Criterion() {
                 /** Specified weight by the user */
                 this.userWeight = 1;
@@ -12699,14 +12700,14 @@ var Mca;
                 return f.properties.hasOwnProperty(this.label) && f.properties[this.label] != null;
             };
             Criterion.prototype.getFeatureScore = function (x) {
-                if (this.maxCutoffValue <= x || x <= this.minCutoffValue) {
+                if (this.maxCutoffValue < x || x < this.minCutoffValue) {
                     return 0;
                 }
-                if (x < this._x[0]) {
+                if (x <= this._x[0]) {
                     return this._y[0];
                 }
                 var last = this._x.length - 1;
-                if (x > this._x[last]) {
+                if (x >= this._x[last]) {
                     return this._y[last];
                 }
                 //for (var k in this.x) {
@@ -12784,7 +12785,7 @@ var Mca;
         }());
         Models.Criterion = Criterion;
         // NOTE: When extending a base class, make sure that the base class has been defined already.
-        var Mca = (function (_super) {
+        var Mca = /** @class */ (function (_super) {
             __extends(Mca, _super);
             function Mca(mca) {
                 var _this = _super.call(this) || this;
@@ -12964,7 +12965,7 @@ var Mca;
         McaCalculationMode[McaCalculationMode["SelectedFeatures"] = 2] = "SelectedFeatures";
         McaCalculationMode[McaCalculationMode["FilteredFeatures"] = 4] = "FilteredFeatures";
     })(McaCalculationMode = Mca.McaCalculationMode || (Mca.McaCalculationMode = {}));
-    var McaCtrl = (function () {
+    var McaCtrl = /** @class */ (function () {
         function McaCtrl($scope, $uibModal, $translate, $timeout, $localStorageService, layerService, messageBusService) {
             var _this = this;
             this.$scope = $scope;
@@ -13734,26 +13735,26 @@ var Mca;
                     }]
             };
         };
+        McaCtrl.mcaChartId = 'mcaChart';
+        McaCtrl.mcas = 'MCAs';
+        McaCtrl.$inject = [
+            '$scope',
+            '$uibModal',
+            '$translate',
+            '$timeout',
+            'localStorageService',
+            'layerService',
+            'messageBusService'
+        ];
         return McaCtrl;
     }());
-    McaCtrl.mcaChartId = 'mcaChart';
-    McaCtrl.mcas = 'MCAs';
-    McaCtrl.$inject = [
-        '$scope',
-        '$uibModal',
-        '$translate',
-        '$timeout',
-        'localStorageService',
-        'layerService',
-        'messageBusService'
-    ];
     Mca.McaCtrl = McaCtrl;
 })(Mca || (Mca = {}));
 //# sourceMappingURL=McaCtrl.js.map
 var Mca;
 (function (Mca) {
     'use strict';
-    var McaEditorCtrl = (function () {
+    var McaEditorCtrl = /** @class */ (function () {
         function McaEditorCtrl($scope, $uibModalInstance, $layerService, $translate, messageBusService, mca) {
             var _this = this;
             this.$scope = $scope;
@@ -14009,16 +14010,16 @@ var Mca;
         McaEditorCtrl.prototype.toggleItemDetails = function (index) {
             this.showItem = this.showItem == index ? -1 : index;
         };
+        McaEditorCtrl.$inject = [
+            '$scope',
+            '$uibModalInstance',
+            'layerService',
+            '$translate',
+            'messageBusService',
+            'mca'
+        ];
         return McaEditorCtrl;
     }());
-    McaEditorCtrl.$inject = [
-        '$scope',
-        '$uibModalInstance',
-        'layerService',
-        '$translate',
-        'messageBusService',
-        'mca'
-    ];
     Mca.McaEditorCtrl = McaEditorCtrl;
 })(Mca || (Mca = {}));
 //# sourceMappingURL=McaEditorCtrl.js.map
@@ -14057,7 +14058,7 @@ var Mobile;
 //# sourceMappingURL=Mobile.js.map
 var Mobile;
 (function (Mobile) {
-    var MobileCtrl = (function () {
+    var MobileCtrl = /** @class */ (function () {
         // dependencies are injected via AngularJS $injector
         // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
         function MobileCtrl($scope, $layerService, $messageBus, localStorageService, geoService) {
@@ -14101,17 +14102,17 @@ var Mobile;
             });
             this.geoService.start({});
         }
+        // $inject annotation.
+        // It provides $injector with information about dependencies to be injected into constructor
+        // it is better to have it close to the constructor, because the parameters must match in count and type.
+        // See http://docs.angularjs.org/guide/di
+        MobileCtrl.$inject = [
+            '$scope',
+            'layerService',
+            'messageBusService', 'localStorageService', 'geoService'
+        ];
         return MobileCtrl;
     }());
-    // $inject annotation.
-    // It provides $injector with information about dependencies to be injected into constructor
-    // it is better to have it close to the constructor, because the parameters must match in count and type.
-    // See http://docs.angularjs.org/guide/di
-    MobileCtrl.$inject = [
-        '$scope',
-        'layerService',
-        'messageBusService', 'localStorageService', 'geoService'
-    ];
     Mobile.MobileCtrl = MobileCtrl;
 })(Mobile || (Mobile = {}));
 //# sourceMappingURL=MobileCtrl.js.map
@@ -14154,13 +14155,13 @@ var Navigate;
 //# sourceMappingURL=Navigate.js.map
 var Navigate;
 (function (Navigate) {
-    var RecentFeature = (function () {
+    var RecentFeature = /** @class */ (function () {
         function RecentFeature() {
         }
         return RecentFeature;
     }());
     Navigate.RecentFeature = RecentFeature;
-    var NavigateCtrl = (function () {
+    var NavigateCtrl = /** @class */ (function () {
         // dependencies are injected via AngularJS $injector
         // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
         function NavigateCtrl($scope, $layerService, $messageBus, localStorageService, $dashboardService, geoService) {
@@ -14483,32 +14484,32 @@ var Navigate;
                 _this.updateRecentFeaturesList();
             });
         };
+        // $inject annotation.
+        // It provides $injector with information about dependencies to be injected into constructor
+        // it is better to have it close to the constructor, because the parameters must match in count and type.
+        // See http://docs.angularjs.org/guide/di
+        NavigateCtrl.$inject = [
+            '$scope',
+            'layerService',
+            'messageBusService',
+            'localStorageService',
+            'dashboardService',
+            'geoService'
+        ];
         return NavigateCtrl;
     }());
-    // $inject annotation.
-    // It provides $injector with information about dependencies to be injected into constructor
-    // it is better to have it close to the constructor, because the parameters must match in count and type.
-    // See http://docs.angularjs.org/guide/di
-    NavigateCtrl.$inject = [
-        '$scope',
-        'layerService',
-        'messageBusService',
-        'localStorageService',
-        'dashboardService',
-        'geoService'
-    ];
     Navigate.NavigateCtrl = NavigateCtrl;
 })(Navigate || (Navigate = {}));
 //# sourceMappingURL=NavigateCtrl.js.map
 var Search;
 (function (Search) {
-    var NavigateSteps = (function () {
+    var NavigateSteps = /** @class */ (function () {
         function NavigateSteps() {
         }
         return NavigateSteps;
     }());
     Search.NavigateSteps = NavigateSteps;
-    var NavigateState = (function () {
+    var NavigateState = /** @class */ (function () {
         function NavigateState() {
         }
         return NavigateState;
@@ -14556,7 +14557,7 @@ var OfflineSearch;
 //# sourceMappingURL=OfflineSearch.js.map
 var OfflineSearch;
 (function (OfflineSearch) {
-    var Layer = (function () {
+    var Layer = /** @class */ (function () {
         function Layer(groupTitle, index, id, title, path, type) {
             this.groupTitle = groupTitle;
             this.index = index;
@@ -14576,7 +14577,7 @@ var OfflineSearch;
     /**
      * An index entry that contains a search result.
      */
-    var Entry = (function () {
+    var Entry = /** @class */ (function () {
         function Entry(layerIndexOrArray, featureIndex, propertyIndex) {
             this.v = Array(2);
             if (typeof layerIndexOrArray === 'number') {
@@ -14608,13 +14609,13 @@ var OfflineSearch;
         return Entry;
     }());
     OfflineSearch.Entry = Entry;
-    var KeywordIndex = (function () {
+    var KeywordIndex = /** @class */ (function () {
         function KeywordIndex() {
         }
         return KeywordIndex;
     }());
     OfflineSearch.KeywordIndex = KeywordIndex;
-    var OfflineSearchResult = (function () {
+    var OfflineSearchResult = /** @class */ (function () {
         function OfflineSearchResult(project, options) {
             this.project = project;
             this.options = options;
@@ -14628,7 +14629,7 @@ var OfflineSearch;
 //# sourceMappingURL=OfflineSearchClasses.js.map
 var OfflineSearch;
 (function (OfflineSearch) {
-    var OfflineSearchResultViewModel = (function () {
+    var OfflineSearchResultViewModel = /** @class */ (function () {
         function OfflineSearchResultViewModel(title, layerTitle, groupTitle, entry) {
             this.title = title;
             this.layerTitle = layerTitle;
@@ -14649,7 +14650,7 @@ var OfflineSearch;
         return OfflineSearchResultViewModel;
     }());
     OfflineSearch.OfflineSearchResultViewModel = OfflineSearchResultViewModel;
-    var OfflineSearchCtrl = (function () {
+    var OfflineSearchCtrl = /** @class */ (function () {
         // dependencies are injected via AngularJS $injector
         // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
         function OfflineSearchCtrl($scope, $http, $layerService, $mapService, $messageBus) {
@@ -14837,25 +14838,25 @@ var OfflineSearch;
             this.$mapService.zoomTo(feature);
             this.$layerService.selectFeature(feature);
         };
+        // $inject annotation.
+        // It provides $injector with information about dependencies to be injected into constructor
+        // it is better to have it close to the constructor, because the parameters must match in count and type.
+        // See http://docs.angularjs.org/guide/di
+        OfflineSearchCtrl.$inject = [
+            '$scope',
+            '$http',
+            'layerService',
+            'mapService',
+            'messageBusService'
+        ];
         return OfflineSearchCtrl;
     }());
-    // $inject annotation.
-    // It provides $injector with information about dependencies to be injected into constructor
-    // it is better to have it close to the constructor, because the parameters must match in count and type.
-    // See http://docs.angularjs.org/guide/di
-    OfflineSearchCtrl.$inject = [
-        '$scope',
-        '$http',
-        'layerService',
-        'mapService',
-        'messageBusService'
-    ];
     OfflineSearch.OfflineSearchCtrl = OfflineSearchCtrl;
 })(OfflineSearch || (OfflineSearch = {}));
 //# sourceMappingURL=OfflineSearchCtrl.js.map
 var ProfileHeader;
 (function (ProfileHeader) {
-    var ProfileHeaderCtrl = (function () {
+    var ProfileHeaderCtrl = /** @class */ (function () {
         function ProfileHeaderCtrl($scope, $localStorageService, $layerService, $mapService, $messageBus, profileService) {
             var _this = this;
             this.$scope = $scope;
@@ -14881,16 +14882,16 @@ var ProfileHeader;
         ProfileHeaderCtrl.prototype.logout = function () {
             this.profileService.logoutUser();
         };
+        ProfileHeaderCtrl.$inject = [
+            '$scope',
+            'localStorageService',
+            'layerService',
+            'mapService',
+            'messageBusService',
+            'profileService'
+        ];
         return ProfileHeaderCtrl;
     }());
-    ProfileHeaderCtrl.$inject = [
-        '$scope',
-        'localStorageService',
-        'layerService',
-        'mapService',
-        'messageBusService',
-        'profileService'
-    ];
     ProfileHeader.ProfileHeaderCtrl = ProfileHeaderCtrl;
     /**
      * Config
@@ -14954,7 +14955,7 @@ var ProfileHeader;
 //# sourceMappingURL=ProfileHeaderCtrl.js.map
 var ProfileTab;
 (function (ProfileTab) {
-    var ProfileTabCtrl = (function () {
+    var ProfileTabCtrl = /** @class */ (function () {
         function ProfileTabCtrl($scope, $localStorageService, $layerService, $mapService, $messageBus, profileService) {
             var _this = this;
             this.$scope = $scope;
@@ -14986,16 +14987,16 @@ var ProfileTab;
         ProfileTabCtrl.prototype.logout = function () {
             this.profileService.logoutUser();
         };
+        ProfileTabCtrl.$inject = [
+            '$scope',
+            'localStorageService',
+            'layerService',
+            'mapService',
+            'messageBusService',
+            'profileService'
+        ];
         return ProfileTabCtrl;
     }());
-    ProfileTabCtrl.$inject = [
-        '$scope',
-        'localStorageService',
-        'layerService',
-        'mapService',
-        'messageBusService',
-        'profileService'
-    ];
     ProfileTab.ProfileTabCtrl = ProfileTabCtrl;
     /**
      * Config
@@ -15093,7 +15094,7 @@ var ProjectHeaderSelection;
 //# sourceMappingURL=ProjectHeaderSelection.js.map
 var ProjectHeaderSelection;
 (function (ProjectHeaderSelection) {
-    var ProjectHeaderSelectionCtrl = (function () {
+    var ProjectHeaderSelectionCtrl = /** @class */ (function () {
         // dependencies are injected via AngularJS $injector
         // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
         function ProjectHeaderSelectionCtrl($scope, $layerService, $dashboardService, $mapService, $messageBusService) {
@@ -15104,19 +15105,19 @@ var ProjectHeaderSelection;
             this.$messageBusService = $messageBusService;
             $scope.vm = this;
         }
+        // $inject annotation.
+        // It provides $injector with information about dependencies to be injected into constructor
+        // it is better to have it close to the constructor, because the parameters must match in count and type.
+        // See http://docs.angularjs.org/guide/di
+        ProjectHeaderSelectionCtrl.$inject = [
+            '$scope',
+            'layerService',
+            'dashboardService',
+            'mapService',
+            'messageBusService'
+        ];
         return ProjectHeaderSelectionCtrl;
     }());
-    // $inject annotation.
-    // It provides $injector with information about dependencies to be injected into constructor
-    // it is better to have it close to the constructor, because the parameters must match in count and type.
-    // See http://docs.angularjs.org/guide/di
-    ProjectHeaderSelectionCtrl.$inject = [
-        '$scope',
-        'layerService',
-        'dashboardService',
-        'mapService',
-        'messageBusService'
-    ];
     ProjectHeaderSelection.ProjectHeaderSelectionCtrl = ProjectHeaderSelectionCtrl;
 })(ProjectHeaderSelection || (ProjectHeaderSelection = {}));
 //# sourceMappingURL=ProjectHeaderSelectionCtrl.js.map
@@ -15160,7 +15161,7 @@ var ProjectSettings;
 //# sourceMappingURL=ProjectSettings.js.map
 var ProjectSettings;
 (function (ProjectSettings) {
-    var ProjectSettingsCtrl = (function () {
+    var ProjectSettingsCtrl = /** @class */ (function () {
         // dependencies are injected via AngularJS $injector
         // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
         function ProjectSettingsCtrl($scope, $timeout, $layerService, dashboardService, mapService, messageBus, $localStorageService) {
@@ -15222,21 +15223,21 @@ var ProjectSettings;
                 console.log('Project.json updated succesfully!');
             }
         };
+        // $inject annotation.
+        // It provides $injector with information about dependencies to be injected into constructor
+        // it is better to have it close to the constructor, because the parameters must match in count and type.
+        // See http://docs.angularjs.org/guide/di
+        ProjectSettingsCtrl.$inject = [
+            '$scope',
+            '$timeout',
+            'layerService',
+            'dashboardService',
+            'mapService',
+            'messageBusService',
+            'localStorageService'
+        ];
         return ProjectSettingsCtrl;
     }());
-    // $inject annotation.
-    // It provides $injector with information about dependencies to be injected into constructor
-    // it is better to have it close to the constructor, because the parameters must match in count and type.
-    // See http://docs.angularjs.org/guide/di
-    ProjectSettingsCtrl.$inject = [
-        '$scope',
-        '$timeout',
-        'layerService',
-        'dashboardService',
-        'mapService',
-        'messageBusService',
-        'localStorageService'
-    ];
     ProjectSettings.ProjectSettingsCtrl = ProjectSettingsCtrl;
 })(ProjectSettings || (ProjectSettings = {}));
 //# sourceMappingURL=ProjectSettingsCtrl.js.map
@@ -15436,7 +15437,7 @@ var StyleList;
 //# sourceMappingURL=StyleList.js.map
 var StyleList;
 (function (StyleList) {
-    var StyleListCtrl = (function () {
+    var StyleListCtrl = /** @class */ (function () {
         // dependencies are injected via AngularJS $injector
         // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
         function StyleListCtrl($scope, $timeout, $layerService, messageBus) {
@@ -15535,25 +15536,25 @@ var StyleList;
                 'background': "linear-gradient(to bottom, " + le.color + ", " + legend.legendEntries[legend.legendEntries.length - key - 2].color + ")"
             };
         };
+        // $inject annotation.
+        // It provides $injector with information about dependencies to be in  jected into constructor
+        // it is better to have it close to the constructor, because the parameters must match in count and type.
+        // See http://docs.angularjs.org/guide/di
+        StyleListCtrl.$inject = [
+            '$scope',
+            '$timeout',
+            'layerService',
+            'messageBusService'
+        ];
         return StyleListCtrl;
     }());
-    // $inject annotation.
-    // It provides $injector with information about dependencies to be in  jected into constructor
-    // it is better to have it close to the constructor, because the parameters must match in count and type.
-    // See http://docs.angularjs.org/guide/di
-    StyleListCtrl.$inject = [
-        '$scope',
-        '$timeout',
-        'layerService',
-        'messageBusService'
-    ];
     StyleList.StyleListCtrl = StyleListCtrl;
 })(StyleList || (StyleList = {}));
 //# sourceMappingURL=StyleListCtrl.js.map
 var Timeline;
 (function (Timeline) {
     // The following class represents the provider
-    var TimelineService = (function () {
+    var TimelineService = /** @class */ (function () {
         function TimelineService() {
             this.timelineOptions = {
                 'width': '100%',
@@ -15620,7 +15621,7 @@ var Timeline;
 //# sourceMappingURL=Timeline.js.map
 var Timeline;
 (function (Timeline) {
-    var TimelineCtrl = (function () {
+    var TimelineCtrl = /** @class */ (function () {
         // dependencies are injected via AngularJS $injector
         // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
         function TimelineCtrl($scope, $layerService, $mapService, $messageBusService, TimelineService) {
@@ -16186,19 +16187,19 @@ var Timeline;
             vis.locales['nl_NL'] = vis.locales['nl'];
             vis.locales['nl_BE'] = vis.locales['nl'];
         };
+        // $inject annotation.
+        // It provides $injector with information about dependencies to be injected into constructor
+        // it is better to have it close to the constructor, because the parameters must match in count and type.
+        // See http://docs.angularjs.org/guide/di
+        TimelineCtrl.$inject = [
+            '$scope',
+            'layerService',
+            'mapService',
+            'messageBusService',
+            'TimelineService'
+        ];
         return TimelineCtrl;
     }());
-    // $inject annotation.
-    // It provides $injector with information about dependencies to be injected into constructor
-    // it is better to have it close to the constructor, because the parameters must match in count and type.
-    // See http://docs.angularjs.org/guide/di
-    TimelineCtrl.$inject = [
-        '$scope',
-        'layerService',
-        'mapService',
-        'messageBusService',
-        'TimelineService'
-    ];
     Timeline.TimelineCtrl = TimelineCtrl;
 })(Timeline || (Timeline = {}));
 //# sourceMappingURL=TimelineCtrl.js.map
@@ -16238,7 +16239,7 @@ var TripPlanner;
 //# sourceMappingURL=TripPlanner.js.map
 var TripPlanner;
 (function (TripPlanner) {
-    var TripPlannerCtrl = (function () {
+    var TripPlannerCtrl = /** @class */ (function () {
         // dependencies are injected via AngularJS $injector
         // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
         function TripPlannerCtrl($scope, $mapService, $layerService, $messageBusService, $dashboardService) {
@@ -16317,19 +16318,19 @@ var TripPlanner;
                 this.activeTab = 'Edit';
             }
         };
+        // $inject annotation.
+        // It provides $injector with information about dependencies to be injected into constructor
+        // it is better to have it close to the constructor, because the parameters must match in count and type.
+        // See http://docs.angularjs.org/guide/di
+        TripPlannerCtrl.$inject = [
+            '$scope',
+            'mapService',
+            'layerService',
+            'messageBusService',
+            'dashboardService'
+        ];
         return TripPlannerCtrl;
     }());
-    // $inject annotation.
-    // It provides $injector with information about dependencies to be injected into constructor
-    // it is better to have it close to the constructor, because the parameters must match in count and type.
-    // See http://docs.angularjs.org/guide/di
-    TripPlannerCtrl.$inject = [
-        '$scope',
-        'mapService',
-        'layerService',
-        'messageBusService',
-        'dashboardService'
-    ];
     TripPlanner.TripPlannerCtrl = TripPlannerCtrl;
 })(TripPlanner || (TripPlanner = {}));
 //# sourceMappingURL=TripPlannerCtrl.js.map
@@ -16389,7 +16390,7 @@ var csComp;
     (function (Services) {
         // Interface for message bus callbacks, i.e. (data: any) => any,
         // so you can supply a single data argument of any type, and it may return any type.
-        var ClientMessage = (function () {
+        var ClientMessage = /** @class */ (function () {
             function ClientMessage(action, data) {
                 this.action = action;
                 this.data = data;
@@ -16398,7 +16399,7 @@ var csComp;
         }());
         Services.ClientMessage = ClientMessage;
         // Handle returned when subscribing to a topic
-        var MessageBusHandle = (function () {
+        var MessageBusHandle = /** @class */ (function () {
             function MessageBusHandle(topic, callback) {
                 this.topic = topic;
                 this.callback = callback;
@@ -16406,7 +16407,7 @@ var csComp;
             return MessageBusHandle;
         }());
         Services.MessageBusHandle = MessageBusHandle;
-        var TypedEvent = (function () {
+        var TypedEvent = /** @class */ (function () {
             function TypedEvent() {
                 // Private member vars
                 this._listeners = [];
@@ -16447,7 +16448,7 @@ var csComp;
             return TypedEvent;
         }());
         Services.TypedEvent = TypedEvent;
-        var Connection = (function () {
+        var Connection = /** @class */ (function () {
             function Connection(id, url, bus) {
                 this.id = id;
                 this.url = url;
@@ -16567,7 +16568,7 @@ var csComp;
             NotifyType[NotifyType["Error"] = 2] = "Error";
             NotifyType[NotifyType["Success"] = 3] = "Success";
         })(NotifyType = Services.NotifyType || (Services.NotifyType = {}));
-        var ServerSubscription = (function () {
+        var ServerSubscription = /** @class */ (function () {
             function ServerSubscription(target, type) {
                 this.target = target;
                 this.type = type;
@@ -16581,7 +16582,7 @@ var csComp;
          * Simple message bus service, used for subscribing and unsubsubscribing to topics.
          * @see {@link https://gist.github.com/floatingmonkey/3384419}
          */
-        var MessageBusService = (function () {
+        var MessageBusService = /** @class */ (function () {
             function MessageBusService($translate) {
                 this.$translate = $translate;
                 this.connections = {};
@@ -16885,14 +16886,14 @@ var csComp;
                     }
                 });
             };
+            MessageBusService.cache = {};
+            MessageBusService.$inject = [
+                '$translate'
+            ];
             return MessageBusService;
         }());
-        MessageBusService.cache = {};
-        MessageBusService.$inject = [
-            '$translate'
-        ];
         Services.MessageBusService = MessageBusService;
-        var EventObj = (function () {
+        var EventObj = /** @class */ (function () {
             function EventObj() {
             }
             // Events primitives ======================
@@ -16970,7 +16971,7 @@ var csComp;
          * The action service can be used to execute certain actions, e.g. when clicking a feature.
          * It comes with some predefined actions, and can be enhanced with other actions from your application.
          */
-        var ActionService = (function () {
+        var ActionService = /** @class */ (function () {
             function ActionService(messageBusService, $timeout) {
                 this.messageBusService = messageBusService;
                 this.$timeout = $timeout;
@@ -16982,7 +16983,11 @@ var csComp;
                 this.layerService = layerService;
                 // NOTE all action titles must be in lowercase
                 this.actions['select feature'] = function () {
-                    var rpt = csComp.Helpers.createRightPanelTab('featureprops', 'featureprops', null, 'Selected feature', '{{"FEATURE_INFO" | translate}}', 'info', false, true);
+                    var featurePropsDirective = 'featureprops';
+                    if (_this.layerService.project && _this.layerService.project.featurePropsDirective) {
+                        featurePropsDirective = _this.layerService.project.featurePropsDirective;
+                    }
+                    var rpt = csComp.Helpers.createRightPanelTab(featurePropsDirective, featurePropsDirective, null, 'Selected feature', '{{"FEATURE_INFO" | translate}}', 'info', false, true);
                     _this.messageBusService.publish('rightpanel', 'activate', rpt);
                     _this.layerService.visual.rightPanelVisible = true;
                 };
@@ -17098,12 +17103,12 @@ var csComp;
                     return;
                 this.layerService.setGroupStyle(group, propType);
             };
+            ActionService.$inject = [
+                'messageBusService',
+                '$timeout'
+            ];
             return ActionService;
         }());
-        ActionService.$inject = [
-            'messageBusService',
-            '$timeout'
-        ];
         Services.ActionService = ActionService;
         /**
           * Register service
@@ -17124,7 +17129,7 @@ var csComp;
 (function (csComp) {
     var Services;
     (function (Services) {
-        var PropertyBarChartGenerator = (function () {
+        var PropertyBarChartGenerator = /** @class */ (function () {
             function PropertyBarChartGenerator($layerService, $dashboardService) {
                 this.$layerService = $layerService;
                 this.$dashboardService = $dashboardService;
@@ -17332,7 +17337,7 @@ var csComp;
             return PropertyBarChartGenerator;
         }());
         Services.PropertyBarChartGenerator = PropertyBarChartGenerator;
-        var propertySensordataGenerator = (function () {
+        var propertySensordataGenerator = /** @class */ (function () {
             function propertySensordataGenerator($layerService, $dashboardService) {
                 this.$layerService = $layerService;
                 this.$dashboardService = $dashboardService;
@@ -17526,7 +17531,7 @@ var csComp;
             return propertySensordataGenerator;
         }());
         Services.propertySensordataGenerator = propertySensordataGenerator;
-        var layerPropertySensordataGenerator = (function () {
+        var layerPropertySensordataGenerator = /** @class */ (function () {
             function layerPropertySensordataGenerator($layerService, $dashboardService) {
                 this.$layerService = $layerService;
                 this.$dashboardService = $dashboardService;
@@ -17691,7 +17696,7 @@ var csComp;
             return layerPropertySensordataGenerator;
         }());
         Services.layerPropertySensordataGenerator = layerPropertySensordataGenerator;
-        var layerKpiGenerator = (function () {
+        var layerKpiGenerator = /** @class */ (function () {
             function layerKpiGenerator($layerService, $dashboardService) {
                 this.$layerService = $layerService;
                 this.$dashboardService = $dashboardService;
@@ -17879,7 +17884,7 @@ var csComp;
     var Services;
     (function (Services) {
         /** Contains properties needed to describe right panel */
-        var RightPanelTab = (function () {
+        var RightPanelTab = /** @class */ (function () {
             function RightPanelTab() {
                 this.icon = 'tachometer';
                 this.popover = '';
@@ -17891,7 +17896,7 @@ var csComp;
         }());
         Services.RightPanelTab = RightPanelTab;
         /** service for managing dashboards */
-        var DashboardService = (function () {
+        var DashboardService = /** @class */ (function () {
             function DashboardService($rootScope, $compile, $injector, $location, $timeout, $translate, $messageBusService, $layerService, $mapService, $localStorageService) {
                 //$translate('FILTER_INFO').then((translation) => console.log(translation));
                 // NOTE EV: private props in constructor automatically become fields, so mb and map are superfluous.
@@ -18207,20 +18212,20 @@ var csComp;
                     $('#leftPanelTab a[data-target="#basewidgets"]').tab('show'); // Select tab by name
                 }
             };
+            DashboardService.$inject = [
+                '$rootScope',
+                '$compile',
+                '$injector',
+                '$location',
+                '$timeout',
+                '$translate',
+                'messageBusService',
+                'layerService',
+                'mapService',
+                'localStorageService'
+            ];
             return DashboardService;
         }());
-        DashboardService.$inject = [
-            '$rootScope',
-            '$compile',
-            '$injector',
-            '$location',
-            '$timeout',
-            '$translate',
-            'messageBusService',
-            'layerService',
-            'mapService',
-            'localStorageService'
-        ];
         Services.DashboardService = DashboardService;
         /**
           * Register service
@@ -18241,7 +18246,7 @@ var csComp;
 (function (csComp) {
     var Services;
     (function (Services) {
-        var top10Generator = (function () {
+        var top10Generator = /** @class */ (function () {
             function top10Generator($layerService, $dashboardService) {
                 this.$layerService = $layerService;
                 this.$dashboardService = $dashboardService;
@@ -18415,19 +18420,19 @@ var csComp;
     var Services;
     (function (Services) {
         'use strict';
-        var Coordinates = (function () {
+        var Coordinates = /** @class */ (function () {
             function Coordinates() {
             }
             return Coordinates;
         }());
         Services.Coordinates = Coordinates;
-        var Geoposition = (function () {
+        var Geoposition = /** @class */ (function () {
             function Geoposition() {
             }
             return Geoposition;
         }());
         Services.Geoposition = Geoposition;
-        var GeoService = (function () {
+        var GeoService = /** @class */ (function () {
             function GeoService(bus, $rootScope, $window, $q) {
                 this.bus = bus;
                 this.$rootScope = $rootScope;
@@ -18485,14 +18490,14 @@ var csComp;
                 }
                 return;
             };
+            GeoService.$inject = [
+                'messageBusService',
+                '$rootScope',
+                '$window',
+                '$q'
+            ];
             return GeoService;
         }());
-        GeoService.$inject = [
-            'messageBusService',
-            '$rootScope',
-            '$window',
-            '$q'
-        ];
         Services.GeoService = GeoService;
         /**
           * Register service
@@ -18511,7 +18516,7 @@ var csComp;
 //# sourceMappingURL=geolocation.js.map
 var ContourAction;
 (function (ContourAction) {
-    var ContourActionModel = (function () {
+    var ContourActionModel = /** @class */ (function () {
         function ContourActionModel() {
             this.id = 'ContourActionModel';
         }
@@ -18571,7 +18576,7 @@ var csComp;
 (function (csComp) {
     var Services;
     (function (Services) {
-        var ExpressionService = (function () {
+        var ExpressionService = /** @class */ (function () {
             function ExpressionService($parse, messageBusService) {
                 var _this = this;
                 this.$parse = $parse;
@@ -18767,11 +18772,11 @@ var csComp;
                     return null;
                 return csComp.Helpers.convertPropertyInfo(pt, this.evalExpression(pt.expression, features, feature));
             };
+            ExpressionService.$inject = [
+                '$parse'
+            ];
             return ExpressionService;
         }());
-        ExpressionService.$inject = [
-            '$parse'
-        ];
         Services.ExpressionService = ExpressionService;
         /**
          * Register service
@@ -18808,7 +18813,7 @@ var csComp;
             ActionType[ActionType["Context"] = 0] = "Context";
             ActionType[ActionType["Hover"] = 1] = "Hover";
         })(ActionType = Services.ActionType || (Services.ActionType = {}));
-        var BasicActionService = (function () {
+        var BasicActionService = /** @class */ (function () {
             function BasicActionService() {
             }
             BasicActionService.prototype.stop = function () { };
@@ -18837,7 +18842,7 @@ var csComp;
             return BasicActionService;
         }());
         Services.BasicActionService = BasicActionService;
-        var LayerActions = (function (_super) {
+        var LayerActions = /** @class */ (function (_super) {
             __extends(LayerActions, _super);
             function LayerActions() {
                 var _this = _super !== null && _super.apply(this, arguments) || this;
@@ -19014,7 +19019,7 @@ var csComp;
     var Services;
     (function (Services) {
         /** layer service is responsible for reading and managing all project, layer and sensor related data */
-        var LayerService = (function () {
+        var LayerService = /** @class */ (function () {
             function LayerService($location, $compile, $translate, $messageBusService, $mapService, $rootScope, geoService, $http, expressionService, actionService, $storage) {
                 var _this = this;
                 this.$location = $location;
@@ -22511,26 +22516,26 @@ var csComp;
                     }
                 });
             };
+            LayerService.$inject = [
+                '$location',
+                '$compile',
+                '$translate',
+                'messageBusService',
+                'mapService',
+                '$rootScope',
+                'geoService',
+                '$http',
+                'expressionService',
+                'actionService',
+                'localStorageService'
+            ];
             return LayerService;
         }());
-        LayerService.$inject = [
-            '$location',
-            '$compile',
-            '$translate',
-            'messageBusService',
-            'mapService',
-            '$rootScope',
-            'geoService',
-            '$http',
-            'expressionService',
-            'actionService',
-            'localStorageService'
-        ];
         Services.LayerService = LayerService;
         /**
          * object for sending layer messages over socket.io channel
          */
-        var LayerUpdate = (function () {
+        var LayerUpdate = /** @class */ (function () {
             function LayerUpdate() {
             }
             return LayerUpdate;
@@ -22566,7 +22571,7 @@ var csComp;
         /**
          * object for sending project messages over socket.io channel
          */
-        var ProjectUpdate = (function () {
+        var ProjectUpdate = /** @class */ (function () {
             function ProjectUpdate() {
             }
             return ProjectUpdate;
@@ -22599,7 +22604,7 @@ var __extends = (this && this.__extends) || (function () {
 })();
 var MatrixAction;
 (function (MatrixAction) {
-    var MatrixActionModel = (function (_super) {
+    var MatrixActionModel = /** @class */ (function (_super) {
         __extends(MatrixActionModel, _super);
         function MatrixActionModel() {
             var _this = _super !== null && _super.apply(this, arguments) || this;
@@ -22682,7 +22687,7 @@ var RelationAction;
      * If present, related features of these propTypes will be looked up and stored in
      * the _gui.relations property of the feature as an IRelation-dictionary.
      */
-    var RelationActionModel = (function (_super) {
+    var RelationActionModel = /** @class */ (function (_super) {
         __extends(RelationActionModel, _super);
         function RelationActionModel() {
             var _this = _super !== null && _super.apply(this, arguments) || this;
@@ -22756,7 +22761,7 @@ var csComp;
          * Singleton service that holds a reference to the map.
          * In case other controllers need access to the map, they can inject this service.
          */
-        var MapService = (function () {
+        var MapService = /** @class */ (function () {
             function MapService($localStorageService, $timeout, $messageBusService) {
                 var _this = this;
                 this.$localStorageService = $localStorageService;
@@ -23065,14 +23070,14 @@ var csComp;
                     }
                 });
             };
+            MapService.expertModeKey = 'expertMode';
+            MapService.$inject = [
+                'localStorageService',
+                '$timeout',
+                'messageBusService'
+            ];
             return MapService;
         }());
-        MapService.expertModeKey = 'expertMode';
-        MapService.$inject = [
-            'localStorageService',
-            '$timeout',
-            'messageBusService'
-        ];
         Services.MapService = MapService;
         /**
           * Register service
@@ -23101,7 +23106,7 @@ var csComp;
          * @export
          * @class JwtDecoder
          */
-        var JwtDecoder = (function () {
+        var JwtDecoder = /** @class */ (function () {
             function JwtDecoder() {
             }
             /**
@@ -23180,7 +23185,7 @@ var csComp;
          * Singleton service that holds a reference to the map.
          * In case other controllers need access to the map, they can inject this service.
          */
-        var ProfileService = (function () {
+        var ProfileService = /** @class */ (function () {
             function ProfileService($localStorageService, $timeout, $http, $messageBusService) {
                 var _this = this;
                 this.$localStorageService = $localStorageService;
@@ -23332,14 +23337,14 @@ var csComp;
                 console.log('Security token set.');
                 this.$messageBusService.publish('profileservice', 'setToken');
             };
+            ProfileService.$inject = [
+                'localStorageService',
+                '$timeout',
+                '$http',
+                'messageBusService'
+            ];
             return ProfileService;
         }());
-        ProfileService.$inject = [
-            'localStorageService',
-            '$timeout',
-            '$http',
-            'messageBusService'
-        ];
         Services.ProfileService = ProfileService;
         /**
           * Register service
@@ -23360,7 +23365,7 @@ var csComp;
 (function (csComp) {
     var Search;
     (function (Search) {
-        var SearchFormCtrl = (function () {
+        var SearchFormCtrl = /** @class */ (function () {
             function SearchFormCtrl($scope, $mapService) {
                 this.$scope = $scope;
                 this.$mapService = $mapService;
@@ -23377,16 +23382,16 @@ var csComp;
                     this.$mapService.zoomToLocation(center);
                 }
             };
+            // $inject annotation.
+            // It provides $injector with information about dependencies to be injected into constructor
+            // it is better to have it close to the constructor, because the parameters must match in count and type.
+            // See http://docs.angularjs.org/guide/di
+            SearchFormCtrl.$inject = [
+                '$scope',
+                'mapService'
+            ];
             return SearchFormCtrl;
         }());
-        // $inject annotation.
-        // It provides $injector with information about dependencies to be injected into constructor
-        // it is better to have it close to the constructor, because the parameters must match in count and type.
-        // See http://docs.angularjs.org/guide/di
-        SearchFormCtrl.$inject = [
-            '$scope',
-            'mapService'
-        ];
         Search.SearchFormCtrl = SearchFormCtrl;
     })(Search = csComp.Search || (csComp.Search = {}));
 })(csComp || (csComp = {}));
@@ -23506,7 +23511,7 @@ var Dashboard;
 //# sourceMappingURL=Dashboard.js.map
 var Dashboard;
 (function (Dashboard_1) {
-    var DashboardCtrl = (function () {
+    var DashboardCtrl = /** @class */ (function () {
         // dependencies are injected via AngularJS $injector
         // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
         function DashboardCtrl($scope, $compile, $layerService, $mapService, $messageBusService, $dashboardService, $templateCache, $timeout) {
@@ -23601,7 +23606,7 @@ var Dashboard;
                 widget._bottom = widget.bottom;
                 widget._left = widget.left;
                 widget._right = widget.right;
-                widget._zindex = '1';
+                widget._zindex = widget.zIndex || '1';
                 widget._gridContainer = widget.inGridContainer; // Responsive container https://getbootstrap.com/examples/grid/
             }
         };
@@ -23965,22 +23970,22 @@ var Dashboard;
                 cb();
             }
         };
+        //public dashboard: csComp.Services.Dashboard;
+        // $inject annotation.
+        // It provides $injector with information about dependencies to be in  jected into constructor
+        // it is better to have it close to the constructor, because the parameters must match in count and type.
+        // See http://docs.angularjs.org/guide/di
+        DashboardCtrl.$inject = [
+            '$scope',
+            '$compile',
+            'layerService',
+            'mapService',
+            'messageBusService',
+            'dashboardService',
+            '$templateCache', '$timeout'
+        ];
         return DashboardCtrl;
     }());
-    //public dashboard: csComp.Services.Dashboard;
-    // $inject annotation.
-    // It provides $injector with information about dependencies to be in  jected into constructor
-    // it is better to have it close to the constructor, because the parameters must match in count and type.
-    // See http://docs.angularjs.org/guide/di
-    DashboardCtrl.$inject = [
-        '$scope',
-        '$compile',
-        'layerService',
-        'mapService',
-        'messageBusService',
-        'dashboardService',
-        '$templateCache', '$timeout'
-    ];
     Dashboard_1.DashboardCtrl = DashboardCtrl;
 })(Dashboard || (Dashboard = {}));
 //# sourceMappingURL=DashboardCtrl.js.map
@@ -24018,7 +24023,7 @@ var DashboarHeaderdSelection;
 //# sourceMappingURL=DashboardHeaderSelection.js.map
 var DashboarHeaderdSelection;
 (function (DashboarHeaderdSelection) {
-    var DashboardHeaderSelectionCtrl = (function () {
+    var DashboardHeaderSelectionCtrl = /** @class */ (function () {
         // dependencies are injected via AngularJS $injector
         // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
         function DashboardHeaderSelectionCtrl($scope, $layerService, $dashboardService, $mapService, $messageBusService) {
@@ -24033,19 +24038,19 @@ var DashboarHeaderdSelection;
             var res = this.$layerService.project.dashboards.filter(function (d) { return (d.parents && d.parents.indexOf(db.id) > -1); });
             return res;
         };
+        // $inject annotation.
+        // It provides $injector with information about dependencies to be injected into constructor
+        // it is better to have it close to the constructor, because the parameters must match in count and type.
+        // See http://docs.angularjs.org/guide/di
+        DashboardHeaderSelectionCtrl.$inject = [
+            '$scope',
+            'layerService',
+            'dashboardService',
+            'mapService',
+            'messageBusService'
+        ];
         return DashboardHeaderSelectionCtrl;
     }());
-    // $inject annotation.
-    // It provides $injector with information about dependencies to be injected into constructor
-    // it is better to have it close to the constructor, because the parameters must match in count and type.
-    // See http://docs.angularjs.org/guide/di
-    DashboardHeaderSelectionCtrl.$inject = [
-        '$scope',
-        'layerService',
-        'dashboardService',
-        'mapService',
-        'messageBusService'
-    ];
     DashboarHeaderdSelection.DashboardHeaderSelectionCtrl = DashboardHeaderSelectionCtrl;
 })(DashboarHeaderdSelection || (DashboarHeaderdSelection = {}));
 //# sourceMappingURL=DashboardHeaderSelectionCtrl.js.map
@@ -24096,7 +24101,7 @@ var DashboardSelection;
 //# sourceMappingURL=DashboardSelection.js.map
 var DashboardSelection;
 (function (DashboardSelection) {
-    var DashboardSelectionCtrl = (function () {
+    var DashboardSelectionCtrl = /** @class */ (function () {
         // dependencies are injected via AngularJS $injector
         // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
         function DashboardSelectionCtrl($scope, $layerService, $dashboardService, $mapService, $messageBusService) {
@@ -24241,19 +24246,19 @@ var DashboardSelection;
                 //this.refreshDashboard();
             }
         };
+        // $inject annotation.
+        // It provides $injector with information about dependencies to be injected into constructor
+        // it is better to have it close to the constructor, because the parameters must match in count and type.
+        // See http://docs.angularjs.org/guide/di
+        DashboardSelectionCtrl.$inject = [
+            '$scope',
+            'layerService',
+            'dashboardService',
+            'mapService',
+            'messageBusService'
+        ];
         return DashboardSelectionCtrl;
     }());
-    // $inject annotation.
-    // It provides $injector with information about dependencies to be injected into constructor
-    // it is better to have it close to the constructor, because the parameters must match in count and type.
-    // See http://docs.angularjs.org/guide/di
-    DashboardSelectionCtrl.$inject = [
-        '$scope',
-        'layerService',
-        'dashboardService',
-        'mapService',
-        'messageBusService'
-    ];
     DashboardSelection.DashboardSelectionCtrl = DashboardSelectionCtrl;
 })(DashboardSelection || (DashboardSelection = {}));
 //# sourceMappingURL=DashboardSelectionCtrl.js.map
@@ -24296,7 +24301,7 @@ var Search;
 //# sourceMappingURL=Search.js.map
 var Search;
 (function (Search) {
-    var SearchCtrl = (function () {
+    var SearchCtrl = /** @class */ (function () {
         // dependencies are injected via AngularJS $injector
         // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
         function SearchCtrl($scope, $compile, $layerService, $mapService, $messageBusService, $dashboardService, $templateCache, $timeout) {
@@ -24338,23 +24343,23 @@ var Search;
         SearchCtrl.prototype.selectFirst = function () {
             this.$messageBusService.publish('search', 'selectFirstResult');
         };
+        //public dashboard: csComp.Services.Dashboard;
+        // $inject annotation.
+        // It provides $injector with information about dependencies to be in  jected into constructor
+        // it is better to have it close to the constructor, because the parameters must match in count and type.
+        // See http://docs.angularjs.org/guide/di
+        SearchCtrl.$inject = [
+            '$scope',
+            '$compile',
+            'layerService',
+            'mapService',
+            'messageBusService',
+            'dashboardService',
+            '$templateCache',
+            '$timeout'
+        ];
         return SearchCtrl;
     }());
-    //public dashboard: csComp.Services.Dashboard;
-    // $inject annotation.
-    // It provides $injector with information about dependencies to be in  jected into constructor
-    // it is better to have it close to the constructor, because the parameters must match in count and type.
-    // See http://docs.angularjs.org/guide/di
-    SearchCtrl.$inject = [
-        '$scope',
-        '$compile',
-        'layerService',
-        'mapService',
-        'messageBusService',
-        'dashboardService',
-        '$templateCache',
-        '$timeout'
-    ];
     Search.SearchCtrl = SearchCtrl;
 })(Search || (Search = {}));
 //# sourceMappingURL=SearchCtrl.js.map
@@ -24394,7 +24399,7 @@ var DashboardEdit;
 //# sourceMappingURL=DashboardEdit.js.map
 var DashboardEdit;
 (function (DashboardEdit) {
-    var DashboardEditCtrl = (function () {
+    var DashboardEditCtrl = /** @class */ (function () {
         // dependencies are injected via AngularJS $injector
         // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
         function DashboardEditCtrl($scope, $mapService, $layerService, $messageBusService, $dashboardService) {
@@ -24482,19 +24487,19 @@ var DashboardEdit;
                 this.$scope.$apply();
             }
         };
+        // $inject annotation.
+        // It provides $injector with information about dependencies to be injected into constructor
+        // it is better to have it close to the constructor, because the parameters must match in count and type.
+        // See http://docs.angularjs.org/guide/di
+        DashboardEditCtrl.$inject = [
+            '$scope',
+            'mapService',
+            'layerService',
+            'messageBusService',
+            'dashboardService'
+        ];
         return DashboardEditCtrl;
     }());
-    // $inject annotation.
-    // It provides $injector with information about dependencies to be injected into constructor
-    // it is better to have it close to the constructor, because the parameters must match in count and type.
-    // See http://docs.angularjs.org/guide/di
-    DashboardEditCtrl.$inject = [
-        '$scope',
-        'mapService',
-        'layerService',
-        'messageBusService',
-        'dashboardService'
-    ];
     DashboardEdit.DashboardEditCtrl = DashboardEditCtrl;
 })(DashboardEdit || (DashboardEdit = {}));
 //# sourceMappingURL=DashboardEditCtrl.js.map
@@ -24534,7 +24539,7 @@ var WidgetEdit;
 //# sourceMappingURL=WidgetEdit.js.map
 var WidgetEdit;
 (function (WidgetEdit) {
-    var WidgetEditCtrl = (function () {
+    var WidgetEditCtrl = /** @class */ (function () {
         // dependencies are injected via AngularJS $injector
         // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
         function WidgetEditCtrl($scope, mapService, layerService, messageBusService, dashboardService) {
@@ -24563,19 +24568,19 @@ var WidgetEdit;
             this.dashboardService.deactivateTabContainer("widget-content");
             this.dashboardService.deactivateTabContainer("widget");
         };
+        // $inject annotation.
+        // It provides $injector with information about dependencies to be injected into constructor
+        // it is better to have it close to the constructor, because the parameters must match in count and type.
+        // See http://docs.angularjs.org/guide/di
+        WidgetEditCtrl.$inject = [
+            '$scope',
+            'mapService',
+            'layerService',
+            'messageBusService',
+            'dashboardService'
+        ];
         return WidgetEditCtrl;
     }());
-    // $inject annotation.
-    // It provides $injector with information about dependencies to be injected into constructor
-    // it is better to have it close to the constructor, because the parameters must match in count and type.
-    // See http://docs.angularjs.org/guide/di
-    WidgetEditCtrl.$inject = [
-        '$scope',
-        'mapService',
-        'layerService',
-        'messageBusService',
-        'dashboardService'
-    ];
     WidgetEdit.WidgetEditCtrl = WidgetEditCtrl;
 })(WidgetEdit || (WidgetEdit = {}));
 //# sourceMappingURL=WidgetEditCtrl.js.map
@@ -24628,7 +24633,7 @@ var FeatureTypeEditor;
 //# sourceMappingURL=FeatureTypeEditor.js.map
 var FeatureTypeEditor;
 (function (FeatureTypeEditor) {
-    var FeatureTypeEditorCtrl = (function () {
+    var FeatureTypeEditorCtrl = /** @class */ (function () {
         // dependencies are injected via AngularJS $injector
         // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
         function FeatureTypeEditorCtrl($scope, $layerService, $messageBusService) {
@@ -24672,17 +24677,17 @@ var FeatureTypeEditor;
             this.$layerService.updateFeatureTypes(this.$scope.featureType);
             this.$messageBusService.publish("featuretype", "stopEditing");
         };
+        // $inject annotation.
+        // It provides $injector with information about dependencies to be in  jected into constructor
+        // it is better to have it close to the constructor, because the parameters must match in count and type.
+        // See http://docs.angularjs.org/guide/di
+        FeatureTypeEditorCtrl.$inject = [
+            '$scope',
+            'layerService',
+            'messageBusService'
+        ];
         return FeatureTypeEditorCtrl;
     }());
-    // $inject annotation.
-    // It provides $injector with information about dependencies to be in  jected into constructor
-    // it is better to have it close to the constructor, because the parameters must match in count and type.
-    // See http://docs.angularjs.org/guide/di
-    FeatureTypeEditorCtrl.$inject = [
-        '$scope',
-        'layerService',
-        'messageBusService'
-    ];
     FeatureTypeEditor.FeatureTypeEditorCtrl = FeatureTypeEditorCtrl;
 })(FeatureTypeEditor || (FeatureTypeEditor = {}));
 //# sourceMappingURL=FeatureTypeEditorCtrl.js.map
@@ -24733,7 +24738,7 @@ var FeatureTypes;
 //# sourceMappingURL=FeatureTypes.js.map
 var FeatureTypes;
 (function (FeatureTypes) {
-    var FeatureTypesCtrl = (function () {
+    var FeatureTypesCtrl = /** @class */ (function () {
         // dependencies are injected via AngularJS $injector
         // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
         function FeatureTypesCtrl($scope, $layerService, $messageBusService) {
@@ -24759,17 +24764,17 @@ var FeatureTypes;
                 this.selectedResource = this.$layerService.typesResources[this.selectedResourceUrl];
             }
         };
+        // $inject annotation.
+        // It provides $injector with information about dependencies to be in  jected into constructor
+        // it is better to have it close to the constructor, because the parameters must match in count and type.
+        // See http://docs.angularjs.org/guide/di
+        FeatureTypesCtrl.$inject = [
+            '$scope',
+            'layerService',
+            'messageBusService'
+        ];
         return FeatureTypesCtrl;
     }());
-    // $inject annotation.
-    // It provides $injector with information about dependencies to be in  jected into constructor
-    // it is better to have it close to the constructor, because the parameters must match in count and type.
-    // See http://docs.angularjs.org/guide/di
-    FeatureTypesCtrl.$inject = [
-        '$scope',
-        'layerService',
-        'messageBusService'
-    ];
     FeatureTypes.FeatureTypesCtrl = FeatureTypesCtrl;
 })(FeatureTypes || (FeatureTypes = {}));
 //# sourceMappingURL=FeatureTypesCtrl.js.map
@@ -24809,7 +24814,7 @@ var GroupEdit;
 //# sourceMappingURL=GroupEdit.js.map
 var GroupEdit;
 (function (GroupEdit) {
-    var GroupEditCtrl = (function () {
+    var GroupEditCtrl = /** @class */ (function () {
         // dependencies are injected via AngularJS $injector
         // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
         function GroupEditCtrl($scope, $mapService, $layerService, $messageBusService, $dashboardService) {
@@ -24843,19 +24848,19 @@ var GroupEdit;
         GroupEditCtrl.prototype.updateOws = function () {
             this.$scope.group.loadLayersFromOWS();
         };
+        // $inject annotation.
+        // It provides $injector with information about dependencies to be injected into constructor
+        // it is better to have it close to the constructor, because the parameters must match in count and type.
+        // See http://docs.angularjs.org/guide/di
+        GroupEditCtrl.$inject = [
+            '$scope',
+            'mapService',
+            'layerService',
+            'messageBusService',
+            'dashboardService'
+        ];
         return GroupEditCtrl;
     }());
-    // $inject annotation.
-    // It provides $injector with information about dependencies to be injected into constructor
-    // it is better to have it close to the constructor, because the parameters must match in count and type.
-    // See http://docs.angularjs.org/guide/di
-    GroupEditCtrl.$inject = [
-        '$scope',
-        'mapService',
-        'layerService',
-        'messageBusService',
-        'dashboardService'
-    ];
     GroupEdit.GroupEditCtrl = GroupEditCtrl;
 })(GroupEdit || (GroupEdit = {}));
 //# sourceMappingURL=GroupEditCtrl.js.map
@@ -24898,7 +24903,7 @@ var LayerEditor;
 //# sourceMappingURL=LayerEditor.js.map
 var LayerEditor;
 (function (LayerEditor) {
-    var LayerEditorCtrl = (function () {
+    var LayerEditorCtrl = /** @class */ (function () {
         // dependencies are injected via AngularJS $injector
         // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
         function LayerEditorCtrl($scope, $http, $mapService, $layerService, $messageBusService, $dashboardService) {
@@ -25032,20 +25037,20 @@ var LayerEditor;
         LayerEditorCtrl.prototype.editFeaturetype = function (type) {
             this.$messageBusService.publish('featuretype', 'startEditing', type);
         };
+        // $inject annotation.
+        // It provides $injector with information about dependencies to be injected into constructor
+        // it is better to have it close to the constructor, because the parameters must match in count and type.
+        // See http://docs.angularjs.org/guide/di
+        LayerEditorCtrl.$inject = [
+            '$scope',
+            '$http',
+            'mapService',
+            'layerService',
+            'messageBusService',
+            'dashboardService'
+        ];
         return LayerEditorCtrl;
     }());
-    // $inject annotation.
-    // It provides $injector with information about dependencies to be injected into constructor
-    // it is better to have it close to the constructor, because the parameters must match in count and type.
-    // See http://docs.angularjs.org/guide/di
-    LayerEditorCtrl.$inject = [
-        '$scope',
-        '$http',
-        'mapService',
-        'layerService',
-        'messageBusService',
-        'dashboardService'
-    ];
     LayerEditor.LayerEditorCtrl = LayerEditorCtrl;
 })(LayerEditor || (LayerEditor = {}));
 //# sourceMappingURL=LayerEditorCtrl.js.map
@@ -25085,7 +25090,7 @@ var LayerSettings;
 //# sourceMappingURL=LayerSettings.js.map
 var LayerSettings;
 (function (LayerSettings) {
-    var LayerSettingsCtrl = (function () {
+    var LayerSettingsCtrl = /** @class */ (function () {
         // dependencies are injected via AngularJS $injector
         // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
         function LayerSettingsCtrl($scope, $http, $timeout, $mapService, $layerService, $messageBusService, $dashboardService) {
@@ -25146,21 +25151,21 @@ var LayerSettings;
                 .catch(function () { console.log('LayerEditCtl.getTypes: error with $http'); });
         };
         ;
+        // $inject annotation.
+        // It provides $injector with information about dependencies to be injected into constructor
+        // it is better to have it close to the constructor, because the parameters must match in count and type.
+        // See http://docs.angularjs.org/guide/di
+        LayerSettingsCtrl.$inject = [
+            '$scope',
+            '$http',
+            '$timeout',
+            'mapService',
+            'layerService',
+            'messageBusService',
+            'dashboardService'
+        ];
         return LayerSettingsCtrl;
     }());
-    // $inject annotation.
-    // It provides $injector with information about dependencies to be injected into constructor
-    // it is better to have it close to the constructor, because the parameters must match in count and type.
-    // See http://docs.angularjs.org/guide/di
-    LayerSettingsCtrl.$inject = [
-        '$scope',
-        '$http',
-        '$timeout',
-        'mapService',
-        'layerService',
-        'messageBusService',
-        'dashboardService'
-    ];
     LayerSettings.LayerSettingsCtrl = LayerSettingsCtrl;
 })(LayerSettings || (LayerSettings = {}));
 //# sourceMappingURL=LayerSettingsCtrl.js.map
@@ -25212,7 +25217,7 @@ var PropertyTypes;
 //# sourceMappingURL=PropertyTypes.js.map
 var PropertyTypes;
 (function (PropertyTypes) {
-    var PropertyTypesCtrl = (function () {
+    var PropertyTypesCtrl = /** @class */ (function () {
         // dependencies are injected via AngularJS $injector
         // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
         function PropertyTypesCtrl($scope, $layerService, $messageBusService) {
@@ -25356,17 +25361,17 @@ var PropertyTypes;
                 this.selectedResource = this.$layerService.typesResources[this.selectedResourceUrl];
             }
         };
+        // $inject annotation.
+        // It provides $injector with information about dependencies to be in  jected into constructor
+        // it is better to have it close to the constructor, because the parameters must match in count and type.
+        // See http://docs.angularjs.org/guide/di
+        PropertyTypesCtrl.$inject = [
+            '$scope',
+            'layerService',
+            'messageBusService'
+        ];
         return PropertyTypesCtrl;
     }());
-    // $inject annotation.
-    // It provides $injector with information about dependencies to be in  jected into constructor
-    // it is better to have it close to the constructor, because the parameters must match in count and type.
-    // See http://docs.angularjs.org/guide/di
-    PropertyTypesCtrl.$inject = [
-        '$scope',
-        'layerService',
-        'messageBusService'
-    ];
     PropertyTypes.PropertyTypesCtrl = PropertyTypesCtrl;
 })(PropertyTypes || (PropertyTypes = {}));
 //# sourceMappingURL=PropertyTypesCtrl.js.map
@@ -25393,7 +25398,7 @@ var Agenda;
             };
         }
     ]);
-    var AgendaWidgetEditCtrl = (function () {
+    var AgendaWidgetEditCtrl = /** @class */ (function () {
         function AgendaWidgetEditCtrl($scope, $http, layerService, messageBusService, $timeout) {
             var _this = this;
             this.$scope = $scope;
@@ -25422,15 +25427,15 @@ var Agenda;
             if (this.selectedLayer)
                 this.widget.data.selectedLayerId = this.selectedLayer.id;
         };
+        AgendaWidgetEditCtrl.$inject = [
+            '$scope',
+            '$http',
+            'layerService',
+            'messageBusService',
+            '$timeout'
+        ];
         return AgendaWidgetEditCtrl;
     }());
-    AgendaWidgetEditCtrl.$inject = [
-        '$scope',
-        '$http',
-        'layerService',
-        'messageBusService',
-        '$timeout'
-    ];
     Agenda.AgendaWidgetEditCtrl = AgendaWidgetEditCtrl;
 })(Agenda || (Agenda = {}));
 //# sourceMappingURL=AgendaWidget-edit.js.map
@@ -25463,7 +25468,7 @@ var Agenda;
      * - it analyses a layer, if the 'agenda' tag is present in the ProjectLayer, for all events, i.e.
      *   features with a start and end time, and displays them on the timeline.
      */
-    var AgendaWidgetCtrl = (function () {
+    var AgendaWidgetCtrl = /** @class */ (function () {
         function AgendaWidgetCtrl($scope, $http, layerService, messageBusService, $timeout) {
             var _this = this;
             this.$scope = $scope;
@@ -25540,15 +25545,15 @@ var Agenda;
             });
             return propValue;
         };
+        AgendaWidgetCtrl.$inject = [
+            '$scope',
+            '$http',
+            'layerService',
+            'messageBusService',
+            '$timeout'
+        ];
         return AgendaWidgetCtrl;
     }());
-    AgendaWidgetCtrl.$inject = [
-        '$scope',
-        '$http',
-        'layerService',
-        'messageBusService',
-        '$timeout'
-    ];
     Agenda.AgendaWidgetCtrl = AgendaWidgetCtrl;
 })(Agenda || (Agenda = {}));
 //# sourceMappingURL=AgendaWidget.js.map
@@ -25577,7 +25582,7 @@ var ButtonWidget;
             };
         }
     ]);
-    var ButtonWidgetEditCtrl = (function () {
+    var ButtonWidgetEditCtrl = /** @class */ (function () {
         function ButtonWidgetEditCtrl($scope, $timeout, $messageBus, $dashboardService) {
             this.$scope = $scope;
             this.$timeout = $timeout;
@@ -25620,15 +25625,15 @@ var ButtonWidget;
             else
                 this.$scope.selectedMessage = this.$scope.data.messages[0];
         };
+        // $inject annotation.
+        ButtonWidgetEditCtrl.$inject = [
+            '$scope',
+            '$timeout',
+            'messageBusService',
+            'dashboardService'
+        ];
         return ButtonWidgetEditCtrl;
     }());
-    // $inject annotation.
-    ButtonWidgetEditCtrl.$inject = [
-        '$scope',
-        '$timeout',
-        'messageBusService',
-        'dashboardService'
-    ];
     ButtonWidget.ButtonWidgetEditCtrl = ButtonWidgetEditCtrl;
 })(ButtonWidget || (ButtonWidget = {}));
 //# sourceMappingURL=ButtonWidget-edit.js.map
@@ -25654,7 +25659,7 @@ var ButtonWidget;
                 controller: ButtonWidgetCtrl
             };
         }]);
-    var ButtonWidgetCtrl = (function () {
+    var ButtonWidgetCtrl = /** @class */ (function () {
         function ButtonWidgetCtrl($scope, $http, layerService, messageBusService, actionService, $timeout, $sce) {
             var _this = this;
             this.$scope = $scope;
@@ -25951,17 +25956,17 @@ var ButtonWidget;
                 $('#filter-tab').tab('show');
             }
         };
+        ButtonWidgetCtrl.$inject = [
+            '$scope',
+            '$http',
+            'layerService',
+            'messageBusService',
+            'actionService',
+            '$timeout',
+            '$sce'
+        ];
         return ButtonWidgetCtrl;
     }());
-    ButtonWidgetCtrl.$inject = [
-        '$scope',
-        '$http',
-        'layerService',
-        'messageBusService',
-        'actionService',
-        '$timeout',
-        '$sce'
-    ];
     ButtonWidget.ButtonWidgetCtrl = ButtonWidgetCtrl;
 })(ButtonWidget || (ButtonWidget = {}));
 //# sourceMappingURL=ButtonWidget.js.map
@@ -25995,7 +26000,7 @@ var ChartsWidget;
             };
         }
     ]);
-    var ChartsEditCtrl = (function () {
+    var ChartsEditCtrl = /** @class */ (function () {
         function ChartsEditCtrl($scope, $timeout, $compile, $layerService, $templateCache, $messageBus, $mapService, $dashboardService) {
             this.$scope = $scope;
             this.$timeout = $timeout;
@@ -26031,21 +26036,21 @@ var ChartsWidget;
             var _this = this;
             vg.parse.spec(this.$scope.data.spec, function (chart) { chart({ el: "#vis" + _this.$scope.data._id }).update(); });
         };
+        // $inject annotation.
+        // It provides $injector with information about dependencies to be injected into constructor
+        // it is better to have it close to the constructor, because the parameters must match in count and type.
+        // See http://docs.angularjs.org/guide/di
+        ChartsEditCtrl.$inject = [
+            '$scope',
+            '$timeout',
+            '$compile',
+            'layerService',
+            '$templateCache',
+            'messageBusService',
+            'mapService', 'dashboardService'
+        ];
         return ChartsEditCtrl;
     }());
-    // $inject annotation.
-    // It provides $injector with information about dependencies to be injected into constructor
-    // it is better to have it close to the constructor, because the parameters must match in count and type.
-    // See http://docs.angularjs.org/guide/di
-    ChartsEditCtrl.$inject = [
-        '$scope',
-        '$timeout',
-        '$compile',
-        'layerService',
-        '$templateCache',
-        'messageBusService',
-        'mapService', 'dashboardService'
-    ];
     ChartsWidget.ChartsEditCtrl = ChartsEditCtrl;
 })(ChartsWidget || (ChartsWidget = {}));
 //# sourceMappingURL=Charts-edit.js.map
@@ -26080,13 +26085,13 @@ var ChartsWidget;
 //# sourceMappingURL=Charts.js.map
 var ChartsWidget;
 (function (ChartsWidget) {
-    var ChartData = (function () {
+    var ChartData = /** @class */ (function () {
         function ChartData() {
         }
         return ChartData;
     }());
     ChartsWidget.ChartData = ChartData;
-    var ChartCtrl = (function () {
+    var ChartCtrl = /** @class */ (function () {
         function ChartCtrl($scope, $timeout, $layerService, $messageBus, $mapService, $dashboardService) {
             var _this = this;
             this.$scope = $scope;
@@ -26276,16 +26281,16 @@ var ChartsWidget;
                 // });
             }
         };
+        ChartCtrl.$inject = [
+            '$scope',
+            '$timeout',
+            'layerService',
+            'messageBusService',
+            'mapService',
+            'dashboardService'
+        ];
         return ChartCtrl;
     }());
-    ChartCtrl.$inject = [
-        '$scope',
-        '$timeout',
-        'layerService',
-        'messageBusService',
-        'mapService',
-        'dashboardService'
-    ];
     ChartsWidget.ChartCtrl = ChartCtrl;
 })(ChartsWidget || (ChartsWidget = {}));
 //# sourceMappingURL=ChartsCtrl.js.map
@@ -26325,7 +26330,7 @@ var CompareWidget;
 //# sourceMappingURL=CompareWidget.js.map
 var CompareWidget;
 (function (CompareWidget) {
-    var CompareWidgetCtrl = (function () {
+    var CompareWidgetCtrl = /** @class */ (function () {
         // dependencies are injected via AngularJS $injector
         // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
         function CompareWidgetCtrl($scope, $location, $timeout, $sce, $mapService, $layerService, $messageBusService, $translate) {
@@ -26468,28 +26473,28 @@ var CompareWidget;
             });
             return entries;
         };
+        // $inject annotation.
+        // It provides $injector with information about dependencies to be injected into constructor
+        // it is better to have it close to the constructor, because the parameters must match in count and type.
+        // See http://docs.angularjs.org/guide/di
+        CompareWidgetCtrl.$inject = [
+            '$scope',
+            '$location',
+            '$timeout',
+            '$sce',
+            'mapService',
+            'layerService',
+            'messageBusService',
+            '$translate'
+        ];
         return CompareWidgetCtrl;
     }());
-    // $inject annotation.
-    // It provides $injector with information about dependencies to be injected into constructor
-    // it is better to have it close to the constructor, because the parameters must match in count and type.
-    // See http://docs.angularjs.org/guide/di
-    CompareWidgetCtrl.$inject = [
-        '$scope',
-        '$location',
-        '$timeout',
-        '$sce',
-        'mapService',
-        'layerService',
-        'messageBusService',
-        '$translate'
-    ];
     CompareWidget.CompareWidgetCtrl = CompareWidgetCtrl;
 })(CompareWidget || (CompareWidget = {}));
 //# sourceMappingURL=CompareWidgetCtrl.js.map
 var AreaFilter;
 (function (AreaFilter) {
-    var AreaFilterModel = (function () {
+    var AreaFilterModel = /** @class */ (function () {
         function AreaFilterModel() {
             this.id = 'AreaFilterModel';
         }
@@ -26558,7 +26563,7 @@ var AreaFilter;
 //# sourceMappingURL=AreaFilter.js.map
 var Filters;
 (function (Filters) {
-    var AreaFilterCtrl = (function () {
+    var AreaFilterCtrl = /** @class */ (function () {
         // dependencies are injected via AngularJS $injector
         // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
         function AreaFilterCtrl($scope, $layerService, $messageBus, $timeout, $translate) {
@@ -26675,25 +26680,25 @@ var Filters;
                 this.$layerService.removeFilter(this.$scope.filter);
             }
         };
+        // $inject annotation.
+        // It provides $injector with information about dependencies to be injected into constructor
+        // it is better to have it close to the constructor, because the parameters must match in count and type.
+        // See http://docs.angularjs.org/guide/di
+        AreaFilterCtrl.$inject = [
+            '$scope',
+            'layerService',
+            'messageBusService',
+            '$timeout',
+            '$translate'
+        ];
         return AreaFilterCtrl;
     }());
-    // $inject annotation.
-    // It provides $injector with information about dependencies to be injected into constructor
-    // it is better to have it close to the constructor, because the parameters must match in count and type.
-    // See http://docs.angularjs.org/guide/di
-    AreaFilterCtrl.$inject = [
-        '$scope',
-        'layerService',
-        'messageBusService',
-        '$timeout',
-        '$translate'
-    ];
     Filters.AreaFilterCtrl = AreaFilterCtrl;
 })(Filters || (Filters = {}));
 //# sourceMappingURL=AreaFilterCtrl.js.map
 var Filters;
 (function (Filters) {
-    var BarFilterCtrl = (function () {
+    var BarFilterCtrl = /** @class */ (function () {
         // dependencies are injected via AngularJS $injector
         // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
         function BarFilterCtrl($scope, $layerService, $messageBus, $timeout, $translate) {
@@ -26848,25 +26853,25 @@ var Filters;
                 this.$layerService.removeFilter(this.$scope.filter);
             }
         };
+        // $inject annotation.
+        // It provides $injector with information about dependencies to be injected into constructor
+        // it is better to have it close to the constructor, because the parameters must match in count and type.
+        // See http://docs.angularjs.org/guide/di
+        BarFilterCtrl.$inject = [
+            '$scope',
+            'layerService',
+            'messageBusService',
+            '$timeout',
+            '$translate'
+        ];
         return BarFilterCtrl;
     }());
-    // $inject annotation.
-    // It provides $injector with information about dependencies to be injected into constructor
-    // it is better to have it close to the constructor, because the parameters must match in count and type.
-    // See http://docs.angularjs.org/guide/di
-    BarFilterCtrl.$inject = [
-        '$scope',
-        'layerService',
-        'messageBusService',
-        '$timeout',
-        '$translate'
-    ];
     Filters.BarFilterCtrl = BarFilterCtrl;
 })(Filters || (Filters = {}));
 //# sourceMappingURL=BarFilterCtrl.js.map
 var Filters;
 (function (Filters) {
-    var BoolFilterCtrl = (function () {
+    var BoolFilterCtrl = /** @class */ (function () {
         // dependencies are injected via AngularJS $injector
         // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
         function BoolFilterCtrl($scope, $layerService, $messageBus) {
@@ -26925,23 +26930,23 @@ var Filters;
                 this.$layerService.removeFilter(this.$scope.filter);
             }
         };
+        // $inject annotation.
+        // It provides $injector with information about dependencies to be injected into constructor
+        // it is better to have it close to the constructor, because the parameters must match in count and type.
+        // See http://docs.angularjs.org/guide/di
+        BoolFilterCtrl.$inject = [
+            '$scope',
+            'layerService',
+            'messageBusService'
+        ];
         return BoolFilterCtrl;
     }());
-    // $inject annotation.
-    // It provides $injector with information about dependencies to be injected into constructor
-    // it is better to have it close to the constructor, because the parameters must match in count and type.
-    // See http://docs.angularjs.org/guide/di
-    BoolFilterCtrl.$inject = [
-        '$scope',
-        'layerService',
-        'messageBusService'
-    ];
     Filters.BoolFilterCtrl = BoolFilterCtrl;
 })(Filters || (Filters = {}));
 //# sourceMappingURL=BoolFilterCtrl.js.map
 var Filters;
 (function (Filters) {
-    var DateFilterCtrl = (function () {
+    var DateFilterCtrl = /** @class */ (function () {
         // dependencies are injected via AngularJS $injector
         // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
         function DateFilterCtrl($scope, $layerService, $messageBus) {
@@ -27029,23 +27034,23 @@ var Filters;
                 this.$layerService.removeFilter(this.$scope.filter);
             }
         };
+        // $inject annotation.
+        // It provides $injector with information about dependencies to be injected into constructor
+        // it is better to have it close to the constructor, because the parameters must match in count and type.
+        // See http://docs.angularjs.org/guide/di
+        DateFilterCtrl.$inject = [
+            '$scope',
+            'layerService',
+            'messageBusService'
+        ];
         return DateFilterCtrl;
     }());
-    // $inject annotation.
-    // It provides $injector with information about dependencies to be injected into constructor
-    // it is better to have it close to the constructor, because the parameters must match in count and type.
-    // See http://docs.angularjs.org/guide/di
-    DateFilterCtrl.$inject = [
-        '$scope',
-        'layerService',
-        'messageBusService'
-    ];
     Filters.DateFilterCtrl = DateFilterCtrl;
 })(Filters || (Filters = {}));
 //# sourceMappingURL=DateFilterCtrl.js.map
 var Filters;
 (function (Filters) {
-    var LocationFilterCtrl = (function () {
+    var LocationFilterCtrl = /** @class */ (function () {
         // dependencies are injected via AngularJS $injector
         // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
         function LocationFilterCtrl($scope, $layerService, $messageBus, $timeout, $translate) {
@@ -27179,25 +27184,25 @@ var Filters;
                 this.$layerService.removeFilter(this.$scope.filter);
             }
         };
+        // $inject annotation.
+        // It provides $injector with information about dependencies to be injected into constructor
+        // it is better to have it close to the constructor, because the parameters must match in count and type.
+        // See http://docs.angularjs.org/guide/di
+        LocationFilterCtrl.$inject = [
+            '$scope',
+            'layerService',
+            'messageBusService',
+            '$timeout',
+            '$translate'
+        ];
         return LocationFilterCtrl;
     }());
-    // $inject annotation.
-    // It provides $injector with information about dependencies to be injected into constructor
-    // it is better to have it close to the constructor, because the parameters must match in count and type.
-    // See http://docs.angularjs.org/guide/di
-    LocationFilterCtrl.$inject = [
-        '$scope',
-        'layerService',
-        'messageBusService',
-        '$timeout',
-        '$translate'
-    ];
     Filters.LocationFilterCtrl = LocationFilterCtrl;
 })(Filters || (Filters = {}));
 //# sourceMappingURL=LocationFilterCtrl.js.map
 var Filters;
 (function (Filters) {
-    var RowFilterCtrl = (function () {
+    var RowFilterCtrl = /** @class */ (function () {
         // dependencies are injected via AngularJS $injector
         // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
         function RowFilterCtrl($scope, $layerService, $messageBus, $timeout, $translate) {
@@ -27442,25 +27447,25 @@ var Filters;
                     canvas.parentElement.removeChild(canvas);
                 } });
         };
+        // $inject annotation.
+        // It provides $injector with information about dependencies to be injected into constructor
+        // it is better to have it close to the constructor, because the parameters must match in count and type.
+        // See http://docs.angularjs.org/guide/di
+        RowFilterCtrl.$inject = [
+            '$scope',
+            'layerService',
+            'messageBusService',
+            '$timeout',
+            '$translate'
+        ];
         return RowFilterCtrl;
     }());
-    // $inject annotation.
-    // It provides $injector with information about dependencies to be injected into constructor
-    // it is better to have it close to the constructor, because the parameters must match in count and type.
-    // See http://docs.angularjs.org/guide/di
-    RowFilterCtrl.$inject = [
-        '$scope',
-        'layerService',
-        'messageBusService',
-        '$timeout',
-        '$translate'
-    ];
     Filters.RowFilterCtrl = RowFilterCtrl;
 })(Filters || (Filters = {}));
 //# sourceMappingURL=RowFilterCtrl.js.map
 var Filters;
 (function (Filters) {
-    var ScatterFilterCtrl = (function () {
+    var ScatterFilterCtrl = /** @class */ (function () {
         // dependencies are injected via AngularJS $injector
         // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
         function ScatterFilterCtrl($scope, $layerService, $messageBus, $timeout) {
@@ -27563,18 +27568,18 @@ var Filters;
                 this.$layerService.removeFilter(this.$scope.filter);
             }
         };
+        // $inject annotation.
+        // It provides $injector with information about dependencies to be injected into constructor
+        // it is better to have it close to the constructor, because the parameters must match in count and type.
+        // See http://docs.angularjs.org/guide/di
+        ScatterFilterCtrl.$inject = [
+            '$scope',
+            'layerService',
+            'messageBusService',
+            '$timeout'
+        ];
         return ScatterFilterCtrl;
     }());
-    // $inject annotation.
-    // It provides $injector with information about dependencies to be injected into constructor
-    // it is better to have it close to the constructor, because the parameters must match in count and type.
-    // See http://docs.angularjs.org/guide/di
-    ScatterFilterCtrl.$inject = [
-        '$scope',
-        'layerService',
-        'messageBusService',
-        '$timeout'
-    ];
     Filters.ScatterFilterCtrl = ScatterFilterCtrl;
 })(Filters || (Filters = {}));
 //# sourceMappingURL=ScatterFilterCtrl.js.map
@@ -27766,7 +27771,7 @@ var Filters;
 //# sourceMappingURL=TextFilter.js.map
 var Filters;
 (function (Filters) {
-    var TextFilterCtrl = (function () {
+    var TextFilterCtrl = /** @class */ (function () {
         // dependencies are injected via AngularJS $injector
         // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
         function TextFilterCtrl($scope, $layerService, $messageBus) {
@@ -27833,17 +27838,17 @@ var Filters;
                 this.$layerService.removeFilter(this.$scope.filter);
             }
         };
+        // $inject annotation.
+        // It provides $injector with information about dependencies to be injected into constructor
+        // it is better to have it close to the constructor, because the parameters must match in count and type.
+        // See http://docs.angularjs.org/guide/di
+        TextFilterCtrl.$inject = [
+            '$scope',
+            'layerService',
+            'messageBusService'
+        ];
         return TextFilterCtrl;
     }());
-    // $inject annotation.
-    // It provides $injector with information about dependencies to be injected into constructor
-    // it is better to have it close to the constructor, because the parameters must match in count and type.
-    // See http://docs.angularjs.org/guide/di
-    TextFilterCtrl.$inject = [
-        '$scope',
-        'layerService',
-        'messageBusService'
-    ];
     Filters.TextFilterCtrl = TextFilterCtrl;
 })(Filters || (Filters = {}));
 //# sourceMappingURL=TextFilterCtrl.js.map
@@ -28211,13 +28216,13 @@ var FilterStyleWidget;
 //# sourceMappingURL=FilterStyleWidget.js.map
 var FilterStyleWidget;
 (function (FilterStyleWidget) {
-    var FilterStyleWidgetData = (function () {
+    var FilterStyleWidgetData = /** @class */ (function () {
         function FilterStyleWidgetData() {
         }
         return FilterStyleWidgetData;
     }());
     FilterStyleWidget.FilterStyleWidgetData = FilterStyleWidgetData;
-    var FilterStyleWidgetCtrl = (function () {
+    var FilterStyleWidgetCtrl = /** @class */ (function () {
         function FilterStyleWidgetCtrl($scope, $timeout, $translate, $layerService, $messageBus, $mapService) {
             var _this = this;
             this.$scope = $scope;
@@ -28380,16 +28385,16 @@ var FilterStyleWidget;
                 }
             });
         };
+        FilterStyleWidgetCtrl.$inject = [
+            '$scope',
+            '$timeout',
+            '$translate',
+            'layerService',
+            'messageBusService',
+            'mapService'
+        ];
         return FilterStyleWidgetCtrl;
     }());
-    FilterStyleWidgetCtrl.$inject = [
-        '$scope',
-        '$timeout',
-        '$translate',
-        'layerService',
-        'messageBusService',
-        'mapService'
-    ];
     FilterStyleWidget.FilterStyleWidgetCtrl = FilterStyleWidgetCtrl;
 })(FilterStyleWidget || (FilterStyleWidget = {}));
 //# sourceMappingURL=FilterStyleWidgetCtrl.js.map
@@ -28416,7 +28421,7 @@ var FocusTimeWidget;
             };
         }
     ]);
-    var FocusTimeWidgetCtrl = (function () {
+    var FocusTimeWidgetCtrl = /** @class */ (function () {
         function FocusTimeWidgetCtrl($scope, $http, layerService, messageBusService, $timeout) {
             var _this = this;
             this.$scope = $scope;
@@ -28502,15 +28507,15 @@ var FocusTimeWidget;
                         }
                     });
         };
+        FocusTimeWidgetCtrl.$inject = [
+            '$scope',
+            '$http',
+            'layerService',
+            'messageBusService',
+            '$timeout'
+        ];
         return FocusTimeWidgetCtrl;
     }());
-    FocusTimeWidgetCtrl.$inject = [
-        '$scope',
-        '$http',
-        'layerService',
-        'messageBusService',
-        '$timeout'
-    ];
     FocusTimeWidget.FocusTimeWidgetCtrl = FocusTimeWidgetCtrl;
 })(FocusTimeWidget || (FocusTimeWidget = {}));
 //# sourceMappingURL=FocusTimeWidget.js.map
@@ -28545,13 +28550,13 @@ var HeaderWidget;
 //# sourceMappingURL=HeaderWidget.js.map
 var HeaderWidget;
 (function (HeaderWidget) {
-    var HeaderWidgetData = (function () {
+    var HeaderWidgetData = /** @class */ (function () {
         function HeaderWidgetData() {
         }
         return HeaderWidgetData;
     }());
     HeaderWidget.HeaderWidgetData = HeaderWidgetData;
-    var HeaderWidgetCtrl = (function () {
+    var HeaderWidgetCtrl = /** @class */ (function () {
         function HeaderWidgetCtrl($scope, $timeout, $layerService, $messageBus, $mapService) {
             this.$scope = $scope;
             this.$timeout = $timeout;
@@ -28575,15 +28580,15 @@ var HeaderWidget;
             this.$messageBus.publish('rightpanel', 'activate', rpt);
             this.$layerService.visual.rightPanelVisible = true; // otherwise, the rightpanel briefly flashes open before closing.
         };
+        HeaderWidgetCtrl.$inject = [
+            '$scope',
+            '$timeout',
+            'layerService',
+            'messageBusService',
+            'mapService'
+        ];
         return HeaderWidgetCtrl;
     }());
-    HeaderWidgetCtrl.$inject = [
-        '$scope',
-        '$timeout',
-        'layerService',
-        'messageBusService',
-        'mapService'
-    ];
     HeaderWidget.HeaderWidgetCtrl = HeaderWidgetCtrl;
 })(HeaderWidget || (HeaderWidget = {}));
 //# sourceMappingURL=HeaderWidgetCtrl.js.map
@@ -28614,13 +28619,13 @@ var InfoWidget;
             };
         }
     ]);
-    var InfoWidgetData = (function () {
+    var InfoWidgetData = /** @class */ (function () {
         function InfoWidgetData() {
         }
         return InfoWidgetData;
     }());
     InfoWidget.InfoWidgetData = InfoWidgetData;
-    var InfoWidgetCtrl = (function () {
+    var InfoWidgetCtrl = /** @class */ (function () {
         function InfoWidgetCtrl($scope, $timeout, $layerService, $messageBus, $mapService) {
             this.$scope = $scope;
             this.$timeout = $timeout;
@@ -28636,15 +28641,15 @@ var InfoWidget;
                 this.parentWidget = $('#' + this.widget.elementId).parent();
             }
         }
+        InfoWidgetCtrl.$inject = [
+            '$scope',
+            '$timeout',
+            'layerService',
+            'messageBusService',
+            'mapService'
+        ];
         return InfoWidgetCtrl;
     }());
-    InfoWidgetCtrl.$inject = [
-        '$scope',
-        '$timeout',
-        'layerService',
-        'messageBusService',
-        'mapService'
-    ];
     InfoWidget.InfoWidgetCtrl = InfoWidgetCtrl;
 })(InfoWidget || (InfoWidget = {}));
 //# sourceMappingURL=InfoWidgetCtrl.js.map
@@ -28678,7 +28683,7 @@ var IFrameWidget;
             };
         }
     ]);
-    var IFrameEditCtrl = (function () {
+    var IFrameEditCtrl = /** @class */ (function () {
         function IFrameEditCtrl($scope, $sce) {
             this.$scope = $scope;
             this.$sce = $sce;
@@ -28691,16 +28696,16 @@ var IFrameWidget;
         IFrameEditCtrl.prototype.update = function () {
             this.$scope.data._safeurl = this.$sce.trustAsResourceUrl(this.$scope.data.url);
         };
+        // $inject annotation.
+        // It provides $injector with information about dependencies to be injected into constructor
+        // it is better to have it close to the constructor, because the parameters must match in count and type.
+        // See http://docs.angularjs.org/guide/di
+        IFrameEditCtrl.$inject = [
+            '$scope',
+            '$sce'
+        ];
         return IFrameEditCtrl;
     }());
-    // $inject annotation.
-    // It provides $injector with information about dependencies to be injected into constructor
-    // it is better to have it close to the constructor, because the parameters must match in count and type.
-    // See http://docs.angularjs.org/guide/di
-    IFrameEditCtrl.$inject = [
-        '$scope',
-        '$sce'
-    ];
     IFrameWidget.IFrameEditCtrl = IFrameEditCtrl;
 })(IFrameWidget || (IFrameWidget = {}));
 //# sourceMappingURL=IFrame-edit.js.map
@@ -28735,13 +28740,13 @@ var IFrameWidget;
 //# sourceMappingURL=IFrameWidget.js.map
 var IFrameWidget;
 (function (IFrameWidget) {
-    var IFrameWidgetData = (function () {
+    var IFrameWidgetData = /** @class */ (function () {
         function IFrameWidgetData() {
         }
         return IFrameWidgetData;
     }());
     IFrameWidget.IFrameWidgetData = IFrameWidgetData;
-    var IFrameWidgetCtrl = (function () {
+    var IFrameWidgetCtrl = /** @class */ (function () {
         function IFrameWidgetCtrl($scope, $sce) {
             this.$scope = $scope;
             this.$sce = $sce;
@@ -28753,12 +28758,12 @@ var IFrameWidget;
         IFrameWidgetCtrl.prototype.update = function () {
             this.$scope.data._safeurl = this.$sce.trustAsResourceUrl(this.$scope.data.url);
         };
+        IFrameWidgetCtrl.$inject = [
+            '$scope',
+            '$sce'
+        ];
         return IFrameWidgetCtrl;
     }());
-    IFrameWidgetCtrl.$inject = [
-        '$scope',
-        '$sce'
-    ];
     IFrameWidget.IFrameWidgetCtrl = IFrameWidgetCtrl;
 })(IFrameWidget || (IFrameWidget = {}));
 //# sourceMappingURL=IFrameWidgetCtrl.js.map
@@ -28792,7 +28797,7 @@ var Indicators;
             };
         }
     ]);
-    var IndicatorsEditCtrl = (function () {
+    var IndicatorsEditCtrl = /** @class */ (function () {
         function IndicatorsEditCtrl($scope, $timeout, $compile, $layerService, $templateCache, $messageBus, $mapService, $dashboardService) {
             this.$scope = $scope;
             this.$timeout = $timeout;
@@ -28947,21 +28952,21 @@ var Indicators;
             }
             ;
         };
+        // $inject annotation.
+        // It provides $injector with information about dependencies to be injected into constructor
+        // it is better to have it close to the constructor, because the parameters must match in count and type.
+        // See http://docs.angularjs.org/guide/di
+        IndicatorsEditCtrl.$inject = [
+            '$scope',
+            '$timeout',
+            '$compile',
+            'layerService',
+            '$templateCache',
+            'messageBusService',
+            'mapService', 'dashboardService'
+        ];
         return IndicatorsEditCtrl;
     }());
-    // $inject annotation.
-    // It provides $injector with information about dependencies to be injected into constructor
-    // it is better to have it close to the constructor, because the parameters must match in count and type.
-    // See http://docs.angularjs.org/guide/di
-    IndicatorsEditCtrl.$inject = [
-        '$scope',
-        '$timeout',
-        '$compile',
-        'layerService',
-        '$templateCache',
-        'messageBusService',
-        'mapService', 'dashboardService'
-    ];
     Indicators.IndicatorsEditCtrl = IndicatorsEditCtrl;
 })(Indicators || (Indicators = {}));
 //# sourceMappingURL=Indicators-edit.js.map
@@ -29012,14 +29017,14 @@ var Indicators;
 //# sourceMappingURL=Indicators.js.map
 var Indicators;
 (function (Indicators) {
-    var IndicatorData = (function () {
+    var IndicatorData = /** @class */ (function () {
         function IndicatorData() {
             this.orientation = 'vertical';
         }
         return IndicatorData;
     }());
     Indicators.IndicatorData = IndicatorData;
-    var Indicator = (function () {
+    var Indicator = /** @class */ (function () {
         function Indicator() {
             this.inputs = {};
             this._result = {};
@@ -29029,7 +29034,7 @@ var Indicators;
         return Indicator;
     }());
     Indicators.Indicator = Indicator;
-    var IndicatorsCtrl = (function () {
+    var IndicatorsCtrl = /** @class */ (function () {
         function IndicatorsCtrl($scope, $timeout, $layerService, $messageBus, $mapService, $dashboardService, $translate) {
             var _this = this;
             this.$scope = $scope;
@@ -29260,21 +29265,21 @@ var Indicators;
             }
             ;
         };
+        // $inject annotation.
+        // It provides $injector with information about dependencies to be injected into constructor
+        // it is better to have it close to the constructor, because the parameters must match in count and type.
+        // See http://docs.angularjs.org/guide/di
+        IndicatorsCtrl.$inject = [
+            '$scope',
+            '$timeout',
+            'layerService',
+            'messageBusService',
+            'mapService',
+            'dashboardService',
+            '$translate'
+        ];
         return IndicatorsCtrl;
     }());
-    // $inject annotation.
-    // It provides $injector with information about dependencies to be injected into constructor
-    // it is better to have it close to the constructor, because the parameters must match in count and type.
-    // See http://docs.angularjs.org/guide/di
-    IndicatorsCtrl.$inject = [
-        '$scope',
-        '$timeout',
-        'layerService',
-        'messageBusService',
-        'mapService',
-        'dashboardService',
-        '$translate'
-    ];
     Indicators.IndicatorsCtrl = IndicatorsCtrl;
 })(Indicators || (Indicators = {}));
 //# sourceMappingURL=IndicatorsCtrl.js.map
@@ -29300,7 +29305,7 @@ var LocationWidget;
                 controller: LocationWidgetCtrl
             };
         }]);
-    var LocationWidgetCtrl = (function () {
+    var LocationWidgetCtrl = /** @class */ (function () {
         function LocationWidgetCtrl($scope, $http, layerService, messageBusService, actionService, $timeout) {
             var _this = this;
             this.$scope = $scope;
@@ -29374,16 +29379,16 @@ var LocationWidget;
             this.location = {};
             this.parentWidget.hide();
         };
+        LocationWidgetCtrl.$inject = [
+            '$scope',
+            '$http',
+            'layerService',
+            'messageBusService',
+            'actionService',
+            '$timeout'
+        ];
         return LocationWidgetCtrl;
     }());
-    LocationWidgetCtrl.$inject = [
-        '$scope',
-        '$http',
-        'layerService',
-        'messageBusService',
-        'actionService',
-        '$timeout'
-    ];
     LocationWidget.LocationWidgetCtrl = LocationWidgetCtrl;
 })(LocationWidget || (LocationWidget = {}));
 //# sourceMappingURL=LocationWidget.js.map
@@ -29417,7 +29422,7 @@ var Markdown;
             };
         }
     ]);
-    var MarkdownEditCtrl = (function () {
+    var MarkdownEditCtrl = /** @class */ (function () {
         function MarkdownEditCtrl($scope, $timeout, $compile, $layerService, $templateCache, $messageBus, $mapService, $dashboardService) {
             this.$scope = $scope;
             this.$timeout = $timeout;
@@ -29435,21 +29440,21 @@ var Markdown;
         MarkdownEditCtrl.prototype.updateText = function () {
             this.$scope.data.mdText = this.$scope.data.content;
         };
+        // $inject annotation.
+        // It provides $injector with information about dependencies to be injected into constructor
+        // it is better to have it close to the constructor, because the parameters must match in count and type.
+        // See http://docs.angularjs.org/guide/di
+        MarkdownEditCtrl.$inject = [
+            '$scope',
+            '$timeout',
+            '$compile',
+            'layerService',
+            '$templateCache',
+            'messageBusService',
+            'mapService', 'dashboardService'
+        ];
         return MarkdownEditCtrl;
     }());
-    // $inject annotation.
-    // It provides $injector with information about dependencies to be injected into constructor
-    // it is better to have it close to the constructor, because the parameters must match in count and type.
-    // See http://docs.angularjs.org/guide/di
-    MarkdownEditCtrl.$inject = [
-        '$scope',
-        '$timeout',
-        '$compile',
-        'layerService',
-        '$templateCache',
-        'messageBusService',
-        'mapService', 'dashboardService'
-    ];
     Markdown.MarkdownEditCtrl = MarkdownEditCtrl;
 })(Markdown || (Markdown = {}));
 //# sourceMappingURL=Markdown-edit.js.map
@@ -29484,13 +29489,13 @@ var MarkdownWidget;
 //# sourceMappingURL=MarkdownWidget.js.map
 var MarkdownWidget;
 (function (MarkdownWidget) {
-    var MarkdownWidgetData = (function () {
+    var MarkdownWidgetData = /** @class */ (function () {
         function MarkdownWidgetData() {
         }
         return MarkdownWidgetData;
     }());
     MarkdownWidget.MarkdownWidgetData = MarkdownWidgetData;
-    var MarkdownWidgetCtrl = (function () {
+    var MarkdownWidgetCtrl = /** @class */ (function () {
         function MarkdownWidgetCtrl($scope, $timeout, $layerService, $messageBus, $mapService) {
             var _this = this;
             this.$scope = $scope;
@@ -29635,18 +29640,209 @@ var MarkdownWidget;
             var fileName = this.$scope.lastSelectedFeature.properties['Name'] || 'markdown-export';
             doc.save(fileName + '.pdf');
         };
+        MarkdownWidgetCtrl.$inject = [
+            '$scope',
+            '$timeout',
+            'layerService',
+            'messageBusService',
+            'mapService'
+        ];
         return MarkdownWidgetCtrl;
     }());
-    MarkdownWidgetCtrl.$inject = [
-        '$scope',
-        '$timeout',
-        'layerService',
-        'messageBusService',
-        'mapService'
-    ];
     MarkdownWidget.MarkdownWidgetCtrl = MarkdownWidgetCtrl;
 })(MarkdownWidget || (MarkdownWidget = {}));
 //# sourceMappingURL=MarkdownWidgetCtrl.js.map
+var MCAWidget;
+(function (MCAWidget) {
+    /**
+      * Config
+      */
+    var moduleName = 'csComp';
+    try {
+        MCAWidget.myModule = angular.module(moduleName);
+    }
+    catch (err) {
+        // named module does not exist, so create one
+        MCAWidget.myModule = angular.module(moduleName, []);
+    }
+    /**
+      * Directive to display the available map layers.
+      */
+    MCAWidget.myModule.directive('mcawidget', [function () {
+            return {
+                restrict: 'E',
+                scope: {},
+                templateUrl: 'directives/Widgets/MCAWidget/MCAWidget.tpl.html',
+                replace: true,
+                transclude: false,
+                controller: MCAWidget.MCAWidgetCtrl
+            };
+        }
+    ]);
+})(MCAWidget || (MCAWidget = {}));
+//# sourceMappingURL=MCAWidget.js.map
+var MCAWidget;
+(function (MCAWidget) {
+    var MCAWidgetData = /** @class */ (function () {
+        function MCAWidgetData() {
+        }
+        return MCAWidgetData;
+    }());
+    MCAWidget.MCAWidgetData = MCAWidgetData;
+    var MCAWidgetCtrl = /** @class */ (function () {
+        function MCAWidgetCtrl($scope, $timeout, $controller, $layerService, $messageBus, $mapService) {
+            var _this = this;
+            this.$scope = $scope;
+            this.$timeout = $timeout;
+            this.$controller = $controller;
+            this.$layerService = $layerService;
+            this.$messageBus = $messageBus;
+            this.$mapService = $mapService;
+            this.mBusHandles = [];
+            $scope.vm = this;
+            var par = $scope.$parent;
+            this.widget = par.widget;
+            $scope.data = this.widget.data;
+            $scope.data.filterByDefaultFeatureType = $scope.data.filterByDefaultFeatureType || false;
+            if (typeof $scope.data.layerId !== 'undefined') {
+                // Hide widget
+                this.parentWidget = $("#" + this.widget.elementId).parent();
+                this.parentWidget.hide();
+                this.mBusHandles.push(this.$messageBus.subscribe('layer', function (action, layer) {
+                    switch (action) {
+                        case 'activated':
+                        case 'deactivate':
+                            _this.activateLayer(layer);
+                            break;
+                        default:
+                            break;
+                    }
+                }));
+                this.mBusHandles.push(this.$messageBus.subscribe('mca', function (action, mca) {
+                    switch (action) {
+                        case 'updated':
+                        case 'deactivate':
+                            if (!mca)
+                                break;
+                            $timeout(function () {
+                                if (_this.selectedMCA !== mca.id) {
+                                    _this.selectedMCA = mca.id;
+                                    _this.setMcaAsStyle(_this.selectedMCA);
+                                }
+                            }, 0);
+                            break;
+                        default:
+                            break;
+                    }
+                }));
+                // Activate widget when layer is already loaded
+                var l = this.$layerService.findLoadedLayer($scope.data.layerId);
+                if (l) {
+                    this.activateLayer(l);
+                }
+            }
+        }
+        MCAWidgetCtrl.prototype.stop = function () {
+            var _this = this;
+            if (this.mBusHandles) {
+                this.mBusHandles.forEach(function (mbh) {
+                    _this.$messageBus.unsubscribe(mbh);
+                });
+                this.mBusHandles.length = 0;
+            }
+        };
+        MCAWidgetCtrl.prototype.activateLayer = function (layer) {
+            var _this = this;
+            this.mcaScope = this.getMcaScope();
+            if (!this.mcaScope)
+                return;
+            this.selectedMCA = this.mcaScope.vm.mca.id;
+            if (layer.id !== this.$scope.data.layerId || (layer.id === this.$scope.data.layerId && !layer.enabled)) {
+                this.parentWidget.hide();
+                return;
+            }
+            this.layer = layer;
+            if (this.$scope.data.autoApplyStyle) {
+                this.setStyleForProperty();
+            }
+            this.$timeout(function () {
+                _this.parentWidget.show();
+            }, 0);
+        };
+        MCAWidgetCtrl.prototype.getMcaScope = function () {
+            var mcaElm = angular.element('div[id="mca"]');
+            if (!mcaElm) {
+                console.log('Mca element not found.');
+                return;
+            }
+            var mcaScope = mcaElm.scope();
+            if (!mcaScope) {
+                console.log('Mca controller scope not found.');
+                return;
+            }
+            else {
+                var l = this.$layerService.findLoadedLayer(this.$scope.data.layerId);
+                if (l && this.$scope.data.filterByDefaultFeatureType) {
+                    this.$scope.data.availableMcas = mcaScope.vm.availableMcas.filter(function (mca) {
+                        return mca.featureIds[0].split('#').pop() === l.defaultFeatureType;
+                    });
+                }
+                else {
+                    this.$scope.data.availableMcas = mcaScope.vm.availableMcas;
+                }
+            }
+            return mcaScope;
+        };
+        MCAWidgetCtrl.prototype.setStyleForProperty = function () {
+            if (!this.mcaScope || !this.mcaScope.vm.mca) {
+                console.log('Mca controller scope not found.');
+                return;
+            }
+            var gs = this.$layerService.setStyleForProperty(this.layer, this.mcaScope.vm.mca.label);
+            if (!gs)
+                return;
+            gs.activeLegend = this.mcaScope.vm.getLegend(this.mcaScope.vm.mca);
+            this.mcaScope.vm.groupStyle = gs;
+            this.$layerService.updateStyle(gs);
+        };
+        MCAWidgetCtrl.prototype.setMcaAsStyle = function (mcaId) {
+            if (!this.mcaScope || !this.mcaScope.vm.mca) {
+                console.log('Mca controller scope not found.');
+                return;
+            }
+            var vm = this.mcaScope.vm;
+            var mca = vm.findMcaById(mcaId);
+            vm.updateAvailableMcas(mca);
+            vm.updateMca();
+            if (!this.$layerService.lastSelectedFeature) {
+                // this.$messageBus.notifyWithTranslation('SELECT_A_FEATURE', 'SELECT_FEATURE_FOR_STYLE');
+                this.setStyleForProperty();
+                return;
+            }
+            vm.updateSelectedFeature(this.$layerService.lastSelectedFeature);
+            if (!vm.showFeature) {
+                this.$messageBus.notifyWithTranslation('SELECT_A_FEATURE', 'SELECT_FEATURE_FOR_STYLE');
+                return;
+            }
+            if (vm.properties.length > 0) {
+                vm.updateMca();
+                console.log('Set mca style.');
+                vm.setStyle(vm.properties[0]);
+            }
+        };
+        MCAWidgetCtrl.$inject = [
+            '$scope',
+            '$timeout',
+            '$controller',
+            'layerService',
+            'messageBusService',
+            'mapService'
+        ];
+        return MCAWidgetCtrl;
+    }());
+    MCAWidget.MCAWidgetCtrl = MCAWidgetCtrl;
+})(MCAWidget || (MCAWidget = {}));
+//# sourceMappingURL=MCAWidgetCtrl.js.map
 var MarvelWidget;
 (function (MarvelWidget) {
     /**
@@ -29678,13 +29874,13 @@ var MarvelWidget;
 //# sourceMappingURL=MarvelWidget.js.map
 var MarvelWidget;
 (function (MarvelWidget) {
-    var MarvelWidgetData = (function () {
+    var MarvelWidgetData = /** @class */ (function () {
         function MarvelWidgetData() {
         }
         return MarvelWidgetData;
     }());
     MarvelWidget.MarvelWidgetData = MarvelWidgetData;
-    var MarvelWidgetCtrl = (function () {
+    var MarvelWidgetCtrl = /** @class */ (function () {
         function MarvelWidgetCtrl($scope, $timeout, $translate, $layerService, $messageBus, $mapService) {
             var _this = this;
             this.$scope = $scope;
@@ -29862,210 +30058,19 @@ var MarvelWidget;
                 }
             });
         };
+        MarvelWidgetCtrl.$inject = [
+            '$scope',
+            '$timeout',
+            '$translate',
+            'layerService',
+            'messageBusService',
+            'mapService'
+        ];
         return MarvelWidgetCtrl;
     }());
-    MarvelWidgetCtrl.$inject = [
-        '$scope',
-        '$timeout',
-        '$translate',
-        'layerService',
-        'messageBusService',
-        'mapService'
-    ];
     MarvelWidget.MarvelWidgetCtrl = MarvelWidgetCtrl;
 })(MarvelWidget || (MarvelWidget = {}));
 //# sourceMappingURL=MarvelWidgetCtrl.js.map
-var MCAWidget;
-(function (MCAWidget) {
-    /**
-      * Config
-      */
-    var moduleName = 'csComp';
-    try {
-        MCAWidget.myModule = angular.module(moduleName);
-    }
-    catch (err) {
-        // named module does not exist, so create one
-        MCAWidget.myModule = angular.module(moduleName, []);
-    }
-    /**
-      * Directive to display the available map layers.
-      */
-    MCAWidget.myModule.directive('mcawidget', [function () {
-            return {
-                restrict: 'E',
-                scope: {},
-                templateUrl: 'directives/Widgets/MCAWidget/MCAWidget.tpl.html',
-                replace: true,
-                transclude: false,
-                controller: MCAWidget.MCAWidgetCtrl
-            };
-        }
-    ]);
-})(MCAWidget || (MCAWidget = {}));
-//# sourceMappingURL=MCAWidget.js.map
-var MCAWidget;
-(function (MCAWidget) {
-    var MCAWidgetData = (function () {
-        function MCAWidgetData() {
-        }
-        return MCAWidgetData;
-    }());
-    MCAWidget.MCAWidgetData = MCAWidgetData;
-    var MCAWidgetCtrl = (function () {
-        function MCAWidgetCtrl($scope, $timeout, $controller, $layerService, $messageBus, $mapService) {
-            var _this = this;
-            this.$scope = $scope;
-            this.$timeout = $timeout;
-            this.$controller = $controller;
-            this.$layerService = $layerService;
-            this.$messageBus = $messageBus;
-            this.$mapService = $mapService;
-            this.mBusHandles = [];
-            $scope.vm = this;
-            var par = $scope.$parent;
-            this.widget = par.widget;
-            $scope.data = this.widget.data;
-            $scope.data.filterByDefaultFeatureType = $scope.data.filterByDefaultFeatureType || false;
-            if (typeof $scope.data.layerId !== 'undefined') {
-                // Hide widget
-                this.parentWidget = $("#" + this.widget.elementId).parent();
-                this.parentWidget.hide();
-                this.mBusHandles.push(this.$messageBus.subscribe('layer', function (action, layer) {
-                    switch (action) {
-                        case 'activated':
-                        case 'deactivate':
-                            _this.activateLayer(layer);
-                            break;
-                        default:
-                            break;
-                    }
-                }));
-                this.mBusHandles.push(this.$messageBus.subscribe('mca', function (action, mca) {
-                    switch (action) {
-                        case 'updated':
-                        case 'deactivate':
-                            if (!mca)
-                                break;
-                            $timeout(function () {
-                                if (_this.selectedMCA !== mca.id) {
-                                    _this.selectedMCA = mca.id;
-                                    _this.setMcaAsStyle(_this.selectedMCA);
-                                }
-                            }, 0);
-                            break;
-                        default:
-                            break;
-                    }
-                }));
-                // Activate widget when layer is already loaded
-                var l = this.$layerService.findLoadedLayer($scope.data.layerId);
-                if (l) {
-                    this.activateLayer(l);
-                }
-            }
-        }
-        MCAWidgetCtrl.prototype.stop = function () {
-            var _this = this;
-            if (this.mBusHandles) {
-                this.mBusHandles.forEach(function (mbh) {
-                    _this.$messageBus.unsubscribe(mbh);
-                });
-                this.mBusHandles.length = 0;
-            }
-        };
-        MCAWidgetCtrl.prototype.activateLayer = function (layer) {
-            var _this = this;
-            this.mcaScope = this.getMcaScope();
-            if (!this.mcaScope)
-                return;
-            this.selectedMCA = this.mcaScope.vm.mca.id;
-            if (layer.id !== this.$scope.data.layerId || (layer.id === this.$scope.data.layerId && !layer.enabled)) {
-                this.parentWidget.hide();
-                return;
-            }
-            this.layer = layer;
-            if (this.$scope.data.autoApplyStyle) {
-                this.setStyleForProperty();
-            }
-            this.$timeout(function () {
-                _this.parentWidget.show();
-            }, 0);
-        };
-        MCAWidgetCtrl.prototype.getMcaScope = function () {
-            var mcaElm = angular.element('div[id="mca"]');
-            if (!mcaElm) {
-                console.log('Mca element not found.');
-                return;
-            }
-            var mcaScope = mcaElm.scope();
-            if (!mcaScope) {
-                console.log('Mca controller scope not found.');
-                return;
-            }
-            else {
-                var l = this.$layerService.findLoadedLayer(this.$scope.data.layerId);
-                if (l && this.$scope.data.filterByDefaultFeatureType) {
-                    this.$scope.data.availableMcas = mcaScope.vm.availableMcas.filter(function (mca) {
-                        return mca.featureIds[0].split('#').pop() === l.defaultFeatureType;
-                    });
-                }
-                else {
-                    this.$scope.data.availableMcas = mcaScope.vm.availableMcas;
-                }
-            }
-            return mcaScope;
-        };
-        MCAWidgetCtrl.prototype.setStyleForProperty = function () {
-            if (!this.mcaScope || !this.mcaScope.vm.mca) {
-                console.log('Mca controller scope not found.');
-                return;
-            }
-            var gs = this.$layerService.setStyleForProperty(this.layer, this.mcaScope.vm.mca.label);
-            if (!gs)
-                return;
-            gs.activeLegend = this.mcaScope.vm.getLegend(this.mcaScope.vm.mca);
-            this.mcaScope.vm.groupStyle = gs;
-            this.$layerService.updateStyle(gs);
-        };
-        MCAWidgetCtrl.prototype.setMcaAsStyle = function (mcaId) {
-            if (!this.mcaScope || !this.mcaScope.vm.mca) {
-                console.log('Mca controller scope not found.');
-                return;
-            }
-            var vm = this.mcaScope.vm;
-            var mca = vm.findMcaById(mcaId);
-            vm.updateAvailableMcas(mca);
-            vm.updateMca();
-            if (!this.$layerService.lastSelectedFeature) {
-                // this.$messageBus.notifyWithTranslation('SELECT_A_FEATURE', 'SELECT_FEATURE_FOR_STYLE');
-                this.setStyleForProperty();
-                return;
-            }
-            vm.updateSelectedFeature(this.$layerService.lastSelectedFeature);
-            if (!vm.showFeature) {
-                this.$messageBus.notifyWithTranslation('SELECT_A_FEATURE', 'SELECT_FEATURE_FOR_STYLE');
-                return;
-            }
-            if (vm.properties.length > 0) {
-                vm.updateMca();
-                console.log('Set mca style.');
-                vm.setStyle(vm.properties[0]);
-            }
-        };
-        return MCAWidgetCtrl;
-    }());
-    MCAWidgetCtrl.$inject = [
-        '$scope',
-        '$timeout',
-        '$controller',
-        'layerService',
-        'messageBusService',
-        'mapService'
-    ];
-    MCAWidget.MCAWidgetCtrl = MCAWidgetCtrl;
-})(MCAWidget || (MCAWidget = {}));
-//# sourceMappingURL=MCAWidgetCtrl.js.map
 var NavigatorWidget;
 (function (NavigatorWidget) {
     /**
@@ -30097,13 +30102,13 @@ var NavigatorWidget;
 //# sourceMappingURL=NavigatorWidget.js.map
 var NavigatorWidget;
 (function (NavigatorWidget) {
-    var NavigatorWidgetData = (function () {
+    var NavigatorWidgetData = /** @class */ (function () {
         function NavigatorWidgetData() {
         }
         return NavigatorWidgetData;
     }());
     NavigatorWidget.NavigatorWidgetData = NavigatorWidgetData;
-    var NavigatorWidgetCtrl = (function () {
+    var NavigatorWidgetCtrl = /** @class */ (function () {
         function NavigatorWidgetCtrl($scope, $timeout, $layerService, $messageBus, $mapService) {
             this.$scope = $scope;
             this.$timeout = $timeout;
@@ -30121,15 +30126,15 @@ var NavigatorWidget;
                 this.parentWidget.hide();
             }
         }
+        NavigatorWidgetCtrl.$inject = [
+            '$scope',
+            '$timeout',
+            'layerService',
+            'messageBusService',
+            'mapService'
+        ];
         return NavigatorWidgetCtrl;
     }());
-    NavigatorWidgetCtrl.$inject = [
-        '$scope',
-        '$timeout',
-        'layerService',
-        'messageBusService',
-        'mapService'
-    ];
     NavigatorWidget.NavigatorWidgetCtrl = NavigatorWidgetCtrl;
 })(NavigatorWidget || (NavigatorWidget = {}));
 //# sourceMappingURL=NavigatorWidgetCtrl.js.map
@@ -30188,7 +30193,7 @@ var PostMan;
 //# sourceMappingURL=PostMan.js.map
 var PostMan;
 (function (PostMan) {
-    var PostManCtrl = (function () {
+    var PostManCtrl = /** @class */ (function () {
         function PostManCtrl($scope, $http, messageBusService, $timeout) {
             this.$scope = $scope;
             this.$http = $http;
@@ -30230,20 +30235,20 @@ var PostMan;
                     break;
             }
         };
+        PostManCtrl.$inject = [
+            '$scope',
+            '$http',
+            'messageBusService',
+            '$timeout'
+        ];
         return PostManCtrl;
     }());
-    PostManCtrl.$inject = [
-        '$scope',
-        '$http',
-        'messageBusService',
-        '$timeout'
-    ];
     PostMan.PostManCtrl = PostManCtrl;
 })(PostMan || (PostMan = {}));
 //# sourceMappingURL=PostManCtrl.js.map
 var PostMan;
 (function (PostMan) {
-    var PostManEditCtrl = (function () {
+    var PostManEditCtrl = /** @class */ (function () {
         function PostManEditCtrl($scope, $timeout, $messageBus, $dashboardService) {
             this.$scope = $scope;
             this.$timeout = $timeout;
@@ -30286,15 +30291,15 @@ var PostMan;
             else
                 this.$scope.selectedMessage = this.$scope.data.messages[0];
         };
+        // $inject annotation.
+        PostManEditCtrl.$inject = [
+            '$scope',
+            '$timeout',
+            'messageBusService',
+            'dashboardService'
+        ];
         return PostManEditCtrl;
     }());
-    // $inject annotation.
-    PostManEditCtrl.$inject = [
-        '$scope',
-        '$timeout',
-        'messageBusService',
-        'dashboardService'
-    ];
     PostMan.PostManEditCtrl = PostManEditCtrl;
 })(PostMan || (PostMan = {}));
 //# sourceMappingURL=PostManEditCtrl.js.map
@@ -30304,7 +30309,7 @@ var Presentation;
      * This service keeps the presentation state, so that when we switch between tabs,
      * we don't loose any information.
      */
-    var PresentationService = (function () {
+    var PresentationService = /** @class */ (function () {
         function PresentationService($rootScope, layerService, messageBusService, dashboardService) {
             // this.dashboardService.widgetTypes['presentation'] = <csComp.Services.IWidget>{
             //     id: 'presentation',
@@ -30429,14 +30434,14 @@ var Presentation;
             }
             return this.presentations[lastKey];
         };
+        PresentationService.$inject = [
+            '$rootScope',
+            'layerService',
+            'messageBusService',
+            'dashboardService'
+        ];
         return PresentationService;
     }());
-    PresentationService.$inject = [
-        '$rootScope',
-        'layerService',
-        'messageBusService',
-        'dashboardService'
-    ];
     Presentation.PresentationService = PresentationService;
     /**
      * Register service
@@ -30475,7 +30480,7 @@ var Presentation;
             };
         }
     ]);
-    var PresentationWidgetEditCtrl = (function () {
+    var PresentationWidgetEditCtrl = /** @class */ (function () {
         function PresentationWidgetEditCtrl($scope, $http, layerService, messageBusService, $timeout) {
             var _this = this;
             this.$scope = $scope;
@@ -30502,15 +30507,15 @@ var Presentation;
             if (this.selectedLayer)
                 this.widget.data.selectedLayerId = this.selectedLayer.id;
         };
+        PresentationWidgetEditCtrl.$inject = [
+            '$scope',
+            '$http',
+            'layerService',
+            'messageBusService',
+            '$timeout'
+        ];
         return PresentationWidgetEditCtrl;
     }());
-    PresentationWidgetEditCtrl.$inject = [
-        '$scope',
-        '$http',
-        'layerService',
-        'messageBusService',
-        '$timeout'
-    ];
     Presentation.PresentationWidgetEditCtrl = PresentationWidgetEditCtrl;
 })(Presentation || (Presentation = {}));
 //# sourceMappingURL=PresentationWidget-edit.js.map
@@ -30541,7 +30546,7 @@ var Presentation;
      * The presentation widget is inspired by ESRI Storymaps, collects slides from all enabled layers, which you can show one by one.
      * The slides are stored in the GeoJSON, as part of regular features, in the _slide property, which is of type ISlide.
      */
-    var PresentationWidgetCtrl = (function () {
+    var PresentationWidgetCtrl = /** @class */ (function () {
         function PresentationWidgetCtrl($scope, layerService, messageBusService, presentationService) {
             var _this = this;
             this.$scope = $scope;
@@ -30728,14 +30733,14 @@ var Presentation;
                 this.$scope.$digest();
             this.presentationService.save(layer);
         };
+        PresentationWidgetCtrl.$inject = [
+            '$scope',
+            'layerService',
+            'messageBusService',
+            'presentationService'
+        ];
         return PresentationWidgetCtrl;
     }());
-    PresentationWidgetCtrl.$inject = [
-        '$scope',
-        'layerService',
-        'messageBusService',
-        'presentationService'
-    ];
     Presentation.PresentationWidgetCtrl = PresentationWidgetCtrl;
 })(Presentation || (Presentation = {}));
 //# sourceMappingURL=PresentationWidget.js.map
@@ -30762,7 +30767,7 @@ var SimState;
             };
         }
     ]);
-    var SimStateEditCtrl = (function () {
+    var SimStateEditCtrl = /** @class */ (function () {
         function SimStateEditCtrl($scope, $http, messageBusService, $timeout) {
             this.$scope = $scope;
             this.$http = $http;
@@ -30772,14 +30777,14 @@ var SimState;
             //var par = <any>$scope.$parent;
             //$scope.data = <PostManEditorData>par.widget.data;
         }
+        SimStateEditCtrl.$inject = [
+            '$scope',
+            '$http',
+            'messageBusService',
+            '$timeout'
+        ];
         return SimStateEditCtrl;
     }());
-    SimStateEditCtrl.$inject = [
-        '$scope',
-        '$http',
-        'messageBusService',
-        '$timeout'
-    ];
     SimState.SimStateEditCtrl = SimStateEditCtrl;
 })(SimState || (SimState = {}));
 //# sourceMappingURL=SimState-edit.js.map
@@ -30806,7 +30811,7 @@ var SimState;
             };
         }
     ]);
-    var SimStateCtrl = (function () {
+    var SimStateCtrl = /** @class */ (function () {
         function SimStateCtrl($scope, $http, messageBusService, $timeout) {
             var _this = this;
             this.$scope = $scope;
@@ -30828,14 +30833,14 @@ var SimState;
                 }, 0);
             });
         }
+        SimStateCtrl.$inject = [
+            '$scope',
+            '$http',
+            'messageBusService',
+            '$timeout'
+        ];
         return SimStateCtrl;
     }());
-    SimStateCtrl.$inject = [
-        '$scope',
-        '$http',
-        'messageBusService',
-        '$timeout'
-    ];
     SimState.SimStateCtrl = SimStateCtrl;
 })(SimState || (SimState = {}));
 //# sourceMappingURL=SimState.js.map
@@ -30914,7 +30919,7 @@ var SimTimeController;
         SimCommand[SimCommand["Finish"] = 4] = "Finish";
         SimCommand[SimCommand["Exit"] = 5] = "Exit";
     })(SimCommand = SimTimeController.SimCommand || (SimTimeController.SimCommand = {}));
-    var SimTimeControllerCtrl = (function () {
+    var SimTimeControllerCtrl = /** @class */ (function () {
         // dependencies are injected via AngularJS $injector
         // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
         function SimTimeControllerCtrl($scope, $http, messageBusService, $timeout) {
@@ -31100,25 +31105,25 @@ var SimTimeController;
             // this.$http.post( '/api/keys/simTime', msg)
             //     .error((err) => alert( "Failed to deliver message: " + JSON.stringify({err: err})));
         };
+        // $inject annotation.
+        // It provides $injector with information about dependencies to be in  jected into constructor
+        // it is better to have it close to the constructor, because the parameters must match in count and type.
+        // See http://docs.angularjs.org/guide/di
+        SimTimeControllerCtrl.$inject = [
+            '$scope',
+            '$http',
+            'messageBusService',
+            '$timeout'
+        ];
         return SimTimeControllerCtrl;
     }());
-    // $inject annotation.
-    // It provides $injector with information about dependencies to be in  jected into constructor
-    // it is better to have it close to the constructor, because the parameters must match in count and type.
-    // See http://docs.angularjs.org/guide/di
-    SimTimeControllerCtrl.$inject = [
-        '$scope',
-        '$http',
-        'messageBusService',
-        '$timeout'
-    ];
     SimTimeController.SimTimeControllerCtrl = SimTimeControllerCtrl;
 })(SimTimeController || (SimTimeController = {}));
 //# sourceMappingURL=SimTimeControllerCtrl.js.map
 var SimTimeController;
 (function (SimTimeController) {
     /** Controller class for the SimTimeController editor */
-    var SimTimeControllerEditCtrl = (function () {
+    var SimTimeControllerEditCtrl = /** @class */ (function () {
         function SimTimeControllerEditCtrl($scope, $timeout, $messageBus, $dashboardService) {
             this.$scope = $scope;
             this.$timeout = $timeout;
@@ -31139,18 +31144,18 @@ var SimTimeController;
             if (!$scope.data.url)
                 $scope.data.url = 'api/keys/simTime';
         }
+        // $inject annotation.
+        // It provides $injector with information about dependencies to be injected into constructor
+        // it is better to have it close to the constructor, because the parameters must match in count and type.
+        // See http://docs.angularjs.org/guide/di
+        SimTimeControllerEditCtrl.$inject = [
+            '$scope',
+            '$timeout',
+            'messageBusService',
+            'dashboardService'
+        ];
         return SimTimeControllerEditCtrl;
     }());
-    // $inject annotation.
-    // It provides $injector with information about dependencies to be injected into constructor
-    // it is better to have it close to the constructor, because the parameters must match in count and type.
-    // See http://docs.angularjs.org/guide/di
-    SimTimeControllerEditCtrl.$inject = [
-        '$scope',
-        '$timeout',
-        'messageBusService',
-        'dashboardService'
-    ];
     SimTimeController.SimTimeControllerEditCtrl = SimTimeControllerEditCtrl;
 })(SimTimeController || (SimTimeController = {}));
 //# sourceMappingURL=SimTimeControllerEditCtrl.js.map
@@ -31185,13 +31190,13 @@ var TableWidget;
 //# sourceMappingURL=TableWidget.js.map
 var TableWidget;
 (function (TableWidget) {
-    var TableWidgetData = (function () {
+    var TableWidgetData = /** @class */ (function () {
         function TableWidgetData() {
         }
         return TableWidgetData;
     }());
     TableWidget.TableWidgetData = TableWidgetData;
-    var TableWidgetCtrl = (function () {
+    var TableWidgetCtrl = /** @class */ (function () {
         function TableWidgetCtrl($scope, $timeout, $layerService, $messageBus, $mapService, $sce) {
             var _this = this;
             this.$scope = $scope;
@@ -31359,16 +31364,16 @@ var TableWidget;
                 return '';
             }
         };
+        TableWidgetCtrl.$inject = [
+            '$scope',
+            '$timeout',
+            'layerService',
+            'messageBusService',
+            'mapService',
+            '$sce'
+        ];
         return TableWidgetCtrl;
     }());
-    TableWidgetCtrl.$inject = [
-        '$scope',
-        '$timeout',
-        'layerService',
-        'messageBusService',
-        'mapService',
-        '$sce'
-    ];
     TableWidget.TableWidgetCtrl = TableWidgetCtrl;
 })(TableWidget || (TableWidget = {}));
 //# sourceMappingURL=TableWidgetCtrl.js.map
@@ -31386,7 +31391,7 @@ var csComp;
 (function (csComp) {
     var Services;
     (function (Services) {
-        var BingSearchAction = (function (_super) {
+        var BingSearchAction = /** @class */ (function (_super) {
             __extends(BingSearchAction, _super);
             /**
              * @param  {string} apiKey: route to the search api (optional, followed by a |), and the Bing maps key (required)
@@ -31496,7 +31501,7 @@ var csComp;
 (function (csComp) {
     var Services;
     (function (Services) {
-        var EsriBagSearchAction = (function (_super) {
+        var EsriBagSearchAction = /** @class */ (function (_super) {
             __extends(EsriBagSearchAction, _super);
             /**
              * @param  {string} apiKey: route to the search api (optional, followed by a |), and the Bing maps key (required)
@@ -31595,14 +31600,14 @@ var csComp;
 (function (csComp) {
     var Services;
     (function (Services) {
-        var KeywordIndex = (function () {
+        var KeywordIndex = /** @class */ (function () {
             function KeywordIndex() {
             }
             return KeywordIndex;
         }());
         Services.KeywordIndex = KeywordIndex;
         /** An index entry that contains a search result. */
-        var Entry = (function () {
+        var Entry = /** @class */ (function () {
             function Entry(layerIndexOrArray, featureIndex, propertyIndex) {
                 this.v = Array(2);
                 if (typeof layerIndexOrArray === 'number') {
@@ -31626,7 +31631,7 @@ var csComp;
             return Entry;
         }());
         Services.Entry = Entry;
-        var OfflineSearchResult = (function () {
+        var OfflineSearchResult = /** @class */ (function () {
             function OfflineSearchResult(title, layerTitle, groupTitle, entry, score) {
                 this.title = title;
                 this.layerTitle = layerTitle;
@@ -31648,7 +31653,7 @@ var csComp;
             return OfflineSearchResult;
         }());
         Services.OfflineSearchResult = OfflineSearchResult;
-        var OfflineSearchActions = (function (_super) {
+        var OfflineSearchActions = /** @class */ (function (_super) {
             __extends(OfflineSearchActions, _super);
             /**
              * @param  {string} projectUri: path to the project.json file
@@ -31858,7 +31863,7 @@ var csComp;
 (function (csComp) {
     var Services;
     (function (Services) {
-        var OnlineSearchActions = (function (_super) {
+        var OnlineSearchActions = /** @class */ (function (_super) {
             __extends(OnlineSearchActions, _super);
             /**
              * @param  {string} searchUrl: route to the search api
@@ -31979,7 +31984,7 @@ var csComp;
 (function (csComp) {
     var Services;
     (function (Services) {
-        var OpenCageDataSearchAction = (function (_super) {
+        var OpenCageDataSearchAction = /** @class */ (function (_super) {
             __extends(OpenCageDataSearchAction, _super);
             /**
              * @param  {string} apiKey: route to the search api (optional, followed by a |), and the Bing maps key (required)
@@ -32101,7 +32106,7 @@ var csComp;
 (function (csComp) {
     var Services;
     (function (Services) {
-        var GeometryTemplateStore = (function () {
+        var GeometryTemplateStore = /** @class */ (function () {
             function GeometryTemplateStore($http) {
                 this.$http = $http;
                 this.TEMPLATE_URL = 'api/layers';
@@ -32150,7 +32155,7 @@ var csComp;
     var Services;
     (function (Services) {
         'use strict';
-        var DatabaseSource = (function () {
+        var DatabaseSource = /** @class */ (function () {
             function DatabaseSource(service) {
                 this.service = service;
                 this.title = 'database';
@@ -32394,7 +32399,7 @@ var csComp;
 (function (csComp) {
     var Services;
     (function (Services) {
-        var GeoJsonSource = (function () {
+        var GeoJsonSource = /** @class */ (function () {
             function GeoJsonSource(service, $http, $storage) {
                 this.service = service;
                 this.$storage = $storage;
@@ -32844,7 +32849,7 @@ var csComp;
             return GeoJsonSource;
         }());
         Services.GeoJsonSource = GeoJsonSource;
-        var EditableGeoJsonSource = (function (_super) {
+        var EditableGeoJsonSource = /** @class */ (function (_super) {
             __extends(EditableGeoJsonSource, _super);
             function EditableGeoJsonSource(service, $http, $storage) {
                 var _this = _super.call(this, service, $http, $storage) || this;
@@ -32993,7 +32998,7 @@ var csComp;
             return EditableGeoJsonSource;
         }(GeoJsonSource));
         Services.EditableGeoJsonSource = EditableGeoJsonSource;
-        var DynamicGeoJsonSource = (function (_super) {
+        var DynamicGeoJsonSource = /** @class */ (function (_super) {
             __extends(DynamicGeoJsonSource, _super);
             function DynamicGeoJsonSource(service, $http, $storage) {
                 var _this = _super.call(this, service, $http, $storage) || this;
@@ -33113,7 +33118,7 @@ var csComp;
             return DynamicGeoJsonSource;
         }(EditableGeoJsonSource));
         Services.DynamicGeoJsonSource = DynamicGeoJsonSource;
-        var EsriJsonSource = (function (_super) {
+        var EsriJsonSource = /** @class */ (function (_super) {
             __extends(EsriJsonSource, _super);
             function EsriJsonSource(service, $http, $storage) {
                 var _this = _super.call(this, service, $http, $storage) || this;
@@ -33182,7 +33187,7 @@ var csComp;
          * A GRID data source is a raster or grid in which the grid cells are delimited by spaces
          * and each newline indicates a new row of data.
          */
-        var GridDataSource = (function (_super) {
+        var GridDataSource = /** @class */ (function (_super) {
             __extends(GridDataSource, _super);
             function GridDataSource(service, $http, $storage) {
                 var _this = _super.call(this, service, $http, $storage) || this;
@@ -33646,7 +33651,7 @@ var csComp;
     var Services;
     (function (Services) {
         'use strict';
-        var HeatmapSource = (function () {
+        var HeatmapSource = /** @class */ (function () {
             function HeatmapSource(service) {
                 this.service = service;
                 this.title = 'heatmap';
@@ -33809,7 +33814,7 @@ var csComp;
     var Services;
     (function (Services) {
         'use strict';
-        var HierarchySource = (function () {
+        var HierarchySource = /** @class */ (function () {
             function HierarchySource(service, $http) {
                 this.service = service;
                 this.title = "hierarchy";
@@ -33930,7 +33935,7 @@ var csComp;
 (function (csComp) {
     var Services;
     (function (Services) {
-        var KmlDataSource = (function (_super) {
+        var KmlDataSource = /** @class */ (function (_super) {
             __extends(KmlDataSource, _super);
             function KmlDataSource(service, $http, $storage) {
                 var _this = _super.call(this, service, $http, $storage) || this;
@@ -34225,7 +34230,7 @@ var csComp;
     var Services;
     (function (Services) {
         'use strict';
-        var NightDayDataSource = (function (_super) {
+        var NightDayDataSource = /** @class */ (function (_super) {
             __extends(NightDayDataSource, _super);
             function NightDayDataSource(service, $http, $storage) {
                 var _this = _super.call(this, service, $http, $storage) || this;
@@ -34318,7 +34323,7 @@ var csComp;
 (function (csComp) {
     var Services;
     (function (Services) {
-        var RssDataSource = (function (_super) {
+        var RssDataSource = /** @class */ (function (_super) {
             __extends(RssDataSource, _super);
             function RssDataSource(service, $http, $storage) {
                 var _this = _super.call(this, service, $http, $storage) || this;
@@ -34364,7 +34369,7 @@ var csComp;
 (function (csComp) {
     var Services;
     (function (Services) {
-        var TileLayerSource = (function () {
+        var TileLayerSource = /** @class */ (function () {
             function TileLayerSource(service) {
                 this.service = service;
                 this.title = 'tilelayer';
@@ -34448,7 +34453,7 @@ var csComp;
 (function (csComp) {
     var Services;
     (function (Services) {
-        var VectorTileSource = (function (_super) {
+        var VectorTileSource = /** @class */ (function (_super) {
             __extends(VectorTileSource, _super);
             function VectorTileSource(service, $http, $storage) {
                 var _this = _super.call(this, service, $http, $storage) || this;
@@ -34559,9 +34564,9 @@ var csComp;
                 layer.data.features = {};
                 //alert('remove layer');
             };
+            VectorTileSource.CACHE_SIZE = 99;
             return VectorTileSource;
         }(Services.GeoJsonSource));
-        VectorTileSource.CACHE_SIZE = 99;
         Services.VectorTileSource = VectorTileSource;
     })(Services = csComp.Services || (csComp.Services = {}));
 })(csComp || (csComp = {}));
@@ -34570,7 +34575,7 @@ var csComp;
 (function (csComp) {
     var Services;
     (function (Services) {
-        var WmsSource = (function () {
+        var WmsSource = /** @class */ (function () {
             //service : LayerService;
             function WmsSource(service) {
                 this.service = service;
@@ -34819,7 +34824,7 @@ var csComp;
 (function (csComp) {
     var Services;
     (function (Services) {
-        var GeojsonRenderer = (function () {
+        var GeojsonRenderer = /** @class */ (function () {
             function GeojsonRenderer() {
             }
             GeojsonRenderer.render = function (service, layer, mapRenderer) {
@@ -34877,7 +34882,7 @@ var csComp;
 (function (csComp) {
     var Services;
     (function (Services) {
-        var GridLayerRenderer = (function () {
+        var GridLayerRenderer = /** @class */ (function () {
             function GridLayerRenderer() {
             }
             GridLayerRenderer.render = function (service, layer) {
@@ -35044,7 +35049,7 @@ var csComp;
 (function (csComp) {
     var Services;
     (function (Services) {
-        var HeatmapRenderer = (function () {
+        var HeatmapRenderer = /** @class */ (function () {
             function HeatmapRenderer() {
             }
             HeatmapRenderer.render = function (service, layer, mapRenderer) {
@@ -35117,7 +35122,7 @@ var csComp;
 (function (csComp) {
     var Services;
     (function (Services) {
-        var TileLayerRenderer = (function () {
+        var TileLayerRenderer = /** @class */ (function () {
             function TileLayerRenderer() {
             }
             TileLayerRenderer.render = function (service, layer) {
@@ -35209,7 +35214,7 @@ var csComp;
 (function (csComp) {
     var Services;
     (function (Services) {
-        var WmsRenderer = (function () {
+        var WmsRenderer = /** @class */ (function () {
             function WmsRenderer() {
             }
             WmsRenderer.getUrl = function (layer, date) {
@@ -35282,7 +35287,7 @@ var csComp;
 (function (csComp) {
     var Services;
     (function (Services) {
-        var CesiumRenderer = (function () {
+        var CesiumRenderer = /** @class */ (function () {
             function CesiumRenderer() {
                 this.title = 'cesium';
                 this.features = {};
@@ -35925,7 +35930,7 @@ var csComp;
 (function (csComp) {
     var Services;
     (function (Services) {
-        var LeafletRenderer = (function () {
+        var LeafletRenderer = /** @class */ (function () {
             function LeafletRenderer() {
                 this.title = 'leaflet';
                 this.cntrlIsPressed = false;

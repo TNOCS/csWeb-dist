@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var fs = require("fs");
 var path = require("path");
 var chokidar = require('chokidar');
-var DynamicProject = (function () {
+var DynamicProject = /** @class */ (function () {
     function DynamicProject(folder, id, service, messageBus) {
         this.folder = folder;
         this.id = id;
@@ -208,7 +208,7 @@ var DynamicProject = (function () {
     return DynamicProject;
 }());
 exports.DynamicProject = DynamicProject;
-var DynamicProjectService = (function () {
+var DynamicProjectService = /** @class */ (function () {
     function DynamicProjectService(server, connection, messageBus) {
         this.server = server;
         this.connection = connection;

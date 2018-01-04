@@ -18,7 +18,7 @@ var KeyUpdateAction = ClientConnection.KeyUpdateAction;
 var ApiResult = ApiManager.ApiResult;
 var BaseConnector = require("./BaseConnector");
 var Winston = require("winston");
-var SocketIOAPI = (function (_super) {
+var SocketIOAPI = /** @class */ (function (_super) {
     __extends(SocketIOAPI, _super);
     function SocketIOAPI(connection) {
         var _this = _super.call(this) || this;

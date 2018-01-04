@@ -16,7 +16,7 @@ var mqtt = require("mqtt");
 var mqttrouter = require("mqtt-router");
 var BaseConnector = require("./BaseConnector");
 var Winston = require("winston");
-var MqttAPI = (function (_super) {
+var MqttAPI = /** @class */ (function (_super) {
     __extends(MqttAPI, _super);
     function MqttAPI(server, port, layerPrefix, keyPrefix) {
         if (port === void 0) { port = 1883; }

@@ -3,7 +3,7 @@ var Utils = require("../helpers/Utils");
 var stream = require("stream");
 var request = require("request");
 var turf = require('turf');
-var AggregateOpportunitiesToGeoJsonTransformer = (function () {
+var AggregateOpportunitiesToGeoJsonTransformer = /** @class */ (function () {
     function AggregateOpportunitiesToGeoJsonTransformer(title) {
         this.title = title;
         this.type = 'AggregateOpportunitiesToGeoJsonTransformer';

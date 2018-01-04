@@ -10,7 +10,7 @@ var winston = require("winston");
 var path = require("path");
 var _ = require("underscore");
 /** A factory class to create new map layers based on input, e.g. from Excel */
-var MapLayerFactory = (function () {
+var MapLayerFactory = /** @class */ (function () {
     // constructor(private bag: LocalBag, private messageBus: MessageBus.MessageBusService) {
     function MapLayerFactory(addressSources, messageBus, apiManager, workingDir) {
         if (workingDir === void 0) { workingDir = ''; }
@@ -598,6 +598,18 @@ var MapLayerFactory = (function () {
     MapLayerFactory.prototype.getPolygonType = function (ld, props) {
         var type = this.determineType(props, ld.parameter1);
         switch (ld.geometryType) {
+            case 'Zorgkantoorregios':
+                ld.geometryFile = 'Zorgkantoorregio';
+                ld.geometryKey = 'Name';
+                break;
+            case 'Regioplus':
+                ld.geometryFile = 'Regioplus';
+                ld.geometryKey = 'Name';
+                break;
+            case 'GGD_Regios':
+                ld.geometryFile = 'GGD_Regios';
+                ld.geometryKey = 'Name';
+                break;
             case 'Provincie':
                 if (type === 'both') {
                     ld.geometryFile = 'CBS_Provincie_op_code';

@@ -3,7 +3,7 @@ var Utils = require("../helpers/Utils");
 var stream = require("stream");
 var request = require("request");
 var turf = require('turf');
-var MergeGeoJsonTransformer = (function () {
+var MergeGeoJsonTransformer = /** @class */ (function () {
     function MergeGeoJsonTransformer(title) {
         this.title = title;
         this.type = 'MergeGeoJsonTransformer';

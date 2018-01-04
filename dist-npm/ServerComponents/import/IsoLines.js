@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var GeoJSON = require("../helpers/GeoJSON");
 var Conrec = require("../helpers/conrec");
-var IsoLines = (function () {
+var IsoLines = /** @class */ (function () {
     function IsoLines() {
     }
     // convertRDToWGS84

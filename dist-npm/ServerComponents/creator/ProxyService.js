@@ -1,7 +1,7 @@
 "use strict";
 var request = require("request");
 /* Multiple storage engine supported, e.g. file system, mongo  */
-var ProxyService = (function () {
+var ProxyService = /** @class */ (function () {
     function ProxyService() {
     }
     ProxyService.prototype.init = function (apiServiceManager, server, config) {

@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var request = require("request");
 var _ = require("underscore");
-var NominatimSource = (function () {
+var NominatimSource = /** @class */ (function () {
     function NominatimSource(config) {
         this.connectionString = 'http://nominatim.openstreetmap.org/search?';
         this.name = 'nominatim (openstreetmap)';

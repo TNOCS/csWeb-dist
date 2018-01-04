@@ -21,7 +21,7 @@ var StringExt = require('../helpers/StringExt'); // to remove the BOM.
 var Winston = require("winston");
 var helpers = require("../helpers/Utils");
 var sift = require('sift');
-var FileStorage = (function (_super) {
+var FileStorage = /** @class */ (function (_super) {
     __extends(FileStorage, _super);
     function FileStorage(rootpath, watch, ignoreInitial) {
         if (watch === void 0) { watch = true; }

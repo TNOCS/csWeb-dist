@@ -62,6 +62,7 @@ declare module csComp.Services {
         top?: string;
         bottom?: string;
         padding?: string;
+        zIndex?: string;
         icon?: string;
         /** When true, hide the widget. */
         hideIfLeftPanel?: boolean;
@@ -1374,6 +1375,8 @@ declare module csComp.Services {
         preferedLanguage: string;
         /** List of search providers to use, e.g. bag, offline, bing */
         searchProviders: ISearchProvider[];
+        /** Directive to use for the featurepropspanel (default: featureprops) */
+        featurePropsDirective?: string;
         /**
          * Serialize the project to a JSON string.
          */
@@ -2139,6 +2142,29 @@ declare module Translations {
     }
 }
 
+declare module BaseMapList {
+    /**
+      * Module
+      */
+    var myModule: any;
+}
+
+declare module BaseMapList {
+    interface IBaseMapScope extends ng.IScope {
+        vm: BaseMapListCtrl;
+    }
+    class BaseMapListCtrl {
+        private $scope;
+        private $layerService;
+        private $mapService;
+        private $messageBusService;
+        private scope;
+        static $inject: string[];
+        constructor($scope: IBaseMapScope, $layerService: csComp.Services.LayerService, $mapService: csComp.Services.MapService, $messageBusService: csComp.Services.MessageBusService);
+        selectBaseLayer(key: any): void;
+    }
+}
+
 declare module Accessibility {
     /**
       * Module
@@ -2204,26 +2230,122 @@ declare module Accessibility {
     }
 }
 
-declare module BaseMapList {
+declare module Charts {
     /**
       * Module
       */
     var myModule: any;
+    interface IBarchartScope extends ng.IScope {
+        data: number[];
+        update: boolean;
+    }
 }
 
-declare module BaseMapList {
-    interface IBaseMapScope extends ng.IScope {
-        vm: BaseMapListCtrl;
+declare var bullet: any;
+declare module Charts {
+    /**
+      * Module
+      */
+    var myModule: any;
+    interface IBulletchartScope extends ng.IScope {
+        data: any;
+        update: boolean;
+        width: number;
+        height: number;
+        margin: number;
     }
-    class BaseMapListCtrl {
-        private $scope;
-        private $layerService;
-        private $mapService;
-        private $messageBusService;
-        private scope;
-        static $inject: string[];
-        constructor($scope: IBaseMapScope, $layerService: csComp.Services.LayerService, $mapService: csComp.Services.MapService, $messageBusService: csComp.Services.MessageBusService);
-        selectBaseLayer(key: any): void;
+}
+
+declare module Charts {
+    class ChartHelpers {
+        /**
+        * Returns the index and value of the maximum.
+        */
+        static max(arr: number[]): {
+            maxIndex: number;
+            max: number;
+        };
+        /**
+        * Returns the index and value of the minimum.
+        */
+        static min(arr: number[]): {
+            minIndex: number;
+            min: number;
+        };
+        /**
+        * Convert a timestamp to string.
+        */
+        static timestampToString(ts: number): any;
+        static timestampToTimeString(ts: number): any;
+        static windowResize(fun: any): void;
+        static initializeMargin(scope: any, attrs: any): void;
+        static getD3Selector(attrs: any, element: any): string;
+        static initializeLegendMargin(scope: any, attrs: any): void;
+        static defaultColor(): (d: any, i: any) => any;
+        static configureLegend(chart: any, scope: any, attrs: any): void;
+        static checkElementID(scope: any, attrs: any, element: any, chart: any, data: any): void;
+        static updateDimensions(scope: any, attrs: any, element: any, chart: any): void;
+    }
+}
+
+declare module Charts {
+    /**
+      * Module
+      */
+    var myModule: any;
+    interface ICircularchartScope extends ng.IScope {
+        value: number;
+        min: number;
+        max: number;
+        update: boolean;
+        color?: string;
+        titleClass: string;
+        title: string;
+        valueString: string;
+        valueClass: string;
+        animationDuration: number;
+        width?: number;
+        height?: number;
+        margin?: {
+            top: number;
+            right: number;
+            bottom: number;
+            left: number;
+        };
+    }
+}
+
+declare module Charts {
+    /**
+      * Module
+      */
+    var myModule: any;
+    interface ISingleValueScope extends ng.IScope {
+        value: number[];
+    }
+}
+
+declare module Charts {
+    /**
+      * Module
+      */
+    var myModule: any;
+    interface ISparklineScope extends ng.IScope {
+        timestamps: number[];
+        update: boolean;
+        sensor: number[];
+        property: string;
+        width?: number;
+        height?: number;
+        closed?: boolean;
+        smooth?: boolean;
+        margin?: {
+            top: number;
+            right: number;
+            bottom: number;
+            left: number;
+        };
+        showaxis?: boolean;
     }
 }
 
@@ -3880,125 +4002,6 @@ declare module Mobile {
         private availableLayers;
         static $inject: string[];
         constructor($scope: IMobileScope, $layerService: csComp.Services.LayerService, $messageBus: csComp.Services.MessageBusService, localStorageService: ng.localStorage.ILocalStorageService, geoService: csComp.Services.GeoService);
-    }
-}
-
-declare module Charts {
-    /**
-      * Module
-      */
-    var myModule: any;
-    interface IBarchartScope extends ng.IScope {
-        data: number[];
-        update: boolean;
-    }
-}
-
-declare var bullet: any;
-declare module Charts {
-    /**
-      * Module
-      */
-    var myModule: any;
-    interface IBulletchartScope extends ng.IScope {
-        data: any;
-        update: boolean;
-        width: number;
-        height: number;
-        margin: number;
-    }
-}
-
-declare module Charts {
-    class ChartHelpers {
-        /**
-        * Returns the index and value of the maximum.
-        */
-        static max(arr: number[]): {
-            maxIndex: number;
-            max: number;
-        };
-        /**
-        * Returns the index and value of the minimum.
-        */
-        static min(arr: number[]): {
-            minIndex: number;
-            min: number;
-        };
-        /**
-        * Convert a timestamp to string.
-        */
-        static timestampToString(ts: number): any;
-        static timestampToTimeString(ts: number): any;
-        static windowResize(fun: any): void;
-        static initializeMargin(scope: any, attrs: any): void;
-        static getD3Selector(attrs: any, element: any): string;
-        static initializeLegendMargin(scope: any, attrs: any): void;
-        static defaultColor(): (d: any, i: any) => any;
-        static configureLegend(chart: any, scope: any, attrs: any): void;
-        static checkElementID(scope: any, attrs: any, element: any, chart: any, data: any): void;
-        static updateDimensions(scope: any, attrs: any, element: any, chart: any): void;
-    }
-}
-
-declare module Charts {
-    /**
-      * Module
-      */
-    var myModule: any;
-    interface ICircularchartScope extends ng.IScope {
-        value: number;
-        min: number;
-        max: number;
-        update: boolean;
-        color?: string;
-        titleClass: string;
-        title: string;
-        valueString: string;
-        valueClass: string;
-        animationDuration: number;
-        width?: number;
-        height?: number;
-        margin?: {
-            top: number;
-            right: number;
-            bottom: number;
-            left: number;
-        };
-    }
-}
-
-declare module Charts {
-    /**
-      * Module
-      */
-    var myModule: any;
-    interface ISingleValueScope extends ng.IScope {
-        value: number[];
-    }
-}
-
-declare module Charts {
-    /**
-      * Module
-      */
-    var myModule: any;
-    interface ISparklineScope extends ng.IScope {
-        timestamps: number[];
-        update: boolean;
-        sensor: number[];
-        property: string;
-        width?: number;
-        height?: number;
-        closed?: boolean;
-        smooth?: boolean;
-        margin?: {
-            top: number;
-            right: number;
-            bottom: number;
-            left: number;
-        };
-        showaxis?: boolean;
     }
 }
 
@@ -6209,6 +6212,68 @@ declare module PropertyTypes {
     }
 }
 
+declare module Agenda {
+    /** Module */
+    var myModule: any;
+    interface IAgendaWidgetEditScope extends ng.IScope {
+        vm: AgendaWidgetEditCtrl;
+        data: AgendaData;
+    }
+    interface AgendaData {
+        selectedLayerId: string;
+    }
+    class AgendaWidgetEditCtrl {
+        private $scope;
+        private $http;
+        layerService: csComp.Services.LayerService;
+        private messageBusService;
+        private $timeout;
+        private widget;
+        private selectedLayer;
+        private layers;
+        static $inject: string[];
+        constructor($scope: IAgendaWidgetEditScope, $http: ng.IHttpService, layerService: csComp.Services.LayerService, messageBusService: csComp.Services.MessageBusService, $timeout: ng.ITimeoutService);
+        update(): void;
+    }
+}
+
+declare module Agenda {
+    /** Module */
+    var myModule: any;
+    interface IAgendaWidgetScope extends ng.IScope {
+        vm: AgendaWidgetCtrl;
+        data: AgendaData;
+    }
+    interface IAgendaItem {
+        title: string;
+        description: string;
+        startTime: Date;
+        endTime: Date;
+    }
+    /**
+     * The agenda widget does two things:
+     * - it shows the relations of the currently selected feature, if any, as an agenda.
+     * - it analyses a layer, if the 'agenda' tag is present in the ProjectLayer, for all events, i.e.
+     *   features with a start and end time, and displays them on the timeline.
+     */
+    class AgendaWidgetCtrl {
+        private $scope;
+        private $http;
+        layerService: csComp.Services.LayerService;
+        private messageBusService;
+        private $timeout;
+        private widget;
+        private selectedLayer;
+        private agenda;
+        private title;
+        static $inject: string[];
+        constructor($scope: IAgendaWidgetScope, $http: ng.IHttpService, layerService: csComp.Services.LayerService, messageBusService: csComp.Services.MessageBusService, $timeout: ng.ITimeoutService);
+        private clearAgenda();
+        private updateAgenda(feature);
+        private getProperty(feature, prop, defaultValue?);
+    }
+}
+
 declare module ButtonWidget {
     /** Module */
     var myModule: any;
@@ -6325,68 +6390,6 @@ declare module ButtonWidget {
         checkLegend(b: IButton): void;
         click(b: IButton): void;
         toggleFilter(le: csComp.Services.LegendEntry, group: string, prop: string): void;
-    }
-}
-
-declare module Agenda {
-    /** Module */
-    var myModule: any;
-    interface IAgendaWidgetEditScope extends ng.IScope {
-        vm: AgendaWidgetEditCtrl;
-        data: AgendaData;
-    }
-    interface AgendaData {
-        selectedLayerId: string;
-    }
-    class AgendaWidgetEditCtrl {
-        private $scope;
-        private $http;
-        layerService: csComp.Services.LayerService;
-        private messageBusService;
-        private $timeout;
-        private widget;
-        private selectedLayer;
-        private layers;
-        static $inject: string[];
-        constructor($scope: IAgendaWidgetEditScope, $http: ng.IHttpService, layerService: csComp.Services.LayerService, messageBusService: csComp.Services.MessageBusService, $timeout: ng.ITimeoutService);
-        update(): void;
-    }
-}
-
-declare module Agenda {
-    /** Module */
-    var myModule: any;
-    interface IAgendaWidgetScope extends ng.IScope {
-        vm: AgendaWidgetCtrl;
-        data: AgendaData;
-    }
-    interface IAgendaItem {
-        title: string;
-        description: string;
-        startTime: Date;
-        endTime: Date;
-    }
-    /**
-     * The agenda widget does two things:
-     * - it shows the relations of the currently selected feature, if any, as an agenda.
-     * - it analyses a layer, if the 'agenda' tag is present in the ProjectLayer, for all events, i.e.
-     *   features with a start and end time, and displays them on the timeline.
-     */
-    class AgendaWidgetCtrl {
-        private $scope;
-        private $http;
-        layerService: csComp.Services.LayerService;
-        private messageBusService;
-        private $timeout;
-        private widget;
-        private selectedLayer;
-        private agenda;
-        private title;
-        static $inject: string[];
-        constructor($scope: IAgendaWidgetScope, $http: ng.IHttpService, layerService: csComp.Services.LayerService, messageBusService: csComp.Services.MessageBusService, $timeout: ng.ITimeoutService);
-        private clearAgenda();
-        private updateAgenda(feature);
-        private getProperty(feature, prop, defaultValue?);
     }
 }
 

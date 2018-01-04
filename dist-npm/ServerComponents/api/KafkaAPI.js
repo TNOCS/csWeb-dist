@@ -24,13 +24,13 @@ var KafkaCompression;
     KafkaCompression[KafkaCompression["GZip"] = 1] = "GZip";
     KafkaCompression[KafkaCompression["snappy"] = 2] = "snappy";
 })(KafkaCompression = exports.KafkaCompression || (exports.KafkaCompression = {}));
-var KafkaOptions = (function () {
+var KafkaOptions = /** @class */ (function () {
     function KafkaOptions() {
     }
     return KafkaOptions;
 }());
 exports.KafkaOptions = KafkaOptions;
-var KafkaAPI = (function (_super) {
+var KafkaAPI = /** @class */ (function (_super) {
     __extends(KafkaAPI, _super);
     function KafkaAPI(server, port, kafkaOptions, layerPrefix, keyPrefix) {
         if (port === void 0) { port = 8082; }

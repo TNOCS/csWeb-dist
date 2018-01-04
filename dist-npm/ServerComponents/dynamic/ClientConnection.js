@@ -3,25 +3,25 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var io = require("socket.io");
 var Winston = require("winston");
 //GetDataSource: Function;
-var MsgSubscription = (function () {
+var MsgSubscription = /** @class */ (function () {
     function MsgSubscription() {
     }
     return MsgSubscription;
 }());
 exports.MsgSubscription = MsgSubscription;
-var ProjectSubscription = (function () {
+var ProjectSubscription = /** @class */ (function () {
     function ProjectSubscription() {
     }
     return ProjectSubscription;
 }());
 exports.ProjectSubscription = ProjectSubscription;
-var LayerSubscription = (function () {
+var LayerSubscription = /** @class */ (function () {
     function LayerSubscription() {
     }
     return LayerSubscription;
 }());
 exports.LayerSubscription = LayerSubscription;
-var KeySubscription = (function () {
+var KeySubscription = /** @class */ (function () {
     function KeySubscription() {
     }
     return KeySubscription;
@@ -30,7 +30,7 @@ exports.KeySubscription = KeySubscription;
 /**
  * object for sending project messages over socket.io channel
  */
-var ProjectUpdate = (function () {
+var ProjectUpdate = /** @class */ (function () {
     function ProjectUpdate() {
     }
     return ProjectUpdate;
@@ -39,7 +39,7 @@ exports.ProjectUpdate = ProjectUpdate;
 /**
  * object for sending layer messages over socket.io channel
  */
-var LayerUpdate = (function () {
+var LayerUpdate = /** @class */ (function () {
     function LayerUpdate() {
     }
     return LayerUpdate;
@@ -48,7 +48,7 @@ exports.LayerUpdate = LayerUpdate;
 /**
  * object for sending layer messages over socket.io channel
  */
-var KeyUpdate = (function () {
+var KeyUpdate = /** @class */ (function () {
     function KeyUpdate() {
     }
     return KeyUpdate;
@@ -82,7 +82,7 @@ var KeyUpdateAction;
     KeyUpdateAction[KeyUpdateAction["updateKey"] = 0] = "updateKey";
     KeyUpdateAction[KeyUpdateAction["deleteKey"] = 1] = "deleteKey"; // onlyused in imb api for now..
 })(KeyUpdateAction = exports.KeyUpdateAction || (exports.KeyUpdateAction = {}));
-var ClientMessage = (function () {
+var ClientMessage = /** @class */ (function () {
     function ClientMessage(action, data) {
         this.action = action;
         this.data = data;
@@ -90,7 +90,7 @@ var ClientMessage = (function () {
     return ClientMessage;
 }());
 exports.ClientMessage = ClientMessage;
-var WebClient = (function () {
+var WebClient = /** @class */ (function () {
     function WebClient(Client) {
         this.Client = Client;
         this.Subscriptions = {};
@@ -121,7 +121,7 @@ var WebClient = (function () {
     return WebClient;
 }());
 exports.WebClient = WebClient;
-var ConnectionManager = (function () {
+var ConnectionManager = /** @class */ (function () {
     function ConnectionManager(httpServer) {
         var _this = this;
         this.users = {};

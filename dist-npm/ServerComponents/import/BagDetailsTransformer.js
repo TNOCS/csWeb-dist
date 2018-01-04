@@ -3,7 +3,7 @@ var Utils = require("../helpers/Utils");
 var stream = require("stream");
 var BagDatabase = require("../database/BagDatabase");
 var IBagOptions = require("../database/IBagOptions");
-var BagDetailsTransformer = (function () {
+var BagDetailsTransformer = /** @class */ (function () {
     function BagDetailsTransformer(title) {
         this.title = title;
         this.type = 'BagDetailsTransformer';

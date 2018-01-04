@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 /**
  *  Handle returned when subscribing to a topic
  */
-var MessageBusHandle = (function () {
+var MessageBusHandle = /** @class */ (function () {
     function MessageBusHandle(topic, callback) {
         this.topic = topic;
         this.callback = callback;
@@ -15,7 +15,7 @@ exports.MessageBusHandle = MessageBusHandle;
  * Simple message bus service, used for subscribing and unsubsubscribing to topics.
  * @see {@link https://gist.github.com/floatingmonkey/3384419}
  */
-var MessageBusService = (function () {
+var MessageBusService = /** @class */ (function () {
     function MessageBusService() {
     }
     // constructor(public Connection: ClientConnection.ConnectionManager) {
@@ -58,8 +58,8 @@ var MessageBusService = (function () {
             }
         });
     };
+    MessageBusService.cache = {};
     return MessageBusService;
 }());
-MessageBusService.cache = {};
 exports.MessageBusService = MessageBusService;
 //# sourceMappingURL=MessageBus.js.map

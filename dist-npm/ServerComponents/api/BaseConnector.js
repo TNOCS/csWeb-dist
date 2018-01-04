@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var ApiManager = require("./ApiManager");
 var ApiResult = ApiManager.ApiResult;
-var BaseConnector = (function () {
+var BaseConnector = /** @class */ (function () {
     function BaseConnector() {
         this.receiveCopy = true;
     }

@@ -2,7 +2,7 @@
 var Utils = require("../helpers/Utils");
 var stream = require("stream");
 var request = require("request");
-var AggregateOpportunitiesToOrganisationTransformer = (function () {
+var AggregateOpportunitiesToOrganisationTransformer = /** @class */ (function () {
     function AggregateOpportunitiesToOrganisationTransformer(title) {
         this.title = title;
         this.type = 'AggregateOpportunitiesToOrganisationTransformer';

@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * A class representing the world state
  */
-var WorldState = (function () {
+var WorldState = /** @class */ (function () {
     function WorldState() {
         /**
          * Time the world state was created.

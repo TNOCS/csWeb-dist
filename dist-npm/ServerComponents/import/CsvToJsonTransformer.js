@@ -2,7 +2,7 @@
 var Utils = require("../helpers/Utils");
 var stream = require("stream");
 var splitStream = require('split');
-var CsvToJsonTransformer = (function () {
+var CsvToJsonTransformer = /** @class */ (function () {
     function CsvToJsonTransformer(title) {
         this.title = title;
         this.type = 'CsvToJsonTransformer';

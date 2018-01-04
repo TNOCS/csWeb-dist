@@ -19,7 +19,7 @@ var Winston = require("winston");
 /**
  * Contains the MongoDB operations.
  */
-var MongoDBStorage = (function (_super) {
+var MongoDBStorage = /** @class */ (function (_super) {
     __extends(MongoDBStorage, _super);
     function MongoDBStorage(server, port) {
         var _this = _super.call(this) || this;

@@ -3,7 +3,7 @@ var request = require("request");
 var xml2js = require("xml2js");
 var RssGeoJSON = require("../helpers/RssGeoJSON");
 /* Multiple storage engine supported, e.g. file system, mongo  */
-var RssService = (function () {
+var RssService = /** @class */ (function () {
     function RssService() {
     }
     RssService.prototype.init = function (apiServiceManager, server, config) {

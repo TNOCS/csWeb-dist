@@ -15,7 +15,7 @@ var fs = require("fs");
 var utils = require("../helpers/Utils");
 var ApiManager = require("../api/ApiManager");
 var Layer = ApiManager.Layer;
-var DynamicLayer = (function (_super) {
+var DynamicLayer = /** @class */ (function (_super) {
     __extends(DynamicLayer, _super);
     function DynamicLayer(manager, layerId, file, server, messageBus, connection) {
         var _this = _super.call(this) || this;

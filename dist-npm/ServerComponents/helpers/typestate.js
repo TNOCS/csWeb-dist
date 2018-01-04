@@ -14,7 +14,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * Transition grouping to faciliate fluent api
  * @class Transitions<T>
  */
-var Transitions = (function () {
+var Transitions = /** @class */ (function () {
     function Transitions(fsm) {
         this.fsm = fsm;
     }
@@ -48,7 +48,7 @@ exports.Transitions = Transitions;
  * Internal representation of a transition function
  * @class TransitionFunction<T>
  */
-var TransitionFunction = (function () {
+var TransitionFunction = /** @class */ (function () {
     // public events: {
     //     [trigger: number]: {
     //         callback: Function,
@@ -63,7 +63,7 @@ var TransitionFunction = (function () {
     return TransitionFunction;
 }());
 exports.TransitionFunction = TransitionFunction;
-var TransitionFunctions = (function (_super) {
+var TransitionFunctions = /** @class */ (function (_super) {
     __extends(TransitionFunctions, _super);
     function TransitionFunctions(fsm) {
         var _this = _super.call(this) || this;
@@ -86,7 +86,7 @@ exports.TransitionFunctions = TransitionFunctions;
  * with an enumeration.
  * @class FiniteStateMachine<T>
  */
-var FiniteStateMachine = (function () {
+var FiniteStateMachine = /** @class */ (function () {
     /**
      * @constructor
      * @param startState {T} Intial starting state

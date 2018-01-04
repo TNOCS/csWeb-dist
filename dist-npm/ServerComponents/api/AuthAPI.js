@@ -27,7 +27,7 @@ var dateExt = require('../helpers/DateUtils');
 /**
  * Authentication API based on Satellizer, which uses a JSON Web Token for access control.
  */
-var AuthAPI = (function () {
+var AuthAPI = /** @class */ (function () {
     function AuthAPI(manager, server, baseUrl) {
         if (baseUrl === void 0) { baseUrl = "/api"; }
         this.manager = manager;
@@ -768,7 +768,7 @@ var AuthAPI = (function () {
     return AuthAPI;
 }());
 exports.AuthAPI = AuthAPI;
-var User = (function (_super) {
+var User = /** @class */ (function (_super) {
     __extends(User, _super);
     function User(user) {
         var _this = _super.call(this) || this;

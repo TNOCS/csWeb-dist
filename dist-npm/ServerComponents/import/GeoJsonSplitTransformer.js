@@ -3,7 +3,7 @@ var Utils = require("../helpers/Utils");
 var stream = require("stream");
 var request = require("request");
 var turf = require('turf');
-var GeoJsonSplitTransformer = (function () {
+var GeoJsonSplitTransformer = /** @class */ (function () {
     function GeoJsonSplitTransformer(title) {
         this.title = title;
         this.type = 'GeoJsonSplitTransformer';

@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var Utils = require("../helpers/Utils");
 var RepeatEnum = require("./RepeatEnum");
-var BaseImport = (function () {
+var BaseImport = /** @class */ (function () {
     function BaseImport() {
         this.tags = {};
         this.transformers = [];

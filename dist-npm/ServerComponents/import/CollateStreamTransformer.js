@@ -1,7 +1,7 @@
 "use strict";
 var Utils = require("../helpers/Utils");
 var stream = require("stream");
-var CollateStreamTransformer = (function () {
+var CollateStreamTransformer = /** @class */ (function () {
     //create?(opt?: ITransformFactoryOptions[]): stream.Readable | stream.Writable | stream.Transform;
     function CollateStreamTransformer(title) {
         this.title = title;

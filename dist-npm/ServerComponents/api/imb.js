@@ -266,14 +266,14 @@ exports.TIMBConnection = function () {
         var rxEventID;
         var txEventID;
         switch (aCommand) {
-            case icEndSession:
+            case icEndSession:// end session
                 handleEndSession();
                 break;
-            case icUniqueClientID:
+            case icUniqueClientID:// unique client id
                 fUniqueClientID = aPayload.readUInt32LE(0);
                 fClientID = aPayload.readUInt32LE(4);
                 break;
-            case icEvent:
+            case icEvent:// event
                 txEventID = aPayload.readInt32LE(0);
                 if (txEventID < fEventTranslations.length) {
                     rxEventID = fEventTranslations[txEventID];

@@ -2,7 +2,7 @@
 var Utils = require("../helpers/Utils");
 var stream = require("stream");
 var splitStream = require('split');
-var KvKToJsonTransformer = (function () {
+var KvKToJsonTransformer = /** @class */ (function () {
     //create?(opt?: ITransformFactoryOptions[]): stream.Readable | stream.Writable | stream.Transform;
     function KvKToJsonTransformer(title) {
         this.title = title;

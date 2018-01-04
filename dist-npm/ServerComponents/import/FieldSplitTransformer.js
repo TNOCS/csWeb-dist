@@ -2,7 +2,7 @@
 var Utils = require("../helpers/Utils");
 var stream = require("stream");
 var turf = require('turf');
-var FieldSplitTransformer = (function () {
+var FieldSplitTransformer = /** @class */ (function () {
     function FieldSplitTransformer(title) {
         this.title = title;
         this.type = 'FieldSplitTransformer';

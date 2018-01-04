@@ -9,7 +9,7 @@ var Winston = require("winston");
 var _ = require("underscore");
 var compress = require('compression');
 var csweb = require("./index");
-var csServerOptions = (function () {
+var csServerOptions = /** @class */ (function () {
     function csServerOptions() {
         this.port = 3002;
         this.apiFolder = 'public/data/api';
@@ -21,7 +21,7 @@ var csServerOptions = (function () {
     return csServerOptions;
 }());
 exports.csServerOptions = csServerOptions;
-var csServer = (function () {
+var csServer = /** @class */ (function () {
     function csServer(dir, options) {
         if (options === void 0) { options = new csServerOptions(); }
         this.dir = dir;

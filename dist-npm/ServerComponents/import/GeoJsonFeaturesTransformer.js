@@ -1,7 +1,7 @@
 "use strict";
 var Utils = require("../helpers/Utils");
 var stream = require("stream");
-var GeoJsonFeaturesTransformer = (function () {
+var GeoJsonFeaturesTransformer = /** @class */ (function () {
     //create?(opt?: ITransformFactoryOptions[]): stream.Readable | stream.Writable | stream.Transform;
     function GeoJsonFeaturesTransformer(title) {
         this.title = title;

@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var chokidar = require('chokidar');
 var LayerDirectory;
 (function (LayerDirectory_1) {
-    var LayerDirectory = (function () {
+    var LayerDirectory = /** @class */ (function () {
         function LayerDirectory(server, connection) {
             this.server = server;
             this.connection = connection;

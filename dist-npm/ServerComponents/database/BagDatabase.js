@@ -4,7 +4,7 @@ var IBagOptions = require("../database/IBagOptions");
 /**
  * Export a connection to the BAG database.
  */
-var BagDatabase = (function () {
+var BagDatabase = /** @class */ (function () {
     function BagDatabase(config) {
         this.isInitialized = false;
         this.name = 'BagDatabase';

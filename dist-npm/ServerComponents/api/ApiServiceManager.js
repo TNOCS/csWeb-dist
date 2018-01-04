@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var Utils = require("../helpers/Utils");
-var ApiServiceManager = (function () {
+var ApiServiceManager = /** @class */ (function () {
     function ApiServiceManager(server, config) {
         this.server = server;
         this.config = config;

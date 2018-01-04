@@ -2,7 +2,7 @@
 var Utils = require("../helpers/Utils");
 var stream = require("stream");
 var turf = require('turf');
-var FieldFilterTransformer = (function () {
+var FieldFilterTransformer = /** @class */ (function () {
     function FieldFilterTransformer(title) {
         this.title = title;
         this.type = 'FieldFilterTransformer';

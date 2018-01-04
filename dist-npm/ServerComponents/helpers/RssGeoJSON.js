@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * Template for describing an RSS item, that contains coordinates, as GeoJSON.
  */
-var RssGeoJSON = (function () {
+var RssGeoJSON = /** @class */ (function () {
     function RssGeoJSON() {
         this.type = "FeatureCollection";
         this.features = [];
@@ -11,7 +11,7 @@ var RssGeoJSON = (function () {
     return RssGeoJSON;
 }());
 exports.RssGeoJSON = RssGeoJSON;
-var RssFeature = (function () {
+var RssFeature = /** @class */ (function () {
     function RssFeature(lat, lon) {
         this.type = "Feature";
         this.properties = {};

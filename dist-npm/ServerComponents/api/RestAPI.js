@@ -21,7 +21,7 @@ var BaseConnector = require("./BaseConnector");
 var ApiResult = ApiManager.ApiResult;
 var Winston = require("winston");
 var request = require("request");
-var RestAPI = (function (_super) {
+var RestAPI = /** @class */ (function (_super) {
     __extends(RestAPI, _super);
     function RestAPI(server, baseUrl) {
         if (baseUrl === void 0) { baseUrl = '/api'; }

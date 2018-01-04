@@ -40,7 +40,7 @@ var ApiResult;
 /**
  * Default result object for api calls
  */
-var CallbackResult = (function () {
+var CallbackResult = /** @class */ (function () {
     function CallbackResult() {
     }
     return CallbackResult;
@@ -63,7 +63,7 @@ var ChangeType;
     ChangeType[ChangeType["Update"] = 1] = "Update";
     ChangeType[ChangeType["Delete"] = 2] = "Delete";
 })(ChangeType = exports.ChangeType || (exports.ChangeType = {}));
-var Key = (function () {
+var Key = /** @class */ (function () {
     function Key() {
     }
     return Key;
@@ -72,19 +72,19 @@ exports.Key = Key;
 /**
  * Project definition
  */
-var Project = (function () {
+var Project = /** @class */ (function () {
     function Project() {
     }
     return Project;
 }());
 exports.Project = Project;
-var Group = (function () {
+var Group = /** @class */ (function () {
     function Group() {
     }
     return Group;
 }());
 exports.Group = Group;
-var ApiKeySubscription = (function () {
+var ApiKeySubscription = /** @class */ (function () {
     function ApiKeySubscription() {
     }
     return ApiKeySubscription;
@@ -93,7 +93,7 @@ exports.ApiKeySubscription = ApiKeySubscription;
 /**
  * Geojson Layer definition
  */
-var Layer = (function () {
+var Layer = /** @class */ (function () {
     function Layer() {
         this.features = [];
     }
@@ -103,7 +103,7 @@ exports.Layer = Layer;
 /**
  * Geojson ProjectId definition
  */
-var ProjectId = (function () {
+var ProjectId = /** @class */ (function () {
     function ProjectId() {
     }
     return ProjectId;
@@ -112,7 +112,7 @@ exports.ProjectId = ProjectId;
 /**
  * Geojson geometry definition
  */
-var Geometry = (function () {
+var Geometry = /** @class */ (function () {
     function Geometry() {
     }
     return Geometry;
@@ -121,7 +121,7 @@ exports.Geometry = Geometry;
 /**
  * Geojson feature definition
  */
-var Feature = (function () {
+var Feature = /** @class */ (function () {
     function Feature() {
         this.type = 'Feature';
     }
@@ -131,31 +131,31 @@ exports.Feature = Feature;
 /**
  * Geojson property definition
  */
-var Property = (function () {
+var Property = /** @class */ (function () {
     function Property() {
     }
     return Property;
 }());
 exports.Property = Property;
-var Log = (function () {
+var Log = /** @class */ (function () {
     function Log() {
     }
     return Log;
 }());
 exports.Log = Log;
-var FeatureType = (function () {
+var FeatureType = /** @class */ (function () {
     function FeatureType() {
     }
     return FeatureType;
 }());
 exports.FeatureType = FeatureType;
-var PropertyType = (function () {
+var PropertyType = /** @class */ (function () {
     function PropertyType() {
     }
     return PropertyType;
 }());
 exports.PropertyType = PropertyType;
-var ResourceFile = (function () {
+var ResourceFile = /** @class */ (function () {
     function ResourceFile() {
     }
     return ResourceFile;
@@ -173,7 +173,7 @@ exports.ResourceFile = ResourceFile;
  * ProjectChanged event when a project is changed (CRUD).
  * FeaturesChanged event when an array of features is changed (CRUD).
  */
-var ApiManager = (function (_super) {
+var ApiManager = /** @class */ (function (_super) {
     __extends(ApiManager, _super);
     /** Create a new client, optionally specifying whether it should act as client. */
     function ApiManager(namespace, name, isClient, options) {

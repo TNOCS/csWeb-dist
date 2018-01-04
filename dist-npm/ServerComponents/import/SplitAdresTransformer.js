@@ -1,7 +1,7 @@
 "use strict";
 var Utils = require("../helpers/Utils");
 var stream = require("stream");
-var SplitAdresTransformer = (function () {
+var SplitAdresTransformer = /** @class */ (function () {
     function SplitAdresTransformer(title) {
         this.title = title;
         this.type = 'SplitAdresTransformer';
