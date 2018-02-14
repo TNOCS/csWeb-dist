@@ -2142,29 +2142,6 @@ declare module Translations {
     }
 }
 
-declare module BaseMapList {
-    /**
-      * Module
-      */
-    var myModule: any;
-}
-
-declare module BaseMapList {
-    interface IBaseMapScope extends ng.IScope {
-        vm: BaseMapListCtrl;
-    }
-    class BaseMapListCtrl {
-        private $scope;
-        private $layerService;
-        private $mapService;
-        private $messageBusService;
-        private scope;
-        static $inject: string[];
-        constructor($scope: IBaseMapScope, $layerService: csComp.Services.LayerService, $mapService: csComp.Services.MapService, $messageBusService: csComp.Services.MessageBusService);
-        selectBaseLayer(key: any): void;
-    }
-}
-
 declare module Accessibility {
     /**
       * Module
@@ -2175,6 +2152,7 @@ declare module Accessibility {
 import IFeature = csComp.Services.IFeature;
 import IPropertyType = csComp.Services.IPropertyType;
 import IActionOption = csComp.Services.IActionOption;
+import GeoExtensions = csComp.Helpers.GeoExtensions;
 declare module Accessibility {
     class AccessibilityModel implements csComp.Services.IActionService {
         private layerService;
@@ -2227,6 +2205,29 @@ declare module Accessibility {
         parseUrl(): void;
         private addCutoffTime();
         private removeCutoffTime(index);
+    }
+}
+
+declare module BaseMapList {
+    /**
+      * Module
+      */
+    var myModule: any;
+}
+
+declare module BaseMapList {
+    interface IBaseMapScope extends ng.IScope {
+        vm: BaseMapListCtrl;
+    }
+    class BaseMapListCtrl {
+        private $scope;
+        private $layerService;
+        private $mapService;
+        private $messageBusService;
+        private scope;
+        static $inject: string[];
+        constructor($scope: IBaseMapScope, $layerService: csComp.Services.LayerService, $mapService: csComp.Services.MapService, $messageBusService: csComp.Services.MessageBusService);
+        selectBaseLayer(key: any): void;
     }
 }
 
@@ -6212,68 +6213,6 @@ declare module PropertyTypes {
     }
 }
 
-declare module Agenda {
-    /** Module */
-    var myModule: any;
-    interface IAgendaWidgetEditScope extends ng.IScope {
-        vm: AgendaWidgetEditCtrl;
-        data: AgendaData;
-    }
-    interface AgendaData {
-        selectedLayerId: string;
-    }
-    class AgendaWidgetEditCtrl {
-        private $scope;
-        private $http;
-        layerService: csComp.Services.LayerService;
-        private messageBusService;
-        private $timeout;
-        private widget;
-        private selectedLayer;
-        private layers;
-        static $inject: string[];
-        constructor($scope: IAgendaWidgetEditScope, $http: ng.IHttpService, layerService: csComp.Services.LayerService, messageBusService: csComp.Services.MessageBusService, $timeout: ng.ITimeoutService);
-        update(): void;
-    }
-}
-
-declare module Agenda {
-    /** Module */
-    var myModule: any;
-    interface IAgendaWidgetScope extends ng.IScope {
-        vm: AgendaWidgetCtrl;
-        data: AgendaData;
-    }
-    interface IAgendaItem {
-        title: string;
-        description: string;
-        startTime: Date;
-        endTime: Date;
-    }
-    /**
-     * The agenda widget does two things:
-     * - it shows the relations of the currently selected feature, if any, as an agenda.
-     * - it analyses a layer, if the 'agenda' tag is present in the ProjectLayer, for all events, i.e.
-     *   features with a start and end time, and displays them on the timeline.
-     */
-    class AgendaWidgetCtrl {
-        private $scope;
-        private $http;
-        layerService: csComp.Services.LayerService;
-        private messageBusService;
-        private $timeout;
-        private widget;
-        private selectedLayer;
-        private agenda;
-        private title;
-        static $inject: string[];
-        constructor($scope: IAgendaWidgetScope, $http: ng.IHttpService, layerService: csComp.Services.LayerService, messageBusService: csComp.Services.MessageBusService, $timeout: ng.ITimeoutService);
-        private clearAgenda();
-        private updateAgenda(feature);
-        private getProperty(feature, prop, defaultValue?);
-    }
-}
-
 declare module ButtonWidget {
     /** Module */
     var myModule: any;
@@ -6390,6 +6329,68 @@ declare module ButtonWidget {
         checkLegend(b: IButton): void;
         click(b: IButton): void;
         toggleFilter(le: csComp.Services.LegendEntry, group: string, prop: string): void;
+    }
+}
+
+declare module Agenda {
+    /** Module */
+    var myModule: any;
+    interface IAgendaWidgetEditScope extends ng.IScope {
+        vm: AgendaWidgetEditCtrl;
+        data: AgendaData;
+    }
+    interface AgendaData {
+        selectedLayerId: string;
+    }
+    class AgendaWidgetEditCtrl {
+        private $scope;
+        private $http;
+        layerService: csComp.Services.LayerService;
+        private messageBusService;
+        private $timeout;
+        private widget;
+        private selectedLayer;
+        private layers;
+        static $inject: string[];
+        constructor($scope: IAgendaWidgetEditScope, $http: ng.IHttpService, layerService: csComp.Services.LayerService, messageBusService: csComp.Services.MessageBusService, $timeout: ng.ITimeoutService);
+        update(): void;
+    }
+}
+
+declare module Agenda {
+    /** Module */
+    var myModule: any;
+    interface IAgendaWidgetScope extends ng.IScope {
+        vm: AgendaWidgetCtrl;
+        data: AgendaData;
+    }
+    interface IAgendaItem {
+        title: string;
+        description: string;
+        startTime: Date;
+        endTime: Date;
+    }
+    /**
+     * The agenda widget does two things:
+     * - it shows the relations of the currently selected feature, if any, as an agenda.
+     * - it analyses a layer, if the 'agenda' tag is present in the ProjectLayer, for all events, i.e.
+     *   features with a start and end time, and displays them on the timeline.
+     */
+    class AgendaWidgetCtrl {
+        private $scope;
+        private $http;
+        layerService: csComp.Services.LayerService;
+        private messageBusService;
+        private $timeout;
+        private widget;
+        private selectedLayer;
+        private agenda;
+        private title;
+        static $inject: string[];
+        constructor($scope: IAgendaWidgetScope, $http: ng.IHttpService, layerService: csComp.Services.LayerService, messageBusService: csComp.Services.MessageBusService, $timeout: ng.ITimeoutService);
+        private clearAgenda();
+        private updateAgenda(feature);
+        private getProperty(feature, prop, defaultValue?);
     }
 }
 
@@ -8719,6 +8720,12 @@ declare module csComp.Services {
         constructor(service: csComp.Services.LayerService, $http: ng.IHttpService, $storage: ng.localStorage.ILocalStorageService);
         addLayer(layer: csComp.Services.ProjectLayer, callback: (layer: csComp.Services.ProjectLayer) => void): void;
         private continueInit(defaultValue, layer, callback);
+    }
+}
+
+declare module 'leaflet' {
+    class Terminator extends L.Polygon {
+        constructor(options?: Object);
     }
 }
 

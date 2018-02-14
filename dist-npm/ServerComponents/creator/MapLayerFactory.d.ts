@@ -112,6 +112,7 @@ export declare class MapLayerFactory {
      */
     private convertTimebasedPropertyData(template);
     private createPolygonFeature(templateName, templateKey, par1, inclTemplProps, features, properties, propertyTypes, sensors, callback);
+    private enrichFeature(featureJson, f, p, inclTemplProps, templateKey);
     private createInternationalFeature(queryString, features, properties, sensors, callback);
     private createLatLonFeature(latString, lonString, features, properties, sensors, callback);
     /**

@@ -14,6 +14,7 @@ export interface Media {
 export declare class FileStorage extends BaseConnector.BaseConnector {
     rootpath: string;
     private ignoreInitial;
+    private layerBaseUrl;
     manager: ApiManager.ApiManager;
     layers: string[];
     projects: {
@@ -35,7 +36,7 @@ export declare class FileStorage extends BaseConnector.BaseConnector {
     staticProjectsPath: string;
     resourcesPath: string;
     private layerDebounceFunctions;
-    constructor(rootpath: string, watch?: boolean, ignoreInitial?: boolean);
+    constructor(rootpath: string, watch?: boolean, ignoreInitial?: boolean, layerBaseUrl?: string);
     watchLayersFolder(): void;
     private getDirectories(srcpath);
     watchProjectsFolder(): void;

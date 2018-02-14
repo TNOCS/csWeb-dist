@@ -89,7 +89,9 @@ var csServer = /** @class */ (function () {
         //         next();
         //     });
         // }
-        this.config.add('server', 'http://localhost:' + this.options.port);
+        if (!this.config.containsKey('server')) {
+            this.config.add('server', 'http://localhost:' + this.options.port);
+        }
         if (this.options.swagger === true)
             this.server.use('/swagger', express.static(path.join(this.dir, 'swagger')));
         this.server.use(express.static(path.resolve(this.dir, 'public')));
@@ -116,10 +118,10 @@ var csServer = /** @class */ (function () {
             /*
              * API platform
              */
-            _this.api = new csweb.ApiManager('cs', 'cs');
+            _this.api = new csweb.ApiManager('cs', 'cs', false, { server: 'http://www.zorgopdekaart.nl/zelfkaartenmaken' });
             _this.api.init(path.resolve(_this.dir, _this.apiFolder), function () {
                 var connectors = [
-                    { key: 'rest', s: new csweb.RestAPI(_this.server), options: {} },
+                    { key: 'rest', s: new csweb.RestAPI(_this.server, _this.config.containsKey('baseUrl') ? _this.config['baseUrl'] : null), options: {} },
                     { key: 'file', s: fs, options: {} },
                     { key: 'socketio', s: new csweb.SocketIOAPI(_this.cm), options: {} }
                 ];

@@ -24,7 +24,7 @@ export interface StartOptions {
 }
 export declare class csServer {
     dir: string;
-    options: csServerOptions;
+    options: csweb.csServerOptions;
     server: core.Express;
     cm: csweb.ConnectionManager;
     messageBus: csweb.MessageBusService;
@@ -32,7 +32,7 @@ export declare class csServer {
     config: csweb.ConfigurationService;
     api: csweb.ApiManager;
     private apiFolder;
-    constructor(dir: string, options?: csServerOptions);
+    constructor(dir: string, options?: csweb.csServerOptions);
     start(started: Function, options?: StartOptions): void;
     private gracefulShutdown();
 }

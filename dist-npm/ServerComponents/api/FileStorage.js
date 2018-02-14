@@ -23,12 +23,14 @@ var helpers = require("../helpers/Utils");
 var sift = require('sift');
 var FileStorage = /** @class */ (function (_super) {
     __extends(FileStorage, _super);
-    function FileStorage(rootpath, watch, ignoreInitial) {
+    function FileStorage(rootpath, watch, ignoreInitial, layerBaseUrl) {
         if (watch === void 0) { watch = true; }
         if (ignoreInitial === void 0) { ignoreInitial = false; }
+        if (layerBaseUrl === void 0) { layerBaseUrl = '/zelfkaartenmaken/api/layers'; }
         var _this = _super.call(this) || this;
         _this.rootpath = rootpath;
         _this.ignoreInitial = ignoreInitial;
+        _this.layerBaseUrl = layerBaseUrl;
         _this.layers = [];
         _this.projects = {};
         _this.keys = {};
@@ -249,7 +251,7 @@ var FileStorage = /** @class */ (function (_super) {
         if (res && !_.isEmpty(res)) {
             fs.outputFile(fn, JSON.stringify(res, null, 2), function (error) {
                 if (error) {
-                    Winston.error('filestore: error writing resourcefile : ' + fn);
+                    Winston.error("filestore: error writing resourcefile: " + fn + " " + error.message);
                 }
                 else {
                     Winston.info('filestore: file saved : ' + fn);
@@ -266,7 +268,7 @@ var FileStorage = /** @class */ (function (_super) {
         Winston.info('writing project file : ' + fn);
         fs.writeFile(fn, JSON.stringify(project, null, 2), function (error) {
             if (error) {
-                Winston.info('error writing project file : ' + fn);
+                Winston.info("filestore: error writing project file: " + fn + " " + error.message);
             }
             else {
                 Winston.info('filestore: file saved : ' + fn);
@@ -397,7 +399,7 @@ var FileStorage = /** @class */ (function (_super) {
                 //layer.title = id;
                 layer.storage = _this.id;
                 //layer.type = "geojson";
-                layer.url = '/api/layers/' + id;
+                layer.url = _this.layerBaseUrl + '/' + id;
                 (layer.storage) ? Winston.debug('storage ' + layer.storage) : Winston.warn("No storage found for " + layer);
                 _this.manager && _this.manager.addUpdateLayer(layer, {}, function () { });
             }

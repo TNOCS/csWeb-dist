@@ -5,10 +5,12 @@ var proj4 = require("proj4");
 var IBagOptions = require("../database/IBagOptions");
 var Api = require("../api/ApiManager");
 var Utils = require("../helpers/Utils");
+var StringExt = require('../helpers/StringExt');
 var async = require("async");
 var winston = require("winston");
 var path = require("path");
 var _ = require("underscore");
+var MIN_STRING_EQUALITY_SCORE = 0.60;
 /** A factory class to create new map layers based on input, e.g. from Excel */
 var MapLayerFactory = /** @class */ (function () {
     // constructor(private bag: LocalBag, private messageBus: MessageBus.MessageBusService) {
@@ -174,10 +176,11 @@ var MapLayerFactory = /** @class */ (function () {
             fitToMap: data.fitToMap,
             defaultFeatureType: data.defaultFeatureType,
             typeUrl: 'data/api/resourceTypes/' + data.reference + '.json',
-            url: 'api/layers/' + data.reference,
+            url: 'zelfkaartenmaken/api/layers/' + data.reference,
             opacity: data.opacity,
             dynamicResource: true
         });
+        layer.url = 'zelfkaartenmaken/api/layers/' + data.reference;
         layer.features = data.geojson.features;
         layer.timestamps = data.geojson.timestamps;
         var group = this.apiManager.getGroupDefinition({ title: data.group, id: data.group, clusterLevel: data.clusterLevel });
@@ -796,36 +799,58 @@ var MapLayerFactory = /** @class */ (function () {
         }
         var fts = templateJson.features;
         properties.forEach(function (p, index) {
+            var featureJson = { type: 'Feature', properties: null };
+            if (sensors.length > 0) {
+                featureJson['sensors'] = sensors[index];
+            }
             var foundFeature = fts.some(function (f) {
-                var featureJson = { type: 'Feature', properties: null };
-                if (sensors.length > 0) {
-                    featureJson['sensors'] = sensors[index];
-                }
                 if (f.properties[templateKey] == p[par1]) {
-                    // console.log(p[par1]);
-                    if (inclTemplProps) {
-                        for (var key in f.properties) {
-                            if (!p.hasOwnProperty(key) && key !== templateKey) {
-                                p[key] = f.properties[key];
-                            }
-                        }
-                    }
-                    featureJson.properties = p;
-                    features.push(featureJson);
+                    _this.enrichFeature(featureJson, f, p, inclTemplProps, templateKey);
                     return true;
                 }
             });
             if (!foundFeature) {
-                console.log('Warning: Could not find: ' + p[par1]);
-                _this.featuresNotFound["" + p[par1]] = { zip: "" + p[par1], number: '' };
-                var featureJson = { type: 'Feature', properties: p }; // Also add feature if a geometry was not found
-                features.push(featureJson);
+                console.log('Warning: Could not find: ' + p[par1] + '. Trying again...');
+                var cleanChars_1 = new RegExp('[^a-zA-Z0-9 -]');
+                var featureScores_1 = [];
+                var cleanMatchProp_1 = p[par1].replace(cleanChars_1, '');
+                fts.forEach(function (f) {
+                    var text1 = decodeURIComponent(f.properties[templateKey]); // Try to convert to utf8
+                    var text2 = f.properties[templateKey].toString();
+                    var score = _.max([cleanMatchProp_1.score(text1.replace(cleanChars_1, ''), 0.8), cleanMatchProp_1.score(text2.replace(cleanChars_1, ''), 0.8)]);
+                    featureScores_1.push({ f: f, score: score });
+                });
+                var maxScore = _.reduce(featureScores_1, function (memo, val) {
+                    return (val.score > memo.score) ? { f: val.f, score: val.score } : memo;
+                }, { score: 0.0, f: null });
+                if (maxScore.score >= MIN_STRING_EQUALITY_SCORE) {
+                    console.log("Did find " + p[par1] + " for " + maxScore.f.properties[templateKey] + " (Score " + maxScore.score + ")");
+                    p[par1] = maxScore.f.properties[templateKey]; // Update the property to the exact same key
+                    _this.enrichFeature(featureJson, maxScore.f, p, inclTemplProps, templateKey);
+                }
+                else {
+                    console.log('Warning: Could not find: ' + p[par1] + '.');
+                    _this.featuresNotFound["" + p[par1]] = { zip: "" + p[par1], number: '' };
+                    featureJson.properties = p; // Also add feature if a geometry was not found
+                }
             }
+            features.push(featureJson);
             if (index % 25 === 0) {
                 console.log("Parsed feature " + (index + 1) + ": " + p[par1]);
             }
         });
         callback();
+    };
+    MapLayerFactory.prototype.enrichFeature = function (featureJson, f, p, inclTemplProps, templateKey) {
+        if (inclTemplProps) {
+            for (var key in f.properties) {
+                if (!p.hasOwnProperty(key) && key !== templateKey) {
+                    p[key] = f.properties[key];
+                }
+            }
+        }
+        featureJson.properties = p;
+        return featureJson;
     };
     MapLayerFactory.prototype.createInternationalFeature = function (queryString, features, properties, sensors, callback) {
         var _this = this;

@@ -225,6 +225,7 @@ var ApiManager = /** @class */ (function (_super) {
         _this.saveLayersDelay = _.debounce(function (layer) {
             _this.saveLayerConfig();
         }, 1000);
+        console.log("Construction apiManager with options: " + JSON.stringify(_this.options, null, 2));
         _this.setMaxListeners(25);
         _this.namespace = namespace;
         _this.name = name;
