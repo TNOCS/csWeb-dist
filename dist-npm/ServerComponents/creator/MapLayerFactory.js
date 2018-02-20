@@ -176,11 +176,10 @@ var MapLayerFactory = /** @class */ (function () {
             fitToMap: data.fitToMap,
             defaultFeatureType: data.defaultFeatureType,
             typeUrl: 'data/api/resourceTypes/' + data.reference + '.json',
-            url: 'zelfkaartenmaken/api/layers/' + data.reference,
+            url: 'api/layers/' + data.reference,
             opacity: data.opacity,
             dynamicResource: true
         });
-        layer.url = 'zelfkaartenmaken/api/layers/' + data.reference;
         layer.features = data.geojson.features;
         layer.timestamps = data.geojson.timestamps;
         var group = this.apiManager.getGroupDefinition({ title: data.group, id: data.group, clusterLevel: data.clusterLevel });

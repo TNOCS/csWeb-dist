@@ -28,7 +28,6 @@ var RestAPI = /** @class */ (function (_super) {
         var _this = _super.call(this) || this;
         _this.server = server;
         _this.baseUrl = baseUrl;
-        Winston.info("Constructing restApi with baseUrl " + baseUrl);
         _this.isInterface = true;
         _this.resourceUrl = '/resources/';
         _this.layersUrl = '/layers/';
@@ -38,7 +37,6 @@ var RestAPI = /** @class */ (function (_super) {
         _this.projectsUrl = '/projects/';
         _this.proxyUrl = '/proxy';
         _this.tilesUrl = '/tiles/';
-        Winston.info("Constructed restApi with baseUrl " + baseUrl);
         return _this;
     }
     RestAPI.prototype.getResources = function (req, res) {

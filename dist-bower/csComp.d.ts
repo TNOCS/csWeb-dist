@@ -2152,7 +2152,6 @@ declare module Accessibility {
 import IFeature = csComp.Services.IFeature;
 import IPropertyType = csComp.Services.IPropertyType;
 import IActionOption = csComp.Services.IActionOption;
-import GeoExtensions = csComp.Helpers.GeoExtensions;
 declare module Accessibility {
     class AccessibilityModel implements csComp.Services.IActionService {
         private layerService;
@@ -5302,7 +5301,7 @@ declare module csComp.Services {
         /** remove feature */
         removeFeature(feature: IFeature, save?: boolean): void;
         /** remove feature batch */
-        removeFeatureBatch(featureIds: string[], layer: IProjectLayer): void;
+        removeFeatureBatch(featureIds: string[], layer: IProjectLayer, save?: boolean): void;
         /** remove feature batch */
         removeAllFeatures(): void;
         /**
@@ -5537,6 +5536,7 @@ declare module csComp.Services {
         updateLayer = 3,
         deleteLayer = 4,
         addUpdateFeatureBatch = 5,
+        deleteFeatureBatch = 6,
     }
     /** Type of change in an ApiEvent */
     enum ChangeType {

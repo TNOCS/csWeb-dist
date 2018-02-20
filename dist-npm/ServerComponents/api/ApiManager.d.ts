@@ -88,6 +88,7 @@ export interface IConnector {
     getFeature(layerId: string, featureId: string, meta: ApiMeta, callback: Function): any;
     updateFeature(layerId: string, feature: any, useLog: boolean, meta: ApiMeta, callback: Function): any;
     deleteFeature(layerId: string, featureId: string, meta: ApiMeta, callback: Function): any;
+    deleteFeatureBatch(layerId: string, featureIds: string[], useLog: boolean, meta: ApiMeta, callback: Function): any;
     addUpdateFeatureBatch(layerId: string, features: any[], useLog: boolean, meta: ApiMeta, callback: Function): any;
     addLog(layerId: string, featureId: string, property: string, log: Log, meta: ApiMeta, callback: Function): any;
     getLog(layerId: string, featureId: string, meta: ApiMeta, callback: Function): any;
@@ -497,6 +498,10 @@ export declare class ApiManager extends events.EventEmitter {
      *
      */
     addUpdateFeatureBatch(layerId: string, features: IChangeEvent[], meta: ApiMeta, callback: Function): void;
+    /** Similar to deleteFeature, but with an array of updated features instead of one feature.
+     *
+     */
+    deleteFeatureBatch(layerId: string, featureIds: string[], useLog: boolean, meta: ApiMeta, callback: Function): void;
     deleteFeature(layerId: string, featureId: string, meta: ApiMeta, callback: Function): void;
     addLog(layerId: string, featureId: string, property: string, log: Log, meta: ApiMeta, callback: Function): void;
     initLayer(layer: Layer): void;

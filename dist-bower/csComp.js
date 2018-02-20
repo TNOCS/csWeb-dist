@@ -2545,8 +2545,7 @@ var csComp;
                 bb.split(',').forEach(function (p) {
                     pts.push(+p);
                 });
-                var bnds = new L.LatLngBounds(new L.LatLng(pts[1], pts[0]), new L.LatLng(pts[3], pts[2]));
-                return bnds;
+                return new L.LatLngBounds([pts[1], pts[0]], [pts[3], pts[2]]);
             };
             /** Start slippy map computation */
             /** Convert longitude to tile coordinate. */
@@ -5279,7 +5278,6 @@ var Accessibility;
     ]);
 })(Accessibility || (Accessibility = {}));
 //# sourceMappingURL=Accessibility.js.map
-var GeoExtensions = csComp.Helpers.GeoExtensions;
 var Accessibility;
 (function (Accessibility) {
     var AccessibilityModel = /** @class */ (function () {
@@ -5443,9 +5441,9 @@ var Accessibility;
             this.urlParameters['mode'] = this.transportMode;
             this.urlParameters['time'] = encodeURIComponent(this.time);
             if (this.walkSpeedKm)
-                this.urlParameters['walkSpeed'] = GeoExtensions.convertKmToMile(this.walkSpeedKm);
+                this.urlParameters['walkSpeed'] = csComp.Helpers.GeoExtensions.convertKmToMile(this.walkSpeedKm);
             if (this.bikeSpeedKm)
-                this.urlParameters['bikeSpeed'] = GeoExtensions.convertKmToMile(this.bikeSpeedKm);
+                this.urlParameters['bikeSpeed'] = csComp.Helpers.GeoExtensions.convertKmToMile(this.bikeSpeedKm);
             var url = this.urlAddress + '?';
             for (var key in this.urlParameters) {
                 if (this.urlParameters.hasOwnProperty(key) && key !== 'cutoffSec') {
@@ -5485,9 +5483,9 @@ var Accessibility;
             this.urlParameters['date'] = (d.getMonth() + 1) + '-' + d.getDate() + '-' + d.getFullYear();
             this.transportMode = this.urlParameters['mode'];
             if (this.urlParameters.hasOwnProperty('walkSpeed'))
-                this.walkSpeedKm = +GeoExtensions.convertMileToKm(this.urlParameters['walkSpeed']).toFixed(2);
+                this.walkSpeedKm = +csComp.Helpers.GeoExtensions.convertMileToKm(this.urlParameters['walkSpeed']).toFixed(2);
             if (this.urlParameters.hasOwnProperty('bikeSpeed'))
-                this.bikeSpeedKm = +GeoExtensions.convertMileToKm(this.urlParameters['bikeSpeed']).toFixed(2);
+                this.bikeSpeedKm = +csComp.Helpers.GeoExtensions.convertMileToKm(this.urlParameters['bikeSpeed']).toFixed(2);
             if (this.$scope.$root.$$phase !== '$apply' && this.$scope.$root.$$phase !== '$digest') {
                 this.$scope.$apply();
             }
@@ -5595,6 +5593,44 @@ var BaseMapList;
     BaseMapList.BaseMapListCtrl = BaseMapListCtrl;
 })(BaseMapList || (BaseMapList = {}));
 //# sourceMappingURL=BaseMapListCtrl.js.map
+var Directives;
+(function (Directives) {
+    var Clock;
+    (function (Clock) {
+        /**
+         * Config
+         */
+        var moduleName = "csComp";
+        try {
+            Clock.myModule = angular.module(moduleName);
+        }
+        catch (err) {
+            // named module does not exist, so create one
+            Clock.myModule = angular.module(moduleName, []);
+        }
+        /**
+          * Directive to show the time.
+          */
+        Clock.myModule.directive('clock', ['dateFilter', function (dateFilter) {
+                return {
+                    restrict: 'E',
+                    scope: {
+                        time: '@',
+                        format: '@'
+                    },
+                    link: function (scope, element, attrs) {
+                        function updateTime() {
+                            element.html(dateFilter(scope.time, scope.format));
+                        }
+                        scope.$watch('time', function (value) {
+                            updateTime();
+                        });
+                    }
+                };
+            }]);
+    })(Clock = Directives.Clock || (Directives.Clock = {}));
+})(Directives || (Directives = {}));
+//# sourceMappingURL=Clock.js.map
 var Charts;
 (function (Charts) {
     'use strict';
@@ -6354,44 +6390,6 @@ var Charts;
         }]);
 })(Charts || (Charts = {}));
 //# sourceMappingURL=SparklineChart.js.map
-var Directives;
-(function (Directives) {
-    var Clock;
-    (function (Clock) {
-        /**
-         * Config
-         */
-        var moduleName = "csComp";
-        try {
-            Clock.myModule = angular.module(moduleName);
-        }
-        catch (err) {
-            // named module does not exist, so create one
-            Clock.myModule = angular.module(moduleName, []);
-        }
-        /**
-          * Directive to show the time.
-          */
-        Clock.myModule.directive('clock', ['dateFilter', function (dateFilter) {
-                return {
-                    restrict: 'E',
-                    scope: {
-                        time: '@',
-                        format: '@'
-                    },
-                    link: function (scope, element, attrs) {
-                        function updateTime() {
-                            element.html(dateFilter(scope.time, scope.format));
-                        }
-                        scope.$watch('time', function (value) {
-                            updateTime();
-                        });
-                    }
-                };
-            }]);
-    })(Clock = Directives.Clock || (Directives.Clock = {}));
-})(Directives || (Directives = {}));
-//# sourceMappingURL=Clock.js.map
 var Helpers;
 (function (Helpers) {
     var ContextMenu;
@@ -8653,836 +8651,6 @@ var FilterList;
     FilterList.FilterListCtrl = FilterListCtrl;
 })(FilterList || (FilterList = {}));
 //# sourceMappingURL=FilterListCtrl.js.map
-var IdvEdit;
-(function (IdvEdit) {
-    /**
-      * Config
-      */
-    var moduleName = 'csComp';
-    try {
-        IdvEdit.myModule = angular.module(moduleName);
-    }
-    catch (err) {
-        // named module does not exist, so create one
-        IdvEdit.myModule = angular.module(moduleName, []);
-    }
-    var IdvEditCtrl = /** @class */ (function () {
-        // dependencies are injected via AngularJS $injector
-        // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
-        function IdvEditCtrl($scope, $mapService, $layerService, $messageBusService) {
-            this.$scope = $scope;
-            this.$mapService = $mapService;
-            this.$layerService = $layerService;
-            this.$messageBusService = $messageBusService;
-            this.scope = $scope;
-            $scope.vm = this;
-            this.scan = $scope.$parent.data;
-            console.log(this);
-        }
-        IdvEditCtrl.prototype.toggleChart = function (chart) {
-            chart.enabled = !chart.enabled;
-        };
-        IdvEditCtrl.prototype.update = function () {
-            this.scan.updateCharts();
-        };
-        IdvEditCtrl.prototype.reset = function () {
-            alert('reset');
-        };
-        IdvEditCtrl.prototype.export = function () {
-            this.scan.exportCsv();
-        };
-        IdvEditCtrl.$inject = [
-            '$scope',
-            'mapService',
-            'layerService',
-            'messageBusService',
-        ];
-        return IdvEditCtrl;
-    }());
-    IdvEdit.IdvEditCtrl = IdvEditCtrl;
-    /**
-    * Directive to display the available map layers.
-    */
-    IdvEdit.myModule.directive('idvedit', [
-        '$window', '$compile',
-        function ($window, $compile) {
-            return {
-                terminal: true,
-                restrict: 'E',
-                scope: {},
-                templateUrl: 'directives/IdvHelper/IdvEdit.tpl.html',
-                link: function (scope, element, attrs) {
-                    // Deal with resizing the element list
-                },
-                replace: false,
-                transclude: false,
-                controller: IdvEditCtrl
-            };
-        }
-    ]);
-})(IdvEdit || (IdvEdit = {}));
-//# sourceMappingURL=IdvEdit.js.map
-var Idv;
-(function (Idv_1) {
-    var Idv = /** @class */ (function () {
-        function Idv() {
-            this.defaultWidth = 180;
-        }
-        Idv.prototype.reduceAddSum = function (properties) {
-            return function (p, v) {
-                ++p.count;
-                properties.forEach(function (pr) {
-                    var t = parseFloat(v[pr]);
-                    if (t > p.max)
-                        p.max = t;
-                    p[pr] += t;
-                });
-                return p;
-            };
-        };
-        Idv.prototype.reduceRemoveSum = function (properties) {
-            return function (p, v) {
-                --p.count;
-                properties.forEach(function (pr) {
-                    var t = parseFloat(v[pr]);
-                    if (t > p.max)
-                        p.max = t;
-                    p[pr] -= t;
-                });
-                //p.avg = p.sum / p.count;
-                return p;
-            };
-        };
-        Idv.prototype.reduceInitSum = function (properties) {
-            var r = {};
-            properties.forEach(function (pr) {
-                r[pr] = 0;
-            });
-            return r;
-        };
-        Idv.prototype.reduceAddAvg = function (attr) {
-            return function (p, v) {
-                ++p.count;
-                var t = parseFloat(v[attr]);
-                if (t > p.max)
-                    p.max = t;
-                p.sum += t;
-                p.avg = p.sum / p.count;
-                return p;
-            };
-        };
-        Idv.prototype.reduceRemoveAvg = function (attr) {
-            return function (p, v) {
-                --p.count;
-                p.sum -= parseFloat(v[attr]);
-                p.avg = p.sum / p.count;
-                return p;
-            };
-        };
-        Idv.prototype.reduceInitAvg = function () {
-            return { count: 0, sum: 0, avg: 0, max: 0 };
-        };
-        Idv.prototype.stop = function () {
-            this.ndx = null;
-            // this.config.charts.forEach(c=>{
-            //     if (c.dimension) c.dimension.remove();
-            //     if (c.group) c.group.remove();
-            // });
-        };
-        Idv.prototype.updateCharts = function () {
-            var _this = this;
-            if (this.gridster) {
-                $("#" + this.config.containerId).empty();
-                this.gridster.destroy();
-            }
-            $(".chart-title").css("visibility", "visible");
-            function getTops(source_group, count) {
-                return {
-                    all: function () {
-                        return source_group.top(count);
-                    }
-                };
-            }
-            var elastic = true;
-            this.gridster = $("#" + this.config.containerId).gridster({
-                widget_margins: [5, 5],
-                widget_base_dimensions: [this.defaultWidth - 20, 125],
-                min_cols: 6,
-                resize: {
-                    enabled: false
-                },
-                autogrow_cols: true,
-                draggable: {
-                    handle: 'header'
-                }
-            }).data('gridster');
-            this.ndx = crossfilter(this.data);
-            if (this.config.charts) {
-                this.config.charts.forEach(function (c) {
-                    _this.addChart(c);
-                });
-            }
-            dc.renderAll();
-            this.triggerFilter(this.config.charts[0]);
-            if (this.scope.$root.$$phase !== '$apply' && this.scope.$root.$$phase !== '$digest') {
-                this.scope.$apply();
-            }
-        };
-        Idv.prototype.loadDataSource = function (done) {
-            done();
-        };
-        Idv.prototype.resize = function () {
-            $("#g-parent").css("height", $(window).height() - 100);
-            $("#g-parent").css("width", $(window).width() - 100);
-        };
-        Idv.prototype.loadData = function (prepare, done) {
-            var _this = this;
-            var store = 'records3';
-            async.series([
-                // get enums
-                function (cb) {
-                    if (typeof _this.config.config !== 'undefined') {
-                        d3.json(_this.config.config, function (error, result) {
-                            if (!error)
-                                _this.enums = result.Enums;
-                            cb();
-                        });
-                    }
-                    else {
-                        cb();
-                    }
-                },
-                // get data
-                function (cb) {
-                    _this.state = "Laden data";
-                    if (!window.indexedDB) {
-                        window.alert("Deze browser is verouderd. Hierdoor zal de informatie trager laden");
-                    }
-                    else {
-                        // if (this.config.localStorage) {
-                        //     var request = window.indexedDB.open(this.config.data, 9);
-                        //     request.onerror = (e => {
-                        //         window.indexedDB.deleteDatabase(this.config.data);
-                        //     });
-                        //     request.onsuccess = (e => {
-                        //         var db = <IDBDatabase>(<any>event.target).result;
-                        //         //if (!db.objectStoreNames.contains(store)) var objStore = db.createObjectStore(store, { autoIncrement : true });
-                        //         if (db.objectStoreNames.contains(store)) {
-                        //             var experiments = [];
-                        //             async.series(
-                        //                 [(cb) => {
-                        //                     db.transaction(store, 'readonly').objectStore(store).openCursor().onsuccess = (d) => {
-                        //                         var r = <IDBCursorWithValue>(<IDBRequest>d.target).result;
-                        //                         if (r) {
-                        //                             var v = r.value;
-                        //                             v.data.forEach(d => experiments.push(d));
-                        //                             //r.advance(1);
-                        //                             r.continue();
-                        //                         }
-                        //                         else {
-                        //                             cb();
-                        //                         }
-                        //                     }
-                        //                 },
-                        //                     (cb) => {
-                        //                         if (experiments.length > 0) {
-                        //                             this.parseData(experiments, prepare, done);
-                        //                             cb();
-                        //                         }
-                        //                         else {
-                        //                             this.state = "Verversen data";
-                        //                             d3.csv(this.config.data, (error, experiments) => {
-                        //                                 this.state = "Opslaan data";
-                        //                                 var s = db.transaction(store, "readwrite").objectStore(store);
-                        //                                 var l = [];
-                        //                                 var id = 0;
-                        //                                 experiments.forEach(e => {
-                        //                                     l.push(e);
-                        //                                     if (l.length > 100000) {
-                        //                                         s.add({ id: id, data: l });
-                        //                                         l = [];
-                        //                                         id += 1;
-                        //                                     }
-                        //                                 });
-                        //                                 this.parseData(experiments, prepare, done);
-                        //                                 cb();
-                        //                             });
-                        //                         }
-                        //                     }]
-                        //                 , (done) => {
-                        //                     cb();
-                        //                 });
-                        //         }
-                        //         else {
-                        //             db.close();
-                        //         }
-                        //     });
-                        //     request.onupgradeneeded = (e => {
-                        //         var db = <IDBDatabase>(<any>event.target).result;
-                        //         var objStore = db.createObjectStore(store, { keyPath: "id" });
-                        //     });
-                        // }
-                        // else {
-                        //     d3.csv(this.config.data, (error, experiments) => {
-                        //         this.parseData(experiments, prepare, done);
-                        //         cb();
-                        //     });
-                        // }
-                        d3.csv(_this.config.data, function (error, experiments) {
-                            _this.parseData(experiments, prepare, done);
-                            cb();
-                        });
-                    }
-                }
-            ], function (done) {
-            });
-        };
-        Idv.prototype.initCharts = function (scope, layerService, prepare, done) {
-            var _this = this;
-            this.layerService = layerService;
-            this.scope = scope;
-            this.state = "Laden configuratie";
-            this.resize();
-            if (this.config.refreshTimer) {
-                setInterval(function () {
-                    _this.loadData(prepare, done);
-                }, (this.config.refreshTimer));
-            }
-            this.loadData(prepare, done);
-            $(window).resize(function () {
-                _this.resize();
-            });
-        };
-        Idv.prototype.parseData = function (data, prepare, done) {
-            this.state = "Verwerken data";
-            if (this.scope.$$phase !== '$apply' && this.scope.$$phase !== '$digest') {
-                this.scope.$apply();
-            }
-            this.data = data;
-            this.DataLoaded = true;
-            prepare(this.enums, data);
-            this.updateCharts();
-            done();
-        };
-        Idv.prototype.reset = function (id) {
-            var cc = _.findWhere(this.config.charts, { id: id });
-            if (!_.isUndefined(cc)) {
-                cc.chart.filterAll();
-                dc.renderAll();
-            }
-        };
-        Idv.prototype.resetAll = function () {
-            this.config.charts.forEach(function (c) {
-                if (!_.isUndefined(c.chart))
-                    c.chart.filterAll();
-            });
-            dc.renderAll();
-        };
-        Idv.prototype.savePng = function (title, elementId) {
-            var _this = this;
-            domtoimage.toPng(document.querySelector('#' + elementId))
-                .then(function (image) {
-                //image = image.replace('image/png;base64', '');
-                csComp.Helpers.saveImage(image, title, "png");
-                // var img = new Image();
-                // img.src = dataUrl;
-                // document.body.appendChild(img);
-            })
-                .catch(function (error) {
-                _this.layerService.$messageBusService.notify("Error saving chart", "When saving charts, only the latest version of chrome is supported");
-            });
-        };
-        Idv.prototype.exportCsv = function () {
-            this.layerService.$messageBusService.notify("Export to CSV", "Export started, your download will start in a little while");
-            var data = this.config.charts[0].dimension.filterAll().top(Infinity);
-            var res = d3.csv.format(data);
-            var blob = new Blob([res], { type: "text/plain;charset=utf-8" });
-            saveAs(blob, this.config.title + "_export.csv");
-            //csComp.Helpers.saveData(res, "export.csv", 'csv');
-        };
-        Idv.prototype.hasFilter = function (id) {
-            return true;
-        };
-        Idv.prototype.addSearchWidget = function (config) {
-            var _this = this;
-            this.createGridsterItem(config);
-            config.dimension = this.ndx.dimension(function (d) {
-                if (d.hasOwnProperty(config.property)) {
-                    return d[config.property];
-                }
-                else
-                    return null;
-            });
-            var searchHtml = "<input class='searchbutton' id='#" + config.id + "'></input><div id='data-count'><span class='filter-count'></span> geselecteerd van de <span class='total-count'></span> " + config.record + "</div>";
-            $("#" + config.elementId).html(searchHtml);
-            $(".searchbutton").keyup(function (e) {
-                var id = e.target.id.replace('#', '');
-                var filterString = e.target.value;
-                if (_.isUndefined(filterString))
-                    return;
-                var chart = _.findWhere(_this.config.charts, { id: id });
-                if (!_.isUndefined(chart)) {
-                    chart.dimension.filterFunction(function (d) {
-                        if (d != null && typeof d.toLowerCase === 'function')
-                            return (d.toLowerCase().indexOf(filterString.toLowerCase()) > -1);
-                        return false;
-                    });
-                    chart.dimension.top(Infinity);
-                    dc.redrawAll();
-                }
-                _this.triggerFilter(config);
-            });
-            var all = this.ndx.groupAll();
-            dc.dataCount("#data-count").dimension(this.ndx).group(all); // set group to ndx.groupAll()
-        };
-        Idv.prototype.addSumCompare = function (config) {
-            this.createGridsterItem(config);
-            var updateChart = function (values) {
-                try {
-                    var vgspec = {
-                        'width': 200,
-                        'height': 200,
-                        'data': [
-                            {
-                                'name': 'table',
-                                'values': values,
-                                'transform': [{ 'type': 'pie', 'field': 'value' }]
-                            }
-                        ],
-                        'scales': [
-                            {
-                                'name': 'r',
-                                'type': 'sqrt',
-                                'domain': { 'data': 'table', 'field': 'value' },
-                                'range': [20, 100]
-                            },
-                            {
-                                "name": "color",
-                                "type": "ordinal",
-                                "domain": { "data": "table", "field": "position" },
-                                "range": "category20"
-                            }
-                        ],
-                        'marks': [
-                            {
-                                'type': 'arc',
-                                'from': { 'data': 'table' },
-                                'properties': {
-                                    'enter': {
-                                        'x': { 'field': { 'group': 'width' }, 'mult': 0.5 },
-                                        'y': { 'field': { 'group': 'height' }, 'mult': 0.5 },
-                                        'startAngle': { 'field': 'layout_start' },
-                                        'endAngle': { 'field': 'layout_end' },
-                                        'innerRadius': { 'value': 20 },
-                                        'outerRadius': { 'scale': 'r', 'field': 'value' },
-                                        'stroke': { 'value': '#fff' }
-                                    },
-                                    'update': { 'fill': { "scale": "color", "field": "position" } },
-                                    'hover': { 'fill': { 'value': 'pink' } }
-                                }
-                            },
-                            {
-                                'type': 'text',
-                                'from': { 'data': 'table' },
-                                'properties': {
-                                    'enter': {
-                                        'x': { 'field': { 'group': 'width' }, 'mult': 0.5 },
-                                        'y': { 'field': { 'group': 'height' }, 'mult': 0.5 },
-                                        'radius': { 'scale': 'r', 'field': 'value', 'offset': 8 },
-                                        'theta': { 'field': 'layout_mid' },
-                                        'fill': { 'value': '#000' },
-                                        'align': { 'value': 'center' },
-                                        'baseline': { 'value': 'middle' },
-                                        'text': { 'field': 'title' }
-                                    }
-                                }
-                            },
-                            {
-                                'type': 'text',
-                                'from': { 'data': 'table' },
-                                'properties': {
-                                    'enter': {
-                                        'x': { 'field': { 'group': 'width' }, 'mult': 0.5 },
-                                        'y': { 'field': { 'group': 'height' }, 'mult': 0.5, 'offset': -10 },
-                                        'radius': { 'scale': 'r', 'field': 'value', 'offset': 8 },
-                                        'theta': { 'field': 'layout_mid' },
-                                        'fill': { 'value': '#000' },
-                                        'align': { 'value': 'center' },
-                                        'baseline': { 'value': 'middle' },
-                                        'text': { 'field': 'value' }
-                                    }
-                                }
-                            }
-                        ]
-                    };
-                    //parse(vgspec);
-                    if (vgspec)
-                        var res = vg.embed("#" + config.elementId, vgspec, function (view, vega_spec) {
-                            config._view = view;
-                            $("#" + config.elementId).css("margin-left", "30px");
-                            //$('.vega-actions').css("display","none");
-                            // Callback receiving the View instance and parsed Vega spec...
-                            // The View resides under the '#vis' element
-                        });
-                }
-                catch (e) {
-                }
-            };
-            updateChart([]);
-            config.filtered = function (result) {
-                var res = {};
-                config.properties.forEach(function (p) { return res[p] = 0; });
-                result.forEach(function (i) {
-                    config.properties.forEach(function (p) { if (i.hasOwnProperty(p))
-                        res[p] += Math.round(+i[p]); });
-                });
-                var values = [];
-                var pos = 0;
-                for (var i in res) {
-                    if (res[i] > 0)
-                        values.push({ title: i, value: res[i], position: pos });
-                    pos += 1;
-                }
-                updateChart(values);
-            };
-        };
-        Idv.prototype.addLayerLink = function (config) {
-            var _this = this;
-            config.dimension = this.ndx.dimension(function (d) { return d[config.property]; });
-            config.group = config.dimension.group().reduceCount();
-            config.filtered = function (result) {
-                if (!_.isUndefined(config.layer)) {
-                    var l = _this.layerService.findLayer(config.layer);
-                    if (!_.isUndefined(l) && l.enabled) {
-                        var mapping = {};
-                        l.data.features.forEach(function (f) {
-                            if (f.properties.hasOwnProperty(config.featureProperty))
-                                mapping[f.properties[config.featureProperty]] = f;
-                            delete f.properties[config.featureTargetProperty];
-                        });
-                        var res = config.group.all();
-                        res.forEach(function (r) {
-                            if (mapping.hasOwnProperty(r.key)) {
-                                var f = mapping[r.key];
-                                f.properties[config.featureTargetProperty] = r.value;
-                            }
-                        });
-                        _this.layerService.updateLayerFeatures(l);
-                        l.group.styles.forEach(function (s) {
-                            _this.layerService.removeStyle(s);
-                        });
-                        _this.layerService.setStyleForProperty(l, config.featureTargetProperty);
-                    }
-                }
-                console.log('do filter with result');
-            };
-        };
-        Idv.prototype.addChartItem = function (config) {
-            var _this = this;
-            this.createGridsterItem(config);
-            if (!config.stat)
-                config.stat = "count";
-            switch (config.stat) {
-                case "sum":
-                    config.dimension = this.ndx.dimension(function (d) { return d[config.property]; });
-                    config.group = config.dimension.group().reduceSum(function (d) {
-                        return { totaal_mensen_auto: +d[config.property] };
-                    });
-                    switch (config.type) {
-                        case "pie":
-                            config.dimension = this.ndx.dimension(function (d) { return d; });
-                            config.group = config.dimension.group().reduce(this.reduceAddSum(config.properties), this.reduceRemoveSum(config.properties), this.reduceInitSum(config.properties));
-                            break;
-                    }
-                    break;
-                case "average":
-                    switch (config.type) {
-                        case "row":
-                            config.dimension = this.ndx.dimension(function (d) { return d[config.property]; });
-                            config.group = config.dimension.group().reduce(this.reduceAddAvg(config.secondProperty), this.reduceRemoveAvg(config.secondProperty), this.reduceInitAvg);
-                            break;
-                        case "line":
-                        case "bar":
-                            config.dimension = this.ndx.dimension(function (d) { return d[config.time]; });
-                            config.group = config.dimension.group().reduce(this.reduceAddAvg(config.property), this.reduceRemoveAvg(config.property), this.reduceInitAvg);
-                        case "time":
-                            config.dimension = this.ndx.dimension(function (d) { return d[config.time]; });
-                            config.group = config.dimension.group().reduce(this.reduceAddAvg(config.property), this.reduceRemoveAvg(config.property), this.reduceInitAvg);
-                            break;
-                    }
-                    break;
-                case "pie":
-                    config.dimension = config.dimension;
-                    config.group = config.group;
-                    break;
-                case "scatter":
-                    config.dimension = this.ndx.dimension(function (d) {
-                        var r = +d[config.property];
-                        return r;
-                    });
-                    config.group = config.dimension.group();
-                    break;
-                case "time":
-                    config.dimension = this.ndx.dimension(function (d) { return d[config.time]; });
-                    break;
-                case "group":
-                    if (!config.bins)
-                        config.bins = 20;
-                    var n_bins = config.bins;
-                    var xExtent = d3.extent(this.data, function (d) { return parseFloat(d[config.property]); });
-                    var binWidth = (xExtent[1] - xExtent[0]) / n_bins;
-                    config.dimension = this.ndx.dimension(function (d) {
-                        var c = Math.floor(parseFloat(d[config.property]) / binWidth) * binWidth;
-                        return c;
-                    });
-                    config.group = config.dimension.group().reduceCount();
-                    break;
-                case "count":
-                    config.dimension = this.ndx.dimension(function (d) { return d[config.property]; });
-                    config.group = config.dimension.group().reduceCount();
-                    break;
-            }
-            var width = (config.width * this.defaultWidth) - 25;
-            var height = (config.height * 125) - 25;
-            switch (config.type) {
-                case "table":
-                    var c = [];
-                    config.columns.forEach(function (ci) {
-                        c.push({
-                            label: ci.title, format: function (d) {
-                                if (ci.hasOwnProperty("type") && ci["type"] === "number")
-                                    return d3.round(d[ci.property], 1);
-                                return d[ci.property];
-                            }
-                        });
-                    });
-                    console.log('table:' + config.elementId);
-                    $("#" + config.elementId).addClass("widget-scrollable");
-                    config.chart = dc.dataTable("#" + config.elementId);
-                    config.chart
-                        .width(width)
-                        .height(height)
-                        .dimension(config.dimension)
-                        .group(function (d) {
-                        var date = d[config.time];
-                        return "";
-                    })
-                        .size(1000)
-                        .columns(c);
-                    break;
-                case "time":
-                    config.chart = dc.lineChart("#" + config.elementId);
-                    config.chart
-                        .width(width)
-                        .height(height)
-                        .x(d3.time.scale().domain([new Date(2011, 0, 1), new Date(2016, 11, 31)]))
-                        .elasticX(true)
-                        .elasticY(true)
-                        .mouseZoomable(true)
-                        .renderHorizontalGridLines(true)
-                        .brushOn(true)
-                        .dimension(config.dimension)
-                        .group(function (d) {
-                        //var format = d3.format('02d');
-                        return d[config.time];
-                    })
-                        .renderHorizontalGridLines(true)
-                        .on('renderlet', function (chart) {
-                        chart.selectAll('rect').on("click", function (d) {
-                            // console.log("click!", d);
-                        });
-                    });
-                    break;
-                case "line":
-                    config.chart = dc.lineChart("#" + config.elementId);
-                    config.chart
-                        .width(width)
-                        .height(height)
-                        .x(d3.scale.linear())
-                        .elasticX(true)
-                        .elasticY(true)
-                        .renderHorizontalGridLines(false)
-                        .dimension(config.dimension)
-                        .group(config.group)
-                        .mouseZoomable(true)
-                        .on('renderlet', function (chart) {
-                        chart.selectAll('rect').on("click", function (d) {
-                            // console.log("click!", d);
-                        });
-                    });
-                    break;
-                case "pie":
-                    config.chart = dc.pieChart("#" + config.elementId);
-                    config.chart
-                        .width(width)
-                        .height(height)
-                        .slicesCap(10)
-                        .innerRadius(10)
-                        .dimension(config.dimension)
-                        .group(config.group);
-                    break;
-                case "bar":
-                    config.chart = dc.barChart("#" + config.elementId);
-                    config.chart
-                        .width(width)
-                        .height(height)
-                        .x(d3.scale.linear())
-                        .centerBar(true)
-                        .xUnits(function () { return 20; })
-                        .elasticX(true)
-                        .elasticY(true)
-                        .renderHorizontalGridLines(true)
-                        .dimension(config.dimension)
-                        .group(config.group);
-                    break;
-                case "stackedbar":
-                    config.chart = dc.barChart("#" + config.elementId);
-                    config.chart
-                        .width(width)
-                        .height(height)
-                        .x(d3.scale.linear())
-                        .centerBar(false)
-                        .xUnits(function () { return 20; })
-                        .elasticX(true)
-                        .elasticY(true)
-                        .renderHorizontalGridLines(true)
-                        .dimension(config.dimension)
-                        .group(config.group);
-                    break;
-                case "scatter":
-                    config.chart = dc.scatterPlot("#" + config.elementId);
-                    config.chart
-                        .width(width)
-                        .height(height)
-                        .symbolSize(3)
-                        .x(d3.scale.linear())
-                        .y(d3.scale.linear())
-                        .elasticX(true)
-                        .elasticY(true)
-                        .dimension(config.dimension)
-                        .group(config.group);
-                    break;
-                case "row":
-                    config.chart = dc.rowChart("#" + config.elementId);
-                    config.chart
-                        .width(width)
-                        .height(height)
-                        .gap(1)
-                        .elasticX(true)
-                        .dimension(config.dimension)
-                        .group(config.group)
-                        .xAxis().ticks(4);
-                    if (!config.ordering)
-                        config.ordering = "value";
-                    switch (config.ordering) {
-                        case "days":
-                            config.chart.ordering(function (d) {
-                                return Idv.days_en.indexOf(d.key);
-                            });
-                            break;
-                        case "months":
-                            config.chart.ordering(function (d) {
-                                return Idv.months.indexOf(d.key);
-                            });
-                            break;
-                        case "value":
-                            config.chart.ordering(function (d) {
-                                return -d.value;
-                            });
-                            break;
-                    }
-                    if (config.cap)
-                        config.chart.cap(config.cap);
-                    break;
-            }
-            if (!_.isUndefined(config.xaxis) && _.isFunction(config.chart.xAxisLabel)) {
-                config.chart.xAxisLabel(config.xaxis);
-            }
-            if (!_.isUndefined(config.yaxis) && _.isFunction(config.chart.yAxisLabel)) {
-                config.chart.yAxisLabel(config.yaxis);
-            }
-            if (config.marginLeft)
-                config.chart.margins().left = config.marginLeft;
-            config.chart.on("filtered", function (chart, filter) {
-                _this.triggerFilter(config);
-            });
-            if (config.stat === "average") {
-                config.chart.valueAccessor(function (d) {
-                    return d.value.avg;
-                });
-            }
-            console.log("Add chart " + config.title);
-        };
-        Idv.prototype.triggerFilter = function (config) {
-            var res = config.dimension.top(Infinity);
-            this.config.charts.forEach(function (c) {
-                if (!_.isUndefined(c.filtered) && _.isFunction(c.filtered)) {
-                    c.filtered(res);
-                }
-                //this.addChart(c)
-            });
-        };
-        Idv.prototype.createGridsterItem = function (config) {
-            var _this = this;
-            var html = "<li id='li" + config.id + "'  style='padding:4px'><header class='chart-title'><div class='fa fa-ellipsis-v dropdown-toggle' data-toggle='dropdown'  style='float:right;cursor:pointer' type='button'></div>";
-            html += "<ul class='dropdown-menu pull-right'><li class='dropdown-item'><a ng-click=\"resetFilter('" + config.id + "')\"'>reset filter</a></li><li class='dropdown-item'><a ng-click=\"resetAll()\">reset all filters</a></li><li class='dropdown-item'><a ng-click=\"disableFilter('" + config.id + "')\">disable filter</a></li><li class='dropdown-item'><a ng-click=\"savePng('" + config.title + "','" + config.elementId + "')\"'>save image</a></li>";
-            html += "</ul>" + config.title + "</header><div id='" + config.elementId + "' ></li>";
-            this.scope.resetFilter = function (id) {
-                _this.reset(id);
-            };
-            this.scope.resetAll = function () {
-                _this.resetAll();
-            };
-            this.scope.savePng = function (title, elementId) {
-                _this.savePng(title, elementId);
-            };
-            this.scope.disableFilter = function (id) {
-                var c = _.findWhere(_this.config.charts, { id: id });
-                if (!_.isUndefined(c)) {
-                    c.enabled = false;
-                    _this.updateCharts();
-                }
-            };
-            var w = this.layerService.$compile(html)(this.scope);
-            this.gridster.add_widget(w, config.width, config.height); //"<li><header class='chart-title'><div class='fa fa-times' style='float:right' ng-click='vm.reset()'></div>" + config.title + "</header><div id='" + config.elementId + "'></li>",config.width,config.height);
-        };
-        Idv.prototype.addChart = function (config) {
-            if (typeof config.enabled === 'undefined')
-                config.enabled = true;
-            if (!config.enabled)
-                return;
-            if (!config.id)
-                config.id = csComp.Helpers.getGuid();
-            if (!config.containerId)
-                config.containerId = this.config.containerId;
-            config.elementId = "ddchart-" + config.id;
-            if (!config.title)
-                config.title = config.property;
-            if (!config.type)
-                config.type = "row";
-            switch (config.type) {
-                case "search":
-                    this.addSearchWidget(config);
-                    break;
-                case "layer":
-                    this.addLayerLink(config);
-                    break;
-                case "sumcompare":
-                    this.addSumCompare(config);
-                    break;
-                default:
-                    this.addChartItem(config);
-                    break;
-            }
-        };
-        Idv.days_nl = ["zondag", "maandag", "dinsdag", "woensdag", "donderdag", "vrijdag", "zaterdag"];
-        Idv.days_en = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saterday"];
-        Idv.months = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "okt", "nov", "dec"];
-        return Idv;
-    }());
-    Idv_1.Idv = Idv;
-})(Idv || (Idv = {}));
-//# sourceMappingURL=IdvHelper.js.map
 var Heatmap;
 (function (Heatmap) {
     'use strict';
@@ -10474,6 +9642,836 @@ var Heatmap;
     Heatmap.IdealityMeasure = IdealityMeasure;
 })(Heatmap || (Heatmap = {}));
 //# sourceMappingURL=IdealityMeasure.js.map
+var IdvEdit;
+(function (IdvEdit) {
+    /**
+      * Config
+      */
+    var moduleName = 'csComp';
+    try {
+        IdvEdit.myModule = angular.module(moduleName);
+    }
+    catch (err) {
+        // named module does not exist, so create one
+        IdvEdit.myModule = angular.module(moduleName, []);
+    }
+    var IdvEditCtrl = /** @class */ (function () {
+        // dependencies are injected via AngularJS $injector
+        // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
+        function IdvEditCtrl($scope, $mapService, $layerService, $messageBusService) {
+            this.$scope = $scope;
+            this.$mapService = $mapService;
+            this.$layerService = $layerService;
+            this.$messageBusService = $messageBusService;
+            this.scope = $scope;
+            $scope.vm = this;
+            this.scan = $scope.$parent.data;
+            console.log(this);
+        }
+        IdvEditCtrl.prototype.toggleChart = function (chart) {
+            chart.enabled = !chart.enabled;
+        };
+        IdvEditCtrl.prototype.update = function () {
+            this.scan.updateCharts();
+        };
+        IdvEditCtrl.prototype.reset = function () {
+            alert('reset');
+        };
+        IdvEditCtrl.prototype.export = function () {
+            this.scan.exportCsv();
+        };
+        IdvEditCtrl.$inject = [
+            '$scope',
+            'mapService',
+            'layerService',
+            'messageBusService',
+        ];
+        return IdvEditCtrl;
+    }());
+    IdvEdit.IdvEditCtrl = IdvEditCtrl;
+    /**
+    * Directive to display the available map layers.
+    */
+    IdvEdit.myModule.directive('idvedit', [
+        '$window', '$compile',
+        function ($window, $compile) {
+            return {
+                terminal: true,
+                restrict: 'E',
+                scope: {},
+                templateUrl: 'directives/IdvHelper/IdvEdit.tpl.html',
+                link: function (scope, element, attrs) {
+                    // Deal with resizing the element list
+                },
+                replace: false,
+                transclude: false,
+                controller: IdvEditCtrl
+            };
+        }
+    ]);
+})(IdvEdit || (IdvEdit = {}));
+//# sourceMappingURL=IdvEdit.js.map
+var Idv;
+(function (Idv_1) {
+    var Idv = /** @class */ (function () {
+        function Idv() {
+            this.defaultWidth = 180;
+        }
+        Idv.prototype.reduceAddSum = function (properties) {
+            return function (p, v) {
+                ++p.count;
+                properties.forEach(function (pr) {
+                    var t = parseFloat(v[pr]);
+                    if (t > p.max)
+                        p.max = t;
+                    p[pr] += t;
+                });
+                return p;
+            };
+        };
+        Idv.prototype.reduceRemoveSum = function (properties) {
+            return function (p, v) {
+                --p.count;
+                properties.forEach(function (pr) {
+                    var t = parseFloat(v[pr]);
+                    if (t > p.max)
+                        p.max = t;
+                    p[pr] -= t;
+                });
+                //p.avg = p.sum / p.count;
+                return p;
+            };
+        };
+        Idv.prototype.reduceInitSum = function (properties) {
+            var r = {};
+            properties.forEach(function (pr) {
+                r[pr] = 0;
+            });
+            return r;
+        };
+        Idv.prototype.reduceAddAvg = function (attr) {
+            return function (p, v) {
+                ++p.count;
+                var t = parseFloat(v[attr]);
+                if (t > p.max)
+                    p.max = t;
+                p.sum += t;
+                p.avg = p.sum / p.count;
+                return p;
+            };
+        };
+        Idv.prototype.reduceRemoveAvg = function (attr) {
+            return function (p, v) {
+                --p.count;
+                p.sum -= parseFloat(v[attr]);
+                p.avg = p.sum / p.count;
+                return p;
+            };
+        };
+        Idv.prototype.reduceInitAvg = function () {
+            return { count: 0, sum: 0, avg: 0, max: 0 };
+        };
+        Idv.prototype.stop = function () {
+            this.ndx = null;
+            // this.config.charts.forEach(c=>{
+            //     if (c.dimension) c.dimension.remove();
+            //     if (c.group) c.group.remove();
+            // });
+        };
+        Idv.prototype.updateCharts = function () {
+            var _this = this;
+            if (this.gridster) {
+                $("#" + this.config.containerId).empty();
+                this.gridster.destroy();
+            }
+            $(".chart-title").css("visibility", "visible");
+            function getTops(source_group, count) {
+                return {
+                    all: function () {
+                        return source_group.top(count);
+                    }
+                };
+            }
+            var elastic = true;
+            this.gridster = $("#" + this.config.containerId).gridster({
+                widget_margins: [5, 5],
+                widget_base_dimensions: [this.defaultWidth - 20, 125],
+                min_cols: 6,
+                resize: {
+                    enabled: false
+                },
+                autogrow_cols: true,
+                draggable: {
+                    handle: 'header'
+                }
+            }).data('gridster');
+            this.ndx = crossfilter(this.data);
+            if (this.config.charts) {
+                this.config.charts.forEach(function (c) {
+                    _this.addChart(c);
+                });
+            }
+            dc.renderAll();
+            this.triggerFilter(this.config.charts[0]);
+            if (this.scope.$root.$$phase !== '$apply' && this.scope.$root.$$phase !== '$digest') {
+                this.scope.$apply();
+            }
+        };
+        Idv.prototype.loadDataSource = function (done) {
+            done();
+        };
+        Idv.prototype.resize = function () {
+            $("#g-parent").css("height", $(window).height() - 100);
+            $("#g-parent").css("width", $(window).width() - 100);
+        };
+        Idv.prototype.loadData = function (prepare, done) {
+            var _this = this;
+            var store = 'records3';
+            async.series([
+                // get enums
+                function (cb) {
+                    if (typeof _this.config.config !== 'undefined') {
+                        d3.json(_this.config.config, function (error, result) {
+                            if (!error)
+                                _this.enums = result.Enums;
+                            cb();
+                        });
+                    }
+                    else {
+                        cb();
+                    }
+                },
+                // get data
+                function (cb) {
+                    _this.state = "Laden data";
+                    if (!window.indexedDB) {
+                        window.alert("Deze browser is verouderd. Hierdoor zal de informatie trager laden");
+                    }
+                    else {
+                        // if (this.config.localStorage) {
+                        //     var request = window.indexedDB.open(this.config.data, 9);
+                        //     request.onerror = (e => {
+                        //         window.indexedDB.deleteDatabase(this.config.data);
+                        //     });
+                        //     request.onsuccess = (e => {
+                        //         var db = <IDBDatabase>(<any>event.target).result;
+                        //         //if (!db.objectStoreNames.contains(store)) var objStore = db.createObjectStore(store, { autoIncrement : true });
+                        //         if (db.objectStoreNames.contains(store)) {
+                        //             var experiments = [];
+                        //             async.series(
+                        //                 [(cb) => {
+                        //                     db.transaction(store, 'readonly').objectStore(store).openCursor().onsuccess = (d) => {
+                        //                         var r = <IDBCursorWithValue>(<IDBRequest>d.target).result;
+                        //                         if (r) {
+                        //                             var v = r.value;
+                        //                             v.data.forEach(d => experiments.push(d));
+                        //                             //r.advance(1);
+                        //                             r.continue();
+                        //                         }
+                        //                         else {
+                        //                             cb();
+                        //                         }
+                        //                     }
+                        //                 },
+                        //                     (cb) => {
+                        //                         if (experiments.length > 0) {
+                        //                             this.parseData(experiments, prepare, done);
+                        //                             cb();
+                        //                         }
+                        //                         else {
+                        //                             this.state = "Verversen data";
+                        //                             d3.csv(this.config.data, (error, experiments) => {
+                        //                                 this.state = "Opslaan data";
+                        //                                 var s = db.transaction(store, "readwrite").objectStore(store);
+                        //                                 var l = [];
+                        //                                 var id = 0;
+                        //                                 experiments.forEach(e => {
+                        //                                     l.push(e);
+                        //                                     if (l.length > 100000) {
+                        //                                         s.add({ id: id, data: l });
+                        //                                         l = [];
+                        //                                         id += 1;
+                        //                                     }
+                        //                                 });
+                        //                                 this.parseData(experiments, prepare, done);
+                        //                                 cb();
+                        //                             });
+                        //                         }
+                        //                     }]
+                        //                 , (done) => {
+                        //                     cb();
+                        //                 });
+                        //         }
+                        //         else {
+                        //             db.close();
+                        //         }
+                        //     });
+                        //     request.onupgradeneeded = (e => {
+                        //         var db = <IDBDatabase>(<any>event.target).result;
+                        //         var objStore = db.createObjectStore(store, { keyPath: "id" });
+                        //     });
+                        // }
+                        // else {
+                        //     d3.csv(this.config.data, (error, experiments) => {
+                        //         this.parseData(experiments, prepare, done);
+                        //         cb();
+                        //     });
+                        // }
+                        d3.csv(_this.config.data, function (error, experiments) {
+                            _this.parseData(experiments, prepare, done);
+                            cb();
+                        });
+                    }
+                }
+            ], function (done) {
+            });
+        };
+        Idv.prototype.initCharts = function (scope, layerService, prepare, done) {
+            var _this = this;
+            this.layerService = layerService;
+            this.scope = scope;
+            this.state = "Laden configuratie";
+            this.resize();
+            if (this.config.refreshTimer) {
+                setInterval(function () {
+                    _this.loadData(prepare, done);
+                }, (this.config.refreshTimer));
+            }
+            this.loadData(prepare, done);
+            $(window).resize(function () {
+                _this.resize();
+            });
+        };
+        Idv.prototype.parseData = function (data, prepare, done) {
+            this.state = "Verwerken data";
+            if (this.scope.$$phase !== '$apply' && this.scope.$$phase !== '$digest') {
+                this.scope.$apply();
+            }
+            this.data = data;
+            this.DataLoaded = true;
+            prepare(this.enums, data);
+            this.updateCharts();
+            done();
+        };
+        Idv.prototype.reset = function (id) {
+            var cc = _.findWhere(this.config.charts, { id: id });
+            if (!_.isUndefined(cc)) {
+                cc.chart.filterAll();
+                dc.renderAll();
+            }
+        };
+        Idv.prototype.resetAll = function () {
+            this.config.charts.forEach(function (c) {
+                if (!_.isUndefined(c.chart))
+                    c.chart.filterAll();
+            });
+            dc.renderAll();
+        };
+        Idv.prototype.savePng = function (title, elementId) {
+            var _this = this;
+            domtoimage.toPng(document.querySelector('#' + elementId))
+                .then(function (image) {
+                //image = image.replace('image/png;base64', '');
+                csComp.Helpers.saveImage(image, title, "png");
+                // var img = new Image();
+                // img.src = dataUrl;
+                // document.body.appendChild(img);
+            })
+                .catch(function (error) {
+                _this.layerService.$messageBusService.notify("Error saving chart", "When saving charts, only the latest version of chrome is supported");
+            });
+        };
+        Idv.prototype.exportCsv = function () {
+            this.layerService.$messageBusService.notify("Export to CSV", "Export started, your download will start in a little while");
+            var data = this.config.charts[0].dimension.filterAll().top(Infinity);
+            var res = d3.csv.format(data);
+            var blob = new Blob([res], { type: "text/plain;charset=utf-8" });
+            saveAs(blob, this.config.title + "_export.csv");
+            //csComp.Helpers.saveData(res, "export.csv", 'csv');
+        };
+        Idv.prototype.hasFilter = function (id) {
+            return true;
+        };
+        Idv.prototype.addSearchWidget = function (config) {
+            var _this = this;
+            this.createGridsterItem(config);
+            config.dimension = this.ndx.dimension(function (d) {
+                if (d.hasOwnProperty(config.property)) {
+                    return d[config.property];
+                }
+                else
+                    return null;
+            });
+            var searchHtml = "<input class='searchbutton' id='#" + config.id + "'></input><div id='data-count'><span class='filter-count'></span> geselecteerd van de <span class='total-count'></span> " + config.record + "</div>";
+            $("#" + config.elementId).html(searchHtml);
+            $(".searchbutton").keyup(function (e) {
+                var id = e.target.id.replace('#', '');
+                var filterString = e.target.value;
+                if (_.isUndefined(filterString))
+                    return;
+                var chart = _.findWhere(_this.config.charts, { id: id });
+                if (!_.isUndefined(chart)) {
+                    chart.dimension.filterFunction(function (d) {
+                        if (d != null && typeof d.toLowerCase === 'function')
+                            return (d.toLowerCase().indexOf(filterString.toLowerCase()) > -1);
+                        return false;
+                    });
+                    chart.dimension.top(Infinity);
+                    dc.redrawAll();
+                }
+                _this.triggerFilter(config);
+            });
+            var all = this.ndx.groupAll();
+            dc.dataCount("#data-count").dimension(this.ndx).group(all); // set group to ndx.groupAll()
+        };
+        Idv.prototype.addSumCompare = function (config) {
+            this.createGridsterItem(config);
+            var updateChart = function (values) {
+                try {
+                    var vgspec = {
+                        'width': 200,
+                        'height': 200,
+                        'data': [
+                            {
+                                'name': 'table',
+                                'values': values,
+                                'transform': [{ 'type': 'pie', 'field': 'value' }]
+                            }
+                        ],
+                        'scales': [
+                            {
+                                'name': 'r',
+                                'type': 'sqrt',
+                                'domain': { 'data': 'table', 'field': 'value' },
+                                'range': [20, 100]
+                            },
+                            {
+                                "name": "color",
+                                "type": "ordinal",
+                                "domain": { "data": "table", "field": "position" },
+                                "range": "category20"
+                            }
+                        ],
+                        'marks': [
+                            {
+                                'type': 'arc',
+                                'from': { 'data': 'table' },
+                                'properties': {
+                                    'enter': {
+                                        'x': { 'field': { 'group': 'width' }, 'mult': 0.5 },
+                                        'y': { 'field': { 'group': 'height' }, 'mult': 0.5 },
+                                        'startAngle': { 'field': 'layout_start' },
+                                        'endAngle': { 'field': 'layout_end' },
+                                        'innerRadius': { 'value': 20 },
+                                        'outerRadius': { 'scale': 'r', 'field': 'value' },
+                                        'stroke': { 'value': '#fff' }
+                                    },
+                                    'update': { 'fill': { "scale": "color", "field": "position" } },
+                                    'hover': { 'fill': { 'value': 'pink' } }
+                                }
+                            },
+                            {
+                                'type': 'text',
+                                'from': { 'data': 'table' },
+                                'properties': {
+                                    'enter': {
+                                        'x': { 'field': { 'group': 'width' }, 'mult': 0.5 },
+                                        'y': { 'field': { 'group': 'height' }, 'mult': 0.5 },
+                                        'radius': { 'scale': 'r', 'field': 'value', 'offset': 8 },
+                                        'theta': { 'field': 'layout_mid' },
+                                        'fill': { 'value': '#000' },
+                                        'align': { 'value': 'center' },
+                                        'baseline': { 'value': 'middle' },
+                                        'text': { 'field': 'title' }
+                                    }
+                                }
+                            },
+                            {
+                                'type': 'text',
+                                'from': { 'data': 'table' },
+                                'properties': {
+                                    'enter': {
+                                        'x': { 'field': { 'group': 'width' }, 'mult': 0.5 },
+                                        'y': { 'field': { 'group': 'height' }, 'mult': 0.5, 'offset': -10 },
+                                        'radius': { 'scale': 'r', 'field': 'value', 'offset': 8 },
+                                        'theta': { 'field': 'layout_mid' },
+                                        'fill': { 'value': '#000' },
+                                        'align': { 'value': 'center' },
+                                        'baseline': { 'value': 'middle' },
+                                        'text': { 'field': 'value' }
+                                    }
+                                }
+                            }
+                        ]
+                    };
+                    //parse(vgspec);
+                    if (vgspec)
+                        var res = vg.embed("#" + config.elementId, vgspec, function (view, vega_spec) {
+                            config._view = view;
+                            $("#" + config.elementId).css("margin-left", "30px");
+                            //$('.vega-actions').css("display","none");
+                            // Callback receiving the View instance and parsed Vega spec...
+                            // The View resides under the '#vis' element
+                        });
+                }
+                catch (e) {
+                }
+            };
+            updateChart([]);
+            config.filtered = function (result) {
+                var res = {};
+                config.properties.forEach(function (p) { return res[p] = 0; });
+                result.forEach(function (i) {
+                    config.properties.forEach(function (p) { if (i.hasOwnProperty(p))
+                        res[p] += Math.round(+i[p]); });
+                });
+                var values = [];
+                var pos = 0;
+                for (var i in res) {
+                    if (res[i] > 0)
+                        values.push({ title: i, value: res[i], position: pos });
+                    pos += 1;
+                }
+                updateChart(values);
+            };
+        };
+        Idv.prototype.addLayerLink = function (config) {
+            var _this = this;
+            config.dimension = this.ndx.dimension(function (d) { return d[config.property]; });
+            config.group = config.dimension.group().reduceCount();
+            config.filtered = function (result) {
+                if (!_.isUndefined(config.layer)) {
+                    var l = _this.layerService.findLayer(config.layer);
+                    if (!_.isUndefined(l) && l.enabled) {
+                        var mapping = {};
+                        l.data.features.forEach(function (f) {
+                            if (f.properties.hasOwnProperty(config.featureProperty))
+                                mapping[f.properties[config.featureProperty]] = f;
+                            delete f.properties[config.featureTargetProperty];
+                        });
+                        var res = config.group.all();
+                        res.forEach(function (r) {
+                            if (mapping.hasOwnProperty(r.key)) {
+                                var f = mapping[r.key];
+                                f.properties[config.featureTargetProperty] = r.value;
+                            }
+                        });
+                        _this.layerService.updateLayerFeatures(l);
+                        l.group.styles.forEach(function (s) {
+                            _this.layerService.removeStyle(s);
+                        });
+                        _this.layerService.setStyleForProperty(l, config.featureTargetProperty);
+                    }
+                }
+                console.log('do filter with result');
+            };
+        };
+        Idv.prototype.addChartItem = function (config) {
+            var _this = this;
+            this.createGridsterItem(config);
+            if (!config.stat)
+                config.stat = "count";
+            switch (config.stat) {
+                case "sum":
+                    config.dimension = this.ndx.dimension(function (d) { return d[config.property]; });
+                    config.group = config.dimension.group().reduceSum(function (d) {
+                        return { totaal_mensen_auto: +d[config.property] };
+                    });
+                    switch (config.type) {
+                        case "pie":
+                            config.dimension = this.ndx.dimension(function (d) { return d; });
+                            config.group = config.dimension.group().reduce(this.reduceAddSum(config.properties), this.reduceRemoveSum(config.properties), this.reduceInitSum(config.properties));
+                            break;
+                    }
+                    break;
+                case "average":
+                    switch (config.type) {
+                        case "row":
+                            config.dimension = this.ndx.dimension(function (d) { return d[config.property]; });
+                            config.group = config.dimension.group().reduce(this.reduceAddAvg(config.secondProperty), this.reduceRemoveAvg(config.secondProperty), this.reduceInitAvg);
+                            break;
+                        case "line":
+                        case "bar":
+                            config.dimension = this.ndx.dimension(function (d) { return d[config.time]; });
+                            config.group = config.dimension.group().reduce(this.reduceAddAvg(config.property), this.reduceRemoveAvg(config.property), this.reduceInitAvg);
+                        case "time":
+                            config.dimension = this.ndx.dimension(function (d) { return d[config.time]; });
+                            config.group = config.dimension.group().reduce(this.reduceAddAvg(config.property), this.reduceRemoveAvg(config.property), this.reduceInitAvg);
+                            break;
+                    }
+                    break;
+                case "pie":
+                    config.dimension = config.dimension;
+                    config.group = config.group;
+                    break;
+                case "scatter":
+                    config.dimension = this.ndx.dimension(function (d) {
+                        var r = +d[config.property];
+                        return r;
+                    });
+                    config.group = config.dimension.group();
+                    break;
+                case "time":
+                    config.dimension = this.ndx.dimension(function (d) { return d[config.time]; });
+                    break;
+                case "group":
+                    if (!config.bins)
+                        config.bins = 20;
+                    var n_bins = config.bins;
+                    var xExtent = d3.extent(this.data, function (d) { return parseFloat(d[config.property]); });
+                    var binWidth = (xExtent[1] - xExtent[0]) / n_bins;
+                    config.dimension = this.ndx.dimension(function (d) {
+                        var c = Math.floor(parseFloat(d[config.property]) / binWidth) * binWidth;
+                        return c;
+                    });
+                    config.group = config.dimension.group().reduceCount();
+                    break;
+                case "count":
+                    config.dimension = this.ndx.dimension(function (d) { return d[config.property]; });
+                    config.group = config.dimension.group().reduceCount();
+                    break;
+            }
+            var width = (config.width * this.defaultWidth) - 25;
+            var height = (config.height * 125) - 25;
+            switch (config.type) {
+                case "table":
+                    var c = [];
+                    config.columns.forEach(function (ci) {
+                        c.push({
+                            label: ci.title, format: function (d) {
+                                if (ci.hasOwnProperty("type") && ci["type"] === "number")
+                                    return d3.round(d[ci.property], 1);
+                                return d[ci.property];
+                            }
+                        });
+                    });
+                    console.log('table:' + config.elementId);
+                    $("#" + config.elementId).addClass("widget-scrollable");
+                    config.chart = dc.dataTable("#" + config.elementId);
+                    config.chart
+                        .width(width)
+                        .height(height)
+                        .dimension(config.dimension)
+                        .group(function (d) {
+                        var date = d[config.time];
+                        return "";
+                    })
+                        .size(1000)
+                        .columns(c);
+                    break;
+                case "time":
+                    config.chart = dc.lineChart("#" + config.elementId);
+                    config.chart
+                        .width(width)
+                        .height(height)
+                        .x(d3.time.scale().domain([new Date(2011, 0, 1), new Date(2016, 11, 31)]))
+                        .elasticX(true)
+                        .elasticY(true)
+                        .mouseZoomable(true)
+                        .renderHorizontalGridLines(true)
+                        .brushOn(true)
+                        .dimension(config.dimension)
+                        .group(function (d) {
+                        //var format = d3.format('02d');
+                        return d[config.time];
+                    })
+                        .renderHorizontalGridLines(true)
+                        .on('renderlet', function (chart) {
+                        chart.selectAll('rect').on("click", function (d) {
+                            // console.log("click!", d);
+                        });
+                    });
+                    break;
+                case "line":
+                    config.chart = dc.lineChart("#" + config.elementId);
+                    config.chart
+                        .width(width)
+                        .height(height)
+                        .x(d3.scale.linear())
+                        .elasticX(true)
+                        .elasticY(true)
+                        .renderHorizontalGridLines(false)
+                        .dimension(config.dimension)
+                        .group(config.group)
+                        .mouseZoomable(true)
+                        .on('renderlet', function (chart) {
+                        chart.selectAll('rect').on("click", function (d) {
+                            // console.log("click!", d);
+                        });
+                    });
+                    break;
+                case "pie":
+                    config.chart = dc.pieChart("#" + config.elementId);
+                    config.chart
+                        .width(width)
+                        .height(height)
+                        .slicesCap(10)
+                        .innerRadius(10)
+                        .dimension(config.dimension)
+                        .group(config.group);
+                    break;
+                case "bar":
+                    config.chart = dc.barChart("#" + config.elementId);
+                    config.chart
+                        .width(width)
+                        .height(height)
+                        .x(d3.scale.linear())
+                        .centerBar(true)
+                        .xUnits(function () { return 20; })
+                        .elasticX(true)
+                        .elasticY(true)
+                        .renderHorizontalGridLines(true)
+                        .dimension(config.dimension)
+                        .group(config.group);
+                    break;
+                case "stackedbar":
+                    config.chart = dc.barChart("#" + config.elementId);
+                    config.chart
+                        .width(width)
+                        .height(height)
+                        .x(d3.scale.linear())
+                        .centerBar(false)
+                        .xUnits(function () { return 20; })
+                        .elasticX(true)
+                        .elasticY(true)
+                        .renderHorizontalGridLines(true)
+                        .dimension(config.dimension)
+                        .group(config.group);
+                    break;
+                case "scatter":
+                    config.chart = dc.scatterPlot("#" + config.elementId);
+                    config.chart
+                        .width(width)
+                        .height(height)
+                        .symbolSize(3)
+                        .x(d3.scale.linear())
+                        .y(d3.scale.linear())
+                        .elasticX(true)
+                        .elasticY(true)
+                        .dimension(config.dimension)
+                        .group(config.group);
+                    break;
+                case "row":
+                    config.chart = dc.rowChart("#" + config.elementId);
+                    config.chart
+                        .width(width)
+                        .height(height)
+                        .gap(1)
+                        .elasticX(true)
+                        .dimension(config.dimension)
+                        .group(config.group)
+                        .xAxis().ticks(4);
+                    if (!config.ordering)
+                        config.ordering = "value";
+                    switch (config.ordering) {
+                        case "days":
+                            config.chart.ordering(function (d) {
+                                return Idv.days_en.indexOf(d.key);
+                            });
+                            break;
+                        case "months":
+                            config.chart.ordering(function (d) {
+                                return Idv.months.indexOf(d.key);
+                            });
+                            break;
+                        case "value":
+                            config.chart.ordering(function (d) {
+                                return -d.value;
+                            });
+                            break;
+                    }
+                    if (config.cap)
+                        config.chart.cap(config.cap);
+                    break;
+            }
+            if (!_.isUndefined(config.xaxis) && _.isFunction(config.chart.xAxisLabel)) {
+                config.chart.xAxisLabel(config.xaxis);
+            }
+            if (!_.isUndefined(config.yaxis) && _.isFunction(config.chart.yAxisLabel)) {
+                config.chart.yAxisLabel(config.yaxis);
+            }
+            if (config.marginLeft)
+                config.chart.margins().left = config.marginLeft;
+            config.chart.on("filtered", function (chart, filter) {
+                _this.triggerFilter(config);
+            });
+            if (config.stat === "average") {
+                config.chart.valueAccessor(function (d) {
+                    return d.value.avg;
+                });
+            }
+            console.log("Add chart " + config.title);
+        };
+        Idv.prototype.triggerFilter = function (config) {
+            var res = config.dimension.top(Infinity);
+            this.config.charts.forEach(function (c) {
+                if (!_.isUndefined(c.filtered) && _.isFunction(c.filtered)) {
+                    c.filtered(res);
+                }
+                //this.addChart(c)
+            });
+        };
+        Idv.prototype.createGridsterItem = function (config) {
+            var _this = this;
+            var html = "<li id='li" + config.id + "'  style='padding:4px'><header class='chart-title'><div class='fa fa-ellipsis-v dropdown-toggle' data-toggle='dropdown'  style='float:right;cursor:pointer' type='button'></div>";
+            html += "<ul class='dropdown-menu pull-right'><li class='dropdown-item'><a ng-click=\"resetFilter('" + config.id + "')\"'>reset filter</a></li><li class='dropdown-item'><a ng-click=\"resetAll()\">reset all filters</a></li><li class='dropdown-item'><a ng-click=\"disableFilter('" + config.id + "')\">disable filter</a></li><li class='dropdown-item'><a ng-click=\"savePng('" + config.title + "','" + config.elementId + "')\"'>save image</a></li>";
+            html += "</ul>" + config.title + "</header><div id='" + config.elementId + "' ></li>";
+            this.scope.resetFilter = function (id) {
+                _this.reset(id);
+            };
+            this.scope.resetAll = function () {
+                _this.resetAll();
+            };
+            this.scope.savePng = function (title, elementId) {
+                _this.savePng(title, elementId);
+            };
+            this.scope.disableFilter = function (id) {
+                var c = _.findWhere(_this.config.charts, { id: id });
+                if (!_.isUndefined(c)) {
+                    c.enabled = false;
+                    _this.updateCharts();
+                }
+            };
+            var w = this.layerService.$compile(html)(this.scope);
+            this.gridster.add_widget(w, config.width, config.height); //"<li><header class='chart-title'><div class='fa fa-times' style='float:right' ng-click='vm.reset()'></div>" + config.title + "</header><div id='" + config.elementId + "'></li>",config.width,config.height);
+        };
+        Idv.prototype.addChart = function (config) {
+            if (typeof config.enabled === 'undefined')
+                config.enabled = true;
+            if (!config.enabled)
+                return;
+            if (!config.id)
+                config.id = csComp.Helpers.getGuid();
+            if (!config.containerId)
+                config.containerId = this.config.containerId;
+            config.elementId = "ddchart-" + config.id;
+            if (!config.title)
+                config.title = config.property;
+            if (!config.type)
+                config.type = "row";
+            switch (config.type) {
+                case "search":
+                    this.addSearchWidget(config);
+                    break;
+                case "layer":
+                    this.addLayerLink(config);
+                    break;
+                case "sumcompare":
+                    this.addSumCompare(config);
+                    break;
+                default:
+                    this.addChartItem(config);
+                    break;
+            }
+        };
+        Idv.days_nl = ["zondag", "maandag", "dinsdag", "woensdag", "donderdag", "vrijdag", "zaterdag"];
+        Idv.days_en = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saterday"];
+        Idv.months = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "okt", "nov", "dec"];
+        return Idv;
+    }());
+    Idv_1.Idv = Idv;
+})(Idv || (Idv = {}));
+//# sourceMappingURL=IdvHelper.js.map
 var KanbanBoard;
 (function (KanbanBoard) {
     /**
@@ -12077,81 +12075,6 @@ var Legend;
     Legend.LegendCtrl = LegendCtrl;
 })(Legend || (Legend = {}));
 //# sourceMappingURL=LegendCtrl.js.map
-var MapElement;
-(function (MapElement) {
-    /**
-      * Config
-      */
-    var moduleName = 'csComp';
-    try {
-        MapElement.myModule = angular.module(moduleName);
-    }
-    catch (err) {
-        // named module does not exist, so create one
-        MapElement.myModule = angular.module(moduleName, []);
-    }
-    /**
-      * Directive to display the available map layers.
-      */
-    MapElement.myModule.directive('map', [
-        '$window', '$compile',
-        function ($window, $compile) {
-            return {
-                terminal: false,
-                restrict: 'E',
-                scope: {
-                    mapid: '='
-                },
-                //templateUrl: 'directives/MapElement/MapElement.tpl.html',
-                templateUrl: 'directives/MapElement/MapElement.tpl.html',
-                link: function (scope, element, attrs) {
-                    //scope.mapid = attrs.mapid;
-                    //var s = jQuery.parseJSON(attrs.param);
-                    //scope.initDashboard();
-                },
-                replace: false,
-                transclude: true,
-                controller: MapElement.MapElementCtrl
-            };
-        }
-    ]);
-})(MapElement || (MapElement = {}));
-//# sourceMappingURL=MapElement.js.map
-var MapElement;
-(function (MapElement) {
-    var MapElementCtrl = /** @class */ (function () {
-        // dependencies are injected via AngularJS $injector
-        // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
-        function MapElementCtrl($scope, $layerService, mapService, $messageBusService) {
-            var _this = this;
-            this.$scope = $scope;
-            this.$layerService = $layerService;
-            this.mapService = mapService;
-            this.$messageBusService = $messageBusService;
-            this.locale = 'en-us';
-            this.options = ['test', 'boe'];
-            $scope.vm = this;
-            this.initMap();
-            $scope.initMap = function () { return _this.initMap(); };
-        }
-        MapElementCtrl.prototype.initMap = function () {
-            this.$layerService.selectRenderer('leaflet');
-        };
-        // $inject annotation.
-        // It provides $injector with information a'bout dependencies to be injected into constructor
-        // it is better to have it close to the constructor, because the parameters must match in count and type.
-        // See http://docs.angularjs.org/guide/di
-        MapElementCtrl.$inject = [
-            '$scope',
-            'layerService',
-            'mapService',
-            'messageBusService'
-        ];
-        return MapElementCtrl;
-    }());
-    MapElement.MapElementCtrl = MapElementCtrl;
-})(MapElement || (MapElement = {}));
-//# sourceMappingURL=MapElementCtrl.js.map
 var LegendList;
 (function (LegendList) {
     /**
@@ -12432,6 +12355,81 @@ var LegendList;
     LegendList.LegendListCtrl = LegendListCtrl;
 })(LegendList || (LegendList = {}));
 //# sourceMappingURL=LegendListCtrl.js.map
+var MapElement;
+(function (MapElement) {
+    /**
+      * Config
+      */
+    var moduleName = 'csComp';
+    try {
+        MapElement.myModule = angular.module(moduleName);
+    }
+    catch (err) {
+        // named module does not exist, so create one
+        MapElement.myModule = angular.module(moduleName, []);
+    }
+    /**
+      * Directive to display the available map layers.
+      */
+    MapElement.myModule.directive('map', [
+        '$window', '$compile',
+        function ($window, $compile) {
+            return {
+                terminal: false,
+                restrict: 'E',
+                scope: {
+                    mapid: '='
+                },
+                //templateUrl: 'directives/MapElement/MapElement.tpl.html',
+                templateUrl: 'directives/MapElement/MapElement.tpl.html',
+                link: function (scope, element, attrs) {
+                    //scope.mapid = attrs.mapid;
+                    //var s = jQuery.parseJSON(attrs.param);
+                    //scope.initDashboard();
+                },
+                replace: false,
+                transclude: true,
+                controller: MapElement.MapElementCtrl
+            };
+        }
+    ]);
+})(MapElement || (MapElement = {}));
+//# sourceMappingURL=MapElement.js.map
+var MapElement;
+(function (MapElement) {
+    var MapElementCtrl = /** @class */ (function () {
+        // dependencies are injected via AngularJS $injector
+        // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
+        function MapElementCtrl($scope, $layerService, mapService, $messageBusService) {
+            var _this = this;
+            this.$scope = $scope;
+            this.$layerService = $layerService;
+            this.mapService = mapService;
+            this.$messageBusService = $messageBusService;
+            this.locale = 'en-us';
+            this.options = ['test', 'boe'];
+            $scope.vm = this;
+            this.initMap();
+            $scope.initMap = function () { return _this.initMap(); };
+        }
+        MapElementCtrl.prototype.initMap = function () {
+            this.$layerService.selectRenderer('leaflet');
+        };
+        // $inject annotation.
+        // It provides $injector with information a'bout dependencies to be injected into constructor
+        // it is better to have it close to the constructor, because the parameters must match in count and type.
+        // See http://docs.angularjs.org/guide/di
+        MapElementCtrl.$inject = [
+            '$scope',
+            'layerService',
+            'mapService',
+            'messageBusService'
+        ];
+        return MapElementCtrl;
+    }());
+    MapElement.MapElementCtrl = MapElementCtrl;
+})(MapElement || (MapElement = {}));
+//# sourceMappingURL=MapElementCtrl.js.map
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -14786,6 +14784,343 @@ var ProjectHeaderSelection;
     ProjectHeaderSelection.ProjectHeaderSelectionCtrl = ProjectHeaderSelectionCtrl;
 })(ProjectHeaderSelection || (ProjectHeaderSelection = {}));
 //# sourceMappingURL=ProjectHeaderSelectionCtrl.js.map
+var OfflineSearch;
+(function (OfflineSearch) {
+    /**
+      * Config
+      */
+    var moduleName = 'csComp';
+    try {
+        OfflineSearch.myModule = angular.module(moduleName);
+    }
+    catch (err) {
+        // named module does not exist, so create one
+        OfflineSearch.myModule = angular.module(moduleName, []);
+    }
+    /**
+      * Directive to display the available map layers.
+      */
+    OfflineSearch.myModule.directive('offlineSearch', [
+        '$compile',
+        function ($compile) {
+            return {
+                terminal: true,
+                restrict: 'E',
+                scope: {},
+                templateUrl: 'directives/OfflineSearch/OfflineSearch.tpl.html',
+                compile: function (el) {
+                    var fn = $compile(el);
+                    return function (scope) {
+                        fn(scope);
+                    };
+                },
+                replace: true,
+                transclude: true,
+                controller: OfflineSearch.OfflineSearchCtrl
+            };
+        }
+    ]);
+})(OfflineSearch || (OfflineSearch = {}));
+//# sourceMappingURL=OfflineSearch.js.map
+var OfflineSearch;
+(function (OfflineSearch) {
+    var Layer = /** @class */ (function () {
+        function Layer(groupTitle, index, id, title, path, type) {
+            this.groupTitle = groupTitle;
+            this.index = index;
+            this.id = id;
+            this.title = title;
+            this.path = path;
+            this.type = type;
+            /**
+             * Names of all the features.
+             * @type {string[]}
+             */
+            this.featureNames = [];
+        }
+        return Layer;
+    }());
+    OfflineSearch.Layer = Layer;
+    /**
+     * An index entry that contains a search result.
+     */
+    var Entry = /** @class */ (function () {
+        function Entry(layerIndexOrArray, featureIndex, propertyIndex) {
+            this.v = Array(2);
+            if (typeof layerIndexOrArray === 'number') {
+                this.v[0] = layerIndexOrArray;
+                this.v[1] = featureIndex;
+            }
+            else {
+                this.v = layerIndexOrArray;
+            }
+        }
+        Object.defineProperty(Entry.prototype, "layerIndex", {
+            get: function () { return this.v[0]; },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(Entry.prototype, "featureIndex", {
+            get: function () { return this.v[1]; },
+            enumerable: true,
+            configurable: true
+        });
+        /**
+         * This function is called when serializing the Entry object to JSON, which is
+         * much less verbose than the default JSON. In the constructor, I've used a
+         * Union type to deserialize it again.
+         */
+        Entry.prototype.toJSON = function () {
+            return this.v;
+        };
+        return Entry;
+    }());
+    OfflineSearch.Entry = Entry;
+    var KeywordIndex = /** @class */ (function () {
+        function KeywordIndex() {
+        }
+        return KeywordIndex;
+    }());
+    OfflineSearch.KeywordIndex = KeywordIndex;
+    var OfflineSearchResult = /** @class */ (function () {
+        function OfflineSearchResult(project, options) {
+            this.project = project;
+            this.options = options;
+            this.layers = [];
+            this.keywordIndex = {};
+        }
+        return OfflineSearchResult;
+    }());
+    OfflineSearch.OfflineSearchResult = OfflineSearchResult;
+})(OfflineSearch || (OfflineSearch = {}));
+//# sourceMappingURL=OfflineSearchClasses.js.map
+var OfflineSearch;
+(function (OfflineSearch) {
+    var OfflineSearchResultViewModel = /** @class */ (function () {
+        function OfflineSearchResultViewModel(title, layerTitle, groupTitle, entry) {
+            this.title = title;
+            this.layerTitle = layerTitle;
+            this.groupTitle = groupTitle;
+            this.entry = entry;
+            this.firstInGroup = false;
+        }
+        OfflineSearchResultViewModel.prototype.toString = function () {
+            return this.title;
+        };
+        Object.defineProperty(OfflineSearchResultViewModel.prototype, "fullTitle", {
+            get: function () {
+                return this.groupTitle + ' >> ' + this.layerTitle + ' >> ' + this.title;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        return OfflineSearchResultViewModel;
+    }());
+    OfflineSearch.OfflineSearchResultViewModel = OfflineSearchResultViewModel;
+    var OfflineSearchCtrl = /** @class */ (function () {
+        // dependencies are injected via AngularJS $injector
+        // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
+        function OfflineSearchCtrl($scope, $http, $layerService, $mapService, $messageBus) {
+            var _this = this;
+            this.$scope = $scope;
+            this.$http = $http;
+            this.$layerService = $layerService;
+            this.$mapService = $mapService;
+            this.$messageBus = $messageBus;
+            this.isReady = false;
+            $scope.vm = this;
+            $messageBus.subscribe('project', function (title) {
+                switch (title) {
+                    case 'loaded':
+                        var offlineSearchResultUrl = $layerService.projectUrl.url.replace('project.json', 'offline_search_result.json');
+                        _this.loadSearchResults(offlineSearchResultUrl);
+                        break;
+                }
+            });
+            $messageBus.subscribe('language', function (title, language) {
+                switch (title) {
+                    case 'newLanguage':
+                        // TODO switch language!
+                        break;
+                }
+            });
+        }
+        /**
+         * Load the offline search results (json file).
+         */
+        OfflineSearchCtrl.prototype.loadSearchResults = function (url) {
+            var _this = this;
+            this.$http.get(url)
+                .then(function (res) {
+                var offlineSearchResult = res.data;
+                _this.offlineSearchResult = offlineSearchResult;
+                var kwi = offlineSearchResult.keywordIndex;
+                var keywordIndex = {};
+                for (var key in kwi) {
+                    if (!kwi.hasOwnProperty(key))
+                        continue;
+                    kwi[key].forEach(function (entry) {
+                        if (!keywordIndex.hasOwnProperty(key))
+                            keywordIndex[key] = [];
+                        keywordIndex[key].push(new OfflineSearch.Entry(entry));
+                    });
+                }
+                _this.offlineSearchResult.keywordIndex = keywordIndex;
+                _this.isReady = true;
+            })
+                .catch(function () { console.log("OfflineSearch: error with $http "); });
+        };
+        /**
+         * Get the locations based on the entered text.
+         */
+        OfflineSearchCtrl.prototype.getLocation = function (text, resultCount) {
+            if (resultCount === void 0) { resultCount = 15; }
+            if (!this.isReady || text === null || text.length < 3)
+                return [];
+            var searchWords = text.toLowerCase().split(' ');
+            // test if last word in text might be a (part of) a stopword, if so remove it
+            var lastSearchTerm = searchWords[searchWords.length - 1];
+            var possibleStopWords = this.offlineSearchResult.options.stopWords.filter(function (stopword) { return stopword.indexOf(lastSearchTerm) > -1; });
+            if (possibleStopWords.length > 0) {
+                searchWords.splice(searchWords.length - 1, 1);
+            }
+            // remove all exact stopwords
+            this.offlineSearchResult.options.stopWords.forEach(function (stopWord) {
+                while (searchWords.indexOf(stopWord) > -1) {
+                    searchWords.splice(searchWords.indexOf(stopWord), 1);
+                }
+            });
+            var totResults;
+            for (var j in searchWords) {
+                var result = this.getKeywordHits(searchWords[j]);
+                totResults = !totResults
+                    ? result
+                    : this.mergeResults(totResults, result);
+            }
+            var searchResults = [];
+            var layers = this.offlineSearchResult.layers;
+            var count = resultCount;
+            var resultIndex = 0;
+            while (count > 0 && resultIndex < totResults.length) {
+                var r = totResults[resultIndex++];
+                var subCount = Math.min(count, r.entries.length);
+                for (var i = 0; i < subCount; i++) {
+                    var entry = r.entries[i];
+                    var layer = layers[entry.layerIndex];
+                    count--;
+                    searchResults.push(new OfflineSearchResultViewModel(layer.featureNames[entry.featureIndex], layer.title, layer.groupTitle, entry));
+                }
+            }
+            // Group search results by groupTitle | layerTitle
+            var groups = {};
+            searchResults.forEach(function (sr) {
+                var group = sr.groupTitle + ' >> ' + sr.layerTitle;
+                if (!groups.hasOwnProperty(group))
+                    groups[group] = [];
+                groups[group].push(sr);
+            });
+            searchResults = [];
+            for (var key in groups) {
+                if (!groups.hasOwnProperty(key))
+                    continue;
+                var firstInGroup = true;
+                groups[key].forEach(function (sr) {
+                    sr.firstInGroup = firstInGroup;
+                    searchResults.push(sr);
+                    firstInGroup = false;
+                });
+            }
+            return searchResults;
+        };
+        /**
+         * Merge the resuls of two keyword lookups by checking whether different entries refer
+         * to the same layer and feature.
+         * @result1 {ILookupResult[]}
+         * @result2 {ILookupResult[]}
+         */
+        OfflineSearchCtrl.prototype.mergeResults = function (result1, result2) {
+            var r = [];
+            result1.forEach(function (r1) {
+                result2.forEach(function (r2) {
+                    r1.entries.forEach(function (entry1) {
+                        r2.entries.forEach(function (entry2) {
+                            if (entry1.layerIndex === entry2.layerIndex && entry1.featureIndex === entry2.featureIndex)
+                                r.push({ score: r1.score * r2.score, key: r1.key + ' ' + r2.key, entries: [entry1] });
+                        });
+                    });
+                });
+            });
+            r = r.sort(function (a, b) { return b.score - a.score; });
+            return r;
+        };
+        /**
+         * Do a fuzzy keyword comparison between the entered text and the list of keywords,
+         * and return a subset.
+         * @text: {string}
+         */
+        OfflineSearchCtrl.prototype.getKeywordHits = function (text) {
+            var results = [];
+            var keywordIndex = this.offlineSearchResult.keywordIndex;
+            var keywords = Object.getOwnPropertyNames(keywordIndex);
+            keywords.forEach(function (key) {
+                var score = key.score(text, null);
+                if (score < 0.5)
+                    return;
+                results.push({ score: score, key: key, entries: keywordIndex[key] });
+            });
+            results = results.sort(function (a, b) { return b.score - a.score; });
+            return results;
+        };
+        /**
+         * When an item is selected, optionally open the layer and jump to the selected feature.
+         */
+        OfflineSearchCtrl.prototype.onSelect = function (selectedItem) {
+            var _this = this;
+            var layerIndex = selectedItem.entry.layerIndex;
+            var layer = this.offlineSearchResult.layers[layerIndex];
+            var projectLayer = this.$layerService.findLayer(layer.id);
+            console.log(selectedItem);
+            if (!projectLayer)
+                return;
+            if (projectLayer.enabled) {
+                this.selectFeature(layer.id, selectedItem.entry.featureIndex);
+                return;
+            }
+            else {
+                var handle = this.$messageBus.subscribe('layer', function (title, layer) {
+                    if (title !== 'activated' || projectLayer.url !== layer.url)
+                        return;
+                    _this.selectFeature(layer.id, selectedItem.entry.featureIndex);
+                    _this.$messageBus.unsubscribe(handle);
+                });
+                this.$layerService.addLayer(projectLayer);
+            }
+            var group = $("#layergroup_" + projectLayer.groupId);
+            group.collapse("show");
+        };
+        OfflineSearchCtrl.prototype.selectFeature = function (layerId, featureIndex) {
+            var feature = this.$layerService.findFeatureByIndex(layerId, featureIndex);
+            if (feature == null)
+                return;
+            this.$mapService.zoomTo(feature);
+            this.$layerService.selectFeature(feature);
+        };
+        // $inject annotation.
+        // It provides $injector with information about dependencies to be injected into constructor
+        // it is better to have it close to the constructor, because the parameters must match in count and type.
+        // See http://docs.angularjs.org/guide/di
+        OfflineSearchCtrl.$inject = [
+            '$scope',
+            '$http',
+            'layerService',
+            'mapService',
+            'messageBusService'
+        ];
+        return OfflineSearchCtrl;
+    }());
+    OfflineSearch.OfflineSearchCtrl = OfflineSearchCtrl;
+})(OfflineSearch || (OfflineSearch = {}));
+//# sourceMappingURL=OfflineSearchCtrl.js.map
 var ProjectSettings;
 (function (ProjectSettings) {
     /**
@@ -14956,6 +15291,102 @@ var ShowModal;
     ]);
 })(ShowModal || (ShowModal = {}));
 //# sourceMappingURL=ShowModal.js.map
+var Helpers;
+(function (Helpers) {
+    var Resize;
+    (function (Resize) {
+        /**
+         * Config
+         */
+        var moduleName = 'csComp';
+        try {
+            Resize.myModule = angular.module(moduleName);
+        }
+        catch (err) {
+            // named module does not exist, so create one
+            Resize.myModule = angular.module(moduleName, []);
+        }
+        ;
+        /**
+          * Directive to resize an element by settings its width or height,
+          * for example to make sure that the scrollbar appears.
+          * Typical usage:
+          * <div style="overflow-y: auto; overflow-x: hidden" resize resize-x="20" resize-y="250">...</div>
+          * Load the directive in your module, e.g.
+          * angular.module('myWebApp', ['csWeb.resize'])
+          */
+        Resize.myModule.directive('resize', ['$window',
+            function ($window) {
+                return {
+                    terminal: false,
+                    // E = elements, A=attributes and C=css classes. Can be compined, e.g. EAC
+                    restrict: 'A',
+                    // Name if optional. Text Binding (Prefix: @), One-way Binding (Prefix: &), Two-way Binding (Prefix: =)
+                    scope: {
+                        resizeX: '@',
+                        resizeY: '@',
+                        resizeRelativeToParent: '@'
+                    },
+                    // Directives that want to modify the DOM typically use the link option.link takes a function with the following signature, function link(scope, element, attrs) { ... } where:
+                    // * scope is an Angular scope object.
+                    // * element is the jqLite wrapped element that this directive matches.
+                    // * attrs is a hash object with key-value pairs of normalized attribute names and their corresponding attribute values.
+                    link: function (scope, element, attrs) {
+                        scope.onResizeFunction = function () {
+                            // console.log(scope.resizeX + "-" + scope.resizeY);
+                            var height, width;
+                            if (scope.resizeRelativeToParent) {
+                                height = element.parent().innerHeight();
+                                width = element.parent().innerWidth();
+                            }
+                            else {
+                                height = $window.innerHeight;
+                                width = $window.innerWidth;
+                            }
+                            if (scope.resizeX) {
+                                element.width((width - +scope.resizeX) + 'px');
+                            }
+                            if (scope.resizeY) {
+                                element.height((height - +scope.resizeY) + 'px');
+                            }
+                        };
+                        // Call to the function when the page is first loaded
+                        scope.onResizeFunction();
+                        // Listen to the resize event.
+                        angular.element($window).bind('resize', function () {
+                            scope.onResizeFunction();
+                            scope.$apply();
+                        });
+                    }
+                };
+            }
+        ]);
+        var inputresizerApp = angular.module('inputresizer', []);
+        Resize.myModule.directive('expandTo', function () {
+            return {
+                restrict: 'A',
+                link: function ($scope, $element, $attributes) {
+                    var expandsize = $attributes['expandTo'] || '50px';
+                    var original = $element.width();
+                    $element.on('focus', function () {
+                        $element.animate({
+                            width: expandsize
+                        }, 500, function () {
+                            // Animation complete.
+                        });
+                    }).on('blur', function () {
+                        $element.animate({
+                            width: original + 'px'
+                        }, 500, function () {
+                            // Animation complete.
+                        });
+                    });
+                }
+            };
+        });
+    })(Resize = Helpers.Resize || (Helpers.Resize = {}));
+})(Helpers || (Helpers = {}));
+//# sourceMappingURL=Resize.js.map
 var StyleList;
 (function (StyleList) {
     /**
@@ -15903,102 +16334,6 @@ var TripPlanner;
     TripPlanner.TripPlannerCtrl = TripPlannerCtrl;
 })(TripPlanner || (TripPlanner = {}));
 //# sourceMappingURL=TripPlannerCtrl.js.map
-var Helpers;
-(function (Helpers) {
-    var Resize;
-    (function (Resize) {
-        /**
-         * Config
-         */
-        var moduleName = 'csComp';
-        try {
-            Resize.myModule = angular.module(moduleName);
-        }
-        catch (err) {
-            // named module does not exist, so create one
-            Resize.myModule = angular.module(moduleName, []);
-        }
-        ;
-        /**
-          * Directive to resize an element by settings its width or height,
-          * for example to make sure that the scrollbar appears.
-          * Typical usage:
-          * <div style="overflow-y: auto; overflow-x: hidden" resize resize-x="20" resize-y="250">...</div>
-          * Load the directive in your module, e.g.
-          * angular.module('myWebApp', ['csWeb.resize'])
-          */
-        Resize.myModule.directive('resize', ['$window',
-            function ($window) {
-                return {
-                    terminal: false,
-                    // E = elements, A=attributes and C=css classes. Can be compined, e.g. EAC
-                    restrict: 'A',
-                    // Name if optional. Text Binding (Prefix: @), One-way Binding (Prefix: &), Two-way Binding (Prefix: =)
-                    scope: {
-                        resizeX: '@',
-                        resizeY: '@',
-                        resizeRelativeToParent: '@'
-                    },
-                    // Directives that want to modify the DOM typically use the link option.link takes a function with the following signature, function link(scope, element, attrs) { ... } where:
-                    // * scope is an Angular scope object.
-                    // * element is the jqLite wrapped element that this directive matches.
-                    // * attrs is a hash object with key-value pairs of normalized attribute names and their corresponding attribute values.
-                    link: function (scope, element, attrs) {
-                        scope.onResizeFunction = function () {
-                            // console.log(scope.resizeX + "-" + scope.resizeY);
-                            var height, width;
-                            if (scope.resizeRelativeToParent) {
-                                height = element.parent().innerHeight();
-                                width = element.parent().innerWidth();
-                            }
-                            else {
-                                height = $window.innerHeight;
-                                width = $window.innerWidth;
-                            }
-                            if (scope.resizeX) {
-                                element.width((width - +scope.resizeX) + 'px');
-                            }
-                            if (scope.resizeY) {
-                                element.height((height - +scope.resizeY) + 'px');
-                            }
-                        };
-                        // Call to the function when the page is first loaded
-                        scope.onResizeFunction();
-                        // Listen to the resize event.
-                        angular.element($window).bind('resize', function () {
-                            scope.onResizeFunction();
-                            scope.$apply();
-                        });
-                    }
-                };
-            }
-        ]);
-        var inputresizerApp = angular.module('inputresizer', []);
-        Resize.myModule.directive('expandTo', function () {
-            return {
-                restrict: 'A',
-                link: function ($scope, $element, $attributes) {
-                    var expandsize = $attributes['expandTo'] || '50px';
-                    var original = $element.width();
-                    $element.on('focus', function () {
-                        $element.animate({
-                            width: expandsize
-                        }, 500, function () {
-                            // Animation complete.
-                        });
-                    }).on('blur', function () {
-                        $element.animate({
-                            width: original + 'px'
-                        }, 500, function () {
-                            // Animation complete.
-                        });
-                    });
-                }
-            };
-        });
-    })(Resize = Helpers.Resize || (Helpers.Resize = {}));
-})(Helpers || (Helpers = {}));
-//# sourceMappingURL=Resize.js.map
 var Voting;
 (function (Voting) {
     /**
@@ -16049,343 +16384,6 @@ var Voting;
     ]);
 })(Voting || (Voting = {}));
 //# sourceMappingURL=Voting.js.map
-var OfflineSearch;
-(function (OfflineSearch) {
-    /**
-      * Config
-      */
-    var moduleName = 'csComp';
-    try {
-        OfflineSearch.myModule = angular.module(moduleName);
-    }
-    catch (err) {
-        // named module does not exist, so create one
-        OfflineSearch.myModule = angular.module(moduleName, []);
-    }
-    /**
-      * Directive to display the available map layers.
-      */
-    OfflineSearch.myModule.directive('offlineSearch', [
-        '$compile',
-        function ($compile) {
-            return {
-                terminal: true,
-                restrict: 'E',
-                scope: {},
-                templateUrl: 'directives/OfflineSearch/OfflineSearch.tpl.html',
-                compile: function (el) {
-                    var fn = $compile(el);
-                    return function (scope) {
-                        fn(scope);
-                    };
-                },
-                replace: true,
-                transclude: true,
-                controller: OfflineSearch.OfflineSearchCtrl
-            };
-        }
-    ]);
-})(OfflineSearch || (OfflineSearch = {}));
-//# sourceMappingURL=OfflineSearch.js.map
-var OfflineSearch;
-(function (OfflineSearch) {
-    var Layer = /** @class */ (function () {
-        function Layer(groupTitle, index, id, title, path, type) {
-            this.groupTitle = groupTitle;
-            this.index = index;
-            this.id = id;
-            this.title = title;
-            this.path = path;
-            this.type = type;
-            /**
-             * Names of all the features.
-             * @type {string[]}
-             */
-            this.featureNames = [];
-        }
-        return Layer;
-    }());
-    OfflineSearch.Layer = Layer;
-    /**
-     * An index entry that contains a search result.
-     */
-    var Entry = /** @class */ (function () {
-        function Entry(layerIndexOrArray, featureIndex, propertyIndex) {
-            this.v = Array(2);
-            if (typeof layerIndexOrArray === 'number') {
-                this.v[0] = layerIndexOrArray;
-                this.v[1] = featureIndex;
-            }
-            else {
-                this.v = layerIndexOrArray;
-            }
-        }
-        Object.defineProperty(Entry.prototype, "layerIndex", {
-            get: function () { return this.v[0]; },
-            enumerable: true,
-            configurable: true
-        });
-        Object.defineProperty(Entry.prototype, "featureIndex", {
-            get: function () { return this.v[1]; },
-            enumerable: true,
-            configurable: true
-        });
-        /**
-         * This function is called when serializing the Entry object to JSON, which is
-         * much less verbose than the default JSON. In the constructor, I've used a
-         * Union type to deserialize it again.
-         */
-        Entry.prototype.toJSON = function () {
-            return this.v;
-        };
-        return Entry;
-    }());
-    OfflineSearch.Entry = Entry;
-    var KeywordIndex = /** @class */ (function () {
-        function KeywordIndex() {
-        }
-        return KeywordIndex;
-    }());
-    OfflineSearch.KeywordIndex = KeywordIndex;
-    var OfflineSearchResult = /** @class */ (function () {
-        function OfflineSearchResult(project, options) {
-            this.project = project;
-            this.options = options;
-            this.layers = [];
-            this.keywordIndex = {};
-        }
-        return OfflineSearchResult;
-    }());
-    OfflineSearch.OfflineSearchResult = OfflineSearchResult;
-})(OfflineSearch || (OfflineSearch = {}));
-//# sourceMappingURL=OfflineSearchClasses.js.map
-var OfflineSearch;
-(function (OfflineSearch) {
-    var OfflineSearchResultViewModel = /** @class */ (function () {
-        function OfflineSearchResultViewModel(title, layerTitle, groupTitle, entry) {
-            this.title = title;
-            this.layerTitle = layerTitle;
-            this.groupTitle = groupTitle;
-            this.entry = entry;
-            this.firstInGroup = false;
-        }
-        OfflineSearchResultViewModel.prototype.toString = function () {
-            return this.title;
-        };
-        Object.defineProperty(OfflineSearchResultViewModel.prototype, "fullTitle", {
-            get: function () {
-                return this.groupTitle + ' >> ' + this.layerTitle + ' >> ' + this.title;
-            },
-            enumerable: true,
-            configurable: true
-        });
-        return OfflineSearchResultViewModel;
-    }());
-    OfflineSearch.OfflineSearchResultViewModel = OfflineSearchResultViewModel;
-    var OfflineSearchCtrl = /** @class */ (function () {
-        // dependencies are injected via AngularJS $injector
-        // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
-        function OfflineSearchCtrl($scope, $http, $layerService, $mapService, $messageBus) {
-            var _this = this;
-            this.$scope = $scope;
-            this.$http = $http;
-            this.$layerService = $layerService;
-            this.$mapService = $mapService;
-            this.$messageBus = $messageBus;
-            this.isReady = false;
-            $scope.vm = this;
-            $messageBus.subscribe('project', function (title) {
-                switch (title) {
-                    case 'loaded':
-                        var offlineSearchResultUrl = $layerService.projectUrl.url.replace('project.json', 'offline_search_result.json');
-                        _this.loadSearchResults(offlineSearchResultUrl);
-                        break;
-                }
-            });
-            $messageBus.subscribe('language', function (title, language) {
-                switch (title) {
-                    case 'newLanguage':
-                        // TODO switch language!
-                        break;
-                }
-            });
-        }
-        /**
-         * Load the offline search results (json file).
-         */
-        OfflineSearchCtrl.prototype.loadSearchResults = function (url) {
-            var _this = this;
-            this.$http.get(url)
-                .then(function (res) {
-                var offlineSearchResult = res.data;
-                _this.offlineSearchResult = offlineSearchResult;
-                var kwi = offlineSearchResult.keywordIndex;
-                var keywordIndex = {};
-                for (var key in kwi) {
-                    if (!kwi.hasOwnProperty(key))
-                        continue;
-                    kwi[key].forEach(function (entry) {
-                        if (!keywordIndex.hasOwnProperty(key))
-                            keywordIndex[key] = [];
-                        keywordIndex[key].push(new OfflineSearch.Entry(entry));
-                    });
-                }
-                _this.offlineSearchResult.keywordIndex = keywordIndex;
-                _this.isReady = true;
-            })
-                .catch(function () { console.log("OfflineSearch: error with $http "); });
-        };
-        /**
-         * Get the locations based on the entered text.
-         */
-        OfflineSearchCtrl.prototype.getLocation = function (text, resultCount) {
-            if (resultCount === void 0) { resultCount = 15; }
-            if (!this.isReady || text === null || text.length < 3)
-                return [];
-            var searchWords = text.toLowerCase().split(' ');
-            // test if last word in text might be a (part of) a stopword, if so remove it
-            var lastSearchTerm = searchWords[searchWords.length - 1];
-            var possibleStopWords = this.offlineSearchResult.options.stopWords.filter(function (stopword) { return stopword.indexOf(lastSearchTerm) > -1; });
-            if (possibleStopWords.length > 0) {
-                searchWords.splice(searchWords.length - 1, 1);
-            }
-            // remove all exact stopwords
-            this.offlineSearchResult.options.stopWords.forEach(function (stopWord) {
-                while (searchWords.indexOf(stopWord) > -1) {
-                    searchWords.splice(searchWords.indexOf(stopWord), 1);
-                }
-            });
-            var totResults;
-            for (var j in searchWords) {
-                var result = this.getKeywordHits(searchWords[j]);
-                totResults = !totResults
-                    ? result
-                    : this.mergeResults(totResults, result);
-            }
-            var searchResults = [];
-            var layers = this.offlineSearchResult.layers;
-            var count = resultCount;
-            var resultIndex = 0;
-            while (count > 0 && resultIndex < totResults.length) {
-                var r = totResults[resultIndex++];
-                var subCount = Math.min(count, r.entries.length);
-                for (var i = 0; i < subCount; i++) {
-                    var entry = r.entries[i];
-                    var layer = layers[entry.layerIndex];
-                    count--;
-                    searchResults.push(new OfflineSearchResultViewModel(layer.featureNames[entry.featureIndex], layer.title, layer.groupTitle, entry));
-                }
-            }
-            // Group search results by groupTitle | layerTitle
-            var groups = {};
-            searchResults.forEach(function (sr) {
-                var group = sr.groupTitle + ' >> ' + sr.layerTitle;
-                if (!groups.hasOwnProperty(group))
-                    groups[group] = [];
-                groups[group].push(sr);
-            });
-            searchResults = [];
-            for (var key in groups) {
-                if (!groups.hasOwnProperty(key))
-                    continue;
-                var firstInGroup = true;
-                groups[key].forEach(function (sr) {
-                    sr.firstInGroup = firstInGroup;
-                    searchResults.push(sr);
-                    firstInGroup = false;
-                });
-            }
-            return searchResults;
-        };
-        /**
-         * Merge the resuls of two keyword lookups by checking whether different entries refer
-         * to the same layer and feature.
-         * @result1 {ILookupResult[]}
-         * @result2 {ILookupResult[]}
-         */
-        OfflineSearchCtrl.prototype.mergeResults = function (result1, result2) {
-            var r = [];
-            result1.forEach(function (r1) {
-                result2.forEach(function (r2) {
-                    r1.entries.forEach(function (entry1) {
-                        r2.entries.forEach(function (entry2) {
-                            if (entry1.layerIndex === entry2.layerIndex && entry1.featureIndex === entry2.featureIndex)
-                                r.push({ score: r1.score * r2.score, key: r1.key + ' ' + r2.key, entries: [entry1] });
-                        });
-                    });
-                });
-            });
-            r = r.sort(function (a, b) { return b.score - a.score; });
-            return r;
-        };
-        /**
-         * Do a fuzzy keyword comparison between the entered text and the list of keywords,
-         * and return a subset.
-         * @text: {string}
-         */
-        OfflineSearchCtrl.prototype.getKeywordHits = function (text) {
-            var results = [];
-            var keywordIndex = this.offlineSearchResult.keywordIndex;
-            var keywords = Object.getOwnPropertyNames(keywordIndex);
-            keywords.forEach(function (key) {
-                var score = key.score(text, null);
-                if (score < 0.5)
-                    return;
-                results.push({ score: score, key: key, entries: keywordIndex[key] });
-            });
-            results = results.sort(function (a, b) { return b.score - a.score; });
-            return results;
-        };
-        /**
-         * When an item is selected, optionally open the layer and jump to the selected feature.
-         */
-        OfflineSearchCtrl.prototype.onSelect = function (selectedItem) {
-            var _this = this;
-            var layerIndex = selectedItem.entry.layerIndex;
-            var layer = this.offlineSearchResult.layers[layerIndex];
-            var projectLayer = this.$layerService.findLayer(layer.id);
-            console.log(selectedItem);
-            if (!projectLayer)
-                return;
-            if (projectLayer.enabled) {
-                this.selectFeature(layer.id, selectedItem.entry.featureIndex);
-                return;
-            }
-            else {
-                var handle = this.$messageBus.subscribe('layer', function (title, layer) {
-                    if (title !== 'activated' || projectLayer.url !== layer.url)
-                        return;
-                    _this.selectFeature(layer.id, selectedItem.entry.featureIndex);
-                    _this.$messageBus.unsubscribe(handle);
-                });
-                this.$layerService.addLayer(projectLayer);
-            }
-            var group = $("#layergroup_" + projectLayer.groupId);
-            group.collapse("show");
-        };
-        OfflineSearchCtrl.prototype.selectFeature = function (layerId, featureIndex) {
-            var feature = this.$layerService.findFeatureByIndex(layerId, featureIndex);
-            if (feature == null)
-                return;
-            this.$mapService.zoomTo(feature);
-            this.$layerService.selectFeature(feature);
-        };
-        // $inject annotation.
-        // It provides $injector with information about dependencies to be injected into constructor
-        // it is better to have it close to the constructor, because the parameters must match in count and type.
-        // See http://docs.angularjs.org/guide/di
-        OfflineSearchCtrl.$inject = [
-            '$scope',
-            '$http',
-            'layerService',
-            'mapService',
-            'messageBusService'
-        ];
-        return OfflineSearchCtrl;
-    }());
-    OfflineSearch.OfflineSearchCtrl = OfflineSearchCtrl;
-})(OfflineSearch || (OfflineSearch = {}));
-//# sourceMappingURL=OfflineSearchCtrl.js.map
 var csComp;
 (function (csComp) {
     var Services;
@@ -18906,9 +18904,7 @@ var csComp;
                     var erase = { title: 'Clean Layer', icon: 'eraser' };
                     erase.callback = function (layer, layerService) {
                         console.log('Eraseing features from layer: ' + layer.title);
-                        layer.data.features.forEach(function (f) {
-                            layerService.removeFeature(f);
-                        });
+                        layer.layerSource.service.removeFeatureBatch(_.map(layer.data.features, function (f) { return f.id; }), layer, true); // remove and save
                         layer.data.features.length = 0;
                     };
                     res.push(erase);
@@ -20444,8 +20440,9 @@ var csComp;
                 }
             };
             /** remove feature batch */
-            LayerService.prototype.removeFeatureBatch = function (featureIds, layer) {
+            LayerService.prototype.removeFeatureBatch = function (featureIds, layer, save) {
                 var _this = this;
+                if (save === void 0) { save = false; }
                 var toRemove = this.project.features.filter(function (f) { return featureIds.indexOf(f.id) >= 0; });
                 this.project.features = this.project.features.filter(function (f) { return featureIds.indexOf(f.id) < 0; });
                 layer.data.features = layer.data.features.filter(function (f) { return featureIds.indexOf(f.id) < 0; });
@@ -20453,6 +20450,13 @@ var csComp;
                     layer.group.filterResult = layer.group.filterResult.filter(function (f) { return featureIds.indexOf(f.id) < 0; });
                 layer.group.ndx.remove(toRemove);
                 this.activeMapRenderer.removeFeatureBatch(toRemove, layer);
+                if (save && layer.isDynamic) {
+                    var s = new LayerUpdate();
+                    s.layerId = layer.id;
+                    s.action = LayerUpdateAction.deleteFeatureBatch;
+                    s.item = featureIds;
+                    this.$messageBusService.serverSendMessageAction('layer', s);
+                }
                 toRemove.forEach(function (feature) {
                     if (feature.isSelected) {
                         _this.lastSelectedFeature = null;
@@ -21542,7 +21546,7 @@ var csComp;
                     if (_this.openSingleProject) {
                         var projectId_1 = searchParams['project'];
                         // By default, look for an API project
-                        var u_1 = 'http://www.zorgopdekaart.nl/zelfkaartenmaken/api/projects/' + projectId_1;
+                        var u_1 = 'api/projects/' + projectId_1;
                         if (!initialProject) {
                             var foundProject = solution.projects.some(function (p) {
                                 // If the solution already specifies a project, use that instead.
@@ -22554,6 +22558,7 @@ var csComp;
             LayerUpdateAction[LayerUpdateAction["updateLayer"] = 3] = "updateLayer";
             LayerUpdateAction[LayerUpdateAction["deleteLayer"] = 4] = "deleteLayer";
             LayerUpdateAction[LayerUpdateAction["addUpdateFeatureBatch"] = 5] = "addUpdateFeatureBatch";
+            LayerUpdateAction[LayerUpdateAction["deleteFeatureBatch"] = 6] = "deleteFeatureBatch";
         })(LayerUpdateAction = Services.LayerUpdateAction || (Services.LayerUpdateAction = {}));
         /** Type of change in an ApiEvent */
         var ChangeType;
@@ -24780,92 +24785,6 @@ var FeatureTypes;
     FeatureTypes.FeatureTypesCtrl = FeatureTypesCtrl;
 })(FeatureTypes || (FeatureTypes = {}));
 //# sourceMappingURL=FeatureTypesCtrl.js.map
-var GroupEdit;
-(function (GroupEdit) {
-    /**
-      * Config
-      */
-    var moduleName = 'csComp';
-    try {
-        GroupEdit.myModule = angular.module(moduleName);
-    }
-    catch (err) {
-        // named module does not exist, so create one
-        GroupEdit.myModule = angular.module(moduleName, []);
-    }
-    /**
-      * Directive to display a feature's properties in a panel.
-      *
-      * @seealso          : http://www.youtube.com/watch?v=gjJ5vLRK8R8&list=UUGD_0i6L48hucTiiyhb5QzQ
-      * @seealso          : http://plnkr.co/edit/HyBP9d?p=preview
-      */
-    GroupEdit.myModule.directive('groupedit', ['$compile',
-        function ($compile) {
-            return {
-                terminal: true,
-                restrict: 'E',
-                scope: {},
-                templateUrl: 'directives/Editors/GroupEditor/GroupEdit.tpl.html',
-                replace: true,
-                transclude: true,
-                controller: GroupEdit.GroupEditCtrl
-            };
-        }
-    ]);
-})(GroupEdit || (GroupEdit = {}));
-//# sourceMappingURL=GroupEdit.js.map
-var GroupEdit;
-(function (GroupEdit) {
-    var GroupEditCtrl = /** @class */ (function () {
-        // dependencies are injected via AngularJS $injector
-        // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
-        function GroupEditCtrl($scope, $mapService, $layerService, $messageBusService, $dashboardService) {
-            var _this = this;
-            this.$scope = $scope;
-            this.$mapService = $mapService;
-            this.$layerService = $layerService;
-            this.$messageBusService = $messageBusService;
-            this.$dashboardService = $dashboardService;
-            this.noLayerSelected = true;
-            this.scope = $scope;
-            $scope.vm = this;
-            $scope.group = $scope.$parent["data"];
-            console.log($scope.group);
-            this.updateLayers();
-            this.$messageBusService.subscribe('layer', function () {
-                _this.updateLayers();
-            });
-        }
-        GroupEditCtrl.prototype.updateLayers = function () {
-            this.noLayerSelected = this.$scope.group.layers.some(function (l) { return l.enabled; });
-            //console.log("selected " + this.noLayerSelected)
-            //this.$scope.group.oneLayerActive
-        };
-        GroupEditCtrl.prototype.removeGroup = function () {
-            this.$layerService.removeGroup(this.$scope.group);
-        };
-        GroupEditCtrl.prototype.toggleClustering = function () {
-            console.log('toggle clustering');
-        };
-        GroupEditCtrl.prototype.updateOws = function () {
-            this.$scope.group.loadLayersFromOWS();
-        };
-        // $inject annotation.
-        // It provides $injector with information about dependencies to be injected into constructor
-        // it is better to have it close to the constructor, because the parameters must match in count and type.
-        // See http://docs.angularjs.org/guide/di
-        GroupEditCtrl.$inject = [
-            '$scope',
-            'mapService',
-            'layerService',
-            'messageBusService',
-            'dashboardService'
-        ];
-        return GroupEditCtrl;
-    }());
-    GroupEdit.GroupEditCtrl = GroupEditCtrl;
-})(GroupEdit || (GroupEdit = {}));
-//# sourceMappingURL=GroupEditCtrl.js.map
 var LayerEditor;
 (function (LayerEditor) {
     /**
@@ -25171,6 +25090,92 @@ var LayerSettings;
     LayerSettings.LayerSettingsCtrl = LayerSettingsCtrl;
 })(LayerSettings || (LayerSettings = {}));
 //# sourceMappingURL=LayerSettingsCtrl.js.map
+var GroupEdit;
+(function (GroupEdit) {
+    /**
+      * Config
+      */
+    var moduleName = 'csComp';
+    try {
+        GroupEdit.myModule = angular.module(moduleName);
+    }
+    catch (err) {
+        // named module does not exist, so create one
+        GroupEdit.myModule = angular.module(moduleName, []);
+    }
+    /**
+      * Directive to display a feature's properties in a panel.
+      *
+      * @seealso          : http://www.youtube.com/watch?v=gjJ5vLRK8R8&list=UUGD_0i6L48hucTiiyhb5QzQ
+      * @seealso          : http://plnkr.co/edit/HyBP9d?p=preview
+      */
+    GroupEdit.myModule.directive('groupedit', ['$compile',
+        function ($compile) {
+            return {
+                terminal: true,
+                restrict: 'E',
+                scope: {},
+                templateUrl: 'directives/Editors/GroupEditor/GroupEdit.tpl.html',
+                replace: true,
+                transclude: true,
+                controller: GroupEdit.GroupEditCtrl
+            };
+        }
+    ]);
+})(GroupEdit || (GroupEdit = {}));
+//# sourceMappingURL=GroupEdit.js.map
+var GroupEdit;
+(function (GroupEdit) {
+    var GroupEditCtrl = /** @class */ (function () {
+        // dependencies are injected via AngularJS $injector
+        // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
+        function GroupEditCtrl($scope, $mapService, $layerService, $messageBusService, $dashboardService) {
+            var _this = this;
+            this.$scope = $scope;
+            this.$mapService = $mapService;
+            this.$layerService = $layerService;
+            this.$messageBusService = $messageBusService;
+            this.$dashboardService = $dashboardService;
+            this.noLayerSelected = true;
+            this.scope = $scope;
+            $scope.vm = this;
+            $scope.group = $scope.$parent["data"];
+            console.log($scope.group);
+            this.updateLayers();
+            this.$messageBusService.subscribe('layer', function () {
+                _this.updateLayers();
+            });
+        }
+        GroupEditCtrl.prototype.updateLayers = function () {
+            this.noLayerSelected = this.$scope.group.layers.some(function (l) { return l.enabled; });
+            //console.log("selected " + this.noLayerSelected)
+            //this.$scope.group.oneLayerActive
+        };
+        GroupEditCtrl.prototype.removeGroup = function () {
+            this.$layerService.removeGroup(this.$scope.group);
+        };
+        GroupEditCtrl.prototype.toggleClustering = function () {
+            console.log('toggle clustering');
+        };
+        GroupEditCtrl.prototype.updateOws = function () {
+            this.$scope.group.loadLayersFromOWS();
+        };
+        // $inject annotation.
+        // It provides $injector with information about dependencies to be injected into constructor
+        // it is better to have it close to the constructor, because the parameters must match in count and type.
+        // See http://docs.angularjs.org/guide/di
+        GroupEditCtrl.$inject = [
+            '$scope',
+            'mapService',
+            'layerService',
+            'messageBusService',
+            'dashboardService'
+        ];
+        return GroupEditCtrl;
+    }());
+    GroupEdit.GroupEditCtrl = GroupEditCtrl;
+})(GroupEdit || (GroupEdit = {}));
+//# sourceMappingURL=GroupEditCtrl.js.map
 var PropertyTypes;
 (function (PropertyTypes) {
     /**

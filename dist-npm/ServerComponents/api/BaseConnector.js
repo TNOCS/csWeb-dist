@@ -27,6 +27,9 @@ var BaseConnector = /** @class */ (function () {
     //TODO: implement
     BaseConnector.prototype.updateFeature = function (layerId, feature, useLog, meta, callback) { };
     //TODO: implement
+    BaseConnector.prototype.deleteFeatureBatch = function (layerId, featureIds, useLog, meta, callback) { };
+    ;
+    //TODO: implement
     BaseConnector.prototype.addUpdateFeatureBatch = function (layerId, feature, useLog, meta, callback) { };
     //TODO: test further. Result is the # of deleted docs.
     BaseConnector.prototype.deleteFeature = function (layerId, featureId, meta, callback) { };

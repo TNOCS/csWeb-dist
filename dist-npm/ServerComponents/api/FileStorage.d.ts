@@ -14,7 +14,6 @@ export interface Media {
 export declare class FileStorage extends BaseConnector.BaseConnector {
     rootpath: string;
     private ignoreInitial;
-    private layerBaseUrl;
     manager: ApiManager.ApiManager;
     layers: string[];
     projects: {
@@ -36,7 +35,7 @@ export declare class FileStorage extends BaseConnector.BaseConnector {
     staticProjectsPath: string;
     resourcesPath: string;
     private layerDebounceFunctions;
-    constructor(rootpath: string, watch?: boolean, ignoreInitial?: boolean, layerBaseUrl?: string);
+    constructor(rootpath: string, watch?: boolean, ignoreInitial?: boolean);
     watchLayersFolder(): void;
     private getDirectories(srcpath);
     watchProjectsFolder(): void;
@@ -95,6 +94,7 @@ export declare class FileStorage extends BaseConnector.BaseConnector {
     getFeature(layerId: string, featureId: string, meta: ApiMeta, callback: Function): void;
     updateFeature(layerId: string, feature: any, useLog: boolean, meta: ApiMeta, callback: Function): void;
     deleteFeature(layerId: string, featureId: string, meta: ApiMeta, callback: Function): void;
+    deleteFeatureBatch(layerId: string, featureIds: string[], useLog: boolean, meta: ApiMeta, callback: Function): void;
     /** Add a file: images go to the iconPath folder, others to the blob folder */
     addFile(base64: string, folder: string, file: string, meta: ApiMeta, callback: Function): void;
     /** Get a file: images get from the iconPath folder, others to the blob folder */

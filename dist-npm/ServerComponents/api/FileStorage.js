@@ -23,14 +23,12 @@ var helpers = require("../helpers/Utils");
 var sift = require('sift');
 var FileStorage = /** @class */ (function (_super) {
     __extends(FileStorage, _super);
-    function FileStorage(rootpath, watch, ignoreInitial, layerBaseUrl) {
+    function FileStorage(rootpath, watch, ignoreInitial) {
         if (watch === void 0) { watch = true; }
         if (ignoreInitial === void 0) { ignoreInitial = false; }
-        if (layerBaseUrl === void 0) { layerBaseUrl = '/zelfkaartenmaken/api/layers'; }
         var _this = _super.call(this) || this;
         _this.rootpath = rootpath;
         _this.ignoreInitial = ignoreInitial;
-        _this.layerBaseUrl = layerBaseUrl;
         _this.layers = [];
         _this.projects = {};
         _this.keys = {};
@@ -251,7 +249,7 @@ var FileStorage = /** @class */ (function (_super) {
         if (res && !_.isEmpty(res)) {
             fs.outputFile(fn, JSON.stringify(res, null, 2), function (error) {
                 if (error) {
-                    Winston.error("filestore: error writing resourcefile: " + fn + " " + error.message);
+                    Winston.error('filestore: error writing resourcefile : ' + fn);
                 }
                 else {
                     Winston.info('filestore: file saved : ' + fn);
@@ -268,7 +266,7 @@ var FileStorage = /** @class */ (function (_super) {
         Winston.info('writing project file : ' + fn);
         fs.writeFile(fn, JSON.stringify(project, null, 2), function (error) {
             if (error) {
-                Winston.info("filestore: error writing project file: " + fn + " " + error.message);
+                Winston.info('error writing project file : ' + fn);
             }
             else {
                 Winston.info('filestore: file saved : ' + fn);
@@ -399,7 +397,7 @@ var FileStorage = /** @class */ (function (_super) {
                 //layer.title = id;
                 layer.storage = _this.id;
                 //layer.type = "geojson";
-                layer.url = _this.layerBaseUrl + '/' + id;
+                layer.url = '/api/layers/' + id;
                 (layer.storage) ? Winston.debug('storage ' + layer.storage) : Winston.warn("No storage found for " + layer);
                 _this.manager && _this.manager.addUpdateLayer(layer, {}, function () { });
             }
@@ -709,6 +707,19 @@ var FileStorage = /** @class */ (function (_super) {
         }
         callback({ result: ApiResult.OK });
     };
+    FileStorage.prototype.deleteFeatureBatch = function (layerId, featureIds, useLog, meta, callback) {
+        if (!featureIds || !Array.isArray(featureIds)) {
+            callback({ result: ApiResult.Error });
+            return;
+        }
+        var layer = this.findLayer(layerId);
+        if (layer && layer.features) {
+            layer.features = layer.features.filter(function (k) { return k.id && featureIds.indexOf(k.id) < 0; });
+            this.saveLayerDelay(layer);
+        }
+        callback({ result: ApiResult.OK });
+    };
+    ;
     /** Add a file: images go to the iconPath folder, others to the blob folder */
     FileStorage.prototype.addFile = function (base64, folder, file, meta, callback) {
         var ext = path.extname(file).toLowerCase();

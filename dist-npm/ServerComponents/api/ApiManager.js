@@ -225,7 +225,6 @@ var ApiManager = /** @class */ (function (_super) {
         _this.saveLayersDelay = _.debounce(function (layer) {
             _this.saveLayerConfig();
         }, 1000);
-        console.log("Construction apiManager with options: " + JSON.stringify(_this.options, null, 2));
         _this.setMaxListeners(25);
         _this.namespace = namespace;
         _this.name = name;
@@ -1203,6 +1202,18 @@ var ApiManager = /** @class */ (function (_super) {
             i.addUpdateFeatureBatch(layerId, features, false, meta, function () { });
         });
         this.emit(Event[Event.FeaturesChanged], { id: layerId, type: ChangeType.Update, value: features });
+    };
+    /** Similar to deleteFeature, but with an array of updated features instead of one feature.
+     *
+     */
+    ApiManager.prototype.deleteFeatureBatch = function (layerId, featureIds, useLog, meta, callback) {
+        var s = this.findStorageForLayerId(layerId);
+        if (s)
+            s.deleteFeatureBatch(layerId, featureIds, true, meta, function (result) { return callback(result); });
+        this.getInterfaces(meta).forEach(function (i) {
+            i.deleteFeatureBatch(layerId, featureIds, false, meta, function () { });
+        });
+        this.emit(Event[Event.FeaturesChanged], { id: layerId, type: ChangeType.Delete, value: featureIds });
     };
     ApiManager.prototype.deleteFeature = function (layerId, featureId, meta, callback) {
         var _this = this;

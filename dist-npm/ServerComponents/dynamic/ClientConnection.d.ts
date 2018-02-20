@@ -62,6 +62,7 @@ export declare enum LayerUpdateAction {
     updateLayer = 3,
     deleteLayer = 4,
     addUpdateFeatureBatch = 5,
+    deleteFeatureBatch = 6,
 }
 /**
  * List of available action for sending/receiving key actions over socket.io channel

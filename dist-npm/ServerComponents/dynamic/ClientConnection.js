@@ -73,6 +73,7 @@ var LayerUpdateAction;
     LayerUpdateAction[LayerUpdateAction["updateLayer"] = 3] = "updateLayer";
     LayerUpdateAction[LayerUpdateAction["deleteLayer"] = 4] = "deleteLayer";
     LayerUpdateAction[LayerUpdateAction["addUpdateFeatureBatch"] = 5] = "addUpdateFeatureBatch";
+    LayerUpdateAction[LayerUpdateAction["deleteFeatureBatch"] = 6] = "deleteFeatureBatch";
 })(LayerUpdateAction = exports.LayerUpdateAction || (exports.LayerUpdateAction = {}));
 /**
  * List of available action for sending/receiving key actions over socket.io channel

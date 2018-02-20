@@ -27,6 +27,7 @@ export declare class SocketIOAPI extends BaseConnector.BaseConnector {
     updateLogs(layerId: string, featureId: string, logs: {
         [key: string]: Log[];
     }, meta: ApiMeta, callback: Function): void;
+    deleteFeatureBatch(layerId: string, featureIds: string[], useLog: boolean, meta: ApiMeta, callback: Function): void;
     deleteFeature(layerId: string, featureId: string, meta: ApiMeta, callback: Function): void;
     updateKey(keyId: string, value: Object, meta: ApiMeta, callback: Function): void;
 }
