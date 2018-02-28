@@ -7,6 +7,7 @@ import Key = ApiManager.Key;
 import Log = ApiManager.Log;
 import ApiMeta = ApiManager.ApiMeta;
 import BaseConnector = require('./BaseConnector');
+import _ = require('underscore');
 export interface Media {
     base64: string;
     fileUri: string;
@@ -42,9 +43,9 @@ export declare class FileStorage extends BaseConnector.BaseConnector {
     openStaticFolder(folder: string): void;
     watchKeysFolder(): void;
     watchResourcesFolder(): void;
-    saveProjectDelay: (project: ApiManager.Project) => void;
-    saveResourcesDelay: (res: ApiManager.ResourceFile) => void;
-    saveKeyDelay: (key: ApiManager.Key) => void;
+    saveProjectDelay: ((project: ApiManager.Project) => void) & _.Cancelable;
+    saveResourcesDelay: ((res: ApiManager.ResourceFile) => void) & _.Cancelable;
+    saveKeyDelay: ((key: ApiManager.Key) => void) & _.Cancelable;
     private saveLayerDelay(layer);
     private getProjectFilename(projectId);
     private getLayerFilename(layerId);

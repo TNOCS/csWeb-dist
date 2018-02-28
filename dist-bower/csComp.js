@@ -979,7 +979,8 @@ var csComp;
                     hideLayerActions: project.hideLayerActions,
                     attributions: project.attributions,
                     disableDrop: project.disableDrop,
-                    featurePropsDirective: project.featurePropsDirective
+                    featurePropsDirective: project.featurePropsDirective,
+                    menuPaddingTopLeft: project.menuPaddingTopLeft
                 };
             };
             Project.prototype.deserialize = function (input) {
@@ -5593,44 +5594,6 @@ var BaseMapList;
     BaseMapList.BaseMapListCtrl = BaseMapListCtrl;
 })(BaseMapList || (BaseMapList = {}));
 //# sourceMappingURL=BaseMapListCtrl.js.map
-var Directives;
-(function (Directives) {
-    var Clock;
-    (function (Clock) {
-        /**
-         * Config
-         */
-        var moduleName = "csComp";
-        try {
-            Clock.myModule = angular.module(moduleName);
-        }
-        catch (err) {
-            // named module does not exist, so create one
-            Clock.myModule = angular.module(moduleName, []);
-        }
-        /**
-          * Directive to show the time.
-          */
-        Clock.myModule.directive('clock', ['dateFilter', function (dateFilter) {
-                return {
-                    restrict: 'E',
-                    scope: {
-                        time: '@',
-                        format: '@'
-                    },
-                    link: function (scope, element, attrs) {
-                        function updateTime() {
-                            element.html(dateFilter(scope.time, scope.format));
-                        }
-                        scope.$watch('time', function (value) {
-                            updateTime();
-                        });
-                    }
-                };
-            }]);
-    })(Clock = Directives.Clock || (Directives.Clock = {}));
-})(Directives || (Directives = {}));
-//# sourceMappingURL=Clock.js.map
 var Charts;
 (function (Charts) {
     'use strict';
@@ -6390,6 +6353,44 @@ var Charts;
         }]);
 })(Charts || (Charts = {}));
 //# sourceMappingURL=SparklineChart.js.map
+var Directives;
+(function (Directives) {
+    var Clock;
+    (function (Clock) {
+        /**
+         * Config
+         */
+        var moduleName = "csComp";
+        try {
+            Clock.myModule = angular.module(moduleName);
+        }
+        catch (err) {
+            // named module does not exist, so create one
+            Clock.myModule = angular.module(moduleName, []);
+        }
+        /**
+          * Directive to show the time.
+          */
+        Clock.myModule.directive('clock', ['dateFilter', function (dateFilter) {
+                return {
+                    restrict: 'E',
+                    scope: {
+                        time: '@',
+                        format: '@'
+                    },
+                    link: function (scope, element, attrs) {
+                        function updateTime() {
+                            element.html(dateFilter(scope.time, scope.format));
+                        }
+                        scope.$watch('time', function (value) {
+                            updateTime();
+                        });
+                    }
+                };
+            }]);
+    })(Clock = Directives.Clock || (Directives.Clock = {}));
+})(Directives || (Directives = {}));
+//# sourceMappingURL=Clock.js.map
 var Helpers;
 (function (Helpers) {
     var ContextMenu;
@@ -6860,7 +6861,7 @@ var DataTable;
          */
         DataTableCtrl.prototype.getRows = function () {
             var _this = this;
-            var meta = [this.headers.length];
+            var meta = new Array(this.headers.length);
             this.propertyTypes.forEach(function (mi) {
                 // Keep headers and mi in the right order
                 var index = _this.headers.indexOf(mi.title);
@@ -7429,12 +7430,12 @@ var ExpertMode;
                 restrict: 'E',
                 scope: {},
                 templateUrl: 'directives/ExpertMode/ExpertMode.tpl.html',
-                compile: function (el) {
+                compile: (function (el) {
                     var fn = $compile(el);
                     return function (scope) {
                         fn(scope);
                     };
-                },
+                }),
                 //link: function (scope, element, attrs) {
                 //     // Since we are wrapping the rating directive in this directive, I couldn't use transclude,
                 //     // so I copy the existing attributes manually.
@@ -7777,10 +7778,21 @@ var FeatureProps;
             // Skip empty, non-editable values
             if (!mi.canEdit && csComp.StringExt.isNullOrEmpty(displayValue))
                 return;
-            var canFilter = (mi.type === 'number' || mi.type === 'text' || mi.type === 'options' || mi.type === 'date' || mi.type === 'boolean');
+            var canFilter, canStyle;
+            if (mi.hasOwnProperty('canFilter')) {
+                canFilter = mi.canFilter;
+            }
+            else {
+                canFilter = (mi.type === 'number' || mi.type === 'text' || mi.type === 'options' || mi.type === 'date' || mi.type === 'boolean');
+            }
             if (mi.filterType)
                 canFilter = mi.filterType.toLowerCase() !== 'none';
-            var canStyle = (mi.type === 'number' || mi.type === 'options' || mi.type === 'color');
+            if (mi.hasOwnProperty('canStyle')) {
+                canStyle = mi.canStyle;
+            }
+            else {
+                canStyle = (mi.type === 'number' || mi.type === 'options' || mi.type === 'color');
+            }
             if (mi.styleType)
                 canStyle = mi.styleType.toLowerCase() !== 'none';
             var canShowStats = (typeof mi.canShowStats === 'undefined') || mi.canShowStats;
@@ -8677,12 +8689,12 @@ var Heatmap;
                 restrict: 'EA',
                 scope: {},
                 templateUrl: 'directives/Heatmap/Heatmap.tpl.html',
-                compile: function (el) {
+                compile: (function (el) {
                     var fn = $compile(el);
                     return function (scope) {
                         fn(scope);
                     };
-                },
+                }),
                 replace: true,
                 transclude: true,
                 controller: Heatmap.HeatmapCtrl
@@ -11004,12 +11016,12 @@ var LanguageSwitch;
                 restrict: 'E',
                 scope: {},
                 templateUrl: 'directives/LanguageSwitch/LanguageSwitch.tpl.html',
-                compile: function (el) {
+                compile: (function (el) {
                     var fn = $compile(el);
                     return function (scope) {
                         fn(scope);
                     };
-                },
+                }),
                 replace: true,
                 transclude: true,
                 controller: LanguageSwitch.LanguageSwitchCtrl
@@ -11825,13 +11837,13 @@ var Legend;
                 restrict: 'E',
                 scope: {},
                 templateUrl: 'directives/Legend/Legend.tpl.html',
-                compile: function (el) {
+                compile: (function (el) {
                     var fn = $compile(el);
                     //console.log('this is the compile function of legendDirective');
                     return function (scope) {
                         fn(scope);
                     };
-                },
+                }),
                 replace: true,
                 transclude: true,
                 controller: Legend.LegendCtrl
@@ -12919,12 +12931,12 @@ var Mca;
                 restrict: 'EA',
                 scope: {},
                 templateUrl: 'directives/MCA/Mca.tpl.html',
-                compile: function (el) {
+                compile: (function (el) {
                     var fn = $compile(el);
                     return function (scope) {
                         fn(scope);
                     };
-                },
+                }),
                 replace: true,
                 transclude: true,
                 controller: Mca.McaCtrl
@@ -13791,7 +13803,7 @@ var Mca;
             this.rankTitle = mca.rankTitle;
             this.scaleMin = mca.scaleMinValue;
             this.scaleMax = mca.scaleMaxValue;
-            this.selectedFeatureType = mca.featureIds.length === 0 ? '' : this.dataset.featureTypes[mca.featureIds[0]];
+            this.selectedFeatureType = mca.featureIds.length === 0 ? null : this.dataset.featureTypes[mca.featureIds[0]];
             if (this.selectedFeatureType) {
                 this.updatePropertyInfo(this.selectedFeatureType);
                 this.updatePropertyInfoUponEdit(mca);
@@ -13929,7 +13941,8 @@ var Mca;
         McaEditorCtrl.prototype.isDisabled = function () {
             if (typeof this.mcaTitle === 'undefined' || this.mcaTitle.length === 0)
                 return true;
-            if (this.propInfos.length === 0 || !this.propInfos.reduce(function (p, c) { return p || c.isSelected; }))
+            // if (this.propInfos.length === 0 || !this.propInfos.reduce((p,c) => { return p || c.isSelected; })) return true; ???
+            if (this.propInfos.length === 0 || !this.propInfos.reduce(function (p) { return p; }))
                 return true;
             return false;
         };
@@ -14517,273 +14530,6 @@ var Search;
     Search.NavigateState = NavigateState;
 })(Search || (Search = {}));
 //# sourceMappingURL=SearchClasses.js.map
-var ProfileHeader;
-(function (ProfileHeader) {
-    var ProfileHeaderCtrl = /** @class */ (function () {
-        function ProfileHeaderCtrl($scope, $localStorageService, $layerService, $mapService, $messageBus, profileService) {
-            var _this = this;
-            this.$scope = $scope;
-            this.$localStorageService = $localStorageService;
-            this.$layerService = $layerService;
-            this.$mapService = $mapService;
-            this.$messageBus = $messageBus;
-            this.profileService = profileService;
-            $scope.vm = this;
-            console.log('init profile service');
-            $messageBus.subscribe('project', function (action, value) {
-                if (_this.$layerService.project) {
-                    _this.$scope.enabled = _this.$layerService.project.profile.authenticationMethod !== csComp.Services.authMethods.none;
-                    console.log(_this.$layerService.project.profile.authenticationMethod);
-                    switch (_this.$layerService.project.profile.authenticationMethod) {
-                    }
-                }
-            });
-        }
-        ProfileHeaderCtrl.prototype.startLogin = function () {
-            this.profileService.startLogin();
-        };
-        ProfileHeaderCtrl.prototype.logout = function () {
-            this.profileService.logoutUser();
-        };
-        ProfileHeaderCtrl.$inject = [
-            '$scope',
-            'localStorageService',
-            'layerService',
-            'mapService',
-            'messageBusService',
-            'profileService'
-        ];
-        return ProfileHeaderCtrl;
-    }());
-    ProfileHeader.ProfileHeaderCtrl = ProfileHeaderCtrl;
-    /**
-     * Config
-     */
-    var moduleName = 'csComp';
-    try {
-        ProfileHeader.myModule = angular.module(moduleName);
-    }
-    catch (err) {
-        // named module does not exist, so create one
-        ProfileHeader.myModule = angular.module(moduleName, []);
-    }
-    /**
-      * Directive to set the expert mode, so we can determine what the user should see (degree of difficulty).
-      * The expert mode can either be set manually, e.g. using this directive, or by setting the expertMode property in the
-      * project.json file. In neither are set, we assume that we are dealing with an expert, so all features should be enabled.
-      *
-      * Precedence:
-      * - when a declaration is absent, assume Expert.
-      * - when the mode is set in local storage, take that value.
-      * - when the mode is set in the project.json file, take that value.
-      *
-      * As we want the expertMode to be always available, we have added it to the MapService service.
-      */
-    ProfileHeader.myModule
-        .directive('profileHeader', [
-        '$compile',
-        function ($compile) {
-            return {
-                terminal: true,
-                restrict: 'E',
-                scope: {},
-                templateUrl: 'directives/Profile/ProfileHeader.tpl.html',
-                compile: function (el) {
-                    var fn = $compile(el);
-                    return function (scope) {
-                        fn(scope);
-                    };
-                },
-                //link: function (scope, element, attrs) {
-                //     // Since we are wrapping the rating directive in this directive, I couldn't use transclude,
-                //     // so I copy the existing attributes manually.
-                //     var attributeString = '';
-                //     for (var key in attrs) {
-                //         if (key.substr(0, 1) !== '$' && attrs.hasOwnProperty(key)) attributeString += key + '="' + attrs[key] + '" ';
-                //     }
-                //     var html = '<rating ng-model="expertMode" '
-                //         + attributeString
-                //         + 'tooltip-html-unsafe="{{\'EXPERTMODE.EXPLANATION\' | translate}}" tooltip-placement="bottom" tooltip-trigger="'mouseenter'" tooltip-append-to-body="false"'
-                //         + 'max="3"></rating>';
-                //     var e = $compile(html)(scope);
-                //     element.replaceWith(e);
-                // },
-                replace: true,
-                transclude: true,
-                controller: ProfileHeaderCtrl
-            };
-        }
-    ]);
-})(ProfileHeader || (ProfileHeader = {}));
-//# sourceMappingURL=ProfileHeaderCtrl.js.map
-var ProfileTab;
-(function (ProfileTab) {
-    var ProfileTabCtrl = /** @class */ (function () {
-        function ProfileTabCtrl($scope, $localStorageService, $layerService, $mapService, $messageBus, profileService) {
-            var _this = this;
-            this.$scope = $scope;
-            this.$localStorageService = $localStorageService;
-            this.$layerService = $layerService;
-            this.$mapService = $mapService;
-            this.$messageBus = $messageBus;
-            this.profileService = profileService;
-            $scope.vm = this;
-            $messageBus.subscribe('project', function (action, value) {
-                if (_this.$layerService.project) {
-                    _this.$scope.enabled = _this.$layerService.project.profile.authenticationMethod !== csComp.Services.authMethods.none;
-                    console.log(_this.$layerService.project.profile.authenticationMethod);
-                    switch (_this.$layerService.project.profile.authenticationMethod) {
-                    }
-                }
-            });
-        }
-        ProfileTabCtrl.prototype.startLogin = function () {
-            this.profileService.startLogin();
-        };
-        ProfileTabCtrl.prototype.validateUser = function () {
-            this.profileService.validateUser(this.userName, this.userPassword);
-            this.userPassword = '';
-        };
-        ProfileTabCtrl.prototype.signupUser = function () {
-            this.profileService.signupUser(this.name, this.userName, this.userPassword);
-        };
-        ProfileTabCtrl.prototype.logout = function () {
-            this.profileService.logoutUser();
-        };
-        ProfileTabCtrl.$inject = [
-            '$scope',
-            'localStorageService',
-            'layerService',
-            'mapService',
-            'messageBusService',
-            'profileService'
-        ];
-        return ProfileTabCtrl;
-    }());
-    ProfileTab.ProfileTabCtrl = ProfileTabCtrl;
-    /**
-     * Config
-     */
-    var moduleName = 'csComp';
-    try {
-        ProfileTab.myModule = angular.module(moduleName);
-    }
-    catch (err) {
-        // named module does not exist, so create one
-        ProfileTab.myModule = angular.module(moduleName, []);
-    }
-    /**
-      * Directive to set the expert mode, so we can determine what the user should see (degree of difficulty).
-      * The expert mode can either be set manually, e.g. using this directive, or by setting the expertMode property in the
-      * project.json file. In neither are set, we assume that we are dealing with an expert, so all features should be enabled.
-      *
-      * Precedence:
-      * - when a declaration is absent, assume Expert.
-      * - when the mode is set in local storage, take that value.
-      * - when the mode is set in the project.json file, take that value.
-      *
-      * As we want the expertMode to be always available, we have added it to the MapService service.
-      */
-    ProfileTab.myModule
-        .directive('profiletab', [
-        '$compile',
-        function ($compile) {
-            return {
-                terminal: true,
-                restrict: 'E',
-                scope: {},
-                templateUrl: 'directives/Profile/ProfileTab.tpl.html',
-                compile: function (el) {
-                    var fn = $compile(el);
-                    return function (scope) {
-                        fn(scope);
-                    };
-                },
-                //link: function (scope, element, attrs) {
-                //     // Since we are wrapping the rating directive in this directive, I couldn't use transclude,
-                //     // so I copy the existing attributes manually.
-                //     var attributeString = '';
-                //     for (var key in attrs) {
-                //         if (key.substr(0, 1) !== '$' && attrs.hasOwnProperty(key)) attributeString += key + '="' + attrs[key] + '" ';
-                //     }
-                //     var html = '<rating ng-model="expertMode" '
-                //         + attributeString
-                //         + 'tooltip-html-unsafe="{{\'EXPERTMODE.EXPLANATION\' | translate}}" tooltip-placement="bottom" tooltip-trigger="'mouseenter'" tooltip-append-to-body="false"'
-                //         + 'max="3"></rating>';
-                //     var e = $compile(html)(scope);
-                //     element.replaceWith(e);
-                // },
-                replace: true,
-                transclude: true,
-                controller: ProfileTabCtrl
-            };
-        }
-    ]);
-})(ProfileTab || (ProfileTab = {}));
-//# sourceMappingURL=ProfileTabCtrl.js.map
-var ProjectHeaderSelection;
-(function (ProjectHeaderSelection) {
-    /**
-      * Config
-      */
-    var moduleName = 'csComp';
-    try {
-        ProjectHeaderSelection.myModule = angular.module(moduleName);
-    }
-    catch (err) {
-        // named module does not exist, so create one
-        ProjectHeaderSelection.myModule = angular.module(moduleName, []);
-    }
-    /**
-      * Directive to display the available map layers.
-      */
-    ProjectHeaderSelection.myModule.directive('projectHeaderSelection', [
-        '$window', '$compile',
-        function ($window, $compile) {
-            return {
-                terminal: false,
-                restrict: 'E',
-                scope: {},
-                templateUrl: 'directives/ProjectSelection/ProjectHeaderSelection.tpl.html',
-                link: function (scope, element, attrs) {
-                },
-                replace: true,
-                transclude: true,
-                controller: ProjectHeaderSelection.ProjectHeaderSelectionCtrl
-            };
-        }
-    ]);
-})(ProjectHeaderSelection || (ProjectHeaderSelection = {}));
-//# sourceMappingURL=ProjectHeaderSelection.js.map
-var ProjectHeaderSelection;
-(function (ProjectHeaderSelection) {
-    var ProjectHeaderSelectionCtrl = /** @class */ (function () {
-        // dependencies are injected via AngularJS $injector
-        // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
-        function ProjectHeaderSelectionCtrl($scope, $layerService, $dashboardService, $mapService, $messageBusService) {
-            this.$scope = $scope;
-            this.$layerService = $layerService;
-            this.$dashboardService = $dashboardService;
-            this.$mapService = $mapService;
-            this.$messageBusService = $messageBusService;
-            $scope.vm = this;
-        }
-        // $inject annotation.
-        // It provides $injector with information about dependencies to be injected into constructor
-        // it is better to have it close to the constructor, because the parameters must match in count and type.
-        // See http://docs.angularjs.org/guide/di
-        ProjectHeaderSelectionCtrl.$inject = [
-            '$scope',
-            'layerService',
-            'dashboardService',
-            'mapService',
-            'messageBusService'
-        ];
-        return ProjectHeaderSelectionCtrl;
-    }());
-    ProjectHeaderSelection.ProjectHeaderSelectionCtrl = ProjectHeaderSelectionCtrl;
-})(ProjectHeaderSelection || (ProjectHeaderSelection = {}));
-//# sourceMappingURL=ProjectHeaderSelectionCtrl.js.map
 var OfflineSearch;
 (function (OfflineSearch) {
     /**
@@ -14808,12 +14554,12 @@ var OfflineSearch;
                 restrict: 'E',
                 scope: {},
                 templateUrl: 'directives/OfflineSearch/OfflineSearch.tpl.html',
-                compile: function (el) {
+                compile: (function (el) {
                     var fn = $compile(el);
                     return function (scope) {
                         fn(scope);
                     };
-                },
+                }),
                 replace: true,
                 transclude: true,
                 controller: OfflineSearch.OfflineSearchCtrl
@@ -15121,6 +14867,273 @@ var OfflineSearch;
     OfflineSearch.OfflineSearchCtrl = OfflineSearchCtrl;
 })(OfflineSearch || (OfflineSearch = {}));
 //# sourceMappingURL=OfflineSearchCtrl.js.map
+var ProfileHeader;
+(function (ProfileHeader) {
+    var ProfileHeaderCtrl = /** @class */ (function () {
+        function ProfileHeaderCtrl($scope, $localStorageService, $layerService, $mapService, $messageBus, profileService) {
+            var _this = this;
+            this.$scope = $scope;
+            this.$localStorageService = $localStorageService;
+            this.$layerService = $layerService;
+            this.$mapService = $mapService;
+            this.$messageBus = $messageBus;
+            this.profileService = profileService;
+            $scope.vm = this;
+            console.log('init profile service');
+            $messageBus.subscribe('project', function (action, value) {
+                if (_this.$layerService.project) {
+                    _this.$scope.enabled = _this.$layerService.project.profile.authenticationMethod !== csComp.Services.authMethods.none;
+                    console.log(_this.$layerService.project.profile.authenticationMethod);
+                    switch (_this.$layerService.project.profile.authenticationMethod) {
+                    }
+                }
+            });
+        }
+        ProfileHeaderCtrl.prototype.startLogin = function () {
+            this.profileService.startLogin();
+        };
+        ProfileHeaderCtrl.prototype.logout = function () {
+            this.profileService.logoutUser();
+        };
+        ProfileHeaderCtrl.$inject = [
+            '$scope',
+            'localStorageService',
+            'layerService',
+            'mapService',
+            'messageBusService',
+            'profileService'
+        ];
+        return ProfileHeaderCtrl;
+    }());
+    ProfileHeader.ProfileHeaderCtrl = ProfileHeaderCtrl;
+    /**
+     * Config
+     */
+    var moduleName = 'csComp';
+    try {
+        ProfileHeader.myModule = angular.module(moduleName);
+    }
+    catch (err) {
+        // named module does not exist, so create one
+        ProfileHeader.myModule = angular.module(moduleName, []);
+    }
+    /**
+      * Directive to set the expert mode, so we can determine what the user should see (degree of difficulty).
+      * The expert mode can either be set manually, e.g. using this directive, or by setting the expertMode property in the
+      * project.json file. In neither are set, we assume that we are dealing with an expert, so all features should be enabled.
+      *
+      * Precedence:
+      * - when a declaration is absent, assume Expert.
+      * - when the mode is set in local storage, take that value.
+      * - when the mode is set in the project.json file, take that value.
+      *
+      * As we want the expertMode to be always available, we have added it to the MapService service.
+      */
+    ProfileHeader.myModule
+        .directive('profileHeader', [
+        '$compile',
+        function ($compile) {
+            return {
+                terminal: true,
+                restrict: 'E',
+                scope: {},
+                templateUrl: 'directives/Profile/ProfileHeader.tpl.html',
+                compile: (function (el) {
+                    var fn = $compile(el);
+                    return function (scope) {
+                        fn(scope);
+                    };
+                }),
+                //link: function (scope, element, attrs) {
+                //     // Since we are wrapping the rating directive in this directive, I couldn't use transclude,
+                //     // so I copy the existing attributes manually.
+                //     var attributeString = '';
+                //     for (var key in attrs) {
+                //         if (key.substr(0, 1) !== '$' && attrs.hasOwnProperty(key)) attributeString += key + '="' + attrs[key] + '" ';
+                //     }
+                //     var html = '<rating ng-model="expertMode" '
+                //         + attributeString
+                //         + 'tooltip-html-unsafe="{{\'EXPERTMODE.EXPLANATION\' | translate}}" tooltip-placement="bottom" tooltip-trigger="'mouseenter'" tooltip-append-to-body="false"'
+                //         + 'max="3"></rating>';
+                //     var e = $compile(html)(scope);
+                //     element.replaceWith(e);
+                // },
+                replace: true,
+                transclude: true,
+                controller: ProfileHeaderCtrl
+            };
+        }
+    ]);
+})(ProfileHeader || (ProfileHeader = {}));
+//# sourceMappingURL=ProfileHeaderCtrl.js.map
+var ProfileTab;
+(function (ProfileTab) {
+    var ProfileTabCtrl = /** @class */ (function () {
+        function ProfileTabCtrl($scope, $localStorageService, $layerService, $mapService, $messageBus, profileService) {
+            var _this = this;
+            this.$scope = $scope;
+            this.$localStorageService = $localStorageService;
+            this.$layerService = $layerService;
+            this.$mapService = $mapService;
+            this.$messageBus = $messageBus;
+            this.profileService = profileService;
+            $scope.vm = this;
+            $messageBus.subscribe('project', function (action, value) {
+                if (_this.$layerService.project) {
+                    _this.$scope.enabled = _this.$layerService.project.profile.authenticationMethod !== csComp.Services.authMethods.none;
+                    console.log(_this.$layerService.project.profile.authenticationMethod);
+                    switch (_this.$layerService.project.profile.authenticationMethod) {
+                    }
+                }
+            });
+        }
+        ProfileTabCtrl.prototype.startLogin = function () {
+            this.profileService.startLogin();
+        };
+        ProfileTabCtrl.prototype.validateUser = function () {
+            this.profileService.validateUser(this.userName, this.userPassword);
+            this.userPassword = '';
+        };
+        ProfileTabCtrl.prototype.signupUser = function () {
+            this.profileService.signupUser(this.name, this.userName, this.userPassword);
+        };
+        ProfileTabCtrl.prototype.logout = function () {
+            this.profileService.logoutUser();
+        };
+        ProfileTabCtrl.$inject = [
+            '$scope',
+            'localStorageService',
+            'layerService',
+            'mapService',
+            'messageBusService',
+            'profileService'
+        ];
+        return ProfileTabCtrl;
+    }());
+    ProfileTab.ProfileTabCtrl = ProfileTabCtrl;
+    /**
+     * Config
+     */
+    var moduleName = 'csComp';
+    try {
+        ProfileTab.myModule = angular.module(moduleName);
+    }
+    catch (err) {
+        // named module does not exist, so create one
+        ProfileTab.myModule = angular.module(moduleName, []);
+    }
+    /**
+      * Directive to set the expert mode, so we can determine what the user should see (degree of difficulty).
+      * The expert mode can either be set manually, e.g. using this directive, or by setting the expertMode property in the
+      * project.json file. In neither are set, we assume that we are dealing with an expert, so all features should be enabled.
+      *
+      * Precedence:
+      * - when a declaration is absent, assume Expert.
+      * - when the mode is set in local storage, take that value.
+      * - when the mode is set in the project.json file, take that value.
+      *
+      * As we want the expertMode to be always available, we have added it to the MapService service.
+      */
+    ProfileTab.myModule
+        .directive('profiletab', [
+        '$compile',
+        function ($compile) {
+            return {
+                terminal: true,
+                restrict: 'E',
+                scope: {},
+                templateUrl: 'directives/Profile/ProfileTab.tpl.html',
+                compile: (function (el) {
+                    var fn = $compile(el);
+                    return function (scope) {
+                        fn(scope);
+                    };
+                }),
+                //link: function (scope, element, attrs) {
+                //     // Since we are wrapping the rating directive in this directive, I couldn't use transclude,
+                //     // so I copy the existing attributes manually.
+                //     var attributeString = '';
+                //     for (var key in attrs) {
+                //         if (key.substr(0, 1) !== '$' && attrs.hasOwnProperty(key)) attributeString += key + '="' + attrs[key] + '" ';
+                //     }
+                //     var html = '<rating ng-model="expertMode" '
+                //         + attributeString
+                //         + 'tooltip-html-unsafe="{{\'EXPERTMODE.EXPLANATION\' | translate}}" tooltip-placement="bottom" tooltip-trigger="'mouseenter'" tooltip-append-to-body="false"'
+                //         + 'max="3"></rating>';
+                //     var e = $compile(html)(scope);
+                //     element.replaceWith(e);
+                // },
+                replace: true,
+                transclude: true,
+                controller: ProfileTabCtrl
+            };
+        }
+    ]);
+})(ProfileTab || (ProfileTab = {}));
+//# sourceMappingURL=ProfileTabCtrl.js.map
+var ProjectHeaderSelection;
+(function (ProjectHeaderSelection) {
+    /**
+      * Config
+      */
+    var moduleName = 'csComp';
+    try {
+        ProjectHeaderSelection.myModule = angular.module(moduleName);
+    }
+    catch (err) {
+        // named module does not exist, so create one
+        ProjectHeaderSelection.myModule = angular.module(moduleName, []);
+    }
+    /**
+      * Directive to display the available map layers.
+      */
+    ProjectHeaderSelection.myModule.directive('projectHeaderSelection', [
+        '$window', '$compile',
+        function ($window, $compile) {
+            return {
+                terminal: false,
+                restrict: 'E',
+                scope: {},
+                templateUrl: 'directives/ProjectSelection/ProjectHeaderSelection.tpl.html',
+                link: function (scope, element, attrs) {
+                },
+                replace: true,
+                transclude: true,
+                controller: ProjectHeaderSelection.ProjectHeaderSelectionCtrl
+            };
+        }
+    ]);
+})(ProjectHeaderSelection || (ProjectHeaderSelection = {}));
+//# sourceMappingURL=ProjectHeaderSelection.js.map
+var ProjectHeaderSelection;
+(function (ProjectHeaderSelection) {
+    var ProjectHeaderSelectionCtrl = /** @class */ (function () {
+        // dependencies are injected via AngularJS $injector
+        // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
+        function ProjectHeaderSelectionCtrl($scope, $layerService, $dashboardService, $mapService, $messageBusService) {
+            this.$scope = $scope;
+            this.$layerService = $layerService;
+            this.$dashboardService = $dashboardService;
+            this.$mapService = $mapService;
+            this.$messageBusService = $messageBusService;
+            $scope.vm = this;
+        }
+        // $inject annotation.
+        // It provides $injector with information about dependencies to be injected into constructor
+        // it is better to have it close to the constructor, because the parameters must match in count and type.
+        // See http://docs.angularjs.org/guide/di
+        ProjectHeaderSelectionCtrl.$inject = [
+            '$scope',
+            'layerService',
+            'dashboardService',
+            'mapService',
+            'messageBusService'
+        ];
+        return ProjectHeaderSelectionCtrl;
+    }());
+    ProjectHeaderSelection.ProjectHeaderSelectionCtrl = ProjectHeaderSelectionCtrl;
+})(ProjectHeaderSelection || (ProjectHeaderSelection = {}));
+//# sourceMappingURL=ProjectHeaderSelectionCtrl.js.map
 var ProjectSettings;
 (function (ProjectSettings) {
     /**
@@ -15241,56 +15254,6 @@ var ProjectSettings;
     ProjectSettings.ProjectSettingsCtrl = ProjectSettingsCtrl;
 })(ProjectSettings || (ProjectSettings = {}));
 //# sourceMappingURL=ProjectSettingsCtrl.js.map
-var ShowModal;
-(function (ShowModal) {
-    /**
-    * Config
-    */
-    var moduleName = 'csComp';
-    try {
-        ShowModal.myModule = angular.module(moduleName);
-    }
-    catch (err) {
-        // named module does not exist, so create one
-        ShowModal.myModule = angular.module(moduleName, []);
-    }
-    /**
-      * Directive to show a modal dialog, whose html is specified inside the main HTML code.
-      * Typical usage: http://plnkr.co/edit/WJBp7A6M3RB1MLERDXSS?p=info
-      * angular.module('myWebApp', ['csWeb.showModal'])
-      */
-    ShowModal.myModule.directive('showModal', [
-        '$parse',
-        function ($parse) {
-            return {
-                restrict: "A",
-                link: function (scope, element, attrs) {
-                    //Hide or show the modal
-                    scope.showModalDialog = function (visible, elem) {
-                        if (!elem)
-                            elem = element;
-                        var myElem = $(elem);
-                        if (visible)
-                            myElem.appendTo('body').modal("show");
-                        else
-                            myElem.modal("hide");
-                    };
-                    //Watch for changes to the modal-visible attribute
-                    scope.$watch(attrs.showModal, function (newValue, oldValue) {
-                        scope.showModalDialog(newValue, attrs.$$element);
-                    });
-                    //Update the visible value when the dialog is closed through UI actions (Ok, cancel, etc.)
-                    $(element).bind("hide.bs.modal", function () {
-                        $parse(attrs.showModal).assign(scope, false);
-                        if (!scope.$$phase && !scope.$root.$$phase)
-                            scope.$apply();
-                    });
-                }
-            };
-        }
-    ]);
-})(ShowModal || (ShowModal = {}));
-//# sourceMappingURL=ShowModal.js.map
 var Helpers;
 (function (Helpers) {
     var Resize;
@@ -15387,6 +15350,56 @@ var Helpers;
     })(Resize = Helpers.Resize || (Helpers.Resize = {}));
 })(Helpers || (Helpers = {}));
 //# sourceMappingURL=Resize.js.map
+var ShowModal;
+(function (ShowModal) {
+    /**
+    * Config
+    */
+    var moduleName = 'csComp';
+    try {
+        ShowModal.myModule = angular.module(moduleName);
+    }
+    catch (err) {
+        // named module does not exist, so create one
+        ShowModal.myModule = angular.module(moduleName, []);
+    }
+    /**
+      * Directive to show a modal dialog, whose html is specified inside the main HTML code.
+      * Typical usage: http://plnkr.co/edit/WJBp7A6M3RB1MLERDXSS?p=info
+      * angular.module('myWebApp', ['csWeb.showModal'])
+      */
+    ShowModal.myModule.directive('showModal', [
+        '$parse',
+        function ($parse) {
+            return {
+                restrict: "A",
+                link: function (scope, element, attrs) {
+                    //Hide or show the modal
+                    scope.showModalDialog = function (visible, elem) {
+                        if (!elem)
+                            elem = element;
+                        var myElem = $(elem);
+                        if (visible)
+                            myElem.appendTo('body').modal("show");
+                        else
+                            myElem.modal("hide");
+                    };
+                    //Watch for changes to the modal-visible attribute
+                    scope.$watch(attrs.showModal, function (newValue, oldValue) {
+                        scope.showModalDialog(newValue, attrs.$$element);
+                    });
+                    //Update the visible value when the dialog is closed through UI actions (Ok, cancel, etc.)
+                    $(element).bind("hide.bs.modal", function () {
+                        $parse(attrs.showModal).assign(scope, false);
+                        if (!scope.$$phase && !scope.$root.$$phase)
+                            scope.$apply();
+                    });
+                }
+            };
+        }
+    ]);
+})(ShowModal || (ShowModal = {}));
+//# sourceMappingURL=ShowModal.js.map
 var StyleList;
 (function (StyleList) {
     /**
@@ -21676,6 +21689,9 @@ var csComp;
                 if (this.project.viewBounds) {
                     this.activeMapRenderer.fitBounds(this.project.viewBounds);
                 }
+                if (this.project.menuPaddingTopLeft) {
+                    this.$messageBusService.publish('map', 'setPadding', this.project.menuPaddingTopLeft);
+                }
                 this.$messageBusService.publish('map', 'showScale', this.project.showScale);
                 this.$messageBusService.publish('map', 'showLocation', this.project.showLocation);
                 this.initTypeResources(this.project);
@@ -22777,6 +22793,9 @@ var csComp;
                 this.showLocation = false;
                 this.mapVisible = true;
                 this.rightMenuVisible = true;
+                /** Padding from the top-left of the screen to compensate for part of the map that
+                 * is overlayed by the menu */
+                this.menuPaddingTopLeft = new L.Point(0, 0);
                 this._timelineVisible = false;
                 this.initExpertMode();
                 this.baseLayers = {};
@@ -22795,10 +22814,13 @@ var csComp;
                 var mapClicked = function (e) { return _this.mapClicked(e); };
                 $messageBusService.subscribe('map', function (action, data) {
                     switch (action.toLowerCase()) {
+                        case 'setpadding':
+                            _this.menuPaddingTopLeft = new L.Point(data.x, data.y);
+                            break;
                         case 'setextent':
                             // console.log(data);
                             // take the navbar and leftpanel into account using padding (15+50px height, 25+400px left)
-                            _this.map.fitBounds(new L.LatLngBounds(data.southWest, data.northEast), { paddingTopLeft: new L.Point(400, 105) });
+                            _this.map.fitBounds(new L.LatLngBounds(data.southWest, data.northEast), { paddingTopLeft: _this.menuPaddingTopLeft });
                             break;
                         case 'setzoom':
                             // Zoom to a location on the map.
@@ -24785,6 +24807,92 @@ var FeatureTypes;
     FeatureTypes.FeatureTypesCtrl = FeatureTypesCtrl;
 })(FeatureTypes || (FeatureTypes = {}));
 //# sourceMappingURL=FeatureTypesCtrl.js.map
+var GroupEdit;
+(function (GroupEdit) {
+    /**
+      * Config
+      */
+    var moduleName = 'csComp';
+    try {
+        GroupEdit.myModule = angular.module(moduleName);
+    }
+    catch (err) {
+        // named module does not exist, so create one
+        GroupEdit.myModule = angular.module(moduleName, []);
+    }
+    /**
+      * Directive to display a feature's properties in a panel.
+      *
+      * @seealso          : http://www.youtube.com/watch?v=gjJ5vLRK8R8&list=UUGD_0i6L48hucTiiyhb5QzQ
+      * @seealso          : http://plnkr.co/edit/HyBP9d?p=preview
+      */
+    GroupEdit.myModule.directive('groupedit', ['$compile',
+        function ($compile) {
+            return {
+                terminal: true,
+                restrict: 'E',
+                scope: {},
+                templateUrl: 'directives/Editors/GroupEditor/GroupEdit.tpl.html',
+                replace: true,
+                transclude: true,
+                controller: GroupEdit.GroupEditCtrl
+            };
+        }
+    ]);
+})(GroupEdit || (GroupEdit = {}));
+//# sourceMappingURL=GroupEdit.js.map
+var GroupEdit;
+(function (GroupEdit) {
+    var GroupEditCtrl = /** @class */ (function () {
+        // dependencies are injected via AngularJS $injector
+        // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
+        function GroupEditCtrl($scope, $mapService, $layerService, $messageBusService, $dashboardService) {
+            var _this = this;
+            this.$scope = $scope;
+            this.$mapService = $mapService;
+            this.$layerService = $layerService;
+            this.$messageBusService = $messageBusService;
+            this.$dashboardService = $dashboardService;
+            this.noLayerSelected = true;
+            this.scope = $scope;
+            $scope.vm = this;
+            $scope.group = $scope.$parent["data"];
+            console.log($scope.group);
+            this.updateLayers();
+            this.$messageBusService.subscribe('layer', function () {
+                _this.updateLayers();
+            });
+        }
+        GroupEditCtrl.prototype.updateLayers = function () {
+            this.noLayerSelected = this.$scope.group.layers.some(function (l) { return l.enabled; });
+            //console.log("selected " + this.noLayerSelected)
+            //this.$scope.group.oneLayerActive
+        };
+        GroupEditCtrl.prototype.removeGroup = function () {
+            this.$layerService.removeGroup(this.$scope.group);
+        };
+        GroupEditCtrl.prototype.toggleClustering = function () {
+            console.log('toggle clustering');
+        };
+        GroupEditCtrl.prototype.updateOws = function () {
+            this.$scope.group.loadLayersFromOWS();
+        };
+        // $inject annotation.
+        // It provides $injector with information about dependencies to be injected into constructor
+        // it is better to have it close to the constructor, because the parameters must match in count and type.
+        // See http://docs.angularjs.org/guide/di
+        GroupEditCtrl.$inject = [
+            '$scope',
+            'mapService',
+            'layerService',
+            'messageBusService',
+            'dashboardService'
+        ];
+        return GroupEditCtrl;
+    }());
+    GroupEdit.GroupEditCtrl = GroupEditCtrl;
+})(GroupEdit || (GroupEdit = {}));
+//# sourceMappingURL=GroupEditCtrl.js.map
 var LayerEditor;
 (function (LayerEditor) {
     /**
@@ -25090,92 +25198,6 @@ var LayerSettings;
     LayerSettings.LayerSettingsCtrl = LayerSettingsCtrl;
 })(LayerSettings || (LayerSettings = {}));
 //# sourceMappingURL=LayerSettingsCtrl.js.map
-var GroupEdit;
-(function (GroupEdit) {
-    /**
-      * Config
-      */
-    var moduleName = 'csComp';
-    try {
-        GroupEdit.myModule = angular.module(moduleName);
-    }
-    catch (err) {
-        // named module does not exist, so create one
-        GroupEdit.myModule = angular.module(moduleName, []);
-    }
-    /**
-      * Directive to display a feature's properties in a panel.
-      *
-      * @seealso          : http://www.youtube.com/watch?v=gjJ5vLRK8R8&list=UUGD_0i6L48hucTiiyhb5QzQ
-      * @seealso          : http://plnkr.co/edit/HyBP9d?p=preview
-      */
-    GroupEdit.myModule.directive('groupedit', ['$compile',
-        function ($compile) {
-            return {
-                terminal: true,
-                restrict: 'E',
-                scope: {},
-                templateUrl: 'directives/Editors/GroupEditor/GroupEdit.tpl.html',
-                replace: true,
-                transclude: true,
-                controller: GroupEdit.GroupEditCtrl
-            };
-        }
-    ]);
-})(GroupEdit || (GroupEdit = {}));
-//# sourceMappingURL=GroupEdit.js.map
-var GroupEdit;
-(function (GroupEdit) {
-    var GroupEditCtrl = /** @class */ (function () {
-        // dependencies are injected via AngularJS $injector
-        // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
-        function GroupEditCtrl($scope, $mapService, $layerService, $messageBusService, $dashboardService) {
-            var _this = this;
-            this.$scope = $scope;
-            this.$mapService = $mapService;
-            this.$layerService = $layerService;
-            this.$messageBusService = $messageBusService;
-            this.$dashboardService = $dashboardService;
-            this.noLayerSelected = true;
-            this.scope = $scope;
-            $scope.vm = this;
-            $scope.group = $scope.$parent["data"];
-            console.log($scope.group);
-            this.updateLayers();
-            this.$messageBusService.subscribe('layer', function () {
-                _this.updateLayers();
-            });
-        }
-        GroupEditCtrl.prototype.updateLayers = function () {
-            this.noLayerSelected = this.$scope.group.layers.some(function (l) { return l.enabled; });
-            //console.log("selected " + this.noLayerSelected)
-            //this.$scope.group.oneLayerActive
-        };
-        GroupEditCtrl.prototype.removeGroup = function () {
-            this.$layerService.removeGroup(this.$scope.group);
-        };
-        GroupEditCtrl.prototype.toggleClustering = function () {
-            console.log('toggle clustering');
-        };
-        GroupEditCtrl.prototype.updateOws = function () {
-            this.$scope.group.loadLayersFromOWS();
-        };
-        // $inject annotation.
-        // It provides $injector with information about dependencies to be injected into constructor
-        // it is better to have it close to the constructor, because the parameters must match in count and type.
-        // See http://docs.angularjs.org/guide/di
-        GroupEditCtrl.$inject = [
-            '$scope',
-            'mapService',
-            'layerService',
-            'messageBusService',
-            'dashboardService'
-        ];
-        return GroupEditCtrl;
-    }());
-    GroupEdit.GroupEditCtrl = GroupEditCtrl;
-})(GroupEdit || (GroupEdit = {}));
-//# sourceMappingURL=GroupEditCtrl.js.map
 var PropertyTypes;
 (function (PropertyTypes) {
     /**
@@ -27614,13 +27636,13 @@ var Filters;
                 restrict: 'E',
                 scope: {},
                 templateUrl: 'directives/Widgets/Filters/TextFilter.tpl.html',
-                compile: function (el) {
+                compile: (function (el) {
                     var fn = $compile(el);
                     //console.log('this is the compile function of legendDirective');
                     return function (scope) {
                         fn(scope, function () { }); //https://docs.angularjs.org/error/$compile/multilink
                     };
-                },
+                }),
                 replace: true,
                 transclude: true,
                 controller: Filters.TextFilterCtrl
@@ -27635,13 +27657,13 @@ var Filters;
                 restrict: 'E',
                 scope: {},
                 templateUrl: 'directives/Widgets/Filters/BoolFilter.tpl.html',
-                compile: function (el) {
+                compile: (function (el) {
                     var fn = $compile(el);
                     //console.log('this is the compile function of legendDirective');
                     return function (scope) {
                         fn(scope);
                     };
-                },
+                }),
                 replace: true,
                 transclude: true,
                 controller: Filters.BoolFilterCtrl
@@ -27656,13 +27678,13 @@ var Filters;
                 restrict: 'E',
                 scope: {},
                 templateUrl: 'directives/Widgets/Filters/BarFilter.tpl.html',
-                compile: function (el) {
+                compile: (function (el) {
                     var fn = $compile(el);
                     //console.log('this is the compile function of legendDirective');
                     return function (scope) {
                         fn(scope);
                     };
-                },
+                }),
                 replace: true,
                 transclude: true,
                 controller: Filters.BarFilterCtrl
@@ -27677,13 +27699,13 @@ var Filters;
                 restrict: 'E',
                 scope: {},
                 templateUrl: 'directives/Widgets/Filters/RowFilter.tpl.html',
-                compile: function (el) {
+                compile: (function (el) {
                     var fn = $compile(el);
                     //console.log('this is the compile function of legendDirective');
                     return function (scope) {
                         fn(scope, function () { }); //https://docs.angularjs.org/error/$compile/multilink
                     };
-                },
+                }),
                 replace: true,
                 transclude: true,
                 controller: Filters.RowFilterCtrl
@@ -27698,13 +27720,13 @@ var Filters;
                 restrict: 'E',
                 scope: {},
                 templateUrl: 'directives/Widgets/Filters/ScatterFilter.tpl.html',
-                compile: function (el) {
+                compile: (function (el) {
                     var fn = $compile(el);
                     //console.log('this is the compile function of legendDirective');
                     return function (scope) {
                         fn(scope);
                     };
-                },
+                }),
                 replace: true,
                 transclude: true,
                 controller: Filters.ScatterFilterCtrl
@@ -27719,13 +27741,13 @@ var Filters;
                 restrict: 'E',
                 scope: {},
                 templateUrl: 'directives/Widgets/Filters/DateFilter.tpl.html',
-                compile: function (el) {
+                compile: (function (el) {
                     var fn = $compile(el);
                     //console.log('this is the compile function of legendDirective');
                     return function (scope) {
                         fn(scope);
                     };
-                },
+                }),
                 replace: true,
                 transclude: true,
                 controller: Filters.DateFilterCtrl
@@ -27740,13 +27762,13 @@ var Filters;
                 restrict: 'E',
                 scope: {},
                 templateUrl: 'directives/Widgets/Filters/LocationFilter.tpl.html',
-                compile: function (el) {
+                compile: (function (el) {
                     var fn = $compile(el);
                     //console.log('this is the compile function of legendDirective');
                     return function (scope) {
                         fn(scope);
                     };
-                },
+                }),
                 replace: true,
                 transclude: true,
                 controller: Filters.LocationFilterCtrl
@@ -27761,13 +27783,13 @@ var Filters;
                 restrict: 'E',
                 scope: {},
                 templateUrl: 'directives/Widgets/Filters/AreaFilter.tpl.html',
-                compile: function (el) {
+                compile: (function (el) {
                     var fn = $compile(el);
                     //console.log('this is the compile function of legendDirective');
                     return function (scope) {
                         fn(scope);
                     };
-                },
+                }),
                 replace: true,
                 transclude: true,
                 controller: Filters.AreaFilterCtrl
@@ -29001,12 +29023,12 @@ var Indicators;
                 restrict: 'E',
                 scope: {},
                 templateUrl: 'directives/Widgets/Indicators/Indicators.tpl.html',
-                compile: function (el) {
+                compile: (function (el) {
                     var fn = $compile(el);
                     return function (scope) {
                         fn(scope);
                     };
-                },
+                }),
                 replace: true,
                 transclude: true,
                 controller: Indicators.IndicatorsCtrl
@@ -30231,12 +30253,12 @@ var PostMan;
                         .catch(function (err) { _this.result = "Error: " + err; });
                     break;
                 case 'GET':
-                    this.$http.get(msg.url, msg.message)
+                    this.$http.get(msg.url)
                         .then(function (data) { _this.result = "Result: " + data.data; })
                         .catch(function (err) { _this.result = "Error: " + err; });
                     break;
                 case 'DELETE':
-                    this.$http.delete(msg.url, msg.message)
+                    this.$http.delete(msg.url)
                         .then(function () { _this.result = 'OK'; })
                         .catch(function (err) { _this.result = "Error: " + err; });
                     break;
@@ -30851,6 +30873,224 @@ var SimState;
     SimState.SimStateCtrl = SimStateCtrl;
 })(SimState || (SimState = {}));
 //# sourceMappingURL=SimState.js.map
+var TableWidget;
+(function (TableWidget) {
+    /**
+      * Config
+      */
+    var moduleName = 'csComp';
+    try {
+        TableWidget.myModule = angular.module(moduleName);
+    }
+    catch (err) {
+        // named module does not exist, so create one
+        TableWidget.myModule = angular.module(moduleName, []);
+    }
+    /**
+      * Directive to display the available map layers.
+      */
+    TableWidget.myModule.directive('tablewidget', [function () {
+            return {
+                restrict: 'E',
+                scope: {},
+                templateUrl: 'directives/Widgets/TableWidget/TableWidget.tpl.html',
+                replace: true,
+                transclude: false,
+                controller: TableWidget.TableWidgetCtrl
+            };
+        }
+    ]);
+})(TableWidget || (TableWidget = {}));
+//# sourceMappingURL=TableWidget.js.map
+var TableWidget;
+(function (TableWidget) {
+    var TableWidgetData = /** @class */ (function () {
+        function TableWidgetData() {
+        }
+        return TableWidgetData;
+    }());
+    TableWidget.TableWidgetData = TableWidgetData;
+    var TableWidgetCtrl = /** @class */ (function () {
+        function TableWidgetCtrl($scope, $timeout, $layerService, $messageBus, $mapService, $sce) {
+            var _this = this;
+            this.$scope = $scope;
+            this.$timeout = $timeout;
+            this.$layerService = $layerService;
+            this.$messageBus = $messageBus;
+            this.$mapService = $mapService;
+            this.$sce = $sce;
+            $scope.vm = this;
+            var par = $scope.$parent;
+            this.widget = par.widget;
+            if (this.widget.directive && this.widget.directive !== 'tablewidget') {
+                console.log('Warning: ' + this.widget.directive + ' does not belong in TableWidgetCtrl!!! Id: ' + this.widget.id);
+            }
+            $scope.data = this.widget.data;
+            $scope.data.tableHtml = '<table></table>';
+            $scope.minimized = false;
+            this.dataProperties = {};
+            this.parentWidget = $('#' + this.widget.elementId).parent();
+            if (typeof $scope.data.featureTypeName !== 'undefined' && typeof $scope.data.dynamicProperties !== 'undefined' && $scope.data.dynamicProperties.length > 0) {
+                // Hide widget
+                this.parentWidget.hide();
+                this.$messageBus.subscribe('feature', function (action, feature) {
+                    switch (action) {
+                        case 'onFeatureDeselect':
+                        case 'onFeatureSelect':
+                            _this.selectFeature(feature);
+                            break;
+                        default:
+                            break;
+                    }
+                });
+            }
+            if (!(typeof $scope.data.url === 'undefined')) {
+                var url = $scope.data.url;
+                if ($scope.data.useLanguagePrefix) {
+                    var extensions = url.split('.');
+                    var newExtension = this.$layerService.currentLocale + '.' + extensions.pop();
+                    extensions.push(newExtension);
+                    url = extensions.join('.');
+                }
+                $.get(url, function (table) {
+                    $timeout(function () {
+                        try {
+                            $scope.data.content = JSON.parse(table);
+                            _this.createTable();
+                            _this.updateTable();
+                        }
+                        catch (error) {
+                            console.log('Error parsing table: ' + error.message);
+                            console.log('Table type: ' + (typeof table));
+                        }
+                    }, 0);
+                });
+            }
+            // in case a separate datafile is used
+            if (!(typeof $scope.data.dataSourceUrl === 'undefined')) {
+                url = $scope.data.dataSourceUrl;
+                $.get(url, function (properties) {
+                    $timeout(function () {
+                        _this.dataProperties = JSON.parse(properties);
+                        _this.replaceKeys();
+                    }, 0);
+                });
+            }
+        }
+        TableWidgetCtrl.prototype.createTable = function () {
+            var data = this.$scope.data.content;
+            var table = '<table style="width:100%">';
+            if (!data.hasOwnProperty('columnHeaders'))
+                return;
+            table += '<tr class="tablewidget-row">';
+            data.columnHeaders.forEach(function (h) {
+                table += '<th class="tablewidget-cell border-bottom" style="width:' + 100 / (data.nrOfCols + 1) + '%">' + h + '</th>';
+            });
+            table += '</tr>';
+            if (!data.hasOwnProperty('rowTitles') || !data.hasOwnProperty('datagrid'))
+                return;
+            data.datagrid.forEach(function (row, ri) {
+                table += '<tr class="tablewidget-row">';
+                table += '<th class="border-right">' + data.rowTitles[ri] + '</th>';
+                row.forEach(function (col, ci) {
+                    var style = (data.stylegrid) ? data.stylegrid[ri][ci] : '';
+                    table += '<td class="tablewidget-cell" style="' + style + '">' + data.datagrid[ri][ci] + '</td>';
+                });
+                table += '</tr>';
+            });
+            table += '</table>';
+            this.$scope.data.tableHtml = table;
+        };
+        TableWidgetCtrl.prototype.updateTable = function () {
+            var tableContainer = $('#' + this.widget.elementId).find('#widgettable-container');
+            tableContainer.html(this.$scope.data.tableHtml);
+        };
+        TableWidgetCtrl.prototype.minimize = function () {
+            this.$scope.minimized = !this.$scope.minimized;
+            if (this.$scope.minimized) {
+                this.parentWidget.css('height', '30px');
+            }
+            else {
+                this.parentWidget.css('height', this.widget.height);
+            }
+        };
+        TableWidgetCtrl.prototype.canClose = function () {
+            return (this.$scope.data.hasOwnProperty('canClose'))
+                ? this.$scope.data['canClose']
+                : true;
+        };
+        TableWidgetCtrl.prototype.close = function () {
+            this.parentWidget.hide();
+        };
+        TableWidgetCtrl.prototype.escapeRegExp = function (str) {
+            return str.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, '\\$1');
+        };
+        TableWidgetCtrl.prototype.replaceAll = function (str, find, replace) {
+            return str.replace(new RegExp(this.escapeRegExp(find), 'g'), replace);
+        };
+        TableWidgetCtrl.prototype.selectFeature = function (feature) {
+            var _this = this;
+            if (!feature || !feature.isSelected || feature.featureTypeName !== this.$scope.data.featureTypeName) {
+                this.parentWidget.hide();
+                return;
+            }
+            this.$timeout(function () {
+                var d = _this.$scope.data.tableHtml;
+                var i = 0;
+                _this.$scope.data.dynamicProperties.forEach(function (p) {
+                    var searchPattern = '{{' + i++ + '}}';
+                    var displayText = '';
+                    if (feature.properties.hasOwnProperty(p)) {
+                        var pt = _this.$layerService.getPropertyType(feature, p);
+                        displayText = csComp.Helpers.convertPropertyInfo(pt, feature.properties[p]);
+                    }
+                    d = _this.replaceAll(d, searchPattern, displayText);
+                });
+                _this.parentWidget.show();
+                _this.$scope.data.tableHtml = d;
+                _this.updateTable();
+            }, 0);
+        };
+        TableWidgetCtrl.prototype.replaceKeys = function () {
+            var _this = this;
+            var d = this.$scope.data.tableHtml;
+            this.$timeout(function () {
+                var keys = Object.keys(_this.dataProperties);
+                keys.forEach(function (k) {
+                    if (_this.dataProperties.hasOwnProperty(k)) {
+                        var searchPattern = '{{' + k + '}}';
+                        var replacePattern = _this.dataProperties[k];
+                        d = _this.replaceAll(d, searchPattern, replacePattern);
+                    }
+                });
+                _this.$scope.data.tableHtml = d;
+                _this.updateTable();
+            }, 0);
+        };
+        TableWidgetCtrl.prototype.toTrusted = function (html) {
+            try {
+                if (html === undefined || html === null)
+                    return this.$sce.trustAsHtml(html);
+                return this.$sce.trustAsHtml(html.toString());
+            }
+            catch (e) {
+                console.log(e + ': ' + html);
+                return '';
+            }
+        };
+        TableWidgetCtrl.$inject = [
+            '$scope',
+            '$timeout',
+            'layerService',
+            'messageBusService',
+            'mapService',
+            '$sce'
+        ];
+        return TableWidgetCtrl;
+    }());
+    TableWidget.TableWidgetCtrl = TableWidgetCtrl;
+})(TableWidget || (TableWidget = {}));
+//# sourceMappingURL=TableWidgetCtrl.js.map
 var SimTimeController;
 (function (SimTimeController) {
     /**
@@ -31166,224 +31406,6 @@ var SimTimeController;
     SimTimeController.SimTimeControllerEditCtrl = SimTimeControllerEditCtrl;
 })(SimTimeController || (SimTimeController = {}));
 //# sourceMappingURL=SimTimeControllerEditCtrl.js.map
-var TableWidget;
-(function (TableWidget) {
-    /**
-      * Config
-      */
-    var moduleName = 'csComp';
-    try {
-        TableWidget.myModule = angular.module(moduleName);
-    }
-    catch (err) {
-        // named module does not exist, so create one
-        TableWidget.myModule = angular.module(moduleName, []);
-    }
-    /**
-      * Directive to display the available map layers.
-      */
-    TableWidget.myModule.directive('tablewidget', [function () {
-            return {
-                restrict: 'E',
-                scope: {},
-                templateUrl: 'directives/Widgets/TableWidget/TableWidget.tpl.html',
-                replace: true,
-                transclude: false,
-                controller: TableWidget.TableWidgetCtrl
-            };
-        }
-    ]);
-})(TableWidget || (TableWidget = {}));
-//# sourceMappingURL=TableWidget.js.map
-var TableWidget;
-(function (TableWidget) {
-    var TableWidgetData = /** @class */ (function () {
-        function TableWidgetData() {
-        }
-        return TableWidgetData;
-    }());
-    TableWidget.TableWidgetData = TableWidgetData;
-    var TableWidgetCtrl = /** @class */ (function () {
-        function TableWidgetCtrl($scope, $timeout, $layerService, $messageBus, $mapService, $sce) {
-            var _this = this;
-            this.$scope = $scope;
-            this.$timeout = $timeout;
-            this.$layerService = $layerService;
-            this.$messageBus = $messageBus;
-            this.$mapService = $mapService;
-            this.$sce = $sce;
-            $scope.vm = this;
-            var par = $scope.$parent;
-            this.widget = par.widget;
-            if (this.widget.directive && this.widget.directive !== 'tablewidget') {
-                console.log('Warning: ' + this.widget.directive + ' does not belong in TableWidgetCtrl!!! Id: ' + this.widget.id);
-            }
-            $scope.data = this.widget.data;
-            $scope.data.tableHtml = '<table></table>';
-            $scope.minimized = false;
-            this.dataProperties = {};
-            this.parentWidget = $('#' + this.widget.elementId).parent();
-            if (typeof $scope.data.featureTypeName !== 'undefined' && typeof $scope.data.dynamicProperties !== 'undefined' && $scope.data.dynamicProperties.length > 0) {
-                // Hide widget
-                this.parentWidget.hide();
-                this.$messageBus.subscribe('feature', function (action, feature) {
-                    switch (action) {
-                        case 'onFeatureDeselect':
-                        case 'onFeatureSelect':
-                            _this.selectFeature(feature);
-                            break;
-                        default:
-                            break;
-                    }
-                });
-            }
-            if (!(typeof $scope.data.url === 'undefined')) {
-                var url = $scope.data.url;
-                if ($scope.data.useLanguagePrefix) {
-                    var extensions = url.split('.');
-                    var newExtension = this.$layerService.currentLocale + '.' + extensions.pop();
-                    extensions.push(newExtension);
-                    url = extensions.join('.');
-                }
-                $.get(url, function (table) {
-                    $timeout(function () {
-                        try {
-                            $scope.data.content = JSON.parse(table);
-                            _this.createTable();
-                            _this.updateTable();
-                        }
-                        catch (error) {
-                            console.log('Error parsing table: ' + error.message);
-                            console.log('Table type: ' + (typeof table));
-                        }
-                    }, 0);
-                });
-            }
-            // in case a separate datafile is used
-            if (!(typeof $scope.data.dataSourceUrl === 'undefined')) {
-                url = $scope.data.dataSourceUrl;
-                $.get(url, function (properties) {
-                    $timeout(function () {
-                        _this.dataProperties = JSON.parse(properties);
-                        _this.replaceKeys();
-                    }, 0);
-                });
-            }
-        }
-        TableWidgetCtrl.prototype.createTable = function () {
-            var data = this.$scope.data.content;
-            var table = '<table style="width:100%">';
-            if (!data.hasOwnProperty('columnHeaders'))
-                return;
-            table += '<tr class="tablewidget-row">';
-            data.columnHeaders.forEach(function (h) {
-                table += '<th class="tablewidget-cell border-bottom" style="width:' + 100 / (data.nrOfCols + 1) + '%">' + h + '</th>';
-            });
-            table += '</tr>';
-            if (!data.hasOwnProperty('rowTitles') || !data.hasOwnProperty('datagrid'))
-                return;
-            data.datagrid.forEach(function (row, ri) {
-                table += '<tr class="tablewidget-row">';
-                table += '<th class="border-right">' + data.rowTitles[ri] + '</th>';
-                row.forEach(function (col, ci) {
-                    var style = (data.stylegrid) ? data.stylegrid[ri][ci] : '';
-                    table += '<td class="tablewidget-cell" style="' + style + '">' + data.datagrid[ri][ci] + '</td>';
-                });
-                table += '</tr>';
-            });
-            table += '</table>';
-            this.$scope.data.tableHtml = table;
-        };
-        TableWidgetCtrl.prototype.updateTable = function () {
-            var tableContainer = $('#' + this.widget.elementId).find('#widgettable-container');
-            tableContainer.html(this.$scope.data.tableHtml);
-        };
-        TableWidgetCtrl.prototype.minimize = function () {
-            this.$scope.minimized = !this.$scope.minimized;
-            if (this.$scope.minimized) {
-                this.parentWidget.css('height', '30px');
-            }
-            else {
-                this.parentWidget.css('height', this.widget.height);
-            }
-        };
-        TableWidgetCtrl.prototype.canClose = function () {
-            return (this.$scope.data.hasOwnProperty('canClose'))
-                ? this.$scope.data['canClose']
-                : true;
-        };
-        TableWidgetCtrl.prototype.close = function () {
-            this.parentWidget.hide();
-        };
-        TableWidgetCtrl.prototype.escapeRegExp = function (str) {
-            return str.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, '\\$1');
-        };
-        TableWidgetCtrl.prototype.replaceAll = function (str, find, replace) {
-            return str.replace(new RegExp(this.escapeRegExp(find), 'g'), replace);
-        };
-        TableWidgetCtrl.prototype.selectFeature = function (feature) {
-            var _this = this;
-            if (!feature || !feature.isSelected || feature.featureTypeName !== this.$scope.data.featureTypeName) {
-                this.parentWidget.hide();
-                return;
-            }
-            this.$timeout(function () {
-                var d = _this.$scope.data.tableHtml;
-                var i = 0;
-                _this.$scope.data.dynamicProperties.forEach(function (p) {
-                    var searchPattern = '{{' + i++ + '}}';
-                    var displayText = '';
-                    if (feature.properties.hasOwnProperty(p)) {
-                        var pt = _this.$layerService.getPropertyType(feature, p);
-                        displayText = csComp.Helpers.convertPropertyInfo(pt, feature.properties[p]);
-                    }
-                    d = _this.replaceAll(d, searchPattern, displayText);
-                });
-                _this.parentWidget.show();
-                _this.$scope.data.tableHtml = d;
-                _this.updateTable();
-            }, 0);
-        };
-        TableWidgetCtrl.prototype.replaceKeys = function () {
-            var _this = this;
-            var d = this.$scope.data.tableHtml;
-            this.$timeout(function () {
-                var keys = Object.keys(_this.dataProperties);
-                keys.forEach(function (k) {
-                    if (_this.dataProperties.hasOwnProperty(k)) {
-                        var searchPattern = '{{' + k + '}}';
-                        var replacePattern = _this.dataProperties[k];
-                        d = _this.replaceAll(d, searchPattern, replacePattern);
-                    }
-                });
-                _this.$scope.data.tableHtml = d;
-                _this.updateTable();
-            }, 0);
-        };
-        TableWidgetCtrl.prototype.toTrusted = function (html) {
-            try {
-                if (html === undefined || html === null)
-                    return this.$sce.trustAsHtml(html);
-                return this.$sce.trustAsHtml(html.toString());
-            }
-            catch (e) {
-                console.log(e + ': ' + html);
-                return '';
-            }
-        };
-        TableWidgetCtrl.$inject = [
-            '$scope',
-            '$timeout',
-            'layerService',
-            'messageBusService',
-            'mapService',
-            '$sce'
-        ];
-        return TableWidgetCtrl;
-    }());
-    TableWidget.TableWidgetCtrl = TableWidgetCtrl;
-})(TableWidget || (TableWidget = {}));
-//# sourceMappingURL=TableWidgetCtrl.js.map
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -32998,7 +33020,7 @@ var csComp;
                     if (!t.style.drawingMode)
                         t.style.drawingMode = 'Point';
                     featureTypes[ft] = this.service.typesResources[layer.typeUrl].featureTypes[ft];
-                    featureTypes[ft].u = csComp.Helpers.getImageUri(ft);
+                    featureTypes[ft].u = csComp.Helpers.getImageUri(t);
                     featureTypes[ft]._guid = csComp.Helpers.getGuid();
                 }
             };
@@ -33844,7 +33866,6 @@ var csComp;
                 var _this = this;
                 return [
                     ["Fit map", (function ($itemScope) { return _this.fitMap(layer); })],
-                    null,
                     ['Refresh', (function ($itemScope) { return _this.refreshLayer(layer); })]
                 ];
             };
@@ -36425,8 +36446,14 @@ var csComp;
                         var l = feature.layer;
                         l.group.markers[feature.id] = m;
                         m.on({
-                            mouseover: function (a) { return _this.showFeatureTooltip(a, l.group); },
-                            mouseout: function (s) { return _this.hideFeatureTooltip(s); },
+                            mouseover: function (a) {
+                                _this.showFeatureTooltip(a, l.group);
+                                _this.setHoverColor(a);
+                            },
+                            mouseout: function (s) {
+                                _this.hideFeatureTooltip(s);
+                                _this.resetHoverColor(s);
+                            },
                             mousemove: function (d) { return _this.updateFeatureTooltip(d); },
                             click: function (e) {
                                 _this.selectFeature(feature);
@@ -36613,7 +36640,8 @@ var csComp;
                 }
                 return {
                     length: valueLength + title.length,
-                    content: content + ("<tr><td><div class=\"fa " + faLabel + "\"></td><td>" + title + "</td><td>" + value + "</td></tr>")
+                    content: content + ("<div class=\"csweb-tooltip-label-entry\">" + title + "</div><div class=\"csweb-tooltip-value\">" + value + "</div></div>")
+                    //  `<tr><td><div class="fa ${faLabel}"></td><td>${title}</td><td>${value}</td></tr>`
                 };
             };
             LeafletRenderer.prototype.generateTooltipContent = function (e, group) {
@@ -36623,7 +36651,8 @@ var csComp;
                 // add title
                 var title = csComp.Helpers.getFeatureTooltipTitle(feature);
                 var rowLength = (title) ? title.length : 1;
-                var content = '<td colspan=\'3\'>' + title + '</td></tr>';
+                var titlecontent = '<div class=\'title\'>' + title + '</div>';
+                var content = '';
                 // add filter values
                 if (group.filters != null && group.filters.length > 0) {
                     group.filters.forEach(function (f) {
@@ -36665,11 +36694,35 @@ var csComp;
                         }
                     });
                 }
+                if (content) {
+                    content = '<div class=\'content\'>' + content + '</div>';
+                }
                 var widthInPixels = Math.max(Math.min(rowLength * 7 + 15, 250), 130);
                 return {
-                    content: '<table style=\'width:' + widthInPixels + 'px;\'>' + content + '</table>',
+                    content: '<div class=\'tooltip-holder\'>' + titlecontent + content + '</div>',
                     widthInPixels: widthInPixels
                 };
+            };
+            LeafletRenderer.prototype.setHoverColor = function (e) {
+                if (!e || !e.target || !e.target.feature)
+                    return;
+                var layer = e.target;
+                var feature = layer.feature;
+                var fType = this.service.getFeatureType(feature);
+                var hoverColor = fType.style.hoverColor;
+                if (!hoverColor)
+                    return;
+                feature.effectiveStyle.fillColor = hoverColor;
+                this.updateFeature(feature);
+            };
+            LeafletRenderer.prototype.resetHoverColor = function (e) {
+                if (!e || !e.target || !e.target.feature)
+                    return;
+                var layer = e.target;
+                var feature = layer.feature;
+                var fType = this.service.getFeatureType(feature);
+                this.service.calculateFeatureStyle(feature);
+                this.updateFeature(feature);
             };
             /**
              * Show tooltip with name, styles & filters.

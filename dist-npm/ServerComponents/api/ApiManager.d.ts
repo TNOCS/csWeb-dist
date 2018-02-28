@@ -1,6 +1,7 @@
 /// <reference types="node" />
 import AuthApi = require('./AuthAPI');
 import events = require('events');
+import _ = require('underscore');
 /**
  * Api Result status
  */
@@ -377,11 +378,11 @@ export declare class ApiManager extends events.EventEmitter {
     /**
      * Have a 1 sec. delay before saving project config
      */
-    saveProjectDelay: (project: Project) => void;
+    saveProjectDelay: ((project: Project) => void) & _.Cancelable;
     /**
      * Have a 1 sec. delay before saving layer config
      */
-    saveLayersDelay: (layer: ILayer) => void;
+    saveLayersDelay: ((layer: ILayer) => void) & _.Cancelable;
     /**
      * Store project config file
      */

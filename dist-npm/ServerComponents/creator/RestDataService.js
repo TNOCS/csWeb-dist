@@ -108,7 +108,7 @@ var RestDataSource = /** @class */ (function () {
             if (_this.enableLogging) {
                 var toWrite = 'Time: ' + (new Date()).toISOString() + '\n';
                 toWrite += JSON.stringify(result, null, 2) + '\n';
-                fs.appendFile(_this.restDataSourceOpts.logFile, toWrite, 'utf8', function (err) {
+                fs.appendFile(_this.restDataSourceOpts.logFile, toWrite, { encoding: 'utf8' }, function (err) {
                     if (!err) {
                         Winston.debug('Logged REST datasource result');
                     }

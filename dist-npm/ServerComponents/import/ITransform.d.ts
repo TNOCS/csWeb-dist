@@ -46,6 +46,6 @@ export interface ITransform {
      * Generated output types.
      */
     outputDataTypes?: OutputDataType[];
-    create?(config: ConfigurationService.ConfigurationService, opt?: ITransformFactoryOptions): NodeJS.ReadWriteStream;
-    initialize(opt: ITransformFactoryOptions, callback: (error) => void): any;
+    create?(config: ConfigurationService.ConfigurationService, opt?: ITransformFactoryOptions | ITransformFactoryOptions[]): NodeJS.ReadWriteStream;
+    initialize(opt: ITransformFactoryOptions | ITransformFactoryOptions[], callback: (error) => void): any;
 }

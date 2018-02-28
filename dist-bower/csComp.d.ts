@@ -439,6 +439,10 @@ declare module csComp.Services {
         visibleInCallOut?: boolean;
         visibleInTooltip?: boolean;
         canEdit?: boolean;
+        /** If set to false, don't allow styling for this property */
+        canStyle?: boolean;
+        /** If set to false, don't allow filtering for this property */
+        canFilter?: boolean;
         /** If set to false, don't show the statistical information (for numbers) */
         canShowStats?: boolean;
         /** Type of filter: none if you don't want to allow filtering */
@@ -499,6 +503,8 @@ declare module csComp.Services {
         fillColor?: string;
         /** The stroke/outline color */
         strokeColor?: string;
+        /** The fill color on hover */
+        hoverColor?: string;
         /** The stroke/outline width */
         strokeWidth?: number;
         /** The background fill color when selected */
@@ -1377,6 +1383,12 @@ declare module csComp.Services {
         searchProviders: ISearchProvider[];
         /** Directive to use for the featurepropspanel (default: featureprops) */
         featurePropsDirective?: string;
+        /** Padding from the top-left of the screen to compensate for part of the map that
+        * is overlayed by the menu */
+        menuPaddingTopLeft?: {
+            x: number;
+            y: number;
+        };
         /**
          * Serialize the project to a JSON string.
          */
@@ -2697,7 +2709,7 @@ declare module FeatureProps {
         private showChart;
         static $inject: string[];
         constructor($scope: IFeaturePropsScope, $location: ng.ILocationService, $sce: ng.ISCEService, $mapService: csComp.Services.MapService, $layerService: csComp.Services.LayerService, $messageBusService: csComp.Services.MessageBusService, $translate: ng.translate.ITranslateService, $compile: ng.ICompileService);
-        updateAllStatsDelay: () => void;
+        updateAllStatsDelay: (() => void) & _.Cancelable;
         updateStatsDelay: (prop: any) => void;
         private updateAllStats();
         saveFeatureType(): void;
@@ -3540,7 +3552,7 @@ declare module LayersDirective {
         editLayer(layer: csComp.Services.ProjectLayer): void;
         stopEditingLayer(layer: csComp.Services.ProjectLayer): void;
         /** change layer opacity */
-        updateLayerOpacity: (layer: csComp.Services.ProjectLayer) => void;
+        updateLayerOpacity: ((layer: csComp.Services.ProjectLayer) => void) & _.Cancelable;
         setLayerOpacity(layer: csComp.Services.ProjectLayer): void;
         /** get a list of available layers from the server */
         loadAvailableLayers(): void;
@@ -4378,7 +4390,7 @@ declare module StyleList {
         constructor($scope: IStyleListScope, $timeout: ng.ITimeoutService, $layerService: csComp.Services.LayerService, messageBus: csComp.Services.MessageBusService);
         selectGroup(group: csComp.Services.ProjectGroup): void;
         selectSection(section: csComp.Services.Section): void;
-        initWizard: () => void;
+        initWizard: (() => void) & _.Cancelable;
         initWizardDebounced(): void;
         setStyle(g: csComp.Services.ProjectGroup, property: csComp.Services.IPropertyType): void;
         getStyle(legend: csComp.Services.Legend, le: csComp.Services.LegendEntry, key: number): {
@@ -4627,8 +4639,8 @@ declare module csComp.Services {
         trigger(...a: any[]): void;
     }
     interface IMessageEvent extends IBaseEvent {
-        add(listener: (message: string) => void): void;
-        remove(listener: (message: string) => void): void;
+        add(listener: (message?: string) => void): void;
+        remove(listener: (message?: string) => void): void;
         trigger(message: string): void;
     }
     class Connection {
@@ -5133,7 +5145,7 @@ declare module csComp.Services {
         fitTimeline?(layer: ProjectLayer): void;
         requiresLayer: boolean;
         getRequiredLayers?(layer: ProjectLayer): ProjectLayer[];
-        layerMenuOptions(layer: ProjectLayer): [[string, Function]];
+        layerMenuOptions(layer: ProjectLayer): [string, Function][];
     }
     /** layer service is responsible for reading and managing all project, layer and sensor related data */
     class LayerService {
@@ -5202,7 +5214,7 @@ declare module csComp.Services {
         startDashboardId: string;
         visual: VisualState;
         throttleSensorDataUpdate: Function;
-        throttleBBOXUpdate: (bbox: string, bboxarray: number[][]) => void;
+        throttleBBOXUpdate: ((bbox: string, bboxarray: number[][]) => void) & _.Cancelable;
         static $inject: string[];
         constructor($location: ng.ILocationService, $compile: any, $translate: ng.translate.ITranslateService, $messageBusService: Services.MessageBusService, $mapService: Services.MapService, $rootScope: any, geoService: GeoService, $http: ng.IHttpService, expressionService: ExpressionService, actionService: ActionService, $storage: ng.localStorage.ILocalStorageService);
         private setLanguage(project?);
@@ -5620,6 +5632,9 @@ declare module csComp.Services {
         drawInstance: any;
         featureGroup: L.ILayer;
         drawingNotification: any;
+        /** Padding from the top-left of the screen to compensate for part of the map that
+         * is overlayed by the menu */
+        private menuPaddingTopLeft;
         private _timelineVisible;
         timelineVisible: boolean;
         expertMode: Expertise;
@@ -6296,9 +6311,9 @@ declare module ButtonWidget {
         vm: ButtonWidgetEditCtrl;
         selectedMessage: IButtonWidgetMessage;
         data: ButtonWidgetEditorData;
-        methods: [{
+        methods: {
             name: string;
-        }];
+        }[];
     }
     class ButtonWidgetEditCtrl {
         private $scope;
@@ -7559,9 +7574,9 @@ declare module PostMan {
         vm: PostManEditCtrl;
         selectedMessage: IPostManMessage;
         data: PostManEditorData;
-        methods: [{
+        methods: {
             name: string;
-        }];
+        }[];
     }
     class PostManEditCtrl {
         private $scope;
@@ -7841,9 +7856,9 @@ declare module SimTimeController {
     interface ISimTimeControllerEditCtrl extends ng.IScope {
         vm: SimTimeControllerEditCtrl;
         data: SimTimeControllerEditorData;
-        methods: [{
+        methods: {
             name: string;
-        }];
+        }[];
     }
     /** Controller class for the SimTimeController editor */
     class SimTimeControllerEditCtrl {
@@ -8393,7 +8408,7 @@ declare module csComp.Services {
         addLayer(layer: ProjectLayer, callback: (layer: ProjectLayer) => void): void;
         /** zoom to boundaries of layer */
         fitMap(layer: ProjectLayer): void;
-        layerMenuOptions(layer: ProjectLayer): [[string, Function]];
+        layerMenuOptions(layer: ProjectLayer): [string, Function][];
         protected baseAddLayer(layer: ProjectLayer, callback: (layer: ProjectLayer) => void, isRefresh?: boolean): void;
         private initLayer(layer, callback);
         private updateLayer(layer, callback);
@@ -8670,7 +8685,7 @@ declare module csComp.Services {
         refreshLayer(layer: ProjectLayer): void;
         addLayer(layer: ProjectLayer, callback: Function, data?: any): void;
         fitMap(layer: ProjectLayer): void;
-        layerMenuOptions(layer: ProjectLayer): [[string, Function]];
+        layerMenuOptions(layer: ProjectLayer): [string, Function][];
         getRequiredLayers(layer: ProjectLayer): ProjectLayer[];
         protected baseAddLayer(layer: ProjectLayer, callback: Function): void;
         removeLayer(layer: ProjectLayer): void;
@@ -8996,6 +9011,8 @@ declare module csComp.Services {
             content: string;
             widthInPixels: number;
         };
+        setHoverColor(e: L.LeafletMouseEvent): void;
+        resetHoverColor(e: L.LeafletMouseEvent): void;
         /**
          * Show tooltip with name, styles & filters.
          */
