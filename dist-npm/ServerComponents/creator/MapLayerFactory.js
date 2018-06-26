@@ -441,8 +441,14 @@ var MapLayerFactory = /** @class */ (function () {
         var features = [];
         var template = { properties: layer.data.properties, propertyTypes: layer.data.propertyTypes || [] };
         this.featuresNotFound = {};
+        var emptyLayer = JSON.parse(JSON.stringify(layer));
+        delete emptyLayer.features;
+        delete emptyLayer.data;
+        this.apiManager.addUpdateLayer(emptyLayer, { source: 'maplayerfactory' }, function (result) {
+            console.log('Unconverted layer was saved, waiting to be updated...');
+        });
         this.addGeometry(layer.data.layerDefinition, template, layer, function () {
-            console.log('Finished adding geometry...');
+            console.log('Finished adding geometry.');
             delete layer.data.properties;
             delete layer.data.features;
             _this.apiManager.addUpdateLayer(layer, { source: 'maplayerfactory' }, function (result) {
@@ -791,7 +797,7 @@ var MapLayerFactory = /** @class */ (function () {
         var templateJson = JSON.parse(templateFile.toString());
         if (inclTemplProps && templateJson.featureTypes && templateJson.featureTypes.hasOwnProperty('Default')) {
             templateJson.featureTypes['Default'].propertyTypeData.forEach(function (ft) {
-                if (!properties[0].hasOwnProperty(ft.label) && ft.label !== templateKey) {
+                if (!properties[0].hasOwnProperty(ft.label) && ft.label !== templateKey) { //Do not overwrite input data, only add new items
                     propertyTypes.push(ft);
                 }
             });
@@ -803,13 +809,13 @@ var MapLayerFactory = /** @class */ (function () {
                 featureJson['sensors'] = sensors[index];
             }
             var foundFeature = fts.some(function (f) {
-                if (f.properties[templateKey] == p[par1]) {
+                if (f.properties[templateKey] == p[par1]) { // Do no type-check (don't use ===)
                     _this.enrichFeature(featureJson, f, p, inclTemplProps, templateKey);
                     return true;
                 }
             });
             if (!foundFeature) {
-                console.log('Warning: Could not find: ' + p[par1] + '. Trying again...');
+                console.log("Warning: Could not find property " + par1 + ": " + p[par1] + ". Trying again...");
                 var cleanChars_1 = new RegExp('[^a-zA-Z0-9 -]');
                 var featureScores_1 = [];
                 var cleanMatchProp_1 = p[par1].replace(cleanChars_1, '');
@@ -843,7 +849,7 @@ var MapLayerFactory = /** @class */ (function () {
     MapLayerFactory.prototype.enrichFeature = function (featureJson, f, p, inclTemplProps, templateKey) {
         if (inclTemplProps) {
             for (var key in f.properties) {
-                if (!p.hasOwnProperty(key) && key !== templateKey) {
+                if (!p.hasOwnProperty(key) && key !== templateKey) { //Do not overwrite input data, only add new items
                     p[key] = f.properties[key];
                 }
             }

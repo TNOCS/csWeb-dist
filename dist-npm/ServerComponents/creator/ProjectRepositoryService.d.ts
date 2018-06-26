@@ -13,8 +13,8 @@ export declare class ProjectRepositoryService implements IProjectRepositoryServi
     id: string;
     constructor(store: IStore);
     init(apiServiceManager: IApiServiceManager, server: express.Express, config: ConfigurationService.ConfigurationService): void;
-    private endsWith(str, suffix);
-    private yyyymmdd();
+    private endsWith;
+    private yyyymmdd;
     shutdown(): void;
     getAll(): Object[];
     get(id: string, res: express.Response): void;

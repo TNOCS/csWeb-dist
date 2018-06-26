@@ -64,7 +64,13 @@ export declare class GeoExtensions {
     */
     static log10(val: any): number;
     static convertDegreesToMeters(latitudeDegrees: number): {
+        /**
+        * Length of a degree of latitude in meters
+        */
         latitudeLength: number;
+        /**
+        * Length of a degree of longitude in meters
+        */
         longitudeLength: number;
     };
 }

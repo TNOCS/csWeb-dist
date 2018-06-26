@@ -67,8 +67,8 @@ export declare class CISDataSource {
     private xmlParser;
     constructor(server: express.Express, apiManager: Api.ApiManager, capLayerId: string, url?: string);
     init(options: ICISOptions, callback: Function): void;
-    private parseCisMessage(msg, cb);
-    private convertCapFeature(cap);
+    private parseCisMessage;
+    private convertCapFeature;
     /**
      * Flattens a nested object to a flat dictionary.
      * Example:
@@ -77,21 +77,21 @@ export declare class CISDataSource {
      * }
      * to {X: 1, Ya: 2, Yb: 3}
      */
-    private static flattenObject(nest, flat, key?);
-    private static createDefaultCISMessage();
+    private static flattenObject;
+    private static createDefaultCISMessage;
     /**
      * Takes a date object, outputs a CAP date string
      */
-    private static convertDateToCAPDate(date);
+    private static convertDateToCAPDate;
     /**
      * Takes a a GeoJSON Polygon or Point {type, coordinates: [[y,x],[y,x]]} (WGS84)
      * Outputs a CAP Polygon in the format: "x,y x,y x,y" or Circle in the format "x,y r" (r in km)
      * Optionally provide a circle radius in km, in case a point is provided (default: 10km)
      */
-    private static convertGeoJSONToCAPGeometry(geo, radiusKM?);
+    private static convertGeoJSONToCAPGeometry;
     /**
      * Takes a CAP Polygon in the format: "x,y x,y x,y". (WGS84)
      * Outputs a GeoJSON geometry {type, coordinates: [[y,x],[y,x]]}.
      */
-    private static convertCAPGeometryToGeoJSON(cisPoly, cisType);
+    private static convertCAPGeometryToGeoJSON;
 }

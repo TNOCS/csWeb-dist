@@ -15,6 +15,9 @@ var BagDatabase = /** @class */ (function () {
         if (this.isInitialized)
             return;
         this.pg.defaults.poolSize = 10;
+        this.pgPool = new this.pg.Pool({
+            connectionString: this.connectionString,
+        });
         console.log("BAG connection: " + this.connectionString);
         console.log("Poolsize: " + this.pg.defaults.poolSize);
         this.isInitialized = true;
@@ -115,7 +118,7 @@ var BagDatabase = /** @class */ (function () {
             callback(null);
             return;
         }
-        this.pg.connect(this.connectionString, function (err, client, done) {
+        this.pgPool.connect(function (err, client, done) {
             if (err) {
                 console.log(err);
                 callback(null);
@@ -145,7 +148,7 @@ var BagDatabase = /** @class */ (function () {
             callback(null);
             return;
         }
-        this.pg.connect(this.connectionString, function (err, client, done) {
+        this.pgPool.connect(function (err, client, done) {
             if (err) {
                 console.log(err);
                 callback(null);
@@ -172,7 +175,7 @@ var BagDatabase = /** @class */ (function () {
             callback(null);
             return;
         }
-        this.pg.connect(this.connectionString, function (err, client, done) {
+        this.pgPool.connect(function (err, client, done) {
             if (err) {
                 console.log(err);
                 callback(null);
@@ -204,7 +207,7 @@ var BagDatabase = /** @class */ (function () {
             callback(null);
             return;
         }
-        this.pg.connect(this.connectionString, function (err, client, done) {
+        this.pgPool.connect(function (err, client, done) {
             if (err) {
                 console.log(err);
                 callback(null);
@@ -249,9 +252,10 @@ var BagDatabase = /** @class */ (function () {
         }
         var houseLetter = splittedAdressNumber.letter;
         var houseNumberAddition = splittedAdressNumber.addition;
-        this.pg.connect(this.connectionString, function (err, client, done) {
+        console.log('Connect to pgPool to lookup address');
+        this.pgPool.connect(function (err, client, done) {
             if (err) {
-                console.log(err);
+                console.error(err);
                 callback(null);
                 return;
             }
@@ -285,11 +289,12 @@ var BagDatabase = /** @class */ (function () {
             client.query(sql, function (err, result) {
                 done();
                 if (err) {
-                    console.log(err);
+                    console.error(err);
                     console.log("Cannot find zip: " + zipCode + ", houseNumber: " + houseNumber + ", letter: " + houseLetter);
                     callback(null);
                 }
                 else {
+                    console.log("Found zip: " + zipCode + ", houseNumber: " + houseNumber + ", letter: " + houseLetter);
                     callback(result.rows);
                 }
             });
@@ -319,7 +324,7 @@ var BagDatabase = /** @class */ (function () {
             res.status(400).send('house number is missing');
             return;
         }
-        this.pg.connect(this.connectionString, function (err, client, done) {
+        this.pgPool.connect(function (err, client, done) {
             if (err) {
                 console.log(err);
                 return;

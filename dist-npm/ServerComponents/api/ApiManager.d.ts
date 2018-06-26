@@ -18,7 +18,7 @@ export declare enum ApiResult {
     GroupAlreadyExists = 413,
     ResourceNotFound = 428,
     ResourceAlreadyExists = 429,
-    SearchNotImplemented = 440,
+    SearchNotImplemented = 440
 }
 export interface IApiManagerOptions {
     /** Host:port name */
@@ -57,13 +57,13 @@ export declare enum Event {
     FeatureChanged = 2,
     LayerChanged = 3,
     ProjectChanged = 4,
-    FeaturesChanged = 5,
+    FeaturesChanged = 5
 }
 /** Type of change in an ApiEvent */
 export declare enum ChangeType {
     Create = 0,
     Update = 1,
-    Delete = 2,
+    Delete = 2
 }
 /** When a key|layer|project is changed, the ChangeEvent is emitted with the following data. */
 export interface IChangeEvent {
@@ -157,6 +157,8 @@ export declare class Project implements StorageObject {
     storage: string;
     groups: Group[];
     isDynamic: boolean;
+    featurePropsDirective?: string;
+    updated?: number;
 }
 export declare class Group {
     id: string;
@@ -403,7 +405,7 @@ export declare class ApiManager extends events.EventEmitter {
      * Update/add a resource and save it to file
      */
     addResource(resource: ResourceFile, replace: boolean, meta: ApiMeta, callback: Function): void;
-    private cloneResource(resourceId, newResourceId, meta, callback);
+    private cloneResource;
     addPropertyTypes(resourceId: string, data: IPropertyType[], meta: ApiMeta, callback: Function): void;
     getResource(id: string, meta: ApiMeta, callback: Function): void;
     addLayerToProject(projectId: string, groupId: string, layerId: string, meta: ApiMeta, callback: Function): void;
@@ -487,7 +489,8 @@ export declare class ApiManager extends events.EventEmitter {
     deleteLayer(layerId: string, meta: ApiMeta, callback: Function): void;
     deleteProject(projectId: string, meta: ApiMeta, callback: Function): void;
     getInterfaces(meta: ApiMeta): IConnector[];
-    private setUpdateLayer(layer, meta);
+    private setUpdateProject;
+    private setUpdateLayer;
     addFeature(layerId: string, feature: Feature, meta: ApiMeta, callback: Function): void;
     updateProperty(layerId: string, featureId: string, property: string, value: any, useLog: boolean, meta: ApiMeta, callback: Function): void;
     updateLogs(layerId: string, featureId: string, logs: {

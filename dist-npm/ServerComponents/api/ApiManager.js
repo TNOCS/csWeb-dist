@@ -668,6 +668,7 @@ var ApiManager = /** @class */ (function (_super) {
             this.projects[project.id] = this.getProjectDefinition(project);
             // store project
             var meta = { source: 'rest' };
+            this.setUpdateProject(project, meta);
             this.getInterfaces(meta).forEach(function (i) {
                 i.initProject(_this.projects[project.id]);
                 i.addProject(_this.projects[project.id], meta, function () { });
@@ -793,8 +794,12 @@ var ApiManager = /** @class */ (function (_super) {
             logo: project.logo ? project.logo : 'images/CommonSenseRound.png',
             groups: project.groups ? _.map(project.groups, function (g) { return _this.getGroupDefinition(g); }) : [],
             url: project.url ? project.url : '/api/projects/' + project.id,
-            _localFile: project._localFile
+            _localFile: project._localFile,
+            updated: project.updated
         };
+        if (project.featurePropsDirective) {
+            p.featurePropsDirective = project.featurePropsDirective;
+        }
         return p;
     };
     /**
@@ -1011,6 +1016,7 @@ var ApiManager = /** @class */ (function (_super) {
                 var file = _this.projects[project.id]._localFile;
                 if (file && !project._localFile)
                     project._localFile = file;
+                _this.setUpdateProject(project, meta);
                 var p = _this.getProjectDefinition(project);
                 _this.projects[p.id] = p;
                 _this.getInterfaces(meta).forEach(function (i) {
@@ -1125,6 +1131,9 @@ var ApiManager = /** @class */ (function (_super) {
             }
         }
         return res;
+    };
+    ApiManager.prototype.setUpdateProject = function (project, meta) {
+        project.updated = new Date().getTime();
     };
     ApiManager.prototype.setUpdateLayer = function (layer, meta) {
         layer.updated = new Date().getTime();
