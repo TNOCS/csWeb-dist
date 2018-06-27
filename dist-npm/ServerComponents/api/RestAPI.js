@@ -37,6 +37,7 @@ var RestAPI = /** @class */ (function (_super) {
         _this.projectsUrl = '/projects/';
         _this.proxyUrl = '/proxy';
         _this.tilesUrl = '/tiles/';
+        Winston.info("Constructed REST api with baseUrl " + baseUrl);
         return _this;
     }
     RestAPI.prototype.getResources = function (req, res) {

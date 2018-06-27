@@ -518,7 +518,7 @@ var csComp;
                 if ($injector === void 0) { $injector = null; }
                 this.layers = []; // add some layers here...
                 this.isLoading = true;
-                if ($injector == null) {
+                if ($injector == null) { // create an injector if not given
                     $injector = angular.injector(['ng']);
                 }
                 $injector.invoke(function ($http, $timeout) {
@@ -1066,6 +1066,502 @@ var csComp;
     })(Services = csComp.Services || (csComp.Services = {}));
 })(csComp || (csComp = {}));
 //# sourceMappingURL=typeresource.js.map
+var Translations;
+(function (Translations) {
+    var English = /** @class */ (function () {
+        function English() {
+        }
+        English.locale = {
+            CANCEL_BTN: 'Cancel',
+            OK_BTN: 'OK',
+            CLOSE: 'Close',
+            FROM: 'from',
+            TO: 'to',
+            PREVIOUS: 'Previous',
+            NEXT: 'Next',
+            ZOOM_IN: 'Zoom in',
+            ZOOM_OUT: 'Zoom out',
+            ZOOM_LEVEL_LOW: 'Zoom level too low',
+            ZOOM_IN_FOR_CONTOURS: 'Zoom in to show contours',
+            NAVIGATE: {
+                TITLE: 'Search results'
+            },
+            CREATE_SCATTER: 'Create scatter with',
+            EXPAND_ALL: 'Expand all',
+            COLLAPSE_ALL: 'Collapse all',
+            SELECT_ALL: 'Select all',
+            DESELECT_ALL: 'Deselect all',
+            CHOOSE_DROPDOWN: 'Choose...',
+            ENABLE_LOCATION_FILTER: 'Enable location filter',
+            DISABLE_LOCATION_FILTER: 'Disable location filter',
+            SELECT_A_FEATURE: 'Select a feature',
+            SELECT_FEATURE_FOR_WIDGET: 'Please select a feature to show the widget.',
+            SELECT_FEATURE_FOR_STYLE: 'Please select a feature to before setting the style.',
+            SELECT_LAYER_GROUP: 'Select Layers',
+            SELECT_CATEGORY: 'Select Category',
+            SELECT_PROPERTIES: 'Select Properties',
+            NO_RELATIONS_FOUND: 'No relations can be shown for the selected feature. Either the zoom level is too low, there are too many features in the view or there are no relations defined.',
+            BASESTYLES: 'Baselayers',
+            MAP: 'Maps',
+            MAP_LABEL: 'Map',
+            TABLE_LABEL: 'Table',
+            LAYERS: 'Layers',
+            DIRECTORY: 'Available layers',
+            CREATELAYER: 'Create new layer',
+            ADDFEATURES: 'Add items',
+            ADDTYPE: 'Add new type',
+            DONE: 'done',
+            FILTERS: 'Filters',
+            FILTER_INFO: 'At the moment, no filters have been selected. In order to add a filter, click on an icon or area on the map, and click on the filter icon (<span class="fa fa-filter"></span>) in the right menu. This will create a filter for the selected property.',
+            STYLES: 'Styles',
+            STYLE_INFO: 'At the moment, no style has been selected. In order to add a style, click on an icon or area on the map, and click on the style icon (<span class="smallStyleIcon"></span>) in the right menu. This will create a filter for the selected property.',
+            FEATURES: 'Features',
+            LEGEND: 'Legend',
+            SEARCH: 'Search',
+            HIDE_PANEL: 'Hide this panel',
+            EDIT_INDICATORS: 'Edit indicators',
+            RELATED_FEATURES: 'Show related features',
+            FEATURE_INFO: 'Show information about the selected feature',
+            MAP_FEATURES: 'Map features',
+            NEARBY_FEATURES: 'Nearby features',
+            TOGGLE_MENU: 'Toggle menu visibility',
+            DASHBOARD_SELECTION: 'Dashboard selection',
+            SETTINGS: 'Settings',
+            SPEEDS_TAOUFIK: 'speed colors Taoufik',
+            SPEEDS_GOOGLEMAPS: 'speed colors Google Maps',
+            VERWARMINGSSYSTEEM: 'Heating system',
+            PERCENTAGES_V1: 'percentages v1',
+            ORANGE_RED: 'orange - red',
+            WHITE_RED: 'white - red',
+            RED_WHITE: 'red - white',
+            RED_WHITE_BLUE: 'red - white - blue',
+            GREEN_RED: 'green - red',
+            RED_GREEN: 'red - green',
+            BLUE_RED: 'blue - red',
+            RED_BLUE: 'red - blue',
+            WHITE_BLUE: 'white - blue',
+            BLUE_WHITE: 'blue - white',
+            WHITE_GREEN: 'white - green',
+            GREEN_WHITE: 'green - white',
+            WHITE_ORANGE: 'white - orange',
+            ORANGE_WHITE: 'orange - white',
+            SAVE: 'save',
+            CONFIG: 'config',
+            EDIT: 'edit',
+            APPLY: 'apply',
+            REMOVE: 'remove',
+            FOCUSTIME: {
+                OUT_OF_RANGE: 'The timerange is out of scope',
+                NOT_AVAILABLE: 'Currently no sensor data available',
+                LOADING: 'Sensor data is being loaded, please wait'
+            },
+            STATS: {
+                COUNT: '#',
+                COUNT_TOOLTIP: 'Count of selected items',
+                MIN: 'min',
+                MIN_TOOLTIP: 'Minimum of selected items',
+                MAX: 'max',
+                MAX_TOOLTIP: 'Maximum of selected items',
+                MEAN: 'µ',
+                MEAN_TOOLTIP: 'Mean of selected items',
+                SUM: 'Σ',
+                SUM_TOOLTIP: 'Sum of selected items'
+            },
+            UTILS: {
+                FILTER: 'Use this property as filter',
+                STYLE: 'Use this property as style',
+                STATS: 'Show property statistics',
+                CHART: 'Show property in time',
+                CONFIG: 'Configure property'
+            },
+            EXPERTMODE: {
+                BEGINNER: 'Novice',
+                INTERMEDIATE: 'Intermediate',
+                EXPERT: 'Expert',
+                ADMIN: 'Admin',
+                EXPLANATION: 'Select your expertise in order to unlock more functionality.'
+            },
+            LAYER_SERVICE: {
+                RELOAD_PROJECT_TITLE: 'Data is reloaded',
+                RELOAD_PROJECT_MSG: 'After switching the language, we need to reload all the map data. Our appologies for the inconvenience.'
+            },
+            HEATMAP: {
+                NAME: 'Heatmaps',
+                DESCRIPTION: '<h4>Heatmap</h4><p  style="text-align: left; margin-left:5px;">Heatmap highlights areas on the map that fulfill multiple selected criteria.',
+                INFO: 'At the moment, no map layers are loaded that contain a heatmap. Open another map layer to use it.',
+                INFO_EXPERT: 'At the moment, no map layers are loaded that contain a heatmap. Open another map layer to use it, or create a new heatmap using the wizard.',
+                SHOW_FEATURE_MSG: 'Select a feature on the map to see the heatmap.',
+                TOTAL_RESULT: 'Combined result',
+                DELETE_MSG: 'Delete "{0}"',
+                DELETE_MSG2: 'Are you sure?',
+                EDITOR_TITLE: 'Heatmap Editor',
+                MAIN_FEATURE: 'Select the main feature',
+                PROPERTIES: 'Select the properties',
+                INTENSITY_SCALE: 'Intensity scale',
+                RESOLUTION: 'Resolution',
+                TITLE: 'Title... *',
+                TITLE_TAG: 'Title',
+                SCALE_MIN_TITLE: '[Min. scale]',
+                SCALE_MAX_TITLE: '[Max. scale]',
+                MIN_MAX_ZOOM: 'Min./Max. zoom',
+                AT_LOCATION_VALUE: '[Weight at location]',
+                DISTANCE_MAX_VALUE: '[Ideal distance]',
+                LOST_INTEREST_VALUE: '[Lost interest distance]',
+                LINEAR_ASC_DESC: 'Linearly increasing, then decreasing function.',
+                ADD_HEATMAP: 'Add a new heatmap.',
+                DELETE_HEATMAP: 'Delete the heatmap.',
+                EDIT_HEATMAP: 'Edit the heatmap.',
+                EXPORT_HEATMAP: 'Export the heatmap.'
+            },
+            MCA: {
+                NAME: 'Multi-Criteria Analysis (MCA)',
+                DESCRIPTION: '<h4>Multi-Criteria Analysis</h4><p  style="text-align: left; margin-left:5px;">MCA, is a method that combines multiple properties of a feature on the map into a new property. It achieves this by:<ol><li>Scaling each property to a range between 0 (no value) and 1 (maximum value).</li><li>Weighing each property relative to the others, where a weight less than 0 indicates you wish to avoid it, 0 is ignored, and a value greater than 0 is prefered.</li></ol> In fact, it is a kind of linear regression.',
+                INFO: 'At the moment, no map layers are loaded that contain a multi-criteria analysis. Open another map layer to see it.',
+                INFO_EXPERT: 'At the moment, no map layers are loaded that contain a multi-criteria analysis. Open another map layer to use it, or create a new MCA using the wizard.',
+                SHOW_FEATURE_MSG: 'Select a feature on the map to see the effects of the Multi-Criteria Analysis (MCA).',
+                TOTAL_RESULT: 'Combined result',
+                DELETE_MSG: 'Delete "{0}"',
+                DELETE_MSG2: 'Are you sure?',
+                HAS_CATEGORY: '  Has category? ',
+                HAS_RANK: '  Include rank? ',
+                EDITOR_TITLE: 'MCA Editor',
+                MAIN_FEATURE: 'Select the main feature',
+                PROPERTIES: 'Select the properties',
+                INCLUDE_RANK: '  Show rank? ',
+                RANK_TITLE: '[Rank title...]',
+                TITLE: 'Title... *',
+                CATEGORY_MSG: '[Category...]',
+                TOGGLE_SPARKLINE: 'Show or hide bar charts and scoring function.',
+                SCALE_MIN_TITLE: '[Min. scale]',
+                SCALE_MAX_TITLE: '[Max. scale]',
+                MIN_VALUE: '[Minimum (\u03BC-2\u03C3)]',
+                MAX_VALUE: '[Maximum (\u03BC+2\u03C3)]',
+                MIN_CUTOFF_VALUE: '[Ignore when below this value]',
+                MAX_CUTOFF_VALUE: '[Ignore when above this value]',
+                LINEAR: 'Linearly increasing function between min and max.',
+                SIGMOID: 'Tangentially increasing function between min and max',
+                GAUSSIAN: 'Normal distribution increasing function between min and max.',
+                ADD_MCA: 'Add a new MCA.',
+                DELETE_MCA: 'Delete the MCA.',
+                EDIT_MCA: 'Edit the MCA.',
+                SET_STYLE: 'Set style'
+            },
+            PROJECTSETTINGS: {
+                TITLE: 'Project Settings',
+                DESCRIPTION: 'Settings'
+            },
+            CHOOSE_CATEGORY: 'Choose category...',
+            SHOW5: 'Show 5 items',
+            SHOW10: 'Show 10 items',
+            SHOW15: 'Show 15 items',
+            SHOW20: 'Show 20 items',
+            SHOW25: 'Show 25 items',
+            SHOW30: 'Show 30 items',
+            SHOW35: 'Show 35 items',
+            SHOW40: 'Show 40 items',
+            RISK_DIAGRAM_FOR: 'Risk-diagram for a ',
+            SAVE_FEATURE_DEPENDENCIES: 'Save dependencies to the selected feature only',
+            SAVE_FEATURETYPE_DEPENDENCIES: 'Save dependencies to all features of this type',
+            SAVE_MARVEL: 'Save ',
+            SAVE_EVERY_MARVEL: 'Save every ',
+            MARVEL_WATER_LEVEL: 'Water level [m]',
+            MARVEL_UPS_DURATION: 'UPS duration [mins]',
+            MARVEL_FEATURE_DEP: 'Depends on',
+            STATE: 'State',
+            EVENT_INFO: 'Show a list of events',
+            CLEAR_EVENTS: 'Clear event log',
+            SEARCH_PLACEHOLDER: 'Municipality, address, ...',
+            SAVE_AS_IMAGE: 'Save as image',
+            SAVE_AS_PDF: 'Save as PDF',
+            ROW_CHART_HELP: 'Click one or multiple rows to apply a filter for the selected property.',
+            CONVERT: 'Convert',
+            VIEW_PROJECT: 'View your project',
+            PASTE_HERE: 'Paste your data here',
+            DROP_HERE: 'Drop your data here',
+            OPTION: 'Option {{number}}',
+            PASSWORD: 'Password',
+            COMPARE_TAB: 'Compare',
+            STRINGFORMAT: 'Number format',
+            ADD: 'Add',
+            NEW: 'New',
+            SECTION: 'Section',
+            GROUP: 'Group',
+            LAYER_TITLE: 'Layer title',
+            LAYER_SETTINGS: 'Layer settings',
+            LAYER_SETTINGS_HELP: 'Change the settings of your map layer, like its title and the group it belongs to.',
+            PROPERTY_SETTINGS: 'Data properties',
+            PROPERTY_DESCRIPTION: 'Property description',
+            PROPERTY_TYPE: 'Property type',
+            PROPERTY_TITLE: 'Property title',
+            VISIBLE_IN_CALLOUT: 'Show property in menu',
+            DESCRIPTION: 'Description',
+            TYPE: 'Type',
+            TITLE: 'Title',
+            NAME: 'Name',
+            EMAIL: 'E-mail',
+            YES: 'Yes',
+            NO: 'No',
+            LOGIN_OR_OUT: 'Login or logout',
+            DOWNLOAD_SELECTION_AS: 'Download selection as:',
+            ERROR_LOADING_TYPERESOURCE: 'Error loading TypeResources',
+            ERROR_LOADING_SENSORDATA: 'Error loading sensordata',
+            ERROR_LOADING_LAYER: 'Error loading layer',
+            ERROR_LOADING_SOLUTION: 'Error loading solution',
+            ERROR_LOADING_PROJECT: 'Error loading project'
+        };
+        return English;
+    }());
+    Translations.English = English;
+})(Translations || (Translations = {}));
+//# sourceMappingURL=locale-en.js.map
+var Translations;
+(function (Translations) {
+    var Dutch = /** @class */ (function () {
+        function Dutch() {
+        }
+        Dutch.locale = {
+            CANCEL_BTN: 'Annuleren',
+            OK_BTN: 'OK',
+            CLOSE: 'Sluit',
+            FROM: 'van',
+            TO: 'tot',
+            PREVIOUS: 'Vorige',
+            NEXT: 'Volgende',
+            ZOOM_IN: 'Inzoomen',
+            ZOOM_OUT: 'Uitzoomen',
+            ZOOM_LEVEL_LOW: 'Zoom niveau te laag',
+            ZOOM_IN_FOR_CONTOURS: 'Zoom in om de contouren te tonen',
+            NAVIGATE: {
+                TITLE: 'Zoekresultaten'
+            },
+            REMOVE: 'Verwijder',
+            CREATE_SCATTER: 'Creeer spreidingsdiagram',
+            EXPAND_ALL: 'Alles uitklappen',
+            COLLAPSE_ALL: 'Alles inklappen',
+            SELECT_ALL: 'Selecteer alles',
+            DESELECT_ALL: 'Deselecteer alles',
+            ENABLE_LOCATION_FILTER: 'Activeer locatiefilter',
+            SELECT_A_FEATURE: 'Selecteer een feature',
+            DISABLE_LOCATION_FILTER: 'Deactiveer locatiefilter',
+            SELECT_FEATURE_FOR_WIDGET: 'Selecteer een gebied om de widget te tonen.',
+            SELECT_FEATURE_FOR_STYLE: 'Selecteer eerst een gebied, dan pas kan de stijl geactiveerd worden.',
+            SELECT_LAYER_GROUP: 'Selecteer lagen',
+            SELECT_CATEGORY: 'Selecteer categorie',
+            SELECT_PROPERTIES: 'Selecteer eigenschappen',
+            NO_RELATIONS_FOUND: 'Geen relaties voor het geselecteerde item gevonden. Ofwel het zoomniveau is te laag, er zijn teveel items zichtbaar of er zijn geen relaties gedefiniëerd.',
+            CHOOSE_DROPDOWN: 'Kies...',
+            BASESTYLES: 'Basiskaarten',
+            MAP: 'Kaarten',
+            MAP_LABEL: 'Kaart',
+            TABLE_LABEL: 'Tabel',
+            LAYERS: 'Kaartlagen',
+            DIRECTORY: 'Beschikbare lagen',
+            CREATELAYER: 'Nieuwe laag maken',
+            ADDFEATURES: 'Objecten toevoegen',
+            ADDTYPE: 'Nieuwe type toevoegen',
+            FILTERS: 'Filters',
+            FILTER_INFO: 'Momenteel zijn er geen filters geselecteerd. Klik op een icoon of gebied op de kaart, en klik op het filter icoontje (<span class="fa fa-filter"></span>) in het rechter menu om een filter toe te voegen. Dan wordt er een filter aangemaakt voor de geselecteerde eigenschap.',
+            STYLES: 'Stijlen',
+            STYLE_INFO: 'Momenteel zijn er geen stijlen geselecteerd. Klik op een icoon of gebied op de kaart, en klik op het stijl icoontje (<span class="smallStyleIcon"></span>) in het rechter menu om een stijl toe te voegen. Dan wordt er een stijl aangemaakt voor de geselecteerde eigenschap.',
+            FEATURES: 'Features',
+            LEGEND: 'Legenda',
+            SEARCH: 'Zoeken',
+            HIDE_PANEL: 'Verberg dit paneel',
+            EDIT_INDICATORS: 'Wijzig indicatoren',
+            RELATED_FEATURES: 'Toon gerelateerde features',
+            FEATURE_INFO: 'Toon informatie over de geselecteerde feature',
+            MAP_FEATURES: 'Kaartfeatures',
+            NEARBY_FEATURES: 'Dichtbijgelegen features',
+            DASHBOARD_SELECTION: 'Dashboardselectie',
+            SETTINGS: 'Instellingen',
+            TOGGLE_MENU: 'Wissel de zichtbaarheid van het menu',
+            SPEEDS_TAOUFIK: 'snelheden legenda Taoufik',
+            SPEEDS_GOOGLEMAPS: 'snelheden legenda Google Maps',
+            VERWARMINGSSYSTEEM: 'Verwarmingssysteem',
+            PERCENTAGES_V1: 'percentages v1',
+            ORANGE_RED: 'oranje - rood',
+            WHITE_RED: 'wit - rood',
+            RED_WHITE_BLUE: 'rood - wit - blauw',
+            RED_WHITE: 'rood - wit',
+            GREEN_RED: 'groen - rood',
+            RED_GREEN: 'rood - groen',
+            BLUE_RED: 'blauw - rood',
+            RED_BLUE: 'rood - blauw',
+            WHITE_BLUE: 'wit - blauw',
+            BLUE_WHITE: 'wit - groen',
+            WHITE_GREEN: 'wit - groen',
+            GREEN_WHITE: 'groen - wit',
+            WHITE_ORANGE: 'wit - oranje',
+            ORANGE_WHITE: 'oranje - wit',
+            SAVE: 'opslaan',
+            APPLY: 'toepassen',
+            DONE: 'klaar',
+            CONFIG: 'config',
+            EDIT: 'aanpassen',
+            FOCUSTIME: {
+                OUT_OF_RANGE: 'De tijdscope is te groot. Gebruik de tijdbalk om deze te verkleinen',
+                NOT_AVAILABLE: 'Momenteel is er geen sensor data beschikbaar',
+                LOADING: 'Sensor data wordt geladen, even geduld'
+            },
+            STATS: {
+                COUNT: '#',
+                COUNT_TOOLTIP: 'Aantal geselecteerde items',
+                MIN: 'min',
+                MIN_TOOLTIP: 'Minimum van geselecteerde items',
+                MAX: 'max',
+                MAX_TOOLTIP: 'Maximum van geselecteerde items',
+                MEAN: 'µ',
+                MEAN_TOOLTIP: 'Gemiddelde van geselecteerde items',
+                SUM: 'Σ',
+                SUM_TOOLTIP: 'Som van geselecteerde items'
+            },
+            UTILS: {
+                FILTER: 'Gebruik dit kenmerk als filter',
+                STYLE: 'Gebruik dit kenmerk als stijl',
+                STATS: 'Toon de statistieken van dit kenmerk',
+                CHART: 'Toon het verloop van dit kenmerk in de tijd',
+                CONFIG: 'Configureer dit kenmerk'
+            },
+            EXPERTMODE: {
+                BEGINNER: 'Beginner',
+                INTERMEDIATE: 'Gevorderd',
+                EXPERT: 'Expert',
+                ADMIN: 'Admin',
+                EXPLANATION: 'Selecteer uw expertise om meer functionaliteit te kunnen gebruiken.'
+            },
+            LAYER_SERVICE: {
+                RELOAD_PROJECT_TITLE: 'Data wordt opnieuw geladen',
+                RELOAD_PROJECT_MSG: 'Na het wisselen van de taal moet de kaartdata opnieuw ingelezen worden. Excuses voor het ongemak.'
+            },
+            HEATMAP: {
+                NAME: 'Heatmaps',
+                DESCRIPTION: '<h4>Toelichting heatmap</h4><div style="text-align: left; margin-left:5px;"><p>Heatmap laat gebieden op de kaart oplichten die voldoen aan bepaalde criteria.',
+                INFO: 'Momenteel zijn er geen kaartlagen geopend die heatmaps bevatten.',
+                INFO_EXPERT: 'Momenteel zijn er geen kaartlagen geopend die heatmaps bevatten. Open een kaartlaag en maak een nieuwe heatmap aan met behulp van de wizard.',
+                SHOW_FEATURE_MSG: 'Selecteer een feature op de kaart om de heatmap resultaten in detail te bekijken.',
+                TOTAL_RESULT: 'Gecombineerd resultaat',
+                DELETE_MSG: 'Verwijder "{0}"',
+                DELETE_MSG2: 'Weet u het zeker?',
+                EDITOR_TITLE: 'Heatmap Editor',
+                MAIN_FEATURE: 'Selecteer het type feature',
+                PROPERTIES: 'Selecteer de eigenschappen',
+                RESOLUTION: 'Resolutie',
+                INTENSITY_SCALE: 'Intensiteitsschaal',
+                TITLE: 'Titel... *',
+                TITLE_TAG: 'Titel',
+                TOGGLE_SPARKLINE: 'Toon of verberg de histogram en score functie.',
+                SCALE_MIN_TITLE: '[Schaal max]',
+                SCALE_MAX_TITLE: '[Schaal min]',
+                MIN_MAX_ZOOM: 'Min./Max. zoom',
+                AT_LOCATION_VALUE: '[Waarde op locatie]',
+                DISTANCE_MAX_VALUE: '[Ideale afstand]',
+                LOST_INTEREST_VALUE: '[Negeer vanaf afstand]',
+                LINEAR_ASC_DESC: 'Linear toenemende, dan afnemende functie.',
+                ADD_HEATMAP: 'Maak een nieuwe heatmap.',
+                DELETE_HEATMAP: 'Verwijder de heatmap.',
+                EDIT_HEATMAP: 'Bewerk de heatmap.',
+                EXPORT_HEATMAP: 'Exporteer de heatmap.'
+            },
+            MCA: {
+                NAME: 'Multi-Criteria Analyse (MCA)',
+                DESCRIPTION: '<h4>Toelichting MCA</h4><div style="text-align: left; margin-left:5px;"><p>Multi-Criteria Analysis (MCA) is een methode die verschillende eigenschappen van een locatie of gebied op de kaart combineerd tot een nieuwe eigenschap. Dit gaat als volgt: <ol><li>Schaal iedere eigenschap tussen 0 (geen waarde) en 1 (maximum waarde).</li><li>Weeg iedere eigenschap relatief t.o.v. de andere gekozen eigenschappen, waar een gewicht onder 0 betekent dat je de eigenschap wil vermijden, 0 wordt genegeerd, en een waarde groter dan 0 betekent dat je dit wil bereiken.</li></ol>Met andere woorden, het is een vorm van lineare regressie.</p></div>',
+                INFO: 'Momenteel zijn er geen kaartlagen geopend die multi-criteria analyses bevatten. Open hiervoor een andere kaartlaag.',
+                INFO_EXPERT: 'Momenteel zijn er geen kaartlagen geopend die multi-criteria analyses bevatten. Open een kaartlaag en maak een nieuwe MCA aan met behulp van de wizard.',
+                SHOW_FEATURE_MSG: 'Selecteer een feature op de kaart om de Multi-Criteria Analyse (MCA) resultaten in detail te bekijken.',
+                TOTAL_RESULT: 'Gecombineerd resultaat',
+                DELETE_MSG: 'Verwijder "{0}"',
+                DELETE_MSG2: 'Weet u het zeker?',
+                HAS_CATEGORY: '  Specificeer categorie? ',
+                EDITOR_TITLE: 'MCA Editor',
+                MAIN_FEATURE: 'Selecteer het type feature',
+                PROPERTIES: 'Selecteer de eigenschappen',
+                INCLUDE_RANK: '  Toon een rangorde? ',
+                RANK_TITLE: '[Titel voor de rangorde]',
+                TITLE: 'Titel... *',
+                CATEGORY_MSG: '[Categorie...]',
+                TOGGLE_SPARKLINE: 'Toon of verberg de histogram en score functie.',
+                SCALE_MIN_TITLE: '[Schaal max]',
+                SCALE_MAX_TITLE: '[Schaal min]',
+                MIN_VALUE: '[Ondergrens (\u03BC-2\u03C3)]',
+                MAX_VALUE: '[Bovengrens (\u03BC+2\u03C3)]',
+                MIN_CUTOFF_VALUE: '[Niet meewegen onder]',
+                MAX_CUTOFF_VALUE: '[Niet meewegen boven]',
+                LINEAR: 'Linear toenemende functie tussen onder- en bovengrens.',
+                SIGMOID: 'Tangentieel toenemende functie tussen onder- en bovengrens.',
+                GAUSSIAN: 'Normale verdeling tussen onder- en bovengrens.',
+                ADD_MCA: 'Maak een nieuwe MCA.',
+                DELETE_MCA: 'Verwijder de MCA.',
+                EDIT_MCA: 'Bewerk de MCA.',
+                SET_STYLE: 'Activeer stijl'
+            },
+            PROJECTSETTINGS: {
+                TITLE: 'Project instellingen',
+                DESCRIPTION: 'Instellingen'
+            },
+            CHOOSE_CATEGORY: 'Kies categorie...',
+            SHOW5: 'Toon 5 regels',
+            SHOW10: 'Toon 10 regels',
+            SHOW15: 'Toon 15 regels',
+            SHOW20: 'Toon 20 regels',
+            SHOW25: 'Toon 25 regels',
+            SHOW30: 'Toon 30 regels',
+            SHOW35: 'Toon 35 regels',
+            SHOW40: 'Toon 40 regels',
+            RISK_DIAGRAM_FOR: 'Risicodiagram voor een ',
+            SAVE_FEATURE_DEPENDENCIES: 'Sla de afhankelijkheden op alléén voor het geselecteerde object',
+            SAVE_FEATURETYPE_DEPENDENCIES: 'Sla de afhankelijkheden op voor alle object van dit type',
+            SAVE_MARVEL: 'Bewaar ',
+            SAVE_EVERY_MARVEL: 'Bewaar ieder ',
+            MARVEL_WATER_LEVEL: 'Waterniveau [m]',
+            MARVEL_UPS_DURATION: 'Noodstroom duur [min]',
+            MARVEL_FEATURE_DEP: 'Afhankelijk van',
+            STATE: 'Status',
+            EVENT_INFO: 'Toon lijst van gebeurtenissen',
+            CLEAR_EVENTS: 'Lijst leegmaken',
+            SEARCH_PLACEHOLDER: 'Gemeente, adres, ...',
+            SAVE_AS_IMAGE: 'Opslaan als afbeelding',
+            SAVE_AS_PDF: 'Opslaan als PDF',
+            ROW_CHART_HELP: 'Klik op één of meerdere rijen om een filter toe te passen voor de geselecteerde eigenschap.',
+            CONVERT: 'Converteer',
+            VIEW_PROJECT: 'Bekijk je project',
+            PASTE_HERE: 'Plak hier uw data',
+            DROP_HERE: 'Sleep uw data hier naartoe',
+            OPTION: 'Optie {{number}}',
+            PASSWORD: 'Wachtwoord',
+            COMPARE_TAB: 'Vergelijk',
+            STRINGFORMAT: 'Nummer opmaak',
+            ADD: 'Voeg toe',
+            NEW: 'Nieuw',
+            SECTION: 'Sectie',
+            GROUP: 'Groep',
+            LAYER_TITLE: 'Kaartlaag titel',
+            LAYER_SETTINGS: 'Kaartlaag instellingen',
+            LAYER_SETTINGS_HELP: 'Wijzig hier de instellingen van je kaartlaag, zoals de titel en de groep waartoe de laag behoort.',
+            PROPERTY_SETTINGS: 'Data eigenschappen',
+            PROPERTY_DESCRIPTION: 'Eigenschap beschrijving',
+            PROPERTY_TYPE: 'Eigenschap type',
+            PROPERTY_TITLE: 'Eigenschap titel',
+            VISIBLE_IN_CALLOUT: 'Toon eigenschap in menu',
+            DESCRIPTION: 'Beschrijving',
+            TYPE: 'Type',
+            TITLE: 'Titel',
+            NAME: 'Naam',
+            EMAIL: 'E-mail',
+            YES: 'Ja',
+            NO: 'Nee',
+            LOGIN_OR_OUT: 'In- of uitloggen',
+            DOWNLOAD_SELECTION_AS: 'Download selectie als:',
+            ERROR_LOADING_TYPERESOURCE: 'Error bij het laden van TypeResources',
+            ERROR_LOADING_LAYER: 'Error bij het laden van de kaartlaag',
+            ERROR_LOADING_SOLUTION: 'Error bij het laden van de projecten',
+            ERROR_LOADING_SENSORDATA: 'Error bij het laden van sensordata',
+            ERROR_LOADING_PROJECT: 'Error bij het laden van het project'
+        };
+        return Dutch;
+    }());
+    Translations.Dutch = Dutch;
+})(Translations || (Translations = {}));
+//# sourceMappingURL=locale-nl.js.map
 var ColorExt;
 (function (ColorExt) {
     /** Color utility class */
@@ -1285,7 +1781,7 @@ var csComp;
                 // c is the case selector based on which of ma and/or mb are set
                 var c = ((ma != null) ? 1 : 0) | ((mb != null) ? 2 : 0);
                 switch (c) {
-                    case 0:// both unmatched, add as new sequence
+                    case 0: // both unmatched, add as new sequence
                         var aa = { p: a, prev: null };
                         var bb = { p: b, next: null };
                         aa.next = bb;
@@ -1299,7 +1795,7 @@ var csComp;
                         this.s = ma;
                         ++this.count; // not essential - tracks number of unmerged sequences
                         break;
-                    case 1:// a matched, b did not - thus b extends sequence ma
+                    case 1: // a matched, b did not - thus b extends sequence ma
                         var pp = { p: b };
                         if (prependA) {
                             pp.next = ma.head;
@@ -1314,7 +1810,7 @@ var csComp;
                             ma.tail = pp;
                         }
                         break;
-                    case 2:// b matched, a did not - thus a extends sequence mb
+                    case 2: // b matched, a did not - thus a extends sequence mb
                         var pp = { p: a };
                         if (prependB) {
                             pp.next = mb.head;
@@ -1329,7 +1825,7 @@ var csComp;
                             mb.tail = pp;
                         }
                         break;
-                    case 3:// both matched, can merge sequences
+                    case 3: // both matched, can merge sequences
                         // if the sequences are the same, do nothing, as we are simply closing this path (could set a flag)
                         if (ma === mb) {
                             var pp = { p: ma.tail.p, next: ma.head, prev: null };
@@ -1342,11 +1838,11 @@ var csComp;
                         // prependB will tell us which type of join is needed. For head/head and tail/tail joins
                         // one sequence needs to be reversed
                         switch ((prependA ? 1 : 0) | (prependB ? 2 : 0)) {
-                            case 0:// tail-tail
+                            case 0: // tail-tail
                                 // reverse ma and append to mb
                                 this.reverseList(ma);
                             // fall through to head/tail case
-                            case 1:// head-tail
+                            case 1: // head-tail
                                 // ma is appended to mb and ma discarded
                                 mb.tail.next = ma.head;
                                 ma.head.prev = mb.tail;
@@ -1354,11 +1850,11 @@ var csComp;
                                 //discard ma sequence record
                                 this.remove_seq(ma);
                                 break;
-                            case 3:// head-head
+                            case 3: // head-head
                                 // reverse ma and append mb to it
                                 this.reverseList(ma);
                             // fall through to tail/head case
-                            case 2:// tail-head
+                            case 2: // tail-head
                                 // mb is appended to ma and mb is discarded
                                 ma.tail.next = mb.head;
                                 mb.head.prev = ma.tail;
@@ -1569,55 +2065,55 @@ var csComp;
                                     case_value = castab[sh[m1] + 1][sh[m2] + 1][sh[m3] + 1];
                                     if (case_value != 0) {
                                         switch (case_value) {
-                                            case 1:// Line between vertices 1 and 2
+                                            case 1: // Line between vertices 1 and 2
                                                 x1 = xh[m1];
                                                 y1 = yh[m1];
                                                 x2 = xh[m2];
                                                 y2 = yh[m2];
                                                 break;
-                                            case 2:// Line between vertices 2 and 3
+                                            case 2: // Line between vertices 2 and 3
                                                 x1 = xh[m2];
                                                 y1 = yh[m2];
                                                 x2 = xh[m3];
                                                 y2 = yh[m3];
                                                 break;
-                                            case 3:// Line between vertices 3 and 1
+                                            case 3: // Line between vertices 3 and 1
                                                 x1 = xh[m3];
                                                 y1 = yh[m3];
                                                 x2 = xh[m1];
                                                 y2 = yh[m1];
                                                 break;
-                                            case 4:// Line between vertex 1 and side 2-3
+                                            case 4: // Line between vertex 1 and side 2-3
                                                 x1 = xh[m1];
                                                 y1 = yh[m1];
                                                 x2 = xsect(m2, m3);
                                                 y2 = ysect(m2, m3);
                                                 break;
-                                            case 5:// Line between vertex 2 and side 3-1
+                                            case 5: // Line between vertex 2 and side 3-1
                                                 x1 = xh[m2];
                                                 y1 = yh[m2];
                                                 x2 = xsect(m3, m1);
                                                 y2 = ysect(m3, m1);
                                                 break;
-                                            case 6://  Line between vertex 3 and side 1-2
+                                            case 6: //  Line between vertex 3 and side 1-2
                                                 x1 = xh[m3];
                                                 y1 = yh[m3];
                                                 x2 = xsect(m1, m2);
                                                 y2 = ysect(m1, m2);
                                                 break;
-                                            case 7:// Line between sides 1-2 and 2-3
+                                            case 7: // Line between sides 1-2 and 2-3
                                                 x1 = xsect(m1, m2);
                                                 y1 = ysect(m1, m2);
                                                 x2 = xsect(m2, m3);
                                                 y2 = ysect(m2, m3);
                                                 break;
-                                            case 8:// Line between sides 2-3 and 3-1
+                                            case 8: // Line between sides 2-3 and 3-1
                                                 x1 = xsect(m2, m3);
                                                 y1 = ysect(m2, m3);
                                                 x2 = xsect(m3, m1);
                                                 y2 = ysect(m3, m1);
                                                 break;
-                                            case 9:// Line between sides 3-1 and 1-2
+                                            case 9: // Line between sides 3-1 and 1-2
                                                 x1 = xsect(m3, m1);
                                                 y1 = ysect(m3, m1);
                                                 x2 = xsect(m1, m2);
@@ -3190,7 +3686,7 @@ var csComp;
                         ? String.format(pt.stringFormat, d)
                         : d.toLocaleString();
                     break;
-                case 'duration'://in ms
+                case 'duration': //in ms
                     if (!$.isNumeric(text)) {
                         displayValue = text;
                     }
@@ -4759,492 +5255,6 @@ var LayersDirective;
     });
 })(LayersDirective || (LayersDirective = {}));
 //# sourceMappingURL=ValidationDirectives.js.map
-var Translations;
-(function (Translations) {
-    var English = /** @class */ (function () {
-        function English() {
-        }
-        English.locale = {
-            CANCEL_BTN: 'Cancel',
-            OK_BTN: 'OK',
-            CLOSE: 'Close',
-            FROM: 'from',
-            TO: 'to',
-            PREVIOUS: 'Previous',
-            NEXT: 'Next',
-            ZOOM_IN: 'Zoom in',
-            ZOOM_OUT: 'Zoom out',
-            ZOOM_LEVEL_LOW: 'Zoom level too low',
-            ZOOM_IN_FOR_CONTOURS: 'Zoom in to show contours',
-            NAVIGATE: {
-                TITLE: 'Search results'
-            },
-            CREATE_SCATTER: 'Create scatter with',
-            EXPAND_ALL: 'Expand all',
-            COLLAPSE_ALL: 'Collapse all',
-            SELECT_ALL: 'Select all',
-            DESELECT_ALL: 'Deselect all',
-            CHOOSE_DROPDOWN: 'Choose...',
-            ENABLE_LOCATION_FILTER: 'Enable location filter',
-            DISABLE_LOCATION_FILTER: 'Disable location filter',
-            SELECT_A_FEATURE: 'Select a feature',
-            SELECT_FEATURE_FOR_WIDGET: 'Please select a feature to show the widget.',
-            SELECT_FEATURE_FOR_STYLE: 'Please select a feature to before setting the style.',
-            SELECT_LAYER_GROUP: 'Select Layers',
-            SELECT_CATEGORY: 'Select Category',
-            SELECT_PROPERTIES: 'Select Properties',
-            NO_RELATIONS_FOUND: 'No relations can be shown for the selected feature. Either the zoom level is too low, there are too many features in the view or there are no relations defined.',
-            BASESTYLES: 'Baselayers',
-            MAP: 'Maps',
-            MAP_LABEL: 'Map',
-            TABLE_LABEL: 'Table',
-            LAYERS: 'Layers',
-            DIRECTORY: 'Available layers',
-            CREATELAYER: 'Create new layer',
-            ADDFEATURES: 'Add items',
-            ADDTYPE: 'Add new type',
-            DONE: 'done',
-            FILTERS: 'Filters',
-            FILTER_INFO: 'At the moment, no filters have been selected. In order to add a filter, click on an icon or area on the map, and click on the filter icon (<span class="fa fa-filter"></span>) in the right menu. This will create a filter for the selected property.',
-            STYLES: 'Styles',
-            STYLE_INFO: 'At the moment, no style has been selected. In order to add a style, click on an icon or area on the map, and click on the style icon (<span class="smallStyleIcon"></span>) in the right menu. This will create a filter for the selected property.',
-            FEATURES: 'Features',
-            LEGEND: 'Legend',
-            SEARCH: 'Search',
-            HIDE_PANEL: 'Hide this panel',
-            EDIT_INDICATORS: 'Edit indicators',
-            RELATED_FEATURES: 'Show related features',
-            FEATURE_INFO: 'Show information about the selected feature',
-            MAP_FEATURES: 'Map features',
-            NEARBY_FEATURES: 'Nearby features',
-            TOGGLE_MENU: 'Toggle menu visibility',
-            DASHBOARD_SELECTION: 'Dashboard selection',
-            SETTINGS: 'Settings',
-            SPEEDS_TAOUFIK: 'speed colors Taoufik',
-            SPEEDS_GOOGLEMAPS: 'speed colors Google Maps',
-            VERWARMINGSSYSTEEM: 'Heating system',
-            PERCENTAGES_V1: 'percentages v1',
-            ORANGE_RED: 'orange - red',
-            WHITE_RED: 'white - red',
-            RED_WHITE: 'red - white',
-            RED_WHITE_BLUE: 'red - white - blue',
-            GREEN_RED: 'green - red',
-            RED_GREEN: 'red - green',
-            BLUE_RED: 'blue - red',
-            RED_BLUE: 'red - blue',
-            WHITE_BLUE: 'white - blue',
-            BLUE_WHITE: 'blue - white',
-            WHITE_GREEN: 'white - green',
-            GREEN_WHITE: 'green - white',
-            WHITE_ORANGE: 'white - orange',
-            ORANGE_WHITE: 'orange - white',
-            SAVE: 'save',
-            CONFIG: 'config',
-            EDIT: 'edit',
-            APPLY: 'apply',
-            REMOVE: 'remove',
-            FOCUSTIME: {
-                OUT_OF_RANGE: 'The timerange is out of scope',
-                NOT_AVAILABLE: 'Currently no sensor data available',
-                LOADING: 'Sensor data is being loaded, please wait'
-            },
-            STATS: {
-                COUNT: '#',
-                COUNT_TOOLTIP: 'Count of selected items',
-                MIN: 'min',
-                MIN_TOOLTIP: 'Minimum of selected items',
-                MAX: 'max',
-                MAX_TOOLTIP: 'Maximum of selected items',
-                MEAN: 'µ',
-                MEAN_TOOLTIP: 'Mean of selected items',
-                SUM: 'Σ',
-                SUM_TOOLTIP: 'Sum of selected items'
-            },
-            UTILS: {
-                FILTER: 'Use this property as filter',
-                STYLE: 'Use this property as style',
-                STATS: 'Show property statistics',
-                CHART: 'Show property in time',
-                CONFIG: 'Configure property'
-            },
-            EXPERTMODE: {
-                BEGINNER: 'Novice',
-                INTERMEDIATE: 'Intermediate',
-                EXPERT: 'Expert',
-                ADMIN: 'Admin',
-                EXPLANATION: 'Select your expertise in order to unlock more functionality.'
-            },
-            LAYER_SERVICE: {
-                RELOAD_PROJECT_TITLE: 'Data is reloaded',
-                RELOAD_PROJECT_MSG: 'After switching the language, we need to reload all the map data. Our appologies for the inconvenience.'
-            },
-            HEATMAP: {
-                NAME: 'Heatmaps',
-                DESCRIPTION: '<h4>Heatmap</h4><p  style="text-align: left; margin-left:5px;">Heatmap highlights areas on the map that fulfill multiple selected criteria.',
-                INFO: 'At the moment, no map layers are loaded that contain a heatmap. Open another map layer to use it.',
-                INFO_EXPERT: 'At the moment, no map layers are loaded that contain a heatmap. Open another map layer to use it, or create a new heatmap using the wizard.',
-                SHOW_FEATURE_MSG: 'Select a feature on the map to see the heatmap.',
-                TOTAL_RESULT: 'Combined result',
-                DELETE_MSG: 'Delete "{0}"',
-                DELETE_MSG2: 'Are you sure?',
-                EDITOR_TITLE: 'Heatmap Editor',
-                MAIN_FEATURE: 'Select the main feature',
-                PROPERTIES: 'Select the properties',
-                INTENSITY_SCALE: 'Intensity scale',
-                RESOLUTION: 'Resolution',
-                TITLE: 'Title... *',
-                TITLE_TAG: 'Title',
-                SCALE_MIN_TITLE: '[Min. scale]',
-                SCALE_MAX_TITLE: '[Max. scale]',
-                MIN_MAX_ZOOM: 'Min./Max. zoom',
-                AT_LOCATION_VALUE: '[Weight at location]',
-                DISTANCE_MAX_VALUE: '[Ideal distance]',
-                LOST_INTEREST_VALUE: '[Lost interest distance]',
-                LINEAR_ASC_DESC: 'Linearly increasing, then decreasing function.',
-                ADD_HEATMAP: 'Add a new heatmap.',
-                DELETE_HEATMAP: 'Delete the heatmap.',
-                EDIT_HEATMAP: 'Edit the heatmap.',
-                EXPORT_HEATMAP: 'Export the heatmap.'
-            },
-            MCA: {
-                NAME: 'Multi-Criteria Analysis (MCA)',
-                DESCRIPTION: '<h4>Multi-Criteria Analysis</h4><p  style="text-align: left; margin-left:5px;">MCA, is a method that combines multiple properties of a feature on the map into a new property. It achieves this by:<ol><li>Scaling each property to a range between 0 (no value) and 1 (maximum value).</li><li>Weighing each property relative to the others, where a weight less than 0 indicates you wish to avoid it, 0 is ignored, and a value greater than 0 is prefered.</li></ol> In fact, it is a kind of linear regression.',
-                INFO: 'At the moment, no map layers are loaded that contain a multi-criteria analysis. Open another map layer to see it.',
-                INFO_EXPERT: 'At the moment, no map layers are loaded that contain a multi-criteria analysis. Open another map layer to use it, or create a new MCA using the wizard.',
-                SHOW_FEATURE_MSG: 'Select a feature on the map to see the effects of the Multi-Criteria Analysis (MCA).',
-                TOTAL_RESULT: 'Combined result',
-                DELETE_MSG: 'Delete "{0}"',
-                DELETE_MSG2: 'Are you sure?',
-                HAS_CATEGORY: '  Has category? ',
-                HAS_RANK: '  Include rank? ',
-                EDITOR_TITLE: 'MCA Editor',
-                MAIN_FEATURE: 'Select the main feature',
-                PROPERTIES: 'Select the properties',
-                INCLUDE_RANK: '  Show rank? ',
-                RANK_TITLE: '[Rank title...]',
-                TITLE: 'Title... *',
-                CATEGORY_MSG: '[Category...]',
-                TOGGLE_SPARKLINE: 'Show or hide bar charts and scoring function.',
-                SCALE_MIN_TITLE: '[Min. scale]',
-                SCALE_MAX_TITLE: '[Max. scale]',
-                MIN_VALUE: '[Minimum (\u03BC-2\u03C3)]',
-                MAX_VALUE: '[Maximum (\u03BC+2\u03C3)]',
-                MIN_CUTOFF_VALUE: '[Ignore when below this value]',
-                MAX_CUTOFF_VALUE: '[Ignore when above this value]',
-                LINEAR: 'Linearly increasing function between min and max.',
-                SIGMOID: 'Tangentially increasing function between min and max',
-                GAUSSIAN: 'Normal distribution increasing function between min and max.',
-                ADD_MCA: 'Add a new MCA.',
-                DELETE_MCA: 'Delete the MCA.',
-                EDIT_MCA: 'Edit the MCA.',
-                SET_STYLE: 'Set style'
-            },
-            PROJECTSETTINGS: {
-                TITLE: 'Project Settings',
-                DESCRIPTION: 'Settings'
-            },
-            CHOOSE_CATEGORY: 'Choose category...',
-            SHOW5: 'Show 5 items',
-            SHOW10: 'Show 10 items',
-            SHOW15: 'Show 15 items',
-            SHOW20: 'Show 20 items',
-            SHOW25: 'Show 25 items',
-            SHOW30: 'Show 30 items',
-            SHOW35: 'Show 35 items',
-            SHOW40: 'Show 40 items',
-            RISK_DIAGRAM_FOR: 'Risk-diagram for a ',
-            SAVE_FEATURE_DEPENDENCIES: 'Save dependencies to the selected feature only',
-            SAVE_FEATURETYPE_DEPENDENCIES: 'Save dependencies to all features of this type',
-            SAVE_MARVEL: 'Save ',
-            SAVE_EVERY_MARVEL: 'Save every ',
-            MARVEL_WATER_LEVEL: 'Water level [m]',
-            MARVEL_UPS_DURATION: 'UPS duration [mins]',
-            MARVEL_FEATURE_DEP: 'Depends on',
-            STATE: 'State',
-            EVENT_INFO: 'Show a list of events',
-            CLEAR_EVENTS: 'Clear event log',
-            SEARCH_PLACEHOLDER: 'Municipality, address, ...',
-            SAVE_AS_IMAGE: 'Save as image',
-            SAVE_AS_PDF: 'Save as PDF',
-            ROW_CHART_HELP: 'Click one or multiple rows to apply a filter for the selected property.',
-            CONVERT: 'Convert',
-            VIEW_PROJECT: 'View your project',
-            PASTE_HERE: 'Paste your data here',
-            DROP_HERE: 'Drop your data here',
-            OPTION: 'Option {{number}}',
-            PASSWORD: 'Password',
-            COMPARE_TAB: 'Compare',
-            STRINGFORMAT: 'Number format',
-            ADD: 'Add',
-            NEW: 'New',
-            SECTION: 'Section',
-            GROUP: 'Group',
-            LAYER_TITLE: 'Layer title',
-            LAYER_SETTINGS: 'Layer settings',
-            LAYER_SETTINGS_HELP: 'Change the settings of your map layer, like its title and the group it belongs to.',
-            PROPERTY_SETTINGS: 'Data properties',
-            PROPERTY_DESCRIPTION: 'Property description',
-            PROPERTY_TYPE: 'Property type',
-            PROPERTY_TITLE: 'Property title',
-            VISIBLE_IN_CALLOUT: 'Show property in menu',
-            DESCRIPTION: 'Description',
-            TYPE: 'Type',
-            TITLE: 'Title',
-            NAME: 'Name',
-            EMAIL: 'E-mail',
-            YES: 'Yes',
-            NO: 'No',
-            LOGIN_OR_OUT: 'Login or logout',
-            DOWNLOAD_SELECTION_AS: 'Download selection as:'
-        };
-        return English;
-    }());
-    Translations.English = English;
-})(Translations || (Translations = {}));
-//# sourceMappingURL=locale-en.js.map
-var Translations;
-(function (Translations) {
-    var Dutch = /** @class */ (function () {
-        function Dutch() {
-        }
-        Dutch.locale = {
-            CANCEL_BTN: 'Annuleren',
-            OK_BTN: 'OK',
-            CLOSE: 'Sluit',
-            FROM: 'van',
-            TO: 'tot',
-            PREVIOUS: 'Vorige',
-            NEXT: 'Volgende',
-            ZOOM_IN: 'Inzoomen',
-            ZOOM_OUT: 'Uitzoomen',
-            ZOOM_LEVEL_LOW: 'Zoom niveau te laag',
-            ZOOM_IN_FOR_CONTOURS: 'Zoom in om de contouren te tonen',
-            NAVIGATE: {
-                TITLE: 'Zoekresultaten'
-            },
-            REMOVE: 'Verwijder',
-            CREATE_SCATTER: 'Creeer spreidingsdiagram',
-            EXPAND_ALL: 'Alles uitklappen',
-            COLLAPSE_ALL: 'Alles inklappen',
-            SELECT_ALL: 'Selecteer alles',
-            DESELECT_ALL: 'Deselecteer alles',
-            ENABLE_LOCATION_FILTER: 'Activeer locatiefilter',
-            SELECT_A_FEATURE: 'Selecteer een feature',
-            DISABLE_LOCATION_FILTER: 'Deactiveer locatiefilter',
-            SELECT_FEATURE_FOR_WIDGET: 'Selecteer een gebied om de widget te tonen.',
-            SELECT_FEATURE_FOR_STYLE: 'Selecteer eerst een gebied, dan pas kan de stijl geactiveerd worden.',
-            SELECT_LAYER_GROUP: 'Selecteer lagen',
-            SELECT_CATEGORY: 'Selecteer categorie',
-            SELECT_PROPERTIES: 'Selecteer eigenschappen',
-            NO_RELATIONS_FOUND: 'Geen relaties voor het geselecteerde item gevonden. Ofwel het zoomniveau is te laag, er zijn teveel items zichtbaar of er zijn geen relaties gedefiniëerd.',
-            CHOOSE_DROPDOWN: 'Kies...',
-            BASESTYLES: 'Basiskaarten',
-            MAP: 'Kaarten',
-            MAP_LABEL: 'Kaart',
-            TABLE_LABEL: 'Tabel',
-            LAYERS: 'Kaartlagen',
-            DIRECTORY: 'Beschikbare lagen',
-            CREATELAYER: 'Nieuwe laag maken',
-            ADDFEATURES: 'Objecten toevoegen',
-            ADDTYPE: 'Nieuwe type toevoegen',
-            FILTERS: 'Filters',
-            FILTER_INFO: 'Momenteel zijn er geen filters geselecteerd. Klik op een icoon of gebied op de kaart, en klik op het filter icoontje (<span class="fa fa-filter"></span>) in het rechter menu om een filter toe te voegen. Dan wordt er een filter aangemaakt voor de geselecteerde eigenschap.',
-            STYLES: 'Stijlen',
-            STYLE_INFO: 'Momenteel zijn er geen stijlen geselecteerd. Klik op een icoon of gebied op de kaart, en klik op het stijl icoontje (<span class="smallStyleIcon"></span>) in het rechter menu om een stijl toe te voegen. Dan wordt er een stijl aangemaakt voor de geselecteerde eigenschap.',
-            FEATURES: 'Features',
-            LEGEND: 'Legenda',
-            SEARCH: 'Zoeken',
-            HIDE_PANEL: 'Verberg dit paneel',
-            EDIT_INDICATORS: 'Wijzig indicatoren',
-            RELATED_FEATURES: 'Toon gerelateerde features',
-            FEATURE_INFO: 'Toon informatie over de geselecteerde feature',
-            MAP_FEATURES: 'Kaartfeatures',
-            NEARBY_FEATURES: 'Dichtbijgelegen features',
-            DASHBOARD_SELECTION: 'Dashboardselectie',
-            SETTINGS: 'Instellingen',
-            TOGGLE_MENU: 'Wissel de zichtbaarheid van het menu',
-            SPEEDS_TAOUFIK: 'snelheden legenda Taoufik',
-            SPEEDS_GOOGLEMAPS: 'snelheden legenda Google Maps',
-            VERWARMINGSSYSTEEM: 'Verwarmingssysteem',
-            PERCENTAGES_V1: 'percentages v1',
-            ORANGE_RED: 'oranje - rood',
-            WHITE_RED: 'wit - rood',
-            RED_WHITE_BLUE: 'rood - wit - blauw',
-            RED_WHITE: 'rood - wit',
-            GREEN_RED: 'groen - rood',
-            RED_GREEN: 'rood - groen',
-            BLUE_RED: 'blauw - rood',
-            RED_BLUE: 'rood - blauw',
-            WHITE_BLUE: 'wit - blauw',
-            BLUE_WHITE: 'wit - groen',
-            WHITE_GREEN: 'wit - groen',
-            GREEN_WHITE: 'groen - wit',
-            WHITE_ORANGE: 'wit - oranje',
-            ORANGE_WHITE: 'oranje - wit',
-            SAVE: 'opslaan',
-            APPLY: 'toepassen',
-            DONE: 'klaar',
-            CONFIG: 'config',
-            EDIT: 'aanpassen',
-            FOCUSTIME: {
-                OUT_OF_RANGE: 'De tijdscope is te groot. Gebruik de tijdbalk om deze te verkleinen',
-                NOT_AVAILABLE: 'Momenteel is er geen sensor data beschikbaar',
-                LOADING: 'Sensor data wordt geladen, even geduld'
-            },
-            STATS: {
-                COUNT: '#',
-                COUNT_TOOLTIP: 'Aantal geselecteerde items',
-                MIN: 'min',
-                MIN_TOOLTIP: 'Minimum van geselecteerde items',
-                MAX: 'max',
-                MAX_TOOLTIP: 'Maximum van geselecteerde items',
-                MEAN: 'µ',
-                MEAN_TOOLTIP: 'Gemiddelde van geselecteerde items',
-                SUM: 'Σ',
-                SUM_TOOLTIP: 'Som van geselecteerde items'
-            },
-            UTILS: {
-                FILTER: 'Gebruik dit kenmerk als filter',
-                STYLE: 'Gebruik dit kenmerk als stijl',
-                STATS: 'Toon de statistieken van dit kenmerk',
-                CHART: 'Toon het verloop van dit kenmerk in de tijd',
-                CONFIG: 'Configureer dit kenmerk'
-            },
-            EXPERTMODE: {
-                BEGINNER: 'Beginner',
-                INTERMEDIATE: 'Gevorderd',
-                EXPERT: 'Expert',
-                ADMIN: 'Admin',
-                EXPLANATION: 'Selecteer uw expertise om meer functionaliteit te kunnen gebruiken.'
-            },
-            LAYER_SERVICE: {
-                RELOAD_PROJECT_TITLE: 'Data wordt opnieuw geladen',
-                RELOAD_PROJECT_MSG: 'Na het wisselen van de taal moet de kaartdata opnieuw ingelezen worden. Excuses voor het ongemak.'
-            },
-            HEATMAP: {
-                NAME: 'Heatmaps',
-                DESCRIPTION: '<h4>Toelichting heatmap</h4><div style="text-align: left; margin-left:5px;"><p>Heatmap laat gebieden op de kaart oplichten die voldoen aan bepaalde criteria.',
-                INFO: 'Momenteel zijn er geen kaartlagen geopend die heatmaps bevatten.',
-                INFO_EXPERT: 'Momenteel zijn er geen kaartlagen geopend die heatmaps bevatten. Open een kaartlaag en maak een nieuwe heatmap aan met behulp van de wizard.',
-                SHOW_FEATURE_MSG: 'Selecteer een feature op de kaart om de heatmap resultaten in detail te bekijken.',
-                TOTAL_RESULT: 'Gecombineerd resultaat',
-                DELETE_MSG: 'Verwijder "{0}"',
-                DELETE_MSG2: 'Weet u het zeker?',
-                EDITOR_TITLE: 'Heatmap Editor',
-                MAIN_FEATURE: 'Selecteer het type feature',
-                PROPERTIES: 'Selecteer de eigenschappen',
-                RESOLUTION: 'Resolutie',
-                INTENSITY_SCALE: 'Intensiteitsschaal',
-                TITLE: 'Titel... *',
-                TITLE_TAG: 'Titel',
-                TOGGLE_SPARKLINE: 'Toon of verberg de histogram en score functie.',
-                SCALE_MIN_TITLE: '[Schaal max]',
-                SCALE_MAX_TITLE: '[Schaal min]',
-                MIN_MAX_ZOOM: 'Min./Max. zoom',
-                AT_LOCATION_VALUE: '[Waarde op locatie]',
-                DISTANCE_MAX_VALUE: '[Ideale afstand]',
-                LOST_INTEREST_VALUE: '[Negeer vanaf afstand]',
-                LINEAR_ASC_DESC: 'Linear toenemende, dan afnemende functie.',
-                ADD_HEATMAP: 'Maak een nieuwe heatmap.',
-                DELETE_HEATMAP: 'Verwijder de heatmap.',
-                EDIT_HEATMAP: 'Bewerk de heatmap.',
-                EXPORT_HEATMAP: 'Exporteer de heatmap.'
-            },
-            MCA: {
-                NAME: 'Multi-Criteria Analyse (MCA)',
-                DESCRIPTION: '<h4>Toelichting MCA</h4><div style="text-align: left; margin-left:5px;"><p>Multi-Criteria Analysis (MCA) is een methode die verschillende eigenschappen van een locatie of gebied op de kaart combineerd tot een nieuwe eigenschap. Dit gaat als volgt: <ol><li>Schaal iedere eigenschap tussen 0 (geen waarde) en 1 (maximum waarde).</li><li>Weeg iedere eigenschap relatief t.o.v. de andere gekozen eigenschappen, waar een gewicht onder 0 betekent dat je de eigenschap wil vermijden, 0 wordt genegeerd, en een waarde groter dan 0 betekent dat je dit wil bereiken.</li></ol>Met andere woorden, het is een vorm van lineare regressie.</p></div>',
-                INFO: 'Momenteel zijn er geen kaartlagen geopend die multi-criteria analyses bevatten. Open hiervoor een andere kaartlaag.',
-                INFO_EXPERT: 'Momenteel zijn er geen kaartlagen geopend die multi-criteria analyses bevatten. Open een kaartlaag en maak een nieuwe MCA aan met behulp van de wizard.',
-                SHOW_FEATURE_MSG: 'Selecteer een feature op de kaart om de Multi-Criteria Analyse (MCA) resultaten in detail te bekijken.',
-                TOTAL_RESULT: 'Gecombineerd resultaat',
-                DELETE_MSG: 'Verwijder "{0}"',
-                DELETE_MSG2: 'Weet u het zeker?',
-                HAS_CATEGORY: '  Specificeer categorie? ',
-                EDITOR_TITLE: 'MCA Editor',
-                MAIN_FEATURE: 'Selecteer het type feature',
-                PROPERTIES: 'Selecteer de eigenschappen',
-                INCLUDE_RANK: '  Toon een rangorde? ',
-                RANK_TITLE: '[Titel voor de rangorde]',
-                TITLE: 'Titel... *',
-                CATEGORY_MSG: '[Categorie...]',
-                TOGGLE_SPARKLINE: 'Toon of verberg de histogram en score functie.',
-                SCALE_MIN_TITLE: '[Schaal max]',
-                SCALE_MAX_TITLE: '[Schaal min]',
-                MIN_VALUE: '[Ondergrens (\u03BC-2\u03C3)]',
-                MAX_VALUE: '[Bovengrens (\u03BC+2\u03C3)]',
-                MIN_CUTOFF_VALUE: '[Niet meewegen onder]',
-                MAX_CUTOFF_VALUE: '[Niet meewegen boven]',
-                LINEAR: 'Linear toenemende functie tussen onder- en bovengrens.',
-                SIGMOID: 'Tangentieel toenemende functie tussen onder- en bovengrens.',
-                GAUSSIAN: 'Normale verdeling tussen onder- en bovengrens.',
-                ADD_MCA: 'Maak een nieuwe MCA.',
-                DELETE_MCA: 'Verwijder de MCA.',
-                EDIT_MCA: 'Bewerk de MCA.',
-                SET_STYLE: 'Activeer stijl'
-            },
-            PROJECTSETTINGS: {
-                TITLE: 'Project instellingen',
-                DESCRIPTION: 'Instellingen'
-            },
-            CHOOSE_CATEGORY: 'Kies categorie...',
-            SHOW5: 'Toon 5 regels',
-            SHOW10: 'Toon 10 regels',
-            SHOW15: 'Toon 15 regels',
-            SHOW20: 'Toon 20 regels',
-            SHOW25: 'Toon 25 regels',
-            SHOW30: 'Toon 30 regels',
-            SHOW35: 'Toon 35 regels',
-            SHOW40: 'Toon 40 regels',
-            RISK_DIAGRAM_FOR: 'Risicodiagram voor een ',
-            SAVE_FEATURE_DEPENDENCIES: 'Sla de afhankelijkheden op alléén voor het geselecteerde object',
-            SAVE_FEATURETYPE_DEPENDENCIES: 'Sla de afhankelijkheden op voor alle object van dit type',
-            SAVE_MARVEL: 'Bewaar ',
-            SAVE_EVERY_MARVEL: 'Bewaar ieder ',
-            MARVEL_WATER_LEVEL: 'Waterniveau [m]',
-            MARVEL_UPS_DURATION: 'Noodstroom duur [min]',
-            MARVEL_FEATURE_DEP: 'Afhankelijk van',
-            STATE: 'Status',
-            EVENT_INFO: 'Toon lijst van gebeurtenissen',
-            CLEAR_EVENTS: 'Lijst leegmaken',
-            SEARCH_PLACEHOLDER: 'Gemeente, adres, ...',
-            SAVE_AS_IMAGE: 'Opslaan als afbeelding',
-            SAVE_AS_PDF: 'Opslaan als PDF',
-            ROW_CHART_HELP: 'Klik op één of meerdere rijen om een filter toe te passen voor de geselecteerde eigenschap.',
-            CONVERT: 'Converteer',
-            VIEW_PROJECT: 'Bekijk je project',
-            PASTE_HERE: 'Plak hier uw data',
-            DROP_HERE: 'Sleep uw data hier naartoe',
-            OPTION: 'Optie {{number}}',
-            PASSWORD: 'Wachtwoord',
-            COMPARE_TAB: 'Vergelijk',
-            STRINGFORMAT: 'Nummer opmaak',
-            ADD: 'Voeg toe',
-            NEW: 'Nieuw',
-            SECTION: 'Sectie',
-            GROUP: 'Groep',
-            LAYER_TITLE: 'Kaartlaag titel',
-            LAYER_SETTINGS: 'Kaartlaag instellingen',
-            LAYER_SETTINGS_HELP: 'Wijzig hier de instellingen van je kaartlaag, zoals de titel en de groep waartoe de laag behoort.',
-            PROPERTY_SETTINGS: 'Data eigenschappen',
-            PROPERTY_DESCRIPTION: 'Eigenschap beschrijving',
-            PROPERTY_TYPE: 'Eigenschap type',
-            PROPERTY_TITLE: 'Eigenschap titel',
-            VISIBLE_IN_CALLOUT: 'Toon eigenschap in menu',
-            DESCRIPTION: 'Beschrijving',
-            TYPE: 'Type',
-            TITLE: 'Titel',
-            NAME: 'Naam',
-            EMAIL: 'E-mail',
-            YES: 'Ja',
-            NO: 'Nee',
-            LOGIN_OR_OUT: 'In- of uitloggen',
-            DOWNLOAD_SELECTION_AS: 'Download selectie als:'
-        };
-        return Dutch;
-    }());
-    Translations.Dutch = Dutch;
-})(Translations || (Translations = {}));
-//# sourceMappingURL=locale-nl.js.map
 var Accessibility;
 (function (Accessibility) {
     /**
@@ -5685,6 +5695,7 @@ var Charts;
                     var svg = chart.append("div").attr("class", "chart")
                         .selectAll('div')
                         .data(parsedData)
+                        //.data(demoData)
                         .enter().append("svg")
                         .attr("class", "bullet")
                         .attr("width", scope.width + 15)
@@ -6198,6 +6209,7 @@ var Charts;
                                     .attr("y", ymin)
                                     .attr("dy", ".35em")
                                     .style("text-anchor", "end")
+                                    //.text(d3.max(y.domain()));
                                     .text();
                                 // y-axis, min
                                 chart.append('line')
@@ -6805,7 +6817,7 @@ var DataTable;
                         }
                     });
                 }
-                else if (layer && data.features && data.features.length > 0) {
+                else if (layer && data.features && data.features.length > 0) { // Take the first feature and derive your properties from that.
                     var feature = data.features[0];
                     feature.layer = layer;
                     for (var key in feature.properties) {
@@ -6835,10 +6847,10 @@ var DataTable;
         };
         DataTableCtrl.prototype.toggleSelection = function (propertyTypeTitle) {
             var idx = this.headers.indexOf(propertyTypeTitle);
-            if (idx > -1) {
+            if (idx > -1) { // is currently selected
                 this.headers.splice(idx, 1);
             }
-            else {
+            else { // is newly selected
                 this.headers.push(propertyTypeTitle);
             }
             this.rows = this.getRows();
@@ -7729,7 +7741,7 @@ var FeatureProps;
                         }
                     }
                 }
-                else {
+                else { // if not go through all properties and find a propertyType
                     for (var key in feature.properties) {
                         var mi = layerservice.getPropertyType(feature, key);
                         if (mi) {
@@ -11028,6 +11040,7 @@ var LanguageSwitch;
             };
         }
     ])
+        // The provider allows you to configure the GUI languages that you wish to use.
         .provider('$languages', function () {
         this.languages = [];
         this.$get = function () {
@@ -11724,7 +11737,7 @@ var LayersDirective;
                         }
                     });
                 }
-                else {
+                else { // not a dynamic project, only save it locally
                     this.$layerService.initLayer(group, this.newLayer);
                     group.layers.push(this.newLayer);
                     this.$layerService.addLayer(this.newLayer);
@@ -13934,6 +13947,7 @@ var Mca;
             if (idx > -1) {
                 this.headers.splice(idx, 1);
             }
+            // is newly selected
             else {
                 this.headers.push(metaInfoTitle);
             }
@@ -15288,7 +15302,8 @@ var Helpers;
                     scope: {
                         resizeX: '@',
                         resizeY: '@',
-                        resizeRelativeToParent: '@'
+                        resizeRelativeToParent: '@',
+                        resizeRelativeToScreen: '@'
                     },
                     // Directives that want to modify the DOM typically use the link option.link takes a function with the following signature, function link(scope, element, attrs) { ... } where:
                     // * scope is an Angular scope object.
@@ -15301,6 +15316,10 @@ var Helpers;
                             if (scope.resizeRelativeToParent) {
                                 height = element.parent().innerHeight();
                                 width = element.parent().innerWidth();
+                            }
+                            else if (scope.resizeRelativeToScreen) {
+                                height = window.innerHeight;
+                                width = window.innerWidth;
                             }
                             else {
                                 height = $window.innerHeight;
@@ -16685,6 +16704,10 @@ var csComp;
                 }).catch(function (err) {
                     _this.notify(title, text, location, type, duration);
                 });
+            };
+            MessageBusService.prototype.notifyErrorWithTranslation = function (title, text, variableReplacement) {
+                if (variableReplacement === void 0) { variableReplacement = null; }
+                this.notifyWithTranslation(title, text, variableReplacement, NotifyLocation.TopBar, NotifyType.Error);
             };
             MessageBusService.prototype.notifyError = function (title, text) {
                 this.notify(title, text, NotifyLocation.TopBar, NotifyType.Error);
@@ -18156,6 +18179,9 @@ var csComp;
                             _this.deactivateTabContainer(tab.container);
                         });
                     }
+                    if (tab.data && _.isObject(tab.data) && tab.data.hasOwnProperty('class')) {
+                        $('#rightpanel').addClass(tab.data.class);
+                    }
                     if (_.isUndefined(tab.open) || tab.open === true) {
                         var elm = $('#rightpanelTabs a[data-target="#' + content + '"]');
                         if (elm && elm.tab) {
@@ -19101,6 +19127,9 @@ var csComp;
                         case 'timeSpanUpdated':
                             _this.updateSensorLinks();
                             break;
+                        // case 'focusChange':
+                        //     delayFocusChange(date);
+                        //     break;
                     }
                 });
                 $messageBusService.subscribe('language', function (title, language) {
@@ -19459,6 +19488,8 @@ var csComp;
             /** Find a dashboard by ID */
             LayerService.prototype.findDashboardById = function (dashboardId) {
                 var dashboard;
+                if (!this.project || !this.project.dashboards)
+                    return;
                 this.project.dashboards.some(function (d) {
                     if (d.id !== dashboardId)
                         return false;
@@ -19645,6 +19676,21 @@ var csComp;
                 this.$messageBusService.publish('layer', 'loading', layer);
                 async.series([
                     function (callback) {
+                        // check if only one layer can be active having a specific
+                        // tag ("oneLayerActiveId"). Make sure all active layers with that id are disabled
+                        if (layer.oneLayerActiveId) {
+                            _this.project.groups.forEach(function (g) {
+                                g.layers.forEach(function (l) {
+                                    if (l.id !== layer.id && l.oneLayerActiveId === layer.oneLayerActiveId && l.enabled) {
+                                        _this.removeLayer(l);
+                                        l.enabled = false;
+                                    }
+                                });
+                            });
+                        }
+                        callback(null, null);
+                    },
+                    function (callback) {
                         // check if in this group only one layer can be active
                         // make sure all existising active layers are disabled
                         if (layer.group.oneLayerActive) {
@@ -19788,7 +19834,7 @@ var csComp;
                                 var resource = res.data;
                                 success = true;
                                 if (!resource || (typeof resource === 'string' && resource !== 'null')) {
-                                    _this.$messageBusService.notifyError('Error loading resource type', url);
+                                    _this.$messageBusService.notifyErrorWithTranslation('ERROR_LOADING_TYPERESOURCE', url);
                                 }
                                 else {
                                     var r = resource;
@@ -19800,7 +19846,7 @@ var csComp;
                                 }
                                 callback();
                             }, function (err) {
-                                _this.$messageBusService.notifyError('ERROR loading TypeResources', 'While loading: ' + url);
+                                _this.$messageBusService.notifyErrorWithTranslation('ERROR_LOADING_TYPERESOURCE', "URL: " + url);
                                 console.log(err);
                             });
                             setTimeout(function () {
@@ -20253,7 +20299,7 @@ var csComp;
                 if (f.sensors || f.coordinates) {
                     var changed = false;
                     var pos = 0;
-                    if (f.timestamps) {
+                    if (f.timestamps) { // check if feature contains timestamps
                         pos = this.getSensorIndex(date, f.timestamps);
                     }
                     else if (l.timestamps) {
@@ -20623,7 +20669,7 @@ var csComp;
                                             break;
                                         case 'fillColor':
                                             s.fillColor = csComp.Helpers.getColor(v, gs);
-                                            if (s.fillColor.length > 7) {
+                                            if (s.fillColor.length > 7) { // Convert RGBA to RGB & opacity
                                                 var res = csComp.Helpers.getColorAndOpacityFromRgbaString(s.fillColor);
                                                 if (res) {
                                                     s.fillColor = res.color;
@@ -20655,7 +20701,7 @@ var csComp;
                                             break;
                                         case 'fillColor':
                                             s.fillColor = csComp.Helpers.getColorFromStringValue(ss, gs);
-                                            if (s.fillColor.length > 7) {
+                                            if (s.fillColor.length > 7) { // Convert RGBA to RGB & opacity
                                                 var res = csComp.Helpers.getColorAndOpacityFromRgbaString(s.fillColor);
                                                 if (res) {
                                                     s.fillColor = res.color;
@@ -20707,7 +20753,8 @@ var csComp;
                                 if (source.propertyTypeData.hasOwnProperty(key)) {
                                     ft._propertyTypeData.push(source.propertyTypeData[key]);
                                 }
-                                else {
+                                else // if not create a new one with the key as label/property and title
+                                 {
                                     var pt = { label: key, title: key, type: 'text' };
                                     source.propertyTypeData[key] = pt;
                                     ft._propertyTypeData.push(pt);
@@ -21032,7 +21079,12 @@ var csComp;
                             gs.legends[ptd.title] = ptd.legend;
                             gs.colorScales[ptd.title] = ['purple', 'purple'];
                         }
-                        if (ft.style && ft.style.fillColor) {
+                        // When a styling colors array is provided, use that one
+                        if (ft.style && ft.style.styleColors) {
+                            gs.colors = ft.style.styleColors;
+                        }
+                        // Else create styling colors based on fillColor
+                        else if (ft.style && ft.style.fillColor) {
                             // Set style color range from fillColor to grey or white, depending on highest contrast
                             if (chroma.deltaE('white', ft.style.fillColor) < 50) {
                                 gs.colors = ['black', ft.style.fillColor];
@@ -21560,6 +21612,9 @@ var csComp;
                         var projectId_1 = searchParams['project'];
                         // By default, look for an API project
                         var u_1 = 'api/projects/' + projectId_1;
+                        if (solution.apiPath) {
+                            u_1 = solution.apiPath + '/projects/' + projectId_1;
+                        }
                         if (!initialProject) {
                             var foundProject = solution.projects.some(function (p) {
                                 // If the solution already specifies a project, use that instead.
@@ -21578,7 +21633,7 @@ var csComp;
                                         _this.parseProject(data, { title: data.title, url: data.url, dynamic: true }, []);
                                     }
                                 }, function (err) {
-                                    _this.$messageBusService.notify('ERROR loading project', 'while loading: ' + u_1);
+                                    _this.$messageBusService.notifyErrorWithTranslation('ERROR_LOADING_PROJECT', "Project: " + u_1);
                                 });
                             }
                         }
@@ -21589,7 +21644,7 @@ var csComp;
                                     _this.parseProject(data, { title: data.title, url: data.url, dynamic: true }, []);
                                 }
                             }, function (data) {
-                                _this.$messageBusService.notify('ERROR loading project', 'while loading: ' + u_1);
+                                _this.$messageBusService.notifyErrorWithTranslation('ERROR_LOADING_PROJECT', "Project: " + u_1);
                             });
                         }
                     }
@@ -21612,7 +21667,7 @@ var csComp;
                     }
                     _this.solution = solution;
                 }, function () {
-                    _this.$messageBusService.notify('ERROR loading solution', 'while loading: ' + url);
+                    _this.$messageBusService.notifyErrorWithTranslation('ERROR_LOADING_SOLUTION', "@: " + url);
                 });
             };
             /**
@@ -21661,7 +21716,7 @@ var csComp;
                         var delayFocusChange = _.debounce(function (date) { _this.refreshActiveLayers(); }, _this.project.timeLine.updateDelay);
                         //alert('project open ' + this.$location.absUrl());
                     }, function () {
-                        _this.$messageBusService.notify('ERROR loading project', 'while loading: ' + solutionProject.url);
+                        _this.$messageBusService.notifyErrorWithTranslation('ERROR_LOADING_PROJECT', "project: " + solutionProject.url);
                     });
                 }
                 else {
@@ -21705,60 +21760,63 @@ var csComp;
                 }
                 // if no dashboards defined, create one
                 if (!this.project.dashboards) {
-                    this.project.dashboards = [];
-                    var d = new Services.Dashboard();
-                    d.id = 'map';
-                    d.name = 'Home';
-                    d.showMap = true;
-                    d.showLeftmenu = true;
-                    d.showLegend = true;
-                    d.widgets = [];
-                    this.project.dashboards.push(d);
-                    var d2 = new Services.Dashboard();
-                    d2.id = 'datatable';
-                    d2.name = 'Table';
-                    d2.showMap = false;
-                    d2.showLeftmenu = false;
-                    d2.showRightmenu = false;
-                    d2.showTimeline = false;
-                    d2.widgets = [{
-                            id: 'datatable_id',
-                            directive: 'datatable',
-                            elementId: 'widget-datatable_id',
-                            enabled: true,
-                            width: '100%',
-                            top: "75px",
-                            height: '100%',
-                            bottom: '0px',
-                            position: 'dashboard'
-                        }];
-                    this.project.dashboards.push(d2);
+                    if (this.project.solution.defaultDashboards) {
+                        this.project.dashboards = this.project.solution.defaultDashboards;
+                    }
+                    else {
+                        this.project.dashboards = [];
+                        var d = new Services.Dashboard();
+                        d.id = 'map';
+                        d.name = 'Home';
+                        d.showMap = true;
+                        d.showLeftmenu = true;
+                        d.showLegend = true;
+                        d.widgets = [];
+                        this.project.dashboards.push(d);
+                        var d2 = new Services.Dashboard();
+                        d2.id = 'datatable';
+                        d2.name = 'Table';
+                        d2.showMap = false;
+                        d2.showLeftmenu = false;
+                        d2.showRightmenu = false;
+                        d2.showTimeline = false;
+                        d2.widgets = [{
+                                id: 'datatable_id',
+                                directive: 'datatable',
+                                elementId: 'widget-datatable_id',
+                                enabled: true,
+                                width: '100%',
+                                top: "75px",
+                                height: '100%',
+                                bottom: '0px',
+                                position: 'dashboard'
+                            }];
+                        this.project.dashboards.push(d2);
+                    }
                 }
-                else {
-                    // initialize dashboards
-                    this.project.dashboards.forEach(function (d) {
-                        d = csComp.Helpers.translateObject(d, _this.currentLocale, false);
-                        if (!d.id) {
-                            d.id = csComp.Helpers.getGuid();
-                        }
-                        if (d.widgets && d.widgets.length > 0)
-                            d.widgets.forEach(function (w) {
-                                if (w.datasource) {
-                                    var source = _this.findWidgetById(w.datasource);
-                                    w.data = csComp.Helpers.translateObject(source.data, _this.currentLocale, true);
-                                }
-                                else {
-                                    w.data = csComp.Helpers.translateObject(w.data, _this.currentLocale, true);
-                                }
-                                if (!w.id)
-                                    w.id = csComp.Helpers.getGuid();
-                                if (!w.enabled)
-                                    w.enabled = true;
-                                if (!w.position)
-                                    w.position = 'dashboard';
-                            });
-                    });
-                }
+                // initialize dashboards
+                this.project.dashboards.forEach(function (d) {
+                    d = csComp.Helpers.translateObject(d, _this.currentLocale, false);
+                    if (!d.id) {
+                        d.id = csComp.Helpers.getGuid();
+                    }
+                    if (d.widgets && d.widgets.length > 0)
+                        d.widgets.forEach(function (w) {
+                            if (w.datasource) {
+                                var source = _this.findWidgetById(w.datasource);
+                                w.data = csComp.Helpers.translateObject(source.data, _this.currentLocale, true);
+                            }
+                            else {
+                                w.data = csComp.Helpers.translateObject(w.data, _this.currentLocale, true);
+                            }
+                            if (!w.id)
+                                w.id = csComp.Helpers.getGuid();
+                            if (!w.enabled)
+                                w.enabled = true;
+                            if (!w.position)
+                                w.position = 'dashboard';
+                        });
+                });
                 async.series([
                     function (callback) {
                         // load extra type resources
@@ -22759,7 +22817,7 @@ var RelationAction;
                     }
                     else {
                         if (f.properties && f.properties.hasOwnProperty(prop.target) && f.properties[prop.target] === searchValue) {
-                            if (f.id !== feature.id) {
+                            if (f.id !== feature.id) { // Do not return self
                                 return true;
                             }
                         }
@@ -22963,7 +23021,7 @@ var csComp;
                         if (feature.geometry.type.toUpperCase().indexOf('MULTI') < 0) {
                             bb = this.getBoundingBox(feature.geometry.coordinates[0]);
                         }
-                        else {
+                        else { // MULTIPOLYGON or MULTILINESTRING
                             bb = [1000, -1000, 1000, -1000];
                             feature.geometry.coordinates.forEach(function (c) {
                                 var b = _this.getBoundingBox(c[0]);
@@ -23223,13 +23281,16 @@ var csComp;
                 this.$messageBusService = $messageBusService;
                 this.jwtDecoded = JwtDecoder.decode(this.token);
                 if (this.jwtDecoded.exp) {
-                    var expiresInMsec = Date.parse(this.jwtDecoded.expires) - Date.now();
+                    var expiresInMsec = (new Date(this.jwtDecoded.exp * 1000).getTime() - Date.now());
                     if (expiresInMsec > 0) {
                         this.addJwtToHeader();
                         this.loggedIn = true;
                         this.userProfile = this.$localStorageService.get('profile');
                         this.$messageBusService.publish('profileservice', 'login', this.userProfile);
                         setTimeout(function () { return _this.validateUser(); }, expiresInMsec - 5 * 60 * 1000);
+                    }
+                    else {
+                        this.logoutUser();
                     }
                 }
             }
@@ -23243,6 +23304,10 @@ var csComp;
                 },
                 set: function (profile) {
                     var _this = this;
+                    if (this.jwtDecoded && this.jwtDecoded.exp) {
+                        this.jwtDecoded.expires = (new Date(this.jwtDecoded.exp * 1000)).toISOString();
+                        profile.expires = this.jwtDecoded.expires;
+                    }
                     this.profile = profile;
                     this.$localStorageService.set('profile', profile);
                     if (!_.isFunction(this.update))
@@ -23272,6 +23337,7 @@ var csComp;
                         _this.isValidating = false;
                         _this.loggedIn = success;
                         if (_this.loggedIn) {
+                            _this.jwtDecoded = JwtDecoder.decode(_this.token);
                             _this.userProfile = profile;
                             _this.$messageBusService.publish('profileservice', 'login', profile);
                         }
@@ -23330,6 +23396,10 @@ var csComp;
                  */
                 set: function (myToken) {
                     this.jwtToken = myToken;
+                    this.jwtDecoded = JwtDecoder.decode(myToken);
+                    if (this.jwtDecoded && this.jwtDecoded.exp) {
+                        this.jwtDecoded.expires = (new Date(this.jwtDecoded.exp * 1000)).toISOString();
+                    }
                     this.addJwtToHeader();
                     this.$localStorageService.set('jwt', myToken);
                 },
@@ -30332,6 +30402,106 @@ var PostMan;
     PostMan.PostManEditCtrl = PostManEditCtrl;
 })(PostMan || (PostMan = {}));
 //# sourceMappingURL=PostManEditCtrl.js.map
+var SimState;
+(function (SimState) {
+    /** Config */
+    var moduleName = 'csComp';
+    try {
+        SimState.myModule = angular.module(moduleName);
+    }
+    catch (err) {
+        // named module does not exist, so create one
+        SimState.myModule = angular.module(moduleName, []);
+    }
+    /** Directive to send a message to a REST endpoint. Similar in goal to the Chrome plugin POSTMAN. */
+    SimState.myModule.directive('simstateEdit', [function () {
+            return {
+                restrict: 'E',
+                scope: {},
+                templateUrl: 'directives/Widgets/SimState/SimState.tpl.html',
+                replace: true,
+                transclude: false,
+                controller: SimStateEditCtrl
+            };
+        }
+    ]);
+    var SimStateEditCtrl = /** @class */ (function () {
+        function SimStateEditCtrl($scope, $http, messageBusService, $timeout) {
+            this.$scope = $scope;
+            this.$http = $http;
+            this.messageBusService = messageBusService;
+            this.$timeout = $timeout;
+            $scope.vm = this;
+            //var par = <any>$scope.$parent;
+            //$scope.data = <PostManEditorData>par.widget.data;
+        }
+        SimStateEditCtrl.$inject = [
+            '$scope',
+            '$http',
+            'messageBusService',
+            '$timeout'
+        ];
+        return SimStateEditCtrl;
+    }());
+    SimState.SimStateEditCtrl = SimStateEditCtrl;
+})(SimState || (SimState = {}));
+//# sourceMappingURL=SimState-edit.js.map
+var SimState;
+(function (SimState) {
+    /** Config */
+    var moduleName = 'csComp';
+    try {
+        SimState.myModule = angular.module(moduleName);
+    }
+    catch (err) {
+        // named module does not exist, so create one
+        SimState.myModule = angular.module(moduleName, []);
+    }
+    /** Directive to send a message to a REST endpoint. Similar in goal to the Chrome plugin POSTMAN. */
+    SimState.myModule.directive('simstate', [function () {
+            return {
+                restrict: 'E',
+                scope: {},
+                templateUrl: 'directives/Widgets/SimState/SimState.tpl.html',
+                replace: true,
+                transclude: false,
+                controller: SimStateCtrl
+            };
+        }
+    ]);
+    var SimStateCtrl = /** @class */ (function () {
+        function SimStateCtrl($scope, $http, messageBusService, $timeout) {
+            var _this = this;
+            this.$scope = $scope;
+            this.$http = $http;
+            this.messageBusService = messageBusService;
+            this.$timeout = $timeout;
+            this.states = {};
+            $scope.vm = this;
+            messageBusService.serverSubscribe('Sim.SimState.', 'key', function (title, msg) {
+                if (!msg || !msg.hasOwnProperty('data') || !msg.data.hasOwnProperty('item'))
+                    return;
+                //console.log(`Server subscription received: ${title}, ${JSON.stringify(msg, null, 2) }.`);
+                _this.$timeout(function () {
+                    var state = msg.data.item;
+                    if (state.state === 'Exit')
+                        delete _this.states[state.id];
+                    else
+                        _this.states[state.name] = state; // Although id would be better, we could end up with the remains of restarted services.
+                }, 0);
+            });
+        }
+        SimStateCtrl.$inject = [
+            '$scope',
+            '$http',
+            'messageBusService',
+            '$timeout'
+        ];
+        return SimStateCtrl;
+    }());
+    SimState.SimStateCtrl = SimStateCtrl;
+})(SimState || (SimState = {}));
+//# sourceMappingURL=SimState.js.map
 var Presentation;
 (function (Presentation) {
     /**
@@ -30773,324 +30943,6 @@ var Presentation;
     Presentation.PresentationWidgetCtrl = PresentationWidgetCtrl;
 })(Presentation || (Presentation = {}));
 //# sourceMappingURL=PresentationWidget.js.map
-var SimState;
-(function (SimState) {
-    /** Config */
-    var moduleName = 'csComp';
-    try {
-        SimState.myModule = angular.module(moduleName);
-    }
-    catch (err) {
-        // named module does not exist, so create one
-        SimState.myModule = angular.module(moduleName, []);
-    }
-    /** Directive to send a message to a REST endpoint. Similar in goal to the Chrome plugin POSTMAN. */
-    SimState.myModule.directive('simstateEdit', [function () {
-            return {
-                restrict: 'E',
-                scope: {},
-                templateUrl: 'directives/Widgets/SimState/SimState.tpl.html',
-                replace: true,
-                transclude: false,
-                controller: SimStateEditCtrl
-            };
-        }
-    ]);
-    var SimStateEditCtrl = /** @class */ (function () {
-        function SimStateEditCtrl($scope, $http, messageBusService, $timeout) {
-            this.$scope = $scope;
-            this.$http = $http;
-            this.messageBusService = messageBusService;
-            this.$timeout = $timeout;
-            $scope.vm = this;
-            //var par = <any>$scope.$parent;
-            //$scope.data = <PostManEditorData>par.widget.data;
-        }
-        SimStateEditCtrl.$inject = [
-            '$scope',
-            '$http',
-            'messageBusService',
-            '$timeout'
-        ];
-        return SimStateEditCtrl;
-    }());
-    SimState.SimStateEditCtrl = SimStateEditCtrl;
-})(SimState || (SimState = {}));
-//# sourceMappingURL=SimState-edit.js.map
-var SimState;
-(function (SimState) {
-    /** Config */
-    var moduleName = 'csComp';
-    try {
-        SimState.myModule = angular.module(moduleName);
-    }
-    catch (err) {
-        // named module does not exist, so create one
-        SimState.myModule = angular.module(moduleName, []);
-    }
-    /** Directive to send a message to a REST endpoint. Similar in goal to the Chrome plugin POSTMAN. */
-    SimState.myModule.directive('simstate', [function () {
-            return {
-                restrict: 'E',
-                scope: {},
-                templateUrl: 'directives/Widgets/SimState/SimState.tpl.html',
-                replace: true,
-                transclude: false,
-                controller: SimStateCtrl
-            };
-        }
-    ]);
-    var SimStateCtrl = /** @class */ (function () {
-        function SimStateCtrl($scope, $http, messageBusService, $timeout) {
-            var _this = this;
-            this.$scope = $scope;
-            this.$http = $http;
-            this.messageBusService = messageBusService;
-            this.$timeout = $timeout;
-            this.states = {};
-            $scope.vm = this;
-            messageBusService.serverSubscribe('Sim.SimState.', 'key', function (title, msg) {
-                if (!msg || !msg.hasOwnProperty('data') || !msg.data.hasOwnProperty('item'))
-                    return;
-                //console.log(`Server subscription received: ${title}, ${JSON.stringify(msg, null, 2) }.`);
-                _this.$timeout(function () {
-                    var state = msg.data.item;
-                    if (state.state === 'Exit')
-                        delete _this.states[state.id];
-                    else
-                        _this.states[state.name] = state; // Although id would be better, we could end up with the remains of restarted services.
-                }, 0);
-            });
-        }
-        SimStateCtrl.$inject = [
-            '$scope',
-            '$http',
-            'messageBusService',
-            '$timeout'
-        ];
-        return SimStateCtrl;
-    }());
-    SimState.SimStateCtrl = SimStateCtrl;
-})(SimState || (SimState = {}));
-//# sourceMappingURL=SimState.js.map
-var TableWidget;
-(function (TableWidget) {
-    /**
-      * Config
-      */
-    var moduleName = 'csComp';
-    try {
-        TableWidget.myModule = angular.module(moduleName);
-    }
-    catch (err) {
-        // named module does not exist, so create one
-        TableWidget.myModule = angular.module(moduleName, []);
-    }
-    /**
-      * Directive to display the available map layers.
-      */
-    TableWidget.myModule.directive('tablewidget', [function () {
-            return {
-                restrict: 'E',
-                scope: {},
-                templateUrl: 'directives/Widgets/TableWidget/TableWidget.tpl.html',
-                replace: true,
-                transclude: false,
-                controller: TableWidget.TableWidgetCtrl
-            };
-        }
-    ]);
-})(TableWidget || (TableWidget = {}));
-//# sourceMappingURL=TableWidget.js.map
-var TableWidget;
-(function (TableWidget) {
-    var TableWidgetData = /** @class */ (function () {
-        function TableWidgetData() {
-        }
-        return TableWidgetData;
-    }());
-    TableWidget.TableWidgetData = TableWidgetData;
-    var TableWidgetCtrl = /** @class */ (function () {
-        function TableWidgetCtrl($scope, $timeout, $layerService, $messageBus, $mapService, $sce) {
-            var _this = this;
-            this.$scope = $scope;
-            this.$timeout = $timeout;
-            this.$layerService = $layerService;
-            this.$messageBus = $messageBus;
-            this.$mapService = $mapService;
-            this.$sce = $sce;
-            $scope.vm = this;
-            var par = $scope.$parent;
-            this.widget = par.widget;
-            if (this.widget.directive && this.widget.directive !== 'tablewidget') {
-                console.log('Warning: ' + this.widget.directive + ' does not belong in TableWidgetCtrl!!! Id: ' + this.widget.id);
-            }
-            $scope.data = this.widget.data;
-            $scope.data.tableHtml = '<table></table>';
-            $scope.minimized = false;
-            this.dataProperties = {};
-            this.parentWidget = $('#' + this.widget.elementId).parent();
-            if (typeof $scope.data.featureTypeName !== 'undefined' && typeof $scope.data.dynamicProperties !== 'undefined' && $scope.data.dynamicProperties.length > 0) {
-                // Hide widget
-                this.parentWidget.hide();
-                this.$messageBus.subscribe('feature', function (action, feature) {
-                    switch (action) {
-                        case 'onFeatureDeselect':
-                        case 'onFeatureSelect':
-                            _this.selectFeature(feature);
-                            break;
-                        default:
-                            break;
-                    }
-                });
-            }
-            if (!(typeof $scope.data.url === 'undefined')) {
-                var url = $scope.data.url;
-                if ($scope.data.useLanguagePrefix) {
-                    var extensions = url.split('.');
-                    var newExtension = this.$layerService.currentLocale + '.' + extensions.pop();
-                    extensions.push(newExtension);
-                    url = extensions.join('.');
-                }
-                $.get(url, function (table) {
-                    $timeout(function () {
-                        try {
-                            $scope.data.content = JSON.parse(table);
-                            _this.createTable();
-                            _this.updateTable();
-                        }
-                        catch (error) {
-                            console.log('Error parsing table: ' + error.message);
-                            console.log('Table type: ' + (typeof table));
-                        }
-                    }, 0);
-                });
-            }
-            // in case a separate datafile is used
-            if (!(typeof $scope.data.dataSourceUrl === 'undefined')) {
-                url = $scope.data.dataSourceUrl;
-                $.get(url, function (properties) {
-                    $timeout(function () {
-                        _this.dataProperties = JSON.parse(properties);
-                        _this.replaceKeys();
-                    }, 0);
-                });
-            }
-        }
-        TableWidgetCtrl.prototype.createTable = function () {
-            var data = this.$scope.data.content;
-            var table = '<table style="width:100%">';
-            if (!data.hasOwnProperty('columnHeaders'))
-                return;
-            table += '<tr class="tablewidget-row">';
-            data.columnHeaders.forEach(function (h) {
-                table += '<th class="tablewidget-cell border-bottom" style="width:' + 100 / (data.nrOfCols + 1) + '%">' + h + '</th>';
-            });
-            table += '</tr>';
-            if (!data.hasOwnProperty('rowTitles') || !data.hasOwnProperty('datagrid'))
-                return;
-            data.datagrid.forEach(function (row, ri) {
-                table += '<tr class="tablewidget-row">';
-                table += '<th class="border-right">' + data.rowTitles[ri] + '</th>';
-                row.forEach(function (col, ci) {
-                    var style = (data.stylegrid) ? data.stylegrid[ri][ci] : '';
-                    table += '<td class="tablewidget-cell" style="' + style + '">' + data.datagrid[ri][ci] + '</td>';
-                });
-                table += '</tr>';
-            });
-            table += '</table>';
-            this.$scope.data.tableHtml = table;
-        };
-        TableWidgetCtrl.prototype.updateTable = function () {
-            var tableContainer = $('#' + this.widget.elementId).find('#widgettable-container');
-            tableContainer.html(this.$scope.data.tableHtml);
-        };
-        TableWidgetCtrl.prototype.minimize = function () {
-            this.$scope.minimized = !this.$scope.minimized;
-            if (this.$scope.minimized) {
-                this.parentWidget.css('height', '30px');
-            }
-            else {
-                this.parentWidget.css('height', this.widget.height);
-            }
-        };
-        TableWidgetCtrl.prototype.canClose = function () {
-            return (this.$scope.data.hasOwnProperty('canClose'))
-                ? this.$scope.data['canClose']
-                : true;
-        };
-        TableWidgetCtrl.prototype.close = function () {
-            this.parentWidget.hide();
-        };
-        TableWidgetCtrl.prototype.escapeRegExp = function (str) {
-            return str.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, '\\$1');
-        };
-        TableWidgetCtrl.prototype.replaceAll = function (str, find, replace) {
-            return str.replace(new RegExp(this.escapeRegExp(find), 'g'), replace);
-        };
-        TableWidgetCtrl.prototype.selectFeature = function (feature) {
-            var _this = this;
-            if (!feature || !feature.isSelected || feature.featureTypeName !== this.$scope.data.featureTypeName) {
-                this.parentWidget.hide();
-                return;
-            }
-            this.$timeout(function () {
-                var d = _this.$scope.data.tableHtml;
-                var i = 0;
-                _this.$scope.data.dynamicProperties.forEach(function (p) {
-                    var searchPattern = '{{' + i++ + '}}';
-                    var displayText = '';
-                    if (feature.properties.hasOwnProperty(p)) {
-                        var pt = _this.$layerService.getPropertyType(feature, p);
-                        displayText = csComp.Helpers.convertPropertyInfo(pt, feature.properties[p]);
-                    }
-                    d = _this.replaceAll(d, searchPattern, displayText);
-                });
-                _this.parentWidget.show();
-                _this.$scope.data.tableHtml = d;
-                _this.updateTable();
-            }, 0);
-        };
-        TableWidgetCtrl.prototype.replaceKeys = function () {
-            var _this = this;
-            var d = this.$scope.data.tableHtml;
-            this.$timeout(function () {
-                var keys = Object.keys(_this.dataProperties);
-                keys.forEach(function (k) {
-                    if (_this.dataProperties.hasOwnProperty(k)) {
-                        var searchPattern = '{{' + k + '}}';
-                        var replacePattern = _this.dataProperties[k];
-                        d = _this.replaceAll(d, searchPattern, replacePattern);
-                    }
-                });
-                _this.$scope.data.tableHtml = d;
-                _this.updateTable();
-            }, 0);
-        };
-        TableWidgetCtrl.prototype.toTrusted = function (html) {
-            try {
-                if (html === undefined || html === null)
-                    return this.$sce.trustAsHtml(html);
-                return this.$sce.trustAsHtml(html.toString());
-            }
-            catch (e) {
-                console.log(e + ': ' + html);
-                return '';
-            }
-        };
-        TableWidgetCtrl.$inject = [
-            '$scope',
-            '$timeout',
-            'layerService',
-            'messageBusService',
-            'mapService',
-            '$sce'
-        ];
-        return TableWidgetCtrl;
-    }());
-    TableWidget.TableWidgetCtrl = TableWidgetCtrl;
-})(TableWidget || (TableWidget = {}));
-//# sourceMappingURL=TableWidgetCtrl.js.map
 var SimTimeController;
 (function (SimTimeController) {
     /**
@@ -31406,6 +31258,224 @@ var SimTimeController;
     SimTimeController.SimTimeControllerEditCtrl = SimTimeControllerEditCtrl;
 })(SimTimeController || (SimTimeController = {}));
 //# sourceMappingURL=SimTimeControllerEditCtrl.js.map
+var TableWidget;
+(function (TableWidget) {
+    /**
+      * Config
+      */
+    var moduleName = 'csComp';
+    try {
+        TableWidget.myModule = angular.module(moduleName);
+    }
+    catch (err) {
+        // named module does not exist, so create one
+        TableWidget.myModule = angular.module(moduleName, []);
+    }
+    /**
+      * Directive to display the available map layers.
+      */
+    TableWidget.myModule.directive('tablewidget', [function () {
+            return {
+                restrict: 'E',
+                scope: {},
+                templateUrl: 'directives/Widgets/TableWidget/TableWidget.tpl.html',
+                replace: true,
+                transclude: false,
+                controller: TableWidget.TableWidgetCtrl
+            };
+        }
+    ]);
+})(TableWidget || (TableWidget = {}));
+//# sourceMappingURL=TableWidget.js.map
+var TableWidget;
+(function (TableWidget) {
+    var TableWidgetData = /** @class */ (function () {
+        function TableWidgetData() {
+        }
+        return TableWidgetData;
+    }());
+    TableWidget.TableWidgetData = TableWidgetData;
+    var TableWidgetCtrl = /** @class */ (function () {
+        function TableWidgetCtrl($scope, $timeout, $layerService, $messageBus, $mapService, $sce) {
+            var _this = this;
+            this.$scope = $scope;
+            this.$timeout = $timeout;
+            this.$layerService = $layerService;
+            this.$messageBus = $messageBus;
+            this.$mapService = $mapService;
+            this.$sce = $sce;
+            $scope.vm = this;
+            var par = $scope.$parent;
+            this.widget = par.widget;
+            if (this.widget.directive && this.widget.directive !== 'tablewidget') {
+                console.log('Warning: ' + this.widget.directive + ' does not belong in TableWidgetCtrl!!! Id: ' + this.widget.id);
+            }
+            $scope.data = this.widget.data;
+            $scope.data.tableHtml = '<table></table>';
+            $scope.minimized = false;
+            this.dataProperties = {};
+            this.parentWidget = $('#' + this.widget.elementId).parent();
+            if (typeof $scope.data.featureTypeName !== 'undefined' && typeof $scope.data.dynamicProperties !== 'undefined' && $scope.data.dynamicProperties.length > 0) {
+                // Hide widget
+                this.parentWidget.hide();
+                this.$messageBus.subscribe('feature', function (action, feature) {
+                    switch (action) {
+                        case 'onFeatureDeselect':
+                        case 'onFeatureSelect':
+                            _this.selectFeature(feature);
+                            break;
+                        default:
+                            break;
+                    }
+                });
+            }
+            if (!(typeof $scope.data.url === 'undefined')) {
+                var url = $scope.data.url;
+                if ($scope.data.useLanguagePrefix) {
+                    var extensions = url.split('.');
+                    var newExtension = this.$layerService.currentLocale + '.' + extensions.pop();
+                    extensions.push(newExtension);
+                    url = extensions.join('.');
+                }
+                $.get(url, function (table) {
+                    $timeout(function () {
+                        try {
+                            $scope.data.content = JSON.parse(table);
+                            _this.createTable();
+                            _this.updateTable();
+                        }
+                        catch (error) {
+                            console.log('Error parsing table: ' + error.message);
+                            console.log('Table type: ' + (typeof table));
+                        }
+                    }, 0);
+                });
+            }
+            // in case a separate datafile is used
+            if (!(typeof $scope.data.dataSourceUrl === 'undefined')) {
+                url = $scope.data.dataSourceUrl;
+                $.get(url, function (properties) {
+                    $timeout(function () {
+                        _this.dataProperties = JSON.parse(properties);
+                        _this.replaceKeys();
+                    }, 0);
+                });
+            }
+        }
+        TableWidgetCtrl.prototype.createTable = function () {
+            var data = this.$scope.data.content;
+            var table = '<table style="width:100%">';
+            if (!data.hasOwnProperty('columnHeaders'))
+                return;
+            table += '<tr class="tablewidget-row">';
+            data.columnHeaders.forEach(function (h) {
+                table += '<th class="tablewidget-cell border-bottom" style="width:' + 100 / (data.nrOfCols + 1) + '%">' + h + '</th>';
+            });
+            table += '</tr>';
+            if (!data.hasOwnProperty('rowTitles') || !data.hasOwnProperty('datagrid'))
+                return;
+            data.datagrid.forEach(function (row, ri) {
+                table += '<tr class="tablewidget-row">';
+                table += '<th class="border-right">' + data.rowTitles[ri] + '</th>';
+                row.forEach(function (col, ci) {
+                    var style = (data.stylegrid) ? data.stylegrid[ri][ci] : '';
+                    table += '<td class="tablewidget-cell" style="' + style + '">' + data.datagrid[ri][ci] + '</td>';
+                });
+                table += '</tr>';
+            });
+            table += '</table>';
+            this.$scope.data.tableHtml = table;
+        };
+        TableWidgetCtrl.prototype.updateTable = function () {
+            var tableContainer = $('#' + this.widget.elementId).find('#widgettable-container');
+            tableContainer.html(this.$scope.data.tableHtml);
+        };
+        TableWidgetCtrl.prototype.minimize = function () {
+            this.$scope.minimized = !this.$scope.minimized;
+            if (this.$scope.minimized) {
+                this.parentWidget.css('height', '30px');
+            }
+            else {
+                this.parentWidget.css('height', this.widget.height);
+            }
+        };
+        TableWidgetCtrl.prototype.canClose = function () {
+            return (this.$scope.data.hasOwnProperty('canClose'))
+                ? this.$scope.data['canClose']
+                : true;
+        };
+        TableWidgetCtrl.prototype.close = function () {
+            this.parentWidget.hide();
+        };
+        TableWidgetCtrl.prototype.escapeRegExp = function (str) {
+            return str.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, '\\$1');
+        };
+        TableWidgetCtrl.prototype.replaceAll = function (str, find, replace) {
+            return str.replace(new RegExp(this.escapeRegExp(find), 'g'), replace);
+        };
+        TableWidgetCtrl.prototype.selectFeature = function (feature) {
+            var _this = this;
+            if (!feature || !feature.isSelected || feature.featureTypeName !== this.$scope.data.featureTypeName) {
+                this.parentWidget.hide();
+                return;
+            }
+            this.$timeout(function () {
+                var d = _this.$scope.data.tableHtml;
+                var i = 0;
+                _this.$scope.data.dynamicProperties.forEach(function (p) {
+                    var searchPattern = '{{' + i++ + '}}';
+                    var displayText = '';
+                    if (feature.properties.hasOwnProperty(p)) {
+                        var pt = _this.$layerService.getPropertyType(feature, p);
+                        displayText = csComp.Helpers.convertPropertyInfo(pt, feature.properties[p]);
+                    }
+                    d = _this.replaceAll(d, searchPattern, displayText);
+                });
+                _this.parentWidget.show();
+                _this.$scope.data.tableHtml = d;
+                _this.updateTable();
+            }, 0);
+        };
+        TableWidgetCtrl.prototype.replaceKeys = function () {
+            var _this = this;
+            var d = this.$scope.data.tableHtml;
+            this.$timeout(function () {
+                var keys = Object.keys(_this.dataProperties);
+                keys.forEach(function (k) {
+                    if (_this.dataProperties.hasOwnProperty(k)) {
+                        var searchPattern = '{{' + k + '}}';
+                        var replacePattern = _this.dataProperties[k];
+                        d = _this.replaceAll(d, searchPattern, replacePattern);
+                    }
+                });
+                _this.$scope.data.tableHtml = d;
+                _this.updateTable();
+            }, 0);
+        };
+        TableWidgetCtrl.prototype.toTrusted = function (html) {
+            try {
+                if (html === undefined || html === null)
+                    return this.$sce.trustAsHtml(html);
+                return this.$sce.trustAsHtml(html.toString());
+            }
+            catch (e) {
+                console.log(e + ': ' + html);
+                return '';
+            }
+        };
+        TableWidgetCtrl.$inject = [
+            '$scope',
+            '$timeout',
+            'layerService',
+            'messageBusService',
+            'mapService',
+            '$sce'
+        ];
+        return TableWidgetCtrl;
+    }());
+    TableWidget.TableWidgetCtrl = TableWidgetCtrl;
+})(TableWidget || (TableWidget = {}));
+//# sourceMappingURL=TableWidgetCtrl.js.map
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -32138,7 +32208,7 @@ var csComp;
         var GeometryTemplateStore = /** @class */ (function () {
             function GeometryTemplateStore($http) {
                 this.$http = $http;
-                this.TEMPLATE_URL = 'http://www.zorgopdekaart.nl/zelfkaartenmaken/public/data/empty-templates';
+                this.TEMPLATE_URL = 'data/templates'; //'http://www.zorgopdekaart.nl/zelfkaartenmaken/public/data/empty-templates';
                 this.templateList = {};
             }
             /* Make sure the geometry is loaded. Calls back true if ok, false if the geometry could not be loaded */
@@ -32664,7 +32734,7 @@ var csComp;
                                     layer.isLoading = false;
                                     layer.enabled = false;
                                     layer.isConnected = false;
-                                    _this.service.$messageBusService.notify('ERROR loading ' + layer.title, '\nwhile loading: ' + u);
+                                    _this.service.$messageBusService.notifyErrorWithTranslation('ERROR_LOADING_LAYER', layer.title + " \nurl: " + u);
                                     _this.service.$messageBusService.publish('layer', 'error', layer);
                                     cb(null, null);
                                 });
@@ -32808,7 +32878,7 @@ var csComp;
                     latlng = new L.LatLng(+coords[0], +coords[1]);
                 }
                 var parsedData = data;
-                if (parsedData.hasOwnProperty('features')) {
+                if (parsedData.hasOwnProperty('features')) { // Reply is in geoJson format
                     //Add arrival times when leaving now
                     var startTime = new Date(Date.now());
                     parsedData.features.forEach(function (f) {
@@ -32833,7 +32903,7 @@ var csComp;
                         layer.data = parsedData;
                     }
                 }
-                else {
+                else { // Reply is in routeplanner format
                     var fromLoc = parsedData.plan.from;
                     var toLoc = parsedData.plan.to;
                     layer.data = {};
@@ -33250,7 +33320,7 @@ var csComp;
                         _this.processData(layer, result, callback);
                     }).fail(function (err) {
                         layer.isLoading = false;
-                        _this.service.$messageBusService.notify('ERROR loading ' + layer.title, '\nwhile loading: ' + err.statusText);
+                        _this.service.$messageBusService.notifyErrorWithTranslation('ERROR_LOADING_LAYER', layer.title + " \nurl: " + layer.url);
                         _this.service.$messageBusService.publish('layer', 'error');
                         console.log("Failed loading layer " + layer.title + " due to " + JSON.stringify(err) + ".");
                     });
@@ -33428,6 +33498,7 @@ var csComp;
                         break;
                     default:
                         throw new Error('Current projection is not supported!');
+                    // break;
                 }
             };
             /** Extract the grid data from the input */
@@ -33929,7 +34000,7 @@ var csComp;
                             .catch(function () {
                             layer.count = 0;
                             layer.isLoading = false;
-                            _this.service.$messageBusService.notify('ERROR loading ' + layer.title, '\nwhile loading: ' + layer.url);
+                            _this.service.$messageBusService.notifyErrorWithTranslation('ERROR_LOADING_LAYER', layer.title + " \nurl: " + layer.url);
                             _this.service.$messageBusService.publish('layer', 'error', layer);
                             cb(null, null);
                         });
@@ -33996,8 +34067,9 @@ var csComp;
                 })
                     .fail(function (error) {
                     layer.isLoading = false;
-                    _this.service.$messageBusService.notify('ERROR loading ' + layer.title, error);
+                    _this.service.$messageBusService.notifyErrorWithTranslation('ERROR_LOADING_LAYER', layer.title + " \n" + layer.url);
                     _this.service.$messageBusService.publish('layer', 'error', layer);
+                    console.log("Failed loading layer " + layer.title + " due to " + JSON.stringify(error) + ".");
                     callback(layer);
                 });
             };
@@ -36502,13 +36574,13 @@ var csComp;
                             if (button && button.dropdown)
                                 button.dropdown('toggle');
                             var mapSize = _this.map.getSize();
-                            if (e.originalEvent.x < (mapSize.x / 2)) {
+                            if (e.originalEvent.x < (mapSize.x / 2)) { //left half of screen
                                 menu.css('left', e.originalEvent.x + 5);
                             }
                             else {
                                 menu.css('left', e.originalEvent.x - 5 - menu.width());
                             }
-                            if (e.originalEvent.y < (mapSize.y / 2)) {
+                            if (e.originalEvent.y < (mapSize.y / 2)) { //top half of screen
                                 menu.css('top', e.originalEvent.y - 35);
                             }
                             else {
@@ -36551,13 +36623,13 @@ var csComp;
                                 if (button && button.dropdown)
                                     button.dropdown('toggle');
                                 var mapSize = _this.map.getSize();
-                                if (e.originalEvent.x < (mapSize.x / 2)) {
+                                if (e.originalEvent.x < (mapSize.x / 2)) { //left half of screen
                                     menu.css('left', e.originalEvent.x + 5);
                                 }
                                 else {
                                     menu.css('left', e.originalEvent.x - 5 - menu.width());
                                 }
-                                if (e.originalEvent.y < (mapSize.y / 2)) {
+                                if (e.originalEvent.y < (mapSize.y / 2)) { //top half of screen
                                     menu.css('top', e.originalEvent.y - 35);
                                 }
                                 else {

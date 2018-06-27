@@ -14,11 +14,13 @@ var MIN_STRING_EQUALITY_SCORE = 0.60;
 /** A factory class to create new map layers based on input, e.g. from Excel */
 var MapLayerFactory = /** @class */ (function () {
     // constructor(private bag: LocalBag, private messageBus: MessageBus.MessageBusService) {
-    function MapLayerFactory(addressSources, messageBus, apiManager, workingDir) {
+    function MapLayerFactory(addressSources, messageBus, apiManager, workingDir, apiRoute) {
         if (workingDir === void 0) { workingDir = ''; }
+        if (apiRoute === void 0) { apiRoute = 'api'; }
         this.addressSources = addressSources;
         this.messageBus = messageBus;
         this.workingDir = workingDir;
+        this.apiRoute = apiRoute;
         addressSources.slice().reverse().forEach(function (src, ind, arr) {
             if (src == null) {
                 addressSources.splice(arr.length - 1 - ind, 1);
@@ -176,10 +178,11 @@ var MapLayerFactory = /** @class */ (function () {
             fitToMap: data.fitToMap,
             defaultFeatureType: data.defaultFeatureType,
             typeUrl: 'data/api/resourceTypes/' + data.reference + '.json',
-            url: 'api/layers/' + data.reference,
+            url: this.apiRoute + '/layers/' + data.reference,
             opacity: data.opacity,
             dynamicResource: true
         });
+        layer.url = this.apiRoute + '/layers/' + data.reference;
         layer.features = data.geojson.features;
         layer.timestamps = data.geojson.timestamps;
         var group = this.apiManager.getGroupDefinition({ title: data.group, id: data.group, clusterLevel: data.clusterLevel });

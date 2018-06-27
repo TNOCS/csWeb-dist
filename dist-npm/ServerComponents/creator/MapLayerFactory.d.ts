@@ -82,10 +82,11 @@ export declare class MapLayerFactory {
     private addressSources;
     private messageBus;
     private workingDir;
+    private apiRoute;
     templateFiles: IProperty[];
     featuresNotFound: any;
     apiManager: Api.ApiManager;
-    constructor(addressSources: IAddressSource.IAddressSource[], messageBus: MessageBus.MessageBusService, apiManager: Api.ApiManager, workingDir?: string);
+    constructor(addressSources: IAddressSource.IAddressSource[], messageBus: MessageBus.MessageBusService, apiManager: Api.ApiManager, workingDir?: string, apiRoute?: string);
     process(req: express.Request, res: express.Response): void;
     private splitJson;
     sendIconThroughApiManager(b64: string, folder: string, filePath: string): void;

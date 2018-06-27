@@ -225,6 +225,7 @@ var ApiManager = /** @class */ (function (_super) {
         _this.saveLayersDelay = _.debounce(function (layer) {
             _this.saveLayerConfig();
         }, 1000);
+        console.log("Construction ApiManager with options: " + JSON.stringify(_this.options, null, 2));
         _this.setMaxListeners(25);
         _this.namespace = namespace;
         _this.name = name;
@@ -965,7 +966,7 @@ var ApiManager = /** @class */ (function (_super) {
                         Winston.debug('updating layer finished');
                     });
                 }
-                callback({ result: ApiResult.OK });
+                callback({ result: ApiResult.OK, layer: layer });
                 _this.emit(Event[Event.LayerChanged], { id: layer.id, type: ChangeType.Update, value: layer });
                 _this.saveLayersDelay(layer);
                 cb();
@@ -1133,9 +1134,13 @@ var ApiManager = /** @class */ (function (_super) {
         return res;
     };
     ApiManager.prototype.setUpdateProject = function (project, meta) {
+        if (meta && meta.source === 'file')
+            return;
         project.updated = new Date().getTime();
     };
     ApiManager.prototype.setUpdateLayer = function (layer, meta) {
+        if (meta && meta.source === 'file')
+            return;
         layer.updated = new Date().getTime();
     };
     // Feature methods start here, in CRUD order.

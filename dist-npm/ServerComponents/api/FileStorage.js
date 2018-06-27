@@ -23,12 +23,14 @@ var helpers = require("../helpers/Utils");
 var sift = require('sift');
 var FileStorage = /** @class */ (function (_super) {
     __extends(FileStorage, _super);
-    function FileStorage(rootpath, watch, ignoreInitial) {
+    function FileStorage(rootpath, watch, ignoreInitial, layerBaseUrl) {
         if (watch === void 0) { watch = true; }
         if (ignoreInitial === void 0) { ignoreInitial = false; }
+        if (layerBaseUrl === void 0) { layerBaseUrl = '/api/layers'; }
         var _this = _super.call(this) || this;
         _this.rootpath = rootpath;
         _this.ignoreInitial = ignoreInitial;
+        _this.layerBaseUrl = layerBaseUrl;
         _this.layers = [];
         _this.projects = {};
         _this.keys = {};
@@ -71,6 +73,9 @@ var FileStorage = /** @class */ (function (_super) {
             _this.watchProjectsFolder();
             _this.watchResourcesFolder();
         }
+        setTimeout(function () {
+            _this.printOverview();
+        }, 10000);
         return _this;
     }
     FileStorage.prototype.watchLayersFolder = function () {
@@ -130,6 +135,11 @@ var FileStorage = /** @class */ (function (_super) {
                 _this.openStaticFolder(folder);
             });
         }, 1000);
+    };
+    FileStorage.prototype.printOverview = function () {
+        Winston.info("Filestorage contains " + Object.keys(this.projects).length + " projects");
+        Winston.info("and " + Object.keys(this.layers).length + " layers");
+        Winston.info("and " + Object.keys(this.resources).length + " resources.");
     };
     FileStorage.prototype.openStaticFolder = function (folder) {
         var _this = this;
@@ -249,7 +259,7 @@ var FileStorage = /** @class */ (function (_super) {
         if (res && !_.isEmpty(res)) {
             fs.outputFile(fn, JSON.stringify(res, null, 2), function (error) {
                 if (error) {
-                    Winston.error('filestore: error writing resourcefile : ' + fn);
+                    Winston.error("filestore: error writing resourcefile : " + fn + " " + error.message);
                 }
                 else {
                     Winston.info('filestore: file saved : ' + fn);
@@ -263,10 +273,10 @@ var FileStorage = /** @class */ (function (_super) {
         if (!fn) {
             fn = this.getProjectFilename(project.id);
         }
-        Winston.info('writing project file : ' + fn);
+        Winston.info("writing project to file: " + fn);
         fs.writeFile(fn, JSON.stringify(project, null, 2), function (error) {
             if (error) {
-                Winston.info('error writing project file : ' + fn);
+                Winston.info("filestore: error writing project : " + fn + " " + error.message);
             }
             else {
                 Winston.info('filestore: file saved : ' + fn);
@@ -397,9 +407,13 @@ var FileStorage = /** @class */ (function (_super) {
                 //layer.title = id;
                 layer.storage = _this.id;
                 //layer.type = "geojson";
-                layer.url = '/api/layers/' + id;
+                layer.url = _this.layerBaseUrl + '/' + id;
                 (layer.storage) ? Winston.debug('storage ' + layer.storage) : Winston.warn("No storage found for " + layer);
-                _this.manager && _this.manager.addUpdateLayer(layer, {}, function () { });
+                _this.manager && _this.manager.addUpdateLayer(layer, { source: _this.id }, function (result) {
+                    if (result && result.layer) {
+                        _this.addLayer(result.layer, { source: _this.id }, function () { });
+                    }
+                });
             }
         });
         if (path.basename(fileName) === 'project.json')
@@ -424,7 +438,7 @@ var FileStorage = /** @class */ (function (_super) {
     FileStorage.prototype.openResourceFile = function (fileName) {
         var _this = this;
         var id = this.getResourceId(fileName);
-        console.log('!! open resource file : ' + fileName + ' (' + id + ')');
+        // console.log('!! open resource file : ' + fileName + ' (' + id + ')');
         Winston.info('filestore: openfile ' + id);
         if (!this.resources.hasOwnProperty(id)) {
             fs.readFile(fileName, 'utf8', function (err, data) {
@@ -466,7 +480,7 @@ var FileStorage = /** @class */ (function (_super) {
                     if (typeof isDynamic !== 'undefined')
                         project.isDynamic = isDynamic;
                     project.url = '/api/projects/' + id;
-                    _this.manager && _this.manager.updateProject(project, {}, function () { });
+                    _this.manager && _this.manager.updateProject(project, { source: _this.id }, function () { });
                 }
             }
             else if (err) {

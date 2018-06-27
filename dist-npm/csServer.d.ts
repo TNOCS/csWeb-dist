@@ -1,6 +1,7 @@
 import * as core from 'express-serve-static-core';
 import csweb = require('./index');
 export declare class csServerOptions {
+    host: string;
     port: number;
     apiFolder: string;
     swagger: boolean;
