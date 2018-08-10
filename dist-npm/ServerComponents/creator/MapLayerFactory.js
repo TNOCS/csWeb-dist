@@ -684,6 +684,10 @@ var MapLayerFactory = /** @class */ (function () {
                     ld.geometryKey = 'BU_CODE';
                 }
                 break;
+            case 'Wijk(2014)':
+                ld.geometryFile = 'CBS_Wijk';
+                ld.geometryKey = 'WK_CODE';
+                break;
             default:
                 break;
         }
@@ -800,7 +804,7 @@ var MapLayerFactory = /** @class */ (function () {
         var templateJson = JSON.parse(templateFile.toString());
         if (inclTemplProps && templateJson.featureTypes && templateJson.featureTypes.hasOwnProperty('Default')) {
             templateJson.featureTypes['Default'].propertyTypeData.forEach(function (ft) {
-                if (!properties[0].hasOwnProperty(ft.label) && ft.label !== templateKey) { //Do not overwrite input data, only add new items
+                if (!properties[0].hasOwnProperty(ft.label) && ft.label !== templateKey) {
                     propertyTypes.push(ft);
                 }
             });
@@ -812,7 +816,7 @@ var MapLayerFactory = /** @class */ (function () {
                 featureJson['sensors'] = sensors[index];
             }
             var foundFeature = fts.some(function (f) {
-                if (f.properties[templateKey] == p[par1]) { // Do no type-check (don't use ===)
+                if (f.properties[templateKey] == p[par1]) {
                     _this.enrichFeature(featureJson, f, p, inclTemplProps, templateKey);
                     return true;
                 }
@@ -852,7 +856,7 @@ var MapLayerFactory = /** @class */ (function () {
     MapLayerFactory.prototype.enrichFeature = function (featureJson, f, p, inclTemplProps, templateKey) {
         if (inclTemplProps) {
             for (var key in f.properties) {
-                if (!p.hasOwnProperty(key) && key !== templateKey) { //Do not overwrite input data, only add new items
+                if (!p.hasOwnProperty(key) && key !== templateKey) {
                     p[key] = f.properties[key];
                 }
             }

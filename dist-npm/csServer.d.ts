@@ -35,5 +35,5 @@ export declare class csServer {
     private apiFolder;
     constructor(dir: string, options?: csweb.csServerOptions);
     start(started: Function, options?: StartOptions): void;
-    private gracefulShutdown;
+    private gracefulShutdown();
 }

@@ -15,7 +15,7 @@ declare class GeoJsonAggregateTransformer implements transform.ITransform {
     outputDataTypes: transform.OutputDataType[];
     geometry: any;
     constructor(title: string);
-    initialize(opt: transform.ITransformFactoryOptions[], callback: (error: any) => void): void;
+    initialize(opt: transform.ITransformFactoryOptions[], callback: (error) => void): void;
     create(config: any, opt?: transform.ITransformFactoryOptions[]): NodeJS.ReadWriteStream;
 }
 export = GeoJsonAggregateTransformer;

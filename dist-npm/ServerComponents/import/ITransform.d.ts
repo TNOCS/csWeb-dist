@@ -9,13 +9,13 @@ export declare enum InputDataType {
     pg = 3,
     shape = 4,
     geojson = 5,
-    zip = 6
+    zip = 6,
 }
 export declare enum OutputDataType {
     file = 0,
     geojson = 1,
     mongo = 2,
-    pg = 3
+    pg = 3,
 }
 export interface IParameterType {
     title: string;
@@ -47,5 +47,5 @@ export interface ITransform {
      */
     outputDataTypes?: OutputDataType[];
     create?(config: ConfigurationService.ConfigurationService, opt?: ITransformFactoryOptions | ITransformFactoryOptions[]): NodeJS.ReadWriteStream;
-    initialize(opt: ITransformFactoryOptions | ITransformFactoryOptions[], callback: (error: any) => void): any;
+    initialize(opt: ITransformFactoryOptions | ITransformFactoryOptions[], callback: (error) => void): any;
 }

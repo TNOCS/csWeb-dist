@@ -119,7 +119,6 @@ var IsoLines = /** @class */ (function () {
                 break;
             default:
                 throw new Error('Current projection is not supported!');
-            // break;
         }
     };
     /** Extract the grid data from the input */

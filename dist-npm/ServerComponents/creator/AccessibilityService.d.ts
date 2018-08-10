@@ -9,5 +9,5 @@ export declare class AccessibilityService implements IApiService {
     id: string;
     init(apiServiceManager: IApiServiceManager, server: express.Express, config: ConfigurationService.ConfigurationService): void;
     shutdown(): void;
-    private getAccessibility;
+    private getAccessibility(url, res);
 }

@@ -15,10 +15,10 @@ function deleteFolderRecursively(folder) {
     }
     fs.readdirSync(folder).forEach(function (file, index) {
         var curPath = folder + '/' + file;
-        if (fs.lstatSync(curPath).isDirectory()) { // recurse
+        if (fs.lstatSync(curPath).isDirectory()) {
             deleteFolderRecursively(curPath);
         }
-        else { // delete file
+        else {
             fs.unlinkSync(curPath);
         }
     });

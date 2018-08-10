@@ -17,7 +17,7 @@ declare class FieldFilterTransformer implements transform.ITransform {
     filterProperty: string;
     filterValue: string | number | RegExp;
     constructor(title: string);
-    initialize(opt: transform.ITransformFactoryOptions, callback: (error: any) => void): void;
+    initialize(opt: transform.ITransformFactoryOptions, callback: (error) => void): void;
     create(config: any, opt?: transform.ITransformFactoryOptions[]): NodeJS.ReadWriteStream;
 }
 export = FieldFilterTransformer;

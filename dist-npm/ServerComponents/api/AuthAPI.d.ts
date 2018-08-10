@@ -13,36 +13,36 @@ export declare class AuthAPI {
     signupUrl: string;
     constructor(manager: ApiManager.ApiManager, server: express.Express, baseUrl?: string);
     /** Read user details */
-    private getUser;
+    private getUser(req, res);
     /** Update user details */
-    private updateUser;
+    private updateUser(req, res);
     /** Log in with Email */
-    private login;
+    private login(req, res);
     /** Signup */
-    private signup;
+    private signup(req, res);
     /** Ensure that the user is authenticated by verifying his authorization token. */
-    private ensureAuthenticated;
+    private ensureAuthenticated(req, res, next);
     /** Generate JSON Web Token */
-    private static createJWT;
+    private static createJWT(user);
     /** Unlink the provider */
-    private unlinkProvider;
+    private unlinkProvider(req, res);
     /** Login with Google */
-    private googleLogin;
-    private githubLogin;
+    private googleLogin(req, res);
+    private githubLogin(req, res);
     /** Login with LinkedIn */
-    private linkedinLogin;
+    private linkedinLogin(req, res);
     /** Login with Windows Live */
-    private windowsLiveLogin;
+    private windowsLiveLogin(req, res);
     /** Login with Facebook */
-    private facebookLogin;
+    private facebookLogin(req, res);
     /** Login with Yahoo */
-    private yahooLogin;
+    private yahooLogin(req, res);
     /** Login with Twitter */
-    private twitterLogin;
+    private twitterLogin(req, res);
     /** Login with Foursquare */
-    private foursquareLogin;
+    private foursquareLogin(req, res);
     /** Login with Twitch */
-    private twitchLogin;
+    private twitchLogin(req, res);
 }
 export interface IUser {
     email: string;
@@ -78,7 +78,7 @@ export declare class User extends Feature implements IUser {
     twitch: string;
     constructor(user?: IUser);
     /** Get the team layer with users based on the teamId. */
-    private static getTeam;
+    private static getTeam(teamId, callback);
     /** Find the user by ID (i.e. email) */
     static findById(teamId: string, id: string, callback: (err: string, user: User) => void): void;
     /** Find one user by key */

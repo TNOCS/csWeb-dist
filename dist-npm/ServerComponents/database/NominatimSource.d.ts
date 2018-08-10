@@ -5,6 +5,6 @@ export declare class NominatimSource implements IAddressSource.IAddressSource {
     name: string;
     constructor(config: ConfigurationService.ConfigurationService);
     init(): void;
-    searchAddress(query: string, limit: number, callback: (searchResults: any) => void): void;
-    searchGemeente(query: string, limit: number, callback: (searchResults: any) => void): void;
+    searchAddress(query: string, limit: number, callback: (searchResults) => void): void;
+    searchGemeente(query: string, limit: number, callback: (searchResults) => void): void;
 }
