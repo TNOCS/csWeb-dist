@@ -123,7 +123,7 @@ var csServer = /** @class */ (function () {
             _this.api = new csweb.ApiManager('cs', 'cs', false, { server: _this.config['server'] });
             _this.api.init(path.resolve(_this.dir, _this.apiFolder), function () {
                 var connectors = [
-                    { key: 'rest', s: new csweb.RestAPI(_this.server, _this.config.containsKey('baseUrl') ? _this.config['baseUrl'] : null), options: {} },
+                    { key: 'rest', s: new csweb.RestAPI(_this.server, _this.config.containsKey('baseUrl') ? _this.config['baseUrl'] : undefined), options: {} },
                     { key: 'file', s: fs, options: {} },
                     { key: 'socketio', s: new csweb.SocketIOAPI(_this.cm), options: {} }
                 ];
