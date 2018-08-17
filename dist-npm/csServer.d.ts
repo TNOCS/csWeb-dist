@@ -4,6 +4,7 @@ export declare class csServerOptions {
     host: string;
     port: number;
     apiFolder: string;
+    baseUrl: string;
     swagger: boolean;
     connectors: Object;
     /** If true (default), use CORRS. Optionally, specify the supported methods in corsSupportedMethods. */
@@ -35,5 +36,5 @@ export declare class csServer {
     private apiFolder;
     constructor(dir: string, options?: csweb.csServerOptions);
     start(started: Function, options?: StartOptions): void;
-    private gracefulShutdown();
+    private gracefulShutdown;
 }

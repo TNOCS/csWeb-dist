@@ -14,6 +14,7 @@ var csServerOptions = /** @class */ (function () {
         this.host = 'http://localhost';
         this.port = 3002;
         this.apiFolder = 'public/data/api';
+        this.baseUrl = '/api';
         /** If true (default), use CORRS. Optionally, specify the supported methods in corsSupportedMethods. */
         this.corrsEnabled = true;
         /** Comma separated string with CORRS messages, e.g. POST, PATCH, GET (default), OPTIONS, DELETE, PUT */
