@@ -7101,6 +7101,7 @@ var DataTable;
             '$translate',
             '$timeout',
             'layerService',
+            'dashboardService',
             'localStorageService',
             'messageBusService'
         ];
@@ -12106,6 +12107,81 @@ var Legend;
     Legend.LegendCtrl = LegendCtrl;
 })(Legend || (Legend = {}));
 //# sourceMappingURL=LegendCtrl.js.map
+var MapElement;
+(function (MapElement) {
+    /**
+      * Config
+      */
+    var moduleName = 'csComp';
+    try {
+        MapElement.myModule = angular.module(moduleName);
+    }
+    catch (err) {
+        // named module does not exist, so create one
+        MapElement.myModule = angular.module(moduleName, []);
+    }
+    /**
+      * Directive to display the available map layers.
+      */
+    MapElement.myModule.directive('map', [
+        '$window', '$compile',
+        function ($window, $compile) {
+            return {
+                terminal: false,
+                restrict: 'E',
+                scope: {
+                    mapid: '='
+                },
+                //templateUrl: 'directives/MapElement/MapElement.tpl.html',
+                templateUrl: 'directives/MapElement/MapElement.tpl.html',
+                link: function (scope, element, attrs) {
+                    //scope.mapid = attrs.mapid;
+                    //var s = jQuery.parseJSON(attrs.param);
+                    //scope.initDashboard();
+                },
+                replace: false,
+                transclude: true,
+                controller: MapElement.MapElementCtrl
+            };
+        }
+    ]);
+})(MapElement || (MapElement = {}));
+//# sourceMappingURL=MapElement.js.map
+var MapElement;
+(function (MapElement) {
+    var MapElementCtrl = /** @class */ (function () {
+        // dependencies are injected via AngularJS $injector
+        // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
+        function MapElementCtrl($scope, $layerService, mapService, $messageBusService) {
+            var _this = this;
+            this.$scope = $scope;
+            this.$layerService = $layerService;
+            this.mapService = mapService;
+            this.$messageBusService = $messageBusService;
+            this.locale = 'en-us';
+            this.options = ['test', 'boe'];
+            $scope.vm = this;
+            this.initMap();
+            $scope.initMap = function () { return _this.initMap(); };
+        }
+        MapElementCtrl.prototype.initMap = function () {
+            this.$layerService.selectRenderer('leaflet');
+        };
+        // $inject annotation.
+        // It provides $injector with information a'bout dependencies to be injected into constructor
+        // it is better to have it close to the constructor, because the parameters must match in count and type.
+        // See http://docs.angularjs.org/guide/di
+        MapElementCtrl.$inject = [
+            '$scope',
+            'layerService',
+            'mapService',
+            'messageBusService'
+        ];
+        return MapElementCtrl;
+    }());
+    MapElement.MapElementCtrl = MapElementCtrl;
+})(MapElement || (MapElement = {}));
+//# sourceMappingURL=MapElementCtrl.js.map
 var LegendList;
 (function (LegendList) {
     /**
@@ -12386,81 +12462,6 @@ var LegendList;
     LegendList.LegendListCtrl = LegendListCtrl;
 })(LegendList || (LegendList = {}));
 //# sourceMappingURL=LegendListCtrl.js.map
-var MapElement;
-(function (MapElement) {
-    /**
-      * Config
-      */
-    var moduleName = 'csComp';
-    try {
-        MapElement.myModule = angular.module(moduleName);
-    }
-    catch (err) {
-        // named module does not exist, so create one
-        MapElement.myModule = angular.module(moduleName, []);
-    }
-    /**
-      * Directive to display the available map layers.
-      */
-    MapElement.myModule.directive('map', [
-        '$window', '$compile',
-        function ($window, $compile) {
-            return {
-                terminal: false,
-                restrict: 'E',
-                scope: {
-                    mapid: '='
-                },
-                //templateUrl: 'directives/MapElement/MapElement.tpl.html',
-                templateUrl: 'directives/MapElement/MapElement.tpl.html',
-                link: function (scope, element, attrs) {
-                    //scope.mapid = attrs.mapid;
-                    //var s = jQuery.parseJSON(attrs.param);
-                    //scope.initDashboard();
-                },
-                replace: false,
-                transclude: true,
-                controller: MapElement.MapElementCtrl
-            };
-        }
-    ]);
-})(MapElement || (MapElement = {}));
-//# sourceMappingURL=MapElement.js.map
-var MapElement;
-(function (MapElement) {
-    var MapElementCtrl = /** @class */ (function () {
-        // dependencies are injected via AngularJS $injector
-        // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
-        function MapElementCtrl($scope, $layerService, mapService, $messageBusService) {
-            var _this = this;
-            this.$scope = $scope;
-            this.$layerService = $layerService;
-            this.mapService = mapService;
-            this.$messageBusService = $messageBusService;
-            this.locale = 'en-us';
-            this.options = ['test', 'boe'];
-            $scope.vm = this;
-            this.initMap();
-            $scope.initMap = function () { return _this.initMap(); };
-        }
-        MapElementCtrl.prototype.initMap = function () {
-            this.$layerService.selectRenderer('leaflet');
-        };
-        // $inject annotation.
-        // It provides $injector with information a'bout dependencies to be injected into constructor
-        // it is better to have it close to the constructor, because the parameters must match in count and type.
-        // See http://docs.angularjs.org/guide/di
-        MapElementCtrl.$inject = [
-            '$scope',
-            'layerService',
-            'mapService',
-            'messageBusService'
-        ];
-        return MapElementCtrl;
-    }());
-    MapElement.MapElementCtrl = MapElementCtrl;
-})(MapElement || (MapElement = {}));
-//# sourceMappingURL=MapElementCtrl.js.map
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -29760,6 +29761,197 @@ var MarkdownWidget;
     MarkdownWidget.MarkdownWidgetCtrl = MarkdownWidgetCtrl;
 })(MarkdownWidget || (MarkdownWidget = {}));
 //# sourceMappingURL=MarkdownWidgetCtrl.js.map
+var MCAWidget;
+(function (MCAWidget) {
+    /**
+      * Config
+      */
+    var moduleName = 'csComp';
+    try {
+        MCAWidget.myModule = angular.module(moduleName);
+    }
+    catch (err) {
+        // named module does not exist, so create one
+        MCAWidget.myModule = angular.module(moduleName, []);
+    }
+    /**
+      * Directive to display the available map layers.
+      */
+    MCAWidget.myModule.directive('mcawidget', [function () {
+            return {
+                restrict: 'E',
+                scope: {},
+                templateUrl: 'directives/Widgets/MCAWidget/MCAWidget.tpl.html',
+                replace: true,
+                transclude: false,
+                controller: MCAWidget.MCAWidgetCtrl
+            };
+        }
+    ]);
+})(MCAWidget || (MCAWidget = {}));
+//# sourceMappingURL=MCAWidget.js.map
+var MCAWidget;
+(function (MCAWidget) {
+    var MCAWidgetData = /** @class */ (function () {
+        function MCAWidgetData() {
+        }
+        return MCAWidgetData;
+    }());
+    MCAWidget.MCAWidgetData = MCAWidgetData;
+    var MCAWidgetCtrl = /** @class */ (function () {
+        function MCAWidgetCtrl($scope, $timeout, $controller, $layerService, $messageBus, $mapService) {
+            var _this = this;
+            this.$scope = $scope;
+            this.$timeout = $timeout;
+            this.$controller = $controller;
+            this.$layerService = $layerService;
+            this.$messageBus = $messageBus;
+            this.$mapService = $mapService;
+            this.mBusHandles = [];
+            $scope.vm = this;
+            var par = $scope.$parent;
+            this.widget = par.widget;
+            $scope.data = this.widget.data;
+            $scope.data.filterByDefaultFeatureType = $scope.data.filterByDefaultFeatureType || false;
+            if (typeof $scope.data.layerId !== 'undefined') {
+                // Hide widget
+                this.parentWidget = $("#" + this.widget.elementId).parent();
+                this.parentWidget.hide();
+                this.mBusHandles.push(this.$messageBus.subscribe('layer', function (action, layer) {
+                    switch (action) {
+                        case 'activated':
+                        case 'deactivate':
+                            _this.activateLayer(layer);
+                            break;
+                        default:
+                            break;
+                    }
+                }));
+                this.mBusHandles.push(this.$messageBus.subscribe('mca', function (action, mca) {
+                    switch (action) {
+                        case 'updated':
+                        case 'deactivate':
+                            if (!mca)
+                                break;
+                            $timeout(function () {
+                                if (_this.selectedMCA !== mca.id) {
+                                    _this.selectedMCA = mca.id;
+                                    _this.setMcaAsStyle(_this.selectedMCA);
+                                }
+                            }, 0);
+                            break;
+                        default:
+                            break;
+                    }
+                }));
+                // Activate widget when layer is already loaded
+                var l = this.$layerService.findLoadedLayer($scope.data.layerId);
+                if (l) {
+                    this.activateLayer(l);
+                }
+            }
+        }
+        MCAWidgetCtrl.prototype.stop = function () {
+            var _this = this;
+            if (this.mBusHandles) {
+                this.mBusHandles.forEach(function (mbh) {
+                    _this.$messageBus.unsubscribe(mbh);
+                });
+                this.mBusHandles.length = 0;
+            }
+        };
+        MCAWidgetCtrl.prototype.activateLayer = function (layer) {
+            var _this = this;
+            this.mcaScope = this.getMcaScope();
+            if (!this.mcaScope)
+                return;
+            this.selectedMCA = this.mcaScope.vm.mca.id;
+            if (layer.id !== this.$scope.data.layerId || (layer.id === this.$scope.data.layerId && !layer.enabled)) {
+                this.parentWidget.hide();
+                return;
+            }
+            this.layer = layer;
+            if (this.$scope.data.autoApplyStyle) {
+                this.setStyleForProperty();
+            }
+            this.$timeout(function () {
+                _this.parentWidget.show();
+            }, 0);
+        };
+        MCAWidgetCtrl.prototype.getMcaScope = function () {
+            var mcaElm = angular.element('div[id="mca"]');
+            if (!mcaElm) {
+                console.log('Mca element not found.');
+                return;
+            }
+            var mcaScope = mcaElm.scope();
+            if (!mcaScope) {
+                console.log('Mca controller scope not found.');
+                return;
+            }
+            else {
+                var l = this.$layerService.findLoadedLayer(this.$scope.data.layerId);
+                if (l && this.$scope.data.filterByDefaultFeatureType) {
+                    this.$scope.data.availableMcas = mcaScope.vm.availableMcas.filter(function (mca) {
+                        return mca.featureIds[0].split('#').pop() === l.defaultFeatureType;
+                    });
+                }
+                else {
+                    this.$scope.data.availableMcas = mcaScope.vm.availableMcas;
+                }
+            }
+            return mcaScope;
+        };
+        MCAWidgetCtrl.prototype.setStyleForProperty = function () {
+            if (!this.mcaScope || !this.mcaScope.vm.mca) {
+                console.log('Mca controller scope not found.');
+                return;
+            }
+            var gs = this.$layerService.setStyleForProperty(this.layer, this.mcaScope.vm.mca.label);
+            if (!gs)
+                return;
+            gs.activeLegend = this.mcaScope.vm.getLegend(this.mcaScope.vm.mca);
+            this.mcaScope.vm.groupStyle = gs;
+            this.$layerService.updateStyle(gs);
+        };
+        MCAWidgetCtrl.prototype.setMcaAsStyle = function (mcaId) {
+            if (!this.mcaScope || !this.mcaScope.vm.mca) {
+                console.log('Mca controller scope not found.');
+                return;
+            }
+            var vm = this.mcaScope.vm;
+            var mca = vm.findMcaById(mcaId);
+            vm.updateAvailableMcas(mca);
+            vm.updateMca();
+            if (!this.$layerService.lastSelectedFeature) {
+                // this.$messageBus.notifyWithTranslation('SELECT_A_FEATURE', 'SELECT_FEATURE_FOR_STYLE');
+                this.setStyleForProperty();
+                return;
+            }
+            vm.updateSelectedFeature(this.$layerService.lastSelectedFeature);
+            if (!vm.showFeature) {
+                this.$messageBus.notifyWithTranslation('SELECT_A_FEATURE', 'SELECT_FEATURE_FOR_STYLE');
+                return;
+            }
+            if (vm.properties.length > 0) {
+                vm.updateMca();
+                console.log('Set mca style.');
+                vm.setStyle(vm.properties[0]);
+            }
+        };
+        MCAWidgetCtrl.$inject = [
+            '$scope',
+            '$timeout',
+            '$controller',
+            'layerService',
+            'messageBusService',
+            'mapService'
+        ];
+        return MCAWidgetCtrl;
+    }());
+    MCAWidget.MCAWidgetCtrl = MCAWidgetCtrl;
+})(MCAWidget || (MCAWidget = {}));
+//# sourceMappingURL=MCAWidgetCtrl.js.map
 var MarvelWidget;
 (function (MarvelWidget) {
     /**
@@ -29988,197 +30180,6 @@ var MarvelWidget;
     MarvelWidget.MarvelWidgetCtrl = MarvelWidgetCtrl;
 })(MarvelWidget || (MarvelWidget = {}));
 //# sourceMappingURL=MarvelWidgetCtrl.js.map
-var MCAWidget;
-(function (MCAWidget) {
-    /**
-      * Config
-      */
-    var moduleName = 'csComp';
-    try {
-        MCAWidget.myModule = angular.module(moduleName);
-    }
-    catch (err) {
-        // named module does not exist, so create one
-        MCAWidget.myModule = angular.module(moduleName, []);
-    }
-    /**
-      * Directive to display the available map layers.
-      */
-    MCAWidget.myModule.directive('mcawidget', [function () {
-            return {
-                restrict: 'E',
-                scope: {},
-                templateUrl: 'directives/Widgets/MCAWidget/MCAWidget.tpl.html',
-                replace: true,
-                transclude: false,
-                controller: MCAWidget.MCAWidgetCtrl
-            };
-        }
-    ]);
-})(MCAWidget || (MCAWidget = {}));
-//# sourceMappingURL=MCAWidget.js.map
-var MCAWidget;
-(function (MCAWidget) {
-    var MCAWidgetData = /** @class */ (function () {
-        function MCAWidgetData() {
-        }
-        return MCAWidgetData;
-    }());
-    MCAWidget.MCAWidgetData = MCAWidgetData;
-    var MCAWidgetCtrl = /** @class */ (function () {
-        function MCAWidgetCtrl($scope, $timeout, $controller, $layerService, $messageBus, $mapService) {
-            var _this = this;
-            this.$scope = $scope;
-            this.$timeout = $timeout;
-            this.$controller = $controller;
-            this.$layerService = $layerService;
-            this.$messageBus = $messageBus;
-            this.$mapService = $mapService;
-            this.mBusHandles = [];
-            $scope.vm = this;
-            var par = $scope.$parent;
-            this.widget = par.widget;
-            $scope.data = this.widget.data;
-            $scope.data.filterByDefaultFeatureType = $scope.data.filterByDefaultFeatureType || false;
-            if (typeof $scope.data.layerId !== 'undefined') {
-                // Hide widget
-                this.parentWidget = $("#" + this.widget.elementId).parent();
-                this.parentWidget.hide();
-                this.mBusHandles.push(this.$messageBus.subscribe('layer', function (action, layer) {
-                    switch (action) {
-                        case 'activated':
-                        case 'deactivate':
-                            _this.activateLayer(layer);
-                            break;
-                        default:
-                            break;
-                    }
-                }));
-                this.mBusHandles.push(this.$messageBus.subscribe('mca', function (action, mca) {
-                    switch (action) {
-                        case 'updated':
-                        case 'deactivate':
-                            if (!mca)
-                                break;
-                            $timeout(function () {
-                                if (_this.selectedMCA !== mca.id) {
-                                    _this.selectedMCA = mca.id;
-                                    _this.setMcaAsStyle(_this.selectedMCA);
-                                }
-                            }, 0);
-                            break;
-                        default:
-                            break;
-                    }
-                }));
-                // Activate widget when layer is already loaded
-                var l = this.$layerService.findLoadedLayer($scope.data.layerId);
-                if (l) {
-                    this.activateLayer(l);
-                }
-            }
-        }
-        MCAWidgetCtrl.prototype.stop = function () {
-            var _this = this;
-            if (this.mBusHandles) {
-                this.mBusHandles.forEach(function (mbh) {
-                    _this.$messageBus.unsubscribe(mbh);
-                });
-                this.mBusHandles.length = 0;
-            }
-        };
-        MCAWidgetCtrl.prototype.activateLayer = function (layer) {
-            var _this = this;
-            this.mcaScope = this.getMcaScope();
-            if (!this.mcaScope)
-                return;
-            this.selectedMCA = this.mcaScope.vm.mca.id;
-            if (layer.id !== this.$scope.data.layerId || (layer.id === this.$scope.data.layerId && !layer.enabled)) {
-                this.parentWidget.hide();
-                return;
-            }
-            this.layer = layer;
-            if (this.$scope.data.autoApplyStyle) {
-                this.setStyleForProperty();
-            }
-            this.$timeout(function () {
-                _this.parentWidget.show();
-            }, 0);
-        };
-        MCAWidgetCtrl.prototype.getMcaScope = function () {
-            var mcaElm = angular.element('div[id="mca"]');
-            if (!mcaElm) {
-                console.log('Mca element not found.');
-                return;
-            }
-            var mcaScope = mcaElm.scope();
-            if (!mcaScope) {
-                console.log('Mca controller scope not found.');
-                return;
-            }
-            else {
-                var l = this.$layerService.findLoadedLayer(this.$scope.data.layerId);
-                if (l && this.$scope.data.filterByDefaultFeatureType) {
-                    this.$scope.data.availableMcas = mcaScope.vm.availableMcas.filter(function (mca) {
-                        return mca.featureIds[0].split('#').pop() === l.defaultFeatureType;
-                    });
-                }
-                else {
-                    this.$scope.data.availableMcas = mcaScope.vm.availableMcas;
-                }
-            }
-            return mcaScope;
-        };
-        MCAWidgetCtrl.prototype.setStyleForProperty = function () {
-            if (!this.mcaScope || !this.mcaScope.vm.mca) {
-                console.log('Mca controller scope not found.');
-                return;
-            }
-            var gs = this.$layerService.setStyleForProperty(this.layer, this.mcaScope.vm.mca.label);
-            if (!gs)
-                return;
-            gs.activeLegend = this.mcaScope.vm.getLegend(this.mcaScope.vm.mca);
-            this.mcaScope.vm.groupStyle = gs;
-            this.$layerService.updateStyle(gs);
-        };
-        MCAWidgetCtrl.prototype.setMcaAsStyle = function (mcaId) {
-            if (!this.mcaScope || !this.mcaScope.vm.mca) {
-                console.log('Mca controller scope not found.');
-                return;
-            }
-            var vm = this.mcaScope.vm;
-            var mca = vm.findMcaById(mcaId);
-            vm.updateAvailableMcas(mca);
-            vm.updateMca();
-            if (!this.$layerService.lastSelectedFeature) {
-                // this.$messageBus.notifyWithTranslation('SELECT_A_FEATURE', 'SELECT_FEATURE_FOR_STYLE');
-                this.setStyleForProperty();
-                return;
-            }
-            vm.updateSelectedFeature(this.$layerService.lastSelectedFeature);
-            if (!vm.showFeature) {
-                this.$messageBus.notifyWithTranslation('SELECT_A_FEATURE', 'SELECT_FEATURE_FOR_STYLE');
-                return;
-            }
-            if (vm.properties.length > 0) {
-                vm.updateMca();
-                console.log('Set mca style.');
-                vm.setStyle(vm.properties[0]);
-            }
-        };
-        MCAWidgetCtrl.$inject = [
-            '$scope',
-            '$timeout',
-            '$controller',
-            'layerService',
-            'messageBusService',
-            'mapService'
-        ];
-        return MCAWidgetCtrl;
-    }());
-    MCAWidget.MCAWidgetCtrl = MCAWidgetCtrl;
-})(MCAWidget || (MCAWidget = {}));
-//# sourceMappingURL=MCAWidgetCtrl.js.map
 var NavigatorWidget;
 (function (NavigatorWidget) {
     /**
