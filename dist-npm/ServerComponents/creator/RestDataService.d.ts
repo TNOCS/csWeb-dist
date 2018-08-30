@@ -61,10 +61,10 @@ export declare class RestDataSource {
     private enableLogging;
     constructor(server: express.Express, apiManager: Api.ApiManager, layerId: string, url?: string);
     init(options: IRestDataSourceSettings, callback: Function): void;
-    private startRestPolling(dataParameters);
-    private filterOldEntries(fcoll);
-    private initFeatures(fCollection, updateTime);
-    private findFeatureDiff(fCollection, updateTime);
-    private isFeatureUpdated(f);
-    private isConverterValid();
+    private startRestPolling;
+    private filterOldEntries;
+    private initFeatures;
+    private findFeatureDiff;
+    private isFeatureUpdated;
+    private isConverterValid;
 }

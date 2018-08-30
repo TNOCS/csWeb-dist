@@ -81,7 +81,7 @@ export declare class FiniteStateMachine<T> {
         */
     from(...states: T[]): Transitions<T>;
     fromAny(states: any): Transitions<T>;
-    private _validTransition(from, to);
+    private _validTransition;
     /**
      * Check whether a transition to a new state is valide
      * @method canGo
@@ -108,5 +108,5 @@ export declare class FiniteStateMachine<T> {
      * @method reset
      */
     reset(): void;
-    private _transitionTo(state, options?);
+    private _transitionTo;
 }

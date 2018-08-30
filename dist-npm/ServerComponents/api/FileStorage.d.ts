@@ -39,43 +39,43 @@ export declare class FileStorage extends BaseConnector.BaseConnector {
     private layerDebounceFunctions;
     constructor(rootpath: string, watch?: boolean, ignoreInitial?: boolean, layerBaseUrl?: string);
     watchLayersFolder(): void;
-    private getDirectories(srcpath);
+    private getDirectories;
     watchProjectsFolder(): void;
-    private printOverview();
+    private printOverview;
     openStaticFolder(folder: string): void;
     watchKeysFolder(): void;
     watchResourcesFolder(): void;
     saveProjectDelay: ((project: ApiManager.Project) => void) & _.Cancelable;
     saveResourcesDelay: ((res: ApiManager.ResourceFile) => void) & _.Cancelable;
     saveKeyDelay: ((key: ApiManager.Key) => void) & _.Cancelable;
-    private saveLayerDelay(layer);
-    private getProjectFilename(projectId);
-    private getLayerFilename(layerId);
-    private getLayerBackupFilename(layerId);
-    private getKeyFilename(keyId);
-    private getResourceFilename(re);
-    private saveKeyFile(key);
-    private saveResourceFile(res);
+    private saveLayerDelay;
+    private getProjectFilename;
+    private getLayerFilename;
+    private getLayerBackupFilename;
+    private getKeyFilename;
+    private getResourceFilename;
+    private saveKeyFile;
+    private saveResourceFile;
     /** Save project file to disk */
-    private saveProjectFile(project);
+    private saveProjectFile;
     /** save media file */
-    private saveBase64(media);
+    private saveBase64;
     /** read media file */
-    private readFile(file, cb);
-    private saveLayerFile(layer);
-    private getProjectId(fileName);
-    private getKeyId(fileName);
-    private getResourceId(fileName);
-    private getLayerId(fileName);
-    private closeLayerFile(fileName);
-    private closeKeyFile(fileName);
-    private closeResourceFile(fileName);
-    private closeProjectFile(fileName);
-    private fetchLayer(layerId);
-    private openLayerFile(fileName);
-    private openKeyFile(fileName);
-    private openResourceFile(fileName);
-    private openProjectFile(fileName, id?, isDynamic?);
+    private readFile;
+    private saveLayerFile;
+    private getProjectId;
+    private getKeyId;
+    private getResourceId;
+    private getLayerId;
+    private closeLayerFile;
+    private closeKeyFile;
+    private closeResourceFile;
+    private closeProjectFile;
+    private fetchLayer;
+    private openLayerFile;
+    private openKeyFile;
+    private openResourceFile;
+    private openProjectFile;
     /**
      * Find layer for a specific layerId (can return null)
      */

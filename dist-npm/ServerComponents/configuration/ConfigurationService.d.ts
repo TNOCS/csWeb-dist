@@ -4,7 +4,7 @@ import IConfiguration = require('./IConfiguration');
  * Is based on csComp.Helpers.Dictionary.
  */
 export declare class ConfigurationService implements IConfiguration {
-    private configurationFile;
+    private configurationFile?;
     private static theKeys;
     private static theValues;
     /**

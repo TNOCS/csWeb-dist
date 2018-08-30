@@ -21,7 +21,7 @@ declare class GeoJsonSaveTransformer implements transform.ITransform {
     nameLabel: string;
     FeatureTypeId: string;
     constructor(title: string);
-    initialize(opt: transform.ITransformFactoryOptions, callback: (error) => void): void;
+    initialize(opt: transform.ITransformFactoryOptions, callback: (error: any) => void): void;
     create(config: any, opt?: transform.ITransformFactoryOptions): NodeJS.ReadWriteStream;
 }
 export = GeoJsonSaveTransformer;

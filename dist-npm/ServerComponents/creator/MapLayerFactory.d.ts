@@ -88,22 +88,22 @@ export declare class MapLayerFactory {
     apiManager: Api.ApiManager;
     constructor(addressSources: IAddressSource.IAddressSource[], messageBus: MessageBus.MessageBusService, apiManager: Api.ApiManager, workingDir?: string, apiRoute?: string);
     process(req: express.Request, res: express.Response): void;
-    private splitJson(data);
+    private splitJson;
     sendIconThroughApiManager(b64: string, folder: string, filePath: string): void;
     sendResourceThroughApiManager(data: any, resourceId: string): void;
     sendLayerThroughApiManager(data: any): void;
     processBagContours(req: express.Request, res: express.Response): void;
     processBagSearchQuery(req: express.Request, res: express.Response): void;
     processBagBuurten(req: express.Request, res: express.Response): void;
-    createMapLayer(template: ILayerTemplate, callback: (Object) => void): {
+    createMapLayer(template: ILayerTemplate, callback: (Object: any) => void): {
         type: string;
         featureTypes: {};
         features: IGeoJsonFeature[];
     };
     addGeometryRequest(req: express.Request, res: express.Response): void;
-    private addGeometry(ld, template, geojson, callback);
-    private getPolygonType(ld, props);
-    private determineType(props, label);
+    private addGeometry;
+    private getPolygonType;
+    private determineType;
     /**
      * This function extracts the timestamps and sensorvalues from the
      * template.propertyTypes. Every sensorvalue is parsed as propertyType in
@@ -111,22 +111,22 @@ export declare class MapLayerFactory {
      * @param  {ILayerTemplate} template : The input template coming from MS Excel
      * @return {array} timestamps        : An array with all date/times converted to milliseconds
      */
-    private convertTimebasedPropertyData(template);
-    private createPolygonFeature(templateName, templateKey, par1, inclTemplProps, features, properties, propertyTypes, sensors, callback);
-    private enrichFeature(featureJson, f, p, inclTemplProps, templateKey);
-    private createInternationalFeature(queryString, features, properties, sensors, callback);
-    private createLatLonFeature(latString, lonString, features, properties, sensors, callback);
+    private convertTimebasedPropertyData;
+    private createPolygonFeature;
+    private enrichFeature;
+    private createInternationalFeature;
+    private createLatLonFeature;
     /**
      * Convert the RD coordinate to WGS84.
      */
-    private createRDFeature(rdX, rdY, features, properties, sensors, callback);
-    private mergeHouseNumber(zipCode, houseNumber, letter, addition, properties);
-    private createPointFeature(zipCode, houseNumber, bagOptions, features, properties, propertyTypes, sensors, callback);
-    private createFeatureWithoutGeometry(properties, sensors?);
-    private createFeature(lon, lat, properties, sensors?);
-    private createPropertyType(propertyTypes, name, section?);
-    private convertTime(date, time);
-    private convertDateProperties(propertyTypes, properties);
-    private convertTypes(propertyTypes, properties);
-    private convertStringFormats(properties);
+    private createRDFeature;
+    private mergeHouseNumber;
+    private createPointFeature;
+    private createFeatureWithoutGeometry;
+    private createFeature;
+    private createPropertyType;
+    private convertTime;
+    private convertDateProperties;
+    private convertTypes;
+    private convertStringFormats;
 }

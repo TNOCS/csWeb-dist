@@ -10,7 +10,7 @@ export declare class DynamicProject {
     constructor(folder: string, id: any, service: DynamicProjectService, messageBus: MessageBus.MessageBusService);
     Start(): void;
     AddLayer(data: any): void;
-    private splitJson(data);
+    private splitJson;
     /***
     Open project file from disk
     */

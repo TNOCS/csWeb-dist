@@ -8,7 +8,7 @@ import kafka = require('kafka-node');
 export declare enum KafkaCompression {
     NoCompression = 0,
     GZip = 1,
-    snappy = 2,
+    snappy = 2
 }
 export declare class KafkaOptions {
     consumers: string[] | Dictionary<number>;
@@ -46,11 +46,11 @@ export declare class KafkaAPI extends BaseConnector.BaseConnector {
     
      */
     subscribeLayer(layer: string, fromOffset?: number): void;
-    private waitForOffsetToBeReady(cb);
+    private waitForOffsetToBeReady;
     removeTopic(topic: string, cb: Function): void;
     exit(callback: Function): void;
     init(layerManager: ApiManager.ApiManager, options: any, callback: Function): void;
-    private parseXmlMessage(msg, cb);
+    private parseXmlMessage;
     /**
      *
      * Recursively search an object for the desired label and return that part of the object
@@ -59,8 +59,8 @@ export declare class KafkaAPI extends BaseConnector.BaseConnector {
      * @param {string} label to find
      * @returns Object with the label, or null
      */
-    private findObjectByLabel(object, label);
-    private extractLayer(message);
+    private findObjectByLabel;
+    private extractLayer;
     /**
      * Subscribe to certain keys using the internal MQTT router.
      * See also https://github.com/wolfeidau/mqtt-router.
@@ -77,13 +77,13 @@ export declare class KafkaAPI extends BaseConnector.BaseConnector {
     sendPayload(topic: string, buffer: Buffer, compression?: KafkaCompression, tries?: number): void;
     updateFeature(layerId: string, feature: any, useLog: boolean, meta: ApiMeta, callback: Function): void;
     addUpdateFeatureBatch(layerId: string, features: ApiManager.IChangeEvent[], useLog: boolean, meta: ApiMeta, callback: Function): void;
-    private sendFeature(layerId, featureId);
+    private sendFeature;
     updateProperty(layerId: string, featureId: string, property: string, value: any, useLog: boolean, meta: ApiMeta, callback: Function): void;
     updateLogs(layerId: string, featureId: string, logs: {
         [key: string]: Log[];
     }, meta: ApiMeta, callback: Function): void;
     initLayer(layer: Layer): void;
-    private getKeyChannel(keyId);
+    private getKeyChannel;
     updateKey(keyId: string, value: Object, meta: ApiMeta, callback: Function): void;
     setOffset(topic: string, offset: number): void;
     fetch(topic: string, time: number, cb: Function): void;

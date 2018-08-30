@@ -67,12 +67,12 @@ export declare class Rule implements IRule {
     /** Evaluate the rule and execute all actions, is applicable. */
     process(worldState: WorldState.WorldState, service: RuleEngine.IRuleEngineService): void;
     /** Evaluate the conditions and check whether all of them are true (AND). */
-    private evaluateConditions(worldState);
-    private showWarning(condition);
-    private executeActions(worldState, service);
-    private setTimerForProperty(service, key, value, delay?, isAnswer?);
-    private static updateLog(f, logs, key, now, value);
-    private updateProperty(f, service, key, value, isAnswer?);
+    private evaluateConditions;
+    private showWarning;
+    private executeActions;
+    private setTimerForProperty;
+    private static updateLog;
+    private updateProperty;
     /** Get the delay, if present, otherwise return 0 */
-    private getDelay(actions, index);
+    private getDelay;
 }

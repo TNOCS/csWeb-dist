@@ -15,7 +15,7 @@ declare class FieldSplitTransformer implements transform.ITransform {
     outputDataTypes: transform.OutputDataType[];
     keyProperty: string;
     constructor(title: string);
-    initialize(opt: transform.ITransformFactoryOptions, callback: (error) => void): void;
+    initialize(opt: transform.ITransformFactoryOptions, callback: (error: any) => void): void;
     create(config: any, opt?: transform.ITransformFactoryOptions): NodeJS.ReadWriteStream;
 }
 export = FieldSplitTransformer;
