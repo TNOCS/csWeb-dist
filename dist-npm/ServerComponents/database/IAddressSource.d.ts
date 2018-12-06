@@ -7,4 +7,5 @@ export interface IAddressSource {
     lookupBagArea?(bounds: string, isArea: boolean, callback: Function): any;
     lookupBagBuurt?(bounds: string, isArea: boolean, callback: Function): any;
     lookupBagAddress?(zip: string, houseNumber: string, bagOptions: IBagOptions, callback: Function): any;
+    lookupBagCity?(city: string, callback: Function): any;
 }

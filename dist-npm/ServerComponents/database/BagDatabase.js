@@ -300,6 +300,37 @@ var BagDatabase = /** @class */ (function () {
             });
         });
     };
+    /**
+     * Lookup the address from the BAG.
+     */
+    BagDatabase.prototype.lookupBagCity = function (city, callback) {
+        if (!city) {
+            console.log('No city: ' + city);
+            callback(null);
+            return;
+        }
+        console.log('Connect to pgPool to lookup address');
+        this.pgPool.connect(function (err, client, done) {
+            if (err) {
+                console.error(err);
+                callback(null);
+                return;
+            }
+            var sql = "SELECT ST_X(ST_Centroid(ST_Transform(geovlak, 4326))) as lon,ST_Y(ST_Centroid(ST_Transform(geovlak, 4326))) as lat FROM bagactueel.woonplaats WHERE woonplaats.woonplaatsnaam='" + city + "'";
+            client.query(sql, function (err, result) {
+                done();
+                if (err) {
+                    console.error(err);
+                    console.log("Cannot find city: " + city);
+                    callback(null);
+                }
+                else {
+                    console.log("Found city: " + city);
+                    callback(result.rows);
+                }
+            });
+        });
+    };
     BagDatabase.prototype.indexes = function (source, find) {
         if (!source)
             return [];

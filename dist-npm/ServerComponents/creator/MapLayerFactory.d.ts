@@ -122,6 +122,7 @@ export declare class MapLayerFactory {
     private createRDFeature;
     private mergeHouseNumber;
     private createPointFeature;
+    private createCityFeature;
     private createFeatureWithoutGeometry;
     private createFeature;
     private createPropertyType;

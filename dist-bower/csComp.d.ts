@@ -1453,6 +1453,18 @@ declare module csComp.Services {
     }
 }
 
+declare module Translations {
+    class English {
+        static locale: ng.translate.ITranslationTable;
+    }
+}
+
+declare module Translations {
+    class Dutch {
+        static locale: ng.translate.ITranslationTable;
+    }
+}
+
 declare module ColorExt {
     /** Color utility class */
     class Utils {
@@ -2160,18 +2172,6 @@ declare module LayersDirective {
     var myModule: any;
 }
 
-declare module Translations {
-    class English {
-        static locale: ng.translate.ITranslationTable;
-    }
-}
-
-declare module Translations {
-    class Dutch {
-        static locale: ng.translate.ITranslationTable;
-    }
-}
-
 declare module Accessibility {
     /**
       * Module
@@ -2379,14 +2379,14 @@ declare module Charts {
     }
 }
 
-declare module Directives.Clock {
+declare module Helpers.ContextMenu {
     /**
       * Module
       */
     var myModule: any;
 }
 
-declare module Helpers.ContextMenu {
+declare module Directives.Clock {
     /**
       * Module
       */
@@ -4386,42 +4386,6 @@ declare module ShowModal {
     var myModule: any;
 }
 
-declare module StyleList {
-    /**
-      * Module
-      */
-    var myModule: any;
-}
-
-declare module StyleList {
-    interface IStyleListScope extends ng.IScope {
-        vm: StyleListCtrl;
-    }
-    class StyleListCtrl {
-        private $scope;
-        private $timeout;
-        private $layerService;
-        private messageBus;
-        private scope;
-        static $inject: string[];
-        selectedGroup: csComp.Services.ProjectGroup;
-        selectedSection: csComp.Services.Section;
-        activeStyles: string[];
-        constructor($scope: IStyleListScope, $timeout: ng.ITimeoutService, $layerService: csComp.Services.LayerService, messageBus: csComp.Services.MessageBusService);
-        selectGroup(group: csComp.Services.ProjectGroup): void;
-        selectSection(section: csComp.Services.Section): void;
-        initWizard: (() => void) & _.Cancelable;
-        initWizardDebounced(): void;
-        setStyle(g: csComp.Services.ProjectGroup, property: csComp.Services.IPropertyType): void;
-        getStyle(legend: csComp.Services.Legend, le: csComp.Services.LegendEntry, key: number): {
-            'float': string;
-            'position': string;
-            'top': string;
-            'background': string;
-        };
-    }
-}
-
 declare module Timeline {
     interface ITimelineService {
         getTimelineOptions(): csComp.Services.ITimelineOptions;
@@ -4575,6 +4539,42 @@ declare module Timeline {
     }
 }
 
+declare module StyleList {
+    /**
+      * Module
+      */
+    var myModule: any;
+}
+
+declare module StyleList {
+    interface IStyleListScope extends ng.IScope {
+        vm: StyleListCtrl;
+    }
+    class StyleListCtrl {
+        private $scope;
+        private $timeout;
+        private $layerService;
+        private messageBus;
+        private scope;
+        static $inject: string[];
+        selectedGroup: csComp.Services.ProjectGroup;
+        selectedSection: csComp.Services.Section;
+        activeStyles: string[];
+        constructor($scope: IStyleListScope, $timeout: ng.ITimeoutService, $layerService: csComp.Services.LayerService, messageBus: csComp.Services.MessageBusService);
+        selectGroup(group: csComp.Services.ProjectGroup): void;
+        selectSection(section: csComp.Services.Section): void;
+        initWizard: (() => void) & _.Cancelable;
+        initWizardDebounced(): void;
+        setStyle(g: csComp.Services.ProjectGroup, property: csComp.Services.IPropertyType): void;
+        getStyle(legend: csComp.Services.Legend, le: csComp.Services.LegendEntry, key: number): {
+            'float': string;
+            'position': string;
+            'top': string;
+            'background': string;
+        };
+    }
+}
+
 declare module TripPlanner {
     /**
       * Module
@@ -4627,166 +4627,6 @@ declare module TripPlanner {
 }
 
 declare module Voting {
-    /**
-      * Module
-      */
-    var myModule: any;
-}
-
-declare module csComp.Services {
-    interface IMessageBusCallback {
-        (title: string, data?: any): any;
-    }
-    class ClientMessage {
-        action: string;
-        data: any;
-        constructor(action: string, data: any);
-    }
-    class MessageBusHandle {
-        constructor(topic: string, callback: IMessageBusCallback);
-        topic: string;
-        callback: IMessageBusCallback;
-    }
-    interface IBaseEvent {
-        add(listener: () => void): void;
-        remove(listener: () => void): void;
-        trigger(...a: any[]): void;
-    }
-    class TypedEvent implements IBaseEvent {
-        private _listeners;
-        add(listener: () => void): void;
-        remove(listener?: () => void): void;
-        trigger(...a: any[]): void;
-    }
-    interface IMessageEvent extends IBaseEvent {
-        add(listener: (message?: string) => void): void;
-        remove(listener: (message?: string) => void): void;
-        trigger(message: string): void;
-    }
-    class Connection {
-        id: string;
-        url: string;
-        bus: MessageBusService;
-        isConnected: boolean;
-        isConnecting: boolean;
-        cache: {
-            [topic: string]: Array<IMessageBusCallback>;
-        };
-        subscriptions: {
-            [id: string]: ServerSubscription;
-        };
-        socket: any;
-        events: IMessageEvent;
-        constructor(id: string, url: string, bus: MessageBusService);
-        unsubscribe(id: string, callback: IMessageBusCallback): void;
-        reSubscribeAll(): void;
-        disconnectAll(): void;
-        subscribe(target: string, type: string, callback: IMessageBusCallback): ServerSubscription;
-        connect(callback: Function): void;
-        disconnect(): void;
-    }
-    enum NotifyLocation {
-        BottomRight = 0,
-        BottomLeft = 1,
-        TopRight = 2,
-        TopLeft = 3,
-        TopBar = 4
-    }
-    enum NotifyType {
-        Normal = 0,
-        Info = 1,
-        Error = 2,
-        Success = 3
-    }
-    class ServerSubscription {
-        target: string;
-        type: string;
-        callbacks: Array<IMessageBusCallback>;
-        id: string;
-        serverCallback: any;
-        constructor(target: string, type: string);
-    }
-    /**
-     * Simple message bus service, used for subscribing and unsubsubscribing to topics.
-     * @see {@link https://gist.github.com/floatingmonkey/3384419}
-     */
-    class MessageBusService {
-        private $translate;
-        private static cache;
-        static $inject: string[];
-        private connections;
-        private notifications;
-        private confirms;
-        constructor($translate: ng.translate.ITranslateService);
-        getConnection(id: string): Connection;
-        initConnection(id: string, url: string, callback: Function): void;
-        serverPublish(topic: string, message: any, serverId?: string): any;
-        serverSendMessage(msg: ClientMessage, serverId?: string): any;
-        serverSendMessageAction(action: string, data: any, serverId?: string): void;
-        serverSubscribe(target: string, type: string, callback: IMessageBusCallback, serverId?: string): MessageBusHandle;
-        serverUnsubscribe(handle: MessageBusHandle, serverId?: string): any;
-        /**
-         * Publish a notification that needs to be translated
-         * @title:              the translation key of the notification's title
-         * @text:               the translation key of the notification's content
-         * @variableReplacement the key to replace in the content translation (see: https://angular-translate.github.io/docs/#/guide/06_variable-replacement)
-         * @location:           the location on the screen where the notification is shown (default bottom right)
-         */
-        notifyWithTranslation(title: string, text: string, variableReplacement?: {
-            [key: string]: string;
-        }, location?: NotifyLocation, type?: NotifyType, duration?: number): void;
-        notifyErrorWithTranslation(title: string, text: string, variableReplacement?: {
-            [key: string]: string;
-        }): void;
-        notifyError(title: string, text: string): void;
-        /**
-         * Publish a notification
-         * @title:       the title of the notification
-         * @text:        the contents of the notification
-         * @location:    the location on the screen where the notification is shown (default bottom right)
-         * @notifyType:  the type of notification
-         */
-        notify(title: string, text: string, location?: NotifyLocation, notifyType?: NotifyType, duration?: number): any;
-        confirmButtons(title: string, text: string, buttons: string[], callback: (result: string) => any): any;
-        /**
-         * Show a confirm dialog
-         * @title           : the title of the notification
-         * @text            : the contents of the notification
-         * @callback        : the callback that will be called after the confirmation has been answered.
-         */
-        confirm(title: string, text: string, callback: (result: boolean) => any, allowDuplicate?: boolean): any;
-        notifyBottom(title: string, text: string): void;
-        /**
-         * Publish a notification
-         * @title: the title of the notification
-         * @text:  the contents of the notification
-         */
-        notifyData(data: any): void;
-        /**
-         * Publish to a topic
-         */
-        publish(topic: string, title: string, data?: any): void;
-        /**
-         * Subscribe to a topic
-         * @param {string} topic The desired topic of the message.
-         * @param {IMessageBusCallback} callback The callback to call.
-         */
-        subscribe(topic: string, callback: IMessageBusCallback): MessageBusHandle;
-        /**
-         * Unsubscribe to a topic by providing its handle
-         */
-        unsubscribe(handle: MessageBusHandle): void;
-    }
-    class EventObj {
-        myEvents: any;
-        bind(event: any, fct: any): void;
-        unbind(event: any, fct: any): void;
-        unbindEvent(event: any): void;
-        unbindAll(): void;
-        trigger(event: any, ...args: any[]): void;
-        registerEvent(evtname: string): void;
-        registerEvents(evtnames: Array<string>): void;
-    }
     /**
       * Module
       */
@@ -4975,6 +4815,166 @@ declare module csComp.Services {
         private updateChart;
         stop(): void;
     }
+}
+
+declare module csComp.Services {
+    interface IMessageBusCallback {
+        (title: string, data?: any): any;
+    }
+    class ClientMessage {
+        action: string;
+        data: any;
+        constructor(action: string, data: any);
+    }
+    class MessageBusHandle {
+        constructor(topic: string, callback: IMessageBusCallback);
+        topic: string;
+        callback: IMessageBusCallback;
+    }
+    interface IBaseEvent {
+        add(listener: () => void): void;
+        remove(listener: () => void): void;
+        trigger(...a: any[]): void;
+    }
+    class TypedEvent implements IBaseEvent {
+        private _listeners;
+        add(listener: () => void): void;
+        remove(listener?: () => void): void;
+        trigger(...a: any[]): void;
+    }
+    interface IMessageEvent extends IBaseEvent {
+        add(listener: (message?: string) => void): void;
+        remove(listener: (message?: string) => void): void;
+        trigger(message: string): void;
+    }
+    class Connection {
+        id: string;
+        url: string;
+        bus: MessageBusService;
+        isConnected: boolean;
+        isConnecting: boolean;
+        cache: {
+            [topic: string]: Array<IMessageBusCallback>;
+        };
+        subscriptions: {
+            [id: string]: ServerSubscription;
+        };
+        socket: any;
+        events: IMessageEvent;
+        constructor(id: string, url: string, bus: MessageBusService);
+        unsubscribe(id: string, callback: IMessageBusCallback): void;
+        reSubscribeAll(): void;
+        disconnectAll(): void;
+        subscribe(target: string, type: string, callback: IMessageBusCallback): ServerSubscription;
+        connect(callback: Function): void;
+        disconnect(): void;
+    }
+    enum NotifyLocation {
+        BottomRight = 0,
+        BottomLeft = 1,
+        TopRight = 2,
+        TopLeft = 3,
+        TopBar = 4
+    }
+    enum NotifyType {
+        Normal = 0,
+        Info = 1,
+        Error = 2,
+        Success = 3
+    }
+    class ServerSubscription {
+        target: string;
+        type: string;
+        callbacks: Array<IMessageBusCallback>;
+        id: string;
+        serverCallback: any;
+        constructor(target: string, type: string);
+    }
+    /**
+     * Simple message bus service, used for subscribing and unsubsubscribing to topics.
+     * @see {@link https://gist.github.com/floatingmonkey/3384419}
+     */
+    class MessageBusService {
+        private $translate;
+        private static cache;
+        static $inject: string[];
+        private connections;
+        private notifications;
+        private confirms;
+        constructor($translate: ng.translate.ITranslateService);
+        getConnection(id: string): Connection;
+        initConnection(id: string, url: string, callback: Function): void;
+        serverPublish(topic: string, message: any, serverId?: string): any;
+        serverSendMessage(msg: ClientMessage, serverId?: string): any;
+        serverSendMessageAction(action: string, data: any, serverId?: string): void;
+        serverSubscribe(target: string, type: string, callback: IMessageBusCallback, serverId?: string): MessageBusHandle;
+        serverUnsubscribe(handle: MessageBusHandle, serverId?: string): any;
+        /**
+         * Publish a notification that needs to be translated
+         * @title:              the translation key of the notification's title
+         * @text:               the translation key of the notification's content
+         * @variableReplacement the key to replace in the content translation (see: https://angular-translate.github.io/docs/#/guide/06_variable-replacement)
+         * @location:           the location on the screen where the notification is shown (default bottom right)
+         */
+        notifyWithTranslation(title: string, text: string, variableReplacement?: {
+            [key: string]: string;
+        }, location?: NotifyLocation, type?: NotifyType, duration?: number): void;
+        notifyErrorWithTranslation(title: string, text: string, variableReplacement?: {
+            [key: string]: string;
+        }): void;
+        notifyError(title: string, text: string): void;
+        /**
+         * Publish a notification
+         * @title:       the title of the notification
+         * @text:        the contents of the notification
+         * @location:    the location on the screen where the notification is shown (default bottom right)
+         * @notifyType:  the type of notification
+         */
+        notify(title: string, text: string, location?: NotifyLocation, notifyType?: NotifyType, duration?: number): any;
+        confirmButtons(title: string, text: string, buttons: string[], callback: (result: string) => any): any;
+        /**
+         * Show a confirm dialog
+         * @title           : the title of the notification
+         * @text            : the contents of the notification
+         * @callback        : the callback that will be called after the confirmation has been answered.
+         */
+        confirm(title: string, text: string, callback: (result: boolean) => any, allowDuplicate?: boolean): any;
+        notifyBottom(title: string, text: string): void;
+        /**
+         * Publish a notification
+         * @title: the title of the notification
+         * @text:  the contents of the notification
+         */
+        notifyData(data: any): void;
+        /**
+         * Publish to a topic
+         */
+        publish(topic: string, title: string, data?: any): void;
+        /**
+         * Subscribe to a topic
+         * @param {string} topic The desired topic of the message.
+         * @param {IMessageBusCallback} callback The callback to call.
+         */
+        subscribe(topic: string, callback: IMessageBusCallback): MessageBusHandle;
+        /**
+         * Unsubscribe to a topic by providing its handle
+         */
+        unsubscribe(handle: MessageBusHandle): void;
+    }
+    class EventObj {
+        myEvents: any;
+        bind(event: any, fct: any): void;
+        unbind(event: any, fct: any): void;
+        unbindEvent(event: any): void;
+        unbindAll(): void;
+        trigger(event: any, ...args: any[]): void;
+        registerEvent(evtname: string): void;
+        registerEvents(evtnames: Array<string>): void;
+    }
+    /**
+      * Module
+      */
+    var myModule: any;
 }
 
 declare module csComp.Services {
@@ -5635,77 +5635,6 @@ declare module RelationAction {
 }
 
 declare module csComp.Services {
-    class MapService {
-        private $localStorageService;
-        private $timeout;
-        private $messageBusService;
-        private static expertModeKey;
-        private scale;
-        private showLocation;
-        static $inject: string[];
-        map: L.Map;
-        baseLayers: any;
-        drawingLayer: ProjectLayer;
-        drawingFeatureType: csComp.Services.IFeatureType;
-        activeBaseLayer: BaseLayer;
-        activeBaseLayerId: string;
-        mapVisible: boolean;
-        rightMenuVisible: boolean;
-        maxBounds: IBoundingBox;
-        drawInstance: any;
-        featureGroup: L.ILayer;
-        drawingNotification: any;
-        /** Padding from the top-left of the screen to compensate for part of the map that
-         * is overlayed by the menu */
-        private menuPaddingTopLeft;
-        private _timelineVisible;
-        timelineVisible: boolean;
-        expertMode: Expertise;
-        constructor($localStorageService: ng.localStorage.ILocalStorageService, $timeout: ng.ITimeoutService, $messageBusService: csComp.Services.MessageBusService);
-        private mapClicked;
-        /**
-         * The expert mode can either be set manually, e.g. using this directive, or by setting the expertMode property in the
-         * project.json file. In neither are set, we assume that we are dealing with an expert, so all features should be enabled.
-         *
-         * Precedence:
-         * - when a declaration is absent, assume Expert.
-         * - when the mode is set in local storage, take that value.
-         * - when the mode is set in the project.json file, take that value.
-         */
-        private initExpertMode;
-        readonly isExpert: boolean;
-        readonly isIntermediate: boolean;
-        readonly isAdminExpert: boolean;
-        getBaselayer(layer: string): BaseLayer;
-        changeBaseLayer(layer: string): void;
-        invalidate(): void;
-        /**
-         * Zoom to a location on the map.
-         */
-        zoomToLocation(center: L.LatLng, zoomFactor?: number): void;
-        /**
-         * Zoom to a feature on the map.
-         */
-        zoomTo(feature: IFeature, zoomLevel?: number): void;
-        zoomIn(): void;
-        zoomOut(): void;
-        /**
-         * Compute the bounding box.
-         * Returns [min_x, max_x, min_y, max_y]
-         */
-        private getBoundingBox;
-        getMap(): L.Map;
-        initDraw(layerService: csComp.Services.LayerService): void;
-        /** start drawing line/polygon */
-        startDraw(layer: csComp.Services.ProjectLayer, featureType: csComp.Services.IFeatureType): void;
-    }
-    /**
-      * Module
-      */
-    var myModule: any;
-}
-
-declare module csComp.Services {
     interface IProfile {
         [key: string]: string | number | boolean | Object;
     }
@@ -5825,6 +5754,77 @@ declare module csComp.Search {
     }
 }
 
+declare module csComp.Services {
+    class MapService {
+        private $localStorageService;
+        private $timeout;
+        private $messageBusService;
+        private static expertModeKey;
+        private scale;
+        private showLocation;
+        static $inject: string[];
+        map: L.Map;
+        baseLayers: any;
+        drawingLayer: ProjectLayer;
+        drawingFeatureType: csComp.Services.IFeatureType;
+        activeBaseLayer: BaseLayer;
+        activeBaseLayerId: string;
+        mapVisible: boolean;
+        rightMenuVisible: boolean;
+        maxBounds: IBoundingBox;
+        drawInstance: any;
+        featureGroup: L.ILayer;
+        drawingNotification: any;
+        /** Padding from the top-left of the screen to compensate for part of the map that
+         * is overlayed by the menu */
+        private menuPaddingTopLeft;
+        private _timelineVisible;
+        timelineVisible: boolean;
+        expertMode: Expertise;
+        constructor($localStorageService: ng.localStorage.ILocalStorageService, $timeout: ng.ITimeoutService, $messageBusService: csComp.Services.MessageBusService);
+        private mapClicked;
+        /**
+         * The expert mode can either be set manually, e.g. using this directive, or by setting the expertMode property in the
+         * project.json file. In neither are set, we assume that we are dealing with an expert, so all features should be enabled.
+         *
+         * Precedence:
+         * - when a declaration is absent, assume Expert.
+         * - when the mode is set in local storage, take that value.
+         * - when the mode is set in the project.json file, take that value.
+         */
+        private initExpertMode;
+        readonly isExpert: boolean;
+        readonly isIntermediate: boolean;
+        readonly isAdminExpert: boolean;
+        getBaselayer(layer: string): BaseLayer;
+        changeBaseLayer(layer: string): void;
+        invalidate(): void;
+        /**
+         * Zoom to a location on the map.
+         */
+        zoomToLocation(center: L.LatLng, zoomFactor?: number): void;
+        /**
+         * Zoom to a feature on the map.
+         */
+        zoomTo(feature: IFeature, zoomLevel?: number): void;
+        zoomIn(): void;
+        zoomOut(): void;
+        /**
+         * Compute the bounding box.
+         * Returns [min_x, max_x, min_y, max_y]
+         */
+        private getBoundingBox;
+        getMap(): L.Map;
+        initDraw(layerService: csComp.Services.LayerService): void;
+        /** start drawing line/polygon */
+        startDraw(layer: csComp.Services.ProjectLayer, featureType: csComp.Services.IFeatureType): void;
+    }
+    /**
+      * Module
+      */
+    var myModule: any;
+}
+
 declare module Dashboard {
     /**
       * Module
@@ -5875,6 +5875,42 @@ declare module Dashboard {
         private checkLegend;
         updateDashboard(): void;
         private updateWidgetsThrottled;
+    }
+}
+
+declare module Search {
+    /**
+      * Module
+      */
+    var myModule: any;
+}
+
+declare module Search {
+    interface ISearchScope extends ng.IScope {
+        vm: SearchCtrl;
+        sv: boolean;
+    }
+    interface IWidgetScope extends ng.IScope {
+        data: any;
+    }
+    class SearchCtrl {
+        private $scope;
+        private $compile;
+        private $layerService;
+        private $mapService;
+        private $messageBusService;
+        private $dashboardService;
+        private $templateCache;
+        private $timeout;
+        private scope;
+        private project;
+        private query;
+        string: any;
+        static $inject: string[];
+        constructor($scope: ISearchScope, $compile: any, $layerService: csComp.Services.LayerService, $mapService: csComp.Services.MapService, $messageBusService: csComp.Services.MessageBusService, $dashboardService: csComp.Services.DashboardService, $templateCache: any, $timeout: ng.ITimeoutService);
+        startSearch(): void;
+        closeSearch(): void;
+        selectFirst(): void;
     }
 }
 
@@ -5954,42 +5990,6 @@ declare module DashboardSelection {
         private publishDashboardUpdate;
         /** Select an active dashboard */
         selectDashboard(dashboard: csComp.Services.Dashboard): void;
-    }
-}
-
-declare module Search {
-    /**
-      * Module
-      */
-    var myModule: any;
-}
-
-declare module Search {
-    interface ISearchScope extends ng.IScope {
-        vm: SearchCtrl;
-        sv: boolean;
-    }
-    interface IWidgetScope extends ng.IScope {
-        data: any;
-    }
-    class SearchCtrl {
-        private $scope;
-        private $compile;
-        private $layerService;
-        private $mapService;
-        private $messageBusService;
-        private $dashboardService;
-        private $templateCache;
-        private $timeout;
-        private scope;
-        private project;
-        private query;
-        string: any;
-        static $inject: string[];
-        constructor($scope: ISearchScope, $compile: any, $layerService: csComp.Services.LayerService, $mapService: csComp.Services.MapService, $messageBusService: csComp.Services.MessageBusService, $dashboardService: csComp.Services.DashboardService, $templateCache: any, $timeout: ng.ITimeoutService);
-        startSearch(): void;
-        closeSearch(): void;
-        selectFirst(): void;
     }
 }
 
@@ -6816,40 +6816,6 @@ declare module Filters {
         initTextFilter(): void;
         updateTextFilter(): void;
         remove(): void;
-    }
-}
-
-declare module Filters {
-    interface IWodkRowFilterScope extends ng.IScope {
-        vm: WodkRowFilterCtrl;
-        filter: csComp.Services.GroupFilter;
-        options: Function;
-        removeString: string;
-        createScatterString: string;
-        saveAsImageString: string;
-    }
-    class WodkRowFilterCtrl {
-        $scope: IWodkRowFilterScope;
-        private $layerService;
-        private $messageBus;
-        private $timeout;
-        private $translate;
-        private scope;
-        private widget;
-        /** To export a filter, canvg can be used. Due to its size it is not included in csWeb by default,
-         *  you need to add it to your csWeb-App. When you have added it, a save-icon will appear in the filter.
-         * canvg is available from https://github.com/gabelerner/canvg */
-        private exporterAvailable;
-        static $inject: string[];
-        constructor($scope: IWodkRowFilterScope, $layerService: csComp.Services.LayerService, $messageBus: csComp.Services.MessageBusService, $timeout: ng.ITimeoutService, $translate: ng.translate.ITranslateService);
-        private createScatter(gf);
-        private dcChart;
-        initRowFilter(): void;
-        private ensureAllBins(source_group, fake_group);
-        private updateFilter();
-        updateRange(): void;
-        remove(): void;
-        exportToImage(): void;
     }
 }
 
@@ -8411,7 +8377,7 @@ declare module csComp.Services {
     }
     class GeometryTemplateStore {
         $http: ng.IHttpService;
-        readonly TEMPLATE_URL: string;
+        readonly TEMPLATE_URL = "data/templates";
         private templateList;
         constructor($http: ng.IHttpService);
         loadGeometry(name: string, cb: Function): void;
@@ -8753,12 +8719,6 @@ declare module csComp.Services {
         constructor(service: csComp.Services.LayerService, $http: ng.IHttpService, $storage: ng.localStorage.ILocalStorageService);
         addLayer(layer: csComp.Services.ProjectLayer, callback: (layer: csComp.Services.ProjectLayer) => void): void;
         private continueInit;
-    }
-}
-
-declare namespace L {
-    class Terminator extends Polygon {
-        constructor(options?: Object);
     }
 }
 

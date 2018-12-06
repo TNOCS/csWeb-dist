@@ -1,7 +1,6 @@
 {
     "name": "csweb",
-    "version": "0.3.27",
-    "authors": ["Arnoud de Jong <damylen@gmail.com>", "Erik Vullings <erik.vullings@gmail.com>"],
+    "version": "0.3.28",
     "main": "dist-bower/csComp.js",
     "ignore": [
         "csComp",
@@ -27,6 +26,8 @@
         "install_karma.bat",
         "updateAll.bat"
     ],
-    "dependencies": {},
-    "devDependencies": {}
+    "dependencies": {
+    },
+    "devDependencies": {
+    }
 }

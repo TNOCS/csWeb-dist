@@ -436,9 +436,12 @@ var csComp;
 })(csComp || (csComp = {}));
 //# sourceMappingURL=feature.js.map
 var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
     return function (d, b) {
         extendStatics(d, b);
         function __() { this.constructor = d; }
@@ -3497,9 +3500,12 @@ var csComp;
 })(csComp || (csComp = {}));
 //# sourceMappingURL=Helpers.js.map
 var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
     return function (d, b) {
         extendStatics(d, b);
         function __() { this.constructor = d; }
@@ -4339,9 +4345,12 @@ var csComp;
 })(csComp || (csComp = {}));
 //# sourceMappingURL=StyleHelpers.js.map
 var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
     return function (d, b) {
         extendStatics(d, b);
         function __() { this.constructor = d; }
@@ -6365,44 +6374,6 @@ var Charts;
         }]);
 })(Charts || (Charts = {}));
 //# sourceMappingURL=SparklineChart.js.map
-var Directives;
-(function (Directives) {
-    var Clock;
-    (function (Clock) {
-        /**
-         * Config
-         */
-        var moduleName = "csComp";
-        try {
-            Clock.myModule = angular.module(moduleName);
-        }
-        catch (err) {
-            // named module does not exist, so create one
-            Clock.myModule = angular.module(moduleName, []);
-        }
-        /**
-          * Directive to show the time.
-          */
-        Clock.myModule.directive('clock', ['dateFilter', function (dateFilter) {
-                return {
-                    restrict: 'E',
-                    scope: {
-                        time: '@',
-                        format: '@'
-                    },
-                    link: function (scope, element, attrs) {
-                        function updateTime() {
-                            element.html(dateFilter(scope.time, scope.format));
-                        }
-                        scope.$watch('time', function (value) {
-                            updateTime();
-                        });
-                    }
-                };
-            }]);
-    })(Clock = Directives.Clock || (Directives.Clock = {}));
-})(Directives || (Directives = {}));
-//# sourceMappingURL=Clock.js.map
 var Helpers;
 (function (Helpers) {
     var ContextMenu;
@@ -6504,6 +6475,44 @@ var Helpers;
     })(ContextMenu = Helpers.ContextMenu || (Helpers.ContextMenu = {}));
 })(Helpers || (Helpers = {}));
 //# sourceMappingURL=ContextMenu.js.map
+var Directives;
+(function (Directives) {
+    var Clock;
+    (function (Clock) {
+        /**
+         * Config
+         */
+        var moduleName = "csComp";
+        try {
+            Clock.myModule = angular.module(moduleName);
+        }
+        catch (err) {
+            // named module does not exist, so create one
+            Clock.myModule = angular.module(moduleName, []);
+        }
+        /**
+          * Directive to show the time.
+          */
+        Clock.myModule.directive('clock', ['dateFilter', function (dateFilter) {
+                return {
+                    restrict: 'E',
+                    scope: {
+                        time: '@',
+                        format: '@'
+                    },
+                    link: function (scope, element, attrs) {
+                        function updateTime() {
+                            element.html(dateFilter(scope.time, scope.format));
+                        }
+                        scope.$watch('time', function (value) {
+                            updateTime();
+                        });
+                    }
+                };
+            }]);
+    })(Clock = Directives.Clock || (Directives.Clock = {}));
+})(Directives || (Directives = {}));
+//# sourceMappingURL=Clock.js.map
 var DataTable;
 (function (DataTable) {
     /**
@@ -7101,7 +7110,6 @@ var DataTable;
             '$translate',
             '$timeout',
             'layerService',
-            'dashboardService',
             'localStorageService',
             'messageBusService'
         ];
@@ -8682,6 +8690,836 @@ var FilterList;
     FilterList.FilterListCtrl = FilterListCtrl;
 })(FilterList || (FilterList = {}));
 //# sourceMappingURL=FilterListCtrl.js.map
+var IdvEdit;
+(function (IdvEdit) {
+    /**
+      * Config
+      */
+    var moduleName = 'csComp';
+    try {
+        IdvEdit.myModule = angular.module(moduleName);
+    }
+    catch (err) {
+        // named module does not exist, so create one
+        IdvEdit.myModule = angular.module(moduleName, []);
+    }
+    var IdvEditCtrl = /** @class */ (function () {
+        // dependencies are injected via AngularJS $injector
+        // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
+        function IdvEditCtrl($scope, $mapService, $layerService, $messageBusService) {
+            this.$scope = $scope;
+            this.$mapService = $mapService;
+            this.$layerService = $layerService;
+            this.$messageBusService = $messageBusService;
+            this.scope = $scope;
+            $scope.vm = this;
+            this.scan = $scope.$parent.data;
+            console.log(this);
+        }
+        IdvEditCtrl.prototype.toggleChart = function (chart) {
+            chart.enabled = !chart.enabled;
+        };
+        IdvEditCtrl.prototype.update = function () {
+            this.scan.updateCharts();
+        };
+        IdvEditCtrl.prototype.reset = function () {
+            alert('reset');
+        };
+        IdvEditCtrl.prototype.export = function () {
+            this.scan.exportCsv();
+        };
+        IdvEditCtrl.$inject = [
+            '$scope',
+            'mapService',
+            'layerService',
+            'messageBusService',
+        ];
+        return IdvEditCtrl;
+    }());
+    IdvEdit.IdvEditCtrl = IdvEditCtrl;
+    /**
+    * Directive to display the available map layers.
+    */
+    IdvEdit.myModule.directive('idvedit', [
+        '$window', '$compile',
+        function ($window, $compile) {
+            return {
+                terminal: true,
+                restrict: 'E',
+                scope: {},
+                templateUrl: 'directives/IdvHelper/IdvEdit.tpl.html',
+                link: function (scope, element, attrs) {
+                    // Deal with resizing the element list
+                },
+                replace: false,
+                transclude: false,
+                controller: IdvEditCtrl
+            };
+        }
+    ]);
+})(IdvEdit || (IdvEdit = {}));
+//# sourceMappingURL=IdvEdit.js.map
+var Idv;
+(function (Idv_1) {
+    var Idv = /** @class */ (function () {
+        function Idv() {
+            this.defaultWidth = 180;
+        }
+        Idv.prototype.reduceAddSum = function (properties) {
+            return function (p, v) {
+                ++p.count;
+                properties.forEach(function (pr) {
+                    var t = parseFloat(v[pr]);
+                    if (t > p.max)
+                        p.max = t;
+                    p[pr] += t;
+                });
+                return p;
+            };
+        };
+        Idv.prototype.reduceRemoveSum = function (properties) {
+            return function (p, v) {
+                --p.count;
+                properties.forEach(function (pr) {
+                    var t = parseFloat(v[pr]);
+                    if (t > p.max)
+                        p.max = t;
+                    p[pr] -= t;
+                });
+                //p.avg = p.sum / p.count;
+                return p;
+            };
+        };
+        Idv.prototype.reduceInitSum = function (properties) {
+            var r = {};
+            properties.forEach(function (pr) {
+                r[pr] = 0;
+            });
+            return r;
+        };
+        Idv.prototype.reduceAddAvg = function (attr) {
+            return function (p, v) {
+                ++p.count;
+                var t = parseFloat(v[attr]);
+                if (t > p.max)
+                    p.max = t;
+                p.sum += t;
+                p.avg = p.sum / p.count;
+                return p;
+            };
+        };
+        Idv.prototype.reduceRemoveAvg = function (attr) {
+            return function (p, v) {
+                --p.count;
+                p.sum -= parseFloat(v[attr]);
+                p.avg = p.sum / p.count;
+                return p;
+            };
+        };
+        Idv.prototype.reduceInitAvg = function () {
+            return { count: 0, sum: 0, avg: 0, max: 0 };
+        };
+        Idv.prototype.stop = function () {
+            this.ndx = null;
+            // this.config.charts.forEach(c=>{
+            //     if (c.dimension) c.dimension.remove();
+            //     if (c.group) c.group.remove();
+            // });
+        };
+        Idv.prototype.updateCharts = function () {
+            var _this = this;
+            if (this.gridster) {
+                $("#" + this.config.containerId).empty();
+                this.gridster.destroy();
+            }
+            $(".chart-title").css("visibility", "visible");
+            function getTops(source_group, count) {
+                return {
+                    all: function () {
+                        return source_group.top(count);
+                    }
+                };
+            }
+            var elastic = true;
+            this.gridster = $("#" + this.config.containerId).gridster({
+                widget_margins: [5, 5],
+                widget_base_dimensions: [this.defaultWidth - 20, 125],
+                min_cols: 6,
+                resize: {
+                    enabled: false
+                },
+                autogrow_cols: true,
+                draggable: {
+                    handle: 'header'
+                }
+            }).data('gridster');
+            this.ndx = crossfilter(this.data);
+            if (this.config.charts) {
+                this.config.charts.forEach(function (c) {
+                    _this.addChart(c);
+                });
+            }
+            dc.renderAll();
+            this.triggerFilter(this.config.charts[0]);
+            if (this.scope.$root.$$phase !== '$apply' && this.scope.$root.$$phase !== '$digest') {
+                this.scope.$apply();
+            }
+        };
+        Idv.prototype.loadDataSource = function (done) {
+            done();
+        };
+        Idv.prototype.resize = function () {
+            $("#g-parent").css("height", $(window).height() - 100);
+            $("#g-parent").css("width", $(window).width() - 100);
+        };
+        Idv.prototype.loadData = function (prepare, done) {
+            var _this = this;
+            var store = 'records3';
+            async.series([
+                // get enums
+                function (cb) {
+                    if (typeof _this.config.config !== 'undefined') {
+                        d3.json(_this.config.config, function (error, result) {
+                            if (!error)
+                                _this.enums = result.Enums;
+                            cb();
+                        });
+                    }
+                    else {
+                        cb();
+                    }
+                },
+                // get data
+                function (cb) {
+                    _this.state = "Laden data";
+                    if (!window.indexedDB) {
+                        window.alert("Deze browser is verouderd. Hierdoor zal de informatie trager laden");
+                    }
+                    else {
+                        // if (this.config.localStorage) {
+                        //     var request = window.indexedDB.open(this.config.data, 9);
+                        //     request.onerror = (e => {
+                        //         window.indexedDB.deleteDatabase(this.config.data);
+                        //     });
+                        //     request.onsuccess = (e => {
+                        //         var db = <IDBDatabase>(<any>event.target).result;
+                        //         //if (!db.objectStoreNames.contains(store)) var objStore = db.createObjectStore(store, { autoIncrement : true });
+                        //         if (db.objectStoreNames.contains(store)) {
+                        //             var experiments = [];
+                        //             async.series(
+                        //                 [(cb) => {
+                        //                     db.transaction(store, 'readonly').objectStore(store).openCursor().onsuccess = (d) => {
+                        //                         var r = <IDBCursorWithValue>(<IDBRequest>d.target).result;
+                        //                         if (r) {
+                        //                             var v = r.value;
+                        //                             v.data.forEach(d => experiments.push(d));
+                        //                             //r.advance(1);
+                        //                             r.continue();
+                        //                         }
+                        //                         else {
+                        //                             cb();
+                        //                         }
+                        //                     }
+                        //                 },
+                        //                     (cb) => {
+                        //                         if (experiments.length > 0) {
+                        //                             this.parseData(experiments, prepare, done);
+                        //                             cb();
+                        //                         }
+                        //                         else {
+                        //                             this.state = "Verversen data";
+                        //                             d3.csv(this.config.data, (error, experiments) => {
+                        //                                 this.state = "Opslaan data";
+                        //                                 var s = db.transaction(store, "readwrite").objectStore(store);
+                        //                                 var l = [];
+                        //                                 var id = 0;
+                        //                                 experiments.forEach(e => {
+                        //                                     l.push(e);
+                        //                                     if (l.length > 100000) {
+                        //                                         s.add({ id: id, data: l });
+                        //                                         l = [];
+                        //                                         id += 1;
+                        //                                     }
+                        //                                 });
+                        //                                 this.parseData(experiments, prepare, done);
+                        //                                 cb();
+                        //                             });
+                        //                         }
+                        //                     }]
+                        //                 , (done) => {
+                        //                     cb();
+                        //                 });
+                        //         }
+                        //         else {
+                        //             db.close();
+                        //         }
+                        //     });
+                        //     request.onupgradeneeded = (e => {
+                        //         var db = <IDBDatabase>(<any>event.target).result;
+                        //         var objStore = db.createObjectStore(store, { keyPath: "id" });
+                        //     });
+                        // }
+                        // else {
+                        //     d3.csv(this.config.data, (error, experiments) => {
+                        //         this.parseData(experiments, prepare, done);
+                        //         cb();
+                        //     });
+                        // }
+                        d3.csv(_this.config.data, function (error, experiments) {
+                            _this.parseData(experiments, prepare, done);
+                            cb();
+                        });
+                    }
+                }
+            ], function (done) {
+            });
+        };
+        Idv.prototype.initCharts = function (scope, layerService, prepare, done) {
+            var _this = this;
+            this.layerService = layerService;
+            this.scope = scope;
+            this.state = "Laden configuratie";
+            this.resize();
+            if (this.config.refreshTimer) {
+                setInterval(function () {
+                    _this.loadData(prepare, done);
+                }, (this.config.refreshTimer));
+            }
+            this.loadData(prepare, done);
+            $(window).resize(function () {
+                _this.resize();
+            });
+        };
+        Idv.prototype.parseData = function (data, prepare, done) {
+            this.state = "Verwerken data";
+            if (this.scope.$$phase !== '$apply' && this.scope.$$phase !== '$digest') {
+                this.scope.$apply();
+            }
+            this.data = data;
+            this.DataLoaded = true;
+            prepare(this.enums, data);
+            this.updateCharts();
+            done();
+        };
+        Idv.prototype.reset = function (id) {
+            var cc = _.findWhere(this.config.charts, { id: id });
+            if (!_.isUndefined(cc)) {
+                cc.chart.filterAll();
+                dc.renderAll();
+            }
+        };
+        Idv.prototype.resetAll = function () {
+            this.config.charts.forEach(function (c) {
+                if (!_.isUndefined(c.chart))
+                    c.chart.filterAll();
+            });
+            dc.renderAll();
+        };
+        Idv.prototype.savePng = function (title, elementId) {
+            var _this = this;
+            domtoimage.toPng(document.querySelector('#' + elementId))
+                .then(function (image) {
+                //image = image.replace('image/png;base64', '');
+                csComp.Helpers.saveImage(image, title, "png");
+                // var img = new Image();
+                // img.src = dataUrl;
+                // document.body.appendChild(img);
+            })
+                .catch(function (error) {
+                _this.layerService.$messageBusService.notify("Error saving chart", "When saving charts, only the latest version of chrome is supported");
+            });
+        };
+        Idv.prototype.exportCsv = function () {
+            this.layerService.$messageBusService.notify("Export to CSV", "Export started, your download will start in a little while");
+            var data = this.config.charts[0].dimension.filterAll().top(Infinity);
+            var res = d3.csv.format(data);
+            var blob = new Blob([res], { type: "text/plain;charset=utf-8" });
+            saveAs(blob, this.config.title + "_export.csv");
+            //csComp.Helpers.saveData(res, "export.csv", 'csv');
+        };
+        Idv.prototype.hasFilter = function (id) {
+            return true;
+        };
+        Idv.prototype.addSearchWidget = function (config) {
+            var _this = this;
+            this.createGridsterItem(config);
+            config.dimension = this.ndx.dimension(function (d) {
+                if (d.hasOwnProperty(config.property)) {
+                    return d[config.property];
+                }
+                else
+                    return null;
+            });
+            var searchHtml = "<input class='searchbutton' id='#" + config.id + "'></input><div id='data-count'><span class='filter-count'></span> geselecteerd van de <span class='total-count'></span> " + config.record + "</div>";
+            $("#" + config.elementId).html(searchHtml);
+            $(".searchbutton").keyup(function (e) {
+                var id = e.target.id.replace('#', '');
+                var filterString = e.target.value;
+                if (_.isUndefined(filterString))
+                    return;
+                var chart = _.findWhere(_this.config.charts, { id: id });
+                if (!_.isUndefined(chart)) {
+                    chart.dimension.filterFunction(function (d) {
+                        if (d != null && typeof d.toLowerCase === 'function')
+                            return (d.toLowerCase().indexOf(filterString.toLowerCase()) > -1);
+                        return false;
+                    });
+                    chart.dimension.top(Infinity);
+                    dc.redrawAll();
+                }
+                _this.triggerFilter(config);
+            });
+            var all = this.ndx.groupAll();
+            dc.dataCount("#data-count").dimension(this.ndx).group(all); // set group to ndx.groupAll()
+        };
+        Idv.prototype.addSumCompare = function (config) {
+            this.createGridsterItem(config);
+            var updateChart = function (values) {
+                try {
+                    var vgspec = {
+                        'width': 200,
+                        'height': 200,
+                        'data': [
+                            {
+                                'name': 'table',
+                                'values': values,
+                                'transform': [{ 'type': 'pie', 'field': 'value' }]
+                            }
+                        ],
+                        'scales': [
+                            {
+                                'name': 'r',
+                                'type': 'sqrt',
+                                'domain': { 'data': 'table', 'field': 'value' },
+                                'range': [20, 100]
+                            },
+                            {
+                                "name": "color",
+                                "type": "ordinal",
+                                "domain": { "data": "table", "field": "position" },
+                                "range": "category20"
+                            }
+                        ],
+                        'marks': [
+                            {
+                                'type': 'arc',
+                                'from': { 'data': 'table' },
+                                'properties': {
+                                    'enter': {
+                                        'x': { 'field': { 'group': 'width' }, 'mult': 0.5 },
+                                        'y': { 'field': { 'group': 'height' }, 'mult': 0.5 },
+                                        'startAngle': { 'field': 'layout_start' },
+                                        'endAngle': { 'field': 'layout_end' },
+                                        'innerRadius': { 'value': 20 },
+                                        'outerRadius': { 'scale': 'r', 'field': 'value' },
+                                        'stroke': { 'value': '#fff' }
+                                    },
+                                    'update': { 'fill': { "scale": "color", "field": "position" } },
+                                    'hover': { 'fill': { 'value': 'pink' } }
+                                }
+                            },
+                            {
+                                'type': 'text',
+                                'from': { 'data': 'table' },
+                                'properties': {
+                                    'enter': {
+                                        'x': { 'field': { 'group': 'width' }, 'mult': 0.5 },
+                                        'y': { 'field': { 'group': 'height' }, 'mult': 0.5 },
+                                        'radius': { 'scale': 'r', 'field': 'value', 'offset': 8 },
+                                        'theta': { 'field': 'layout_mid' },
+                                        'fill': { 'value': '#000' },
+                                        'align': { 'value': 'center' },
+                                        'baseline': { 'value': 'middle' },
+                                        'text': { 'field': 'title' }
+                                    }
+                                }
+                            },
+                            {
+                                'type': 'text',
+                                'from': { 'data': 'table' },
+                                'properties': {
+                                    'enter': {
+                                        'x': { 'field': { 'group': 'width' }, 'mult': 0.5 },
+                                        'y': { 'field': { 'group': 'height' }, 'mult': 0.5, 'offset': -10 },
+                                        'radius': { 'scale': 'r', 'field': 'value', 'offset': 8 },
+                                        'theta': { 'field': 'layout_mid' },
+                                        'fill': { 'value': '#000' },
+                                        'align': { 'value': 'center' },
+                                        'baseline': { 'value': 'middle' },
+                                        'text': { 'field': 'value' }
+                                    }
+                                }
+                            }
+                        ]
+                    };
+                    //parse(vgspec);
+                    if (vgspec)
+                        var res = vg.embed("#" + config.elementId, vgspec, function (view, vega_spec) {
+                            config._view = view;
+                            $("#" + config.elementId).css("margin-left", "30px");
+                            //$('.vega-actions').css("display","none");
+                            // Callback receiving the View instance and parsed Vega spec...
+                            // The View resides under the '#vis' element
+                        });
+                }
+                catch (e) {
+                }
+            };
+            updateChart([]);
+            config.filtered = function (result) {
+                var res = {};
+                config.properties.forEach(function (p) { return res[p] = 0; });
+                result.forEach(function (i) {
+                    config.properties.forEach(function (p) { if (i.hasOwnProperty(p))
+                        res[p] += Math.round(+i[p]); });
+                });
+                var values = [];
+                var pos = 0;
+                for (var i in res) {
+                    if (res[i] > 0)
+                        values.push({ title: i, value: res[i], position: pos });
+                    pos += 1;
+                }
+                updateChart(values);
+            };
+        };
+        Idv.prototype.addLayerLink = function (config) {
+            var _this = this;
+            config.dimension = this.ndx.dimension(function (d) { return d[config.property]; });
+            config.group = config.dimension.group().reduceCount();
+            config.filtered = function (result) {
+                if (!_.isUndefined(config.layer)) {
+                    var l = _this.layerService.findLayer(config.layer);
+                    if (!_.isUndefined(l) && l.enabled) {
+                        var mapping = {};
+                        l.data.features.forEach(function (f) {
+                            if (f.properties.hasOwnProperty(config.featureProperty))
+                                mapping[f.properties[config.featureProperty]] = f;
+                            delete f.properties[config.featureTargetProperty];
+                        });
+                        var res = config.group.all();
+                        res.forEach(function (r) {
+                            if (mapping.hasOwnProperty(r.key)) {
+                                var f = mapping[r.key];
+                                f.properties[config.featureTargetProperty] = r.value;
+                            }
+                        });
+                        _this.layerService.updateLayerFeatures(l);
+                        l.group.styles.forEach(function (s) {
+                            _this.layerService.removeStyle(s);
+                        });
+                        _this.layerService.setStyleForProperty(l, config.featureTargetProperty);
+                    }
+                }
+                console.log('do filter with result');
+            };
+        };
+        Idv.prototype.addChartItem = function (config) {
+            var _this = this;
+            this.createGridsterItem(config);
+            if (!config.stat)
+                config.stat = "count";
+            switch (config.stat) {
+                case "sum":
+                    config.dimension = this.ndx.dimension(function (d) { return d[config.property]; });
+                    config.group = config.dimension.group().reduceSum(function (d) {
+                        return { totaal_mensen_auto: +d[config.property] };
+                    });
+                    switch (config.type) {
+                        case "pie":
+                            config.dimension = this.ndx.dimension(function (d) { return d; });
+                            config.group = config.dimension.group().reduce(this.reduceAddSum(config.properties), this.reduceRemoveSum(config.properties), this.reduceInitSum(config.properties));
+                            break;
+                    }
+                    break;
+                case "average":
+                    switch (config.type) {
+                        case "row":
+                            config.dimension = this.ndx.dimension(function (d) { return d[config.property]; });
+                            config.group = config.dimension.group().reduce(this.reduceAddAvg(config.secondProperty), this.reduceRemoveAvg(config.secondProperty), this.reduceInitAvg);
+                            break;
+                        case "line":
+                        case "bar":
+                            config.dimension = this.ndx.dimension(function (d) { return d[config.time]; });
+                            config.group = config.dimension.group().reduce(this.reduceAddAvg(config.property), this.reduceRemoveAvg(config.property), this.reduceInitAvg);
+                        case "time":
+                            config.dimension = this.ndx.dimension(function (d) { return d[config.time]; });
+                            config.group = config.dimension.group().reduce(this.reduceAddAvg(config.property), this.reduceRemoveAvg(config.property), this.reduceInitAvg);
+                            break;
+                    }
+                    break;
+                case "pie":
+                    config.dimension = config.dimension;
+                    config.group = config.group;
+                    break;
+                case "scatter":
+                    config.dimension = this.ndx.dimension(function (d) {
+                        var r = +d[config.property];
+                        return r;
+                    });
+                    config.group = config.dimension.group();
+                    break;
+                case "time":
+                    config.dimension = this.ndx.dimension(function (d) { return d[config.time]; });
+                    break;
+                case "group":
+                    if (!config.bins)
+                        config.bins = 20;
+                    var n_bins = config.bins;
+                    var xExtent = d3.extent(this.data, function (d) { return parseFloat(d[config.property]); });
+                    var binWidth = (xExtent[1] - xExtent[0]) / n_bins;
+                    config.dimension = this.ndx.dimension(function (d) {
+                        var c = Math.floor(parseFloat(d[config.property]) / binWidth) * binWidth;
+                        return c;
+                    });
+                    config.group = config.dimension.group().reduceCount();
+                    break;
+                case "count":
+                    config.dimension = this.ndx.dimension(function (d) { return d[config.property]; });
+                    config.group = config.dimension.group().reduceCount();
+                    break;
+            }
+            var width = (config.width * this.defaultWidth) - 25;
+            var height = (config.height * 125) - 25;
+            switch (config.type) {
+                case "table":
+                    var c = [];
+                    config.columns.forEach(function (ci) {
+                        c.push({
+                            label: ci.title, format: function (d) {
+                                if (ci.hasOwnProperty("type") && ci["type"] === "number")
+                                    return d3.round(d[ci.property], 1);
+                                return d[ci.property];
+                            }
+                        });
+                    });
+                    console.log('table:' + config.elementId);
+                    $("#" + config.elementId).addClass("widget-scrollable");
+                    config.chart = dc.dataTable("#" + config.elementId);
+                    config.chart
+                        .width(width)
+                        .height(height)
+                        .dimension(config.dimension)
+                        .group(function (d) {
+                        var date = d[config.time];
+                        return "";
+                    })
+                        .size(1000)
+                        .columns(c);
+                    break;
+                case "time":
+                    config.chart = dc.lineChart("#" + config.elementId);
+                    config.chart
+                        .width(width)
+                        .height(height)
+                        .x(d3.time.scale().domain([new Date(2011, 0, 1), new Date(2016, 11, 31)]))
+                        .elasticX(true)
+                        .elasticY(true)
+                        .mouseZoomable(true)
+                        .renderHorizontalGridLines(true)
+                        .brushOn(true)
+                        .dimension(config.dimension)
+                        .group(function (d) {
+                        //var format = d3.format('02d');
+                        return d[config.time];
+                    })
+                        .renderHorizontalGridLines(true)
+                        .on('renderlet', function (chart) {
+                        chart.selectAll('rect').on("click", function (d) {
+                            // console.log("click!", d);
+                        });
+                    });
+                    break;
+                case "line":
+                    config.chart = dc.lineChart("#" + config.elementId);
+                    config.chart
+                        .width(width)
+                        .height(height)
+                        .x(d3.scale.linear())
+                        .elasticX(true)
+                        .elasticY(true)
+                        .renderHorizontalGridLines(false)
+                        .dimension(config.dimension)
+                        .group(config.group)
+                        .mouseZoomable(true)
+                        .on('renderlet', function (chart) {
+                        chart.selectAll('rect').on("click", function (d) {
+                            // console.log("click!", d);
+                        });
+                    });
+                    break;
+                case "pie":
+                    config.chart = dc.pieChart("#" + config.elementId);
+                    config.chart
+                        .width(width)
+                        .height(height)
+                        .slicesCap(10)
+                        .innerRadius(10)
+                        .dimension(config.dimension)
+                        .group(config.group);
+                    break;
+                case "bar":
+                    config.chart = dc.barChart("#" + config.elementId);
+                    config.chart
+                        .width(width)
+                        .height(height)
+                        .x(d3.scale.linear())
+                        .centerBar(true)
+                        .xUnits(function () { return 20; })
+                        .elasticX(true)
+                        .elasticY(true)
+                        .renderHorizontalGridLines(true)
+                        .dimension(config.dimension)
+                        .group(config.group);
+                    break;
+                case "stackedbar":
+                    config.chart = dc.barChart("#" + config.elementId);
+                    config.chart
+                        .width(width)
+                        .height(height)
+                        .x(d3.scale.linear())
+                        .centerBar(false)
+                        .xUnits(function () { return 20; })
+                        .elasticX(true)
+                        .elasticY(true)
+                        .renderHorizontalGridLines(true)
+                        .dimension(config.dimension)
+                        .group(config.group);
+                    break;
+                case "scatter":
+                    config.chart = dc.scatterPlot("#" + config.elementId);
+                    config.chart
+                        .width(width)
+                        .height(height)
+                        .symbolSize(3)
+                        .x(d3.scale.linear())
+                        .y(d3.scale.linear())
+                        .elasticX(true)
+                        .elasticY(true)
+                        .dimension(config.dimension)
+                        .group(config.group);
+                    break;
+                case "row":
+                    config.chart = dc.rowChart("#" + config.elementId);
+                    config.chart
+                        .width(width)
+                        .height(height)
+                        .gap(1)
+                        .elasticX(true)
+                        .dimension(config.dimension)
+                        .group(config.group)
+                        .xAxis().ticks(4);
+                    if (!config.ordering)
+                        config.ordering = "value";
+                    switch (config.ordering) {
+                        case "days":
+                            config.chart.ordering(function (d) {
+                                return Idv.days_en.indexOf(d.key);
+                            });
+                            break;
+                        case "months":
+                            config.chart.ordering(function (d) {
+                                return Idv.months.indexOf(d.key);
+                            });
+                            break;
+                        case "value":
+                            config.chart.ordering(function (d) {
+                                return -d.value;
+                            });
+                            break;
+                    }
+                    if (config.cap)
+                        config.chart.cap(config.cap);
+                    break;
+            }
+            if (!_.isUndefined(config.xaxis) && _.isFunction(config.chart.xAxisLabel)) {
+                config.chart.xAxisLabel(config.xaxis);
+            }
+            if (!_.isUndefined(config.yaxis) && _.isFunction(config.chart.yAxisLabel)) {
+                config.chart.yAxisLabel(config.yaxis);
+            }
+            if (config.marginLeft)
+                config.chart.margins().left = config.marginLeft;
+            config.chart.on("filtered", function (chart, filter) {
+                _this.triggerFilter(config);
+            });
+            if (config.stat === "average") {
+                config.chart.valueAccessor(function (d) {
+                    return d.value.avg;
+                });
+            }
+            console.log("Add chart " + config.title);
+        };
+        Idv.prototype.triggerFilter = function (config) {
+            var res = config.dimension.top(Infinity);
+            this.config.charts.forEach(function (c) {
+                if (!_.isUndefined(c.filtered) && _.isFunction(c.filtered)) {
+                    c.filtered(res);
+                }
+                //this.addChart(c)
+            });
+        };
+        Idv.prototype.createGridsterItem = function (config) {
+            var _this = this;
+            var html = "<li id='li" + config.id + "'  style='padding:4px'><header class='chart-title'><div class='fa fa-ellipsis-v dropdown-toggle' data-toggle='dropdown'  style='float:right;cursor:pointer' type='button'></div>";
+            html += "<ul class='dropdown-menu pull-right'><li class='dropdown-item'><a ng-click=\"resetFilter('" + config.id + "')\"'>reset filter</a></li><li class='dropdown-item'><a ng-click=\"resetAll()\">reset all filters</a></li><li class='dropdown-item'><a ng-click=\"disableFilter('" + config.id + "')\">disable filter</a></li><li class='dropdown-item'><a ng-click=\"savePng('" + config.title + "','" + config.elementId + "')\"'>save image</a></li>";
+            html += "</ul>" + config.title + "</header><div id='" + config.elementId + "' ></li>";
+            this.scope.resetFilter = function (id) {
+                _this.reset(id);
+            };
+            this.scope.resetAll = function () {
+                _this.resetAll();
+            };
+            this.scope.savePng = function (title, elementId) {
+                _this.savePng(title, elementId);
+            };
+            this.scope.disableFilter = function (id) {
+                var c = _.findWhere(_this.config.charts, { id: id });
+                if (!_.isUndefined(c)) {
+                    c.enabled = false;
+                    _this.updateCharts();
+                }
+            };
+            var w = this.layerService.$compile(html)(this.scope);
+            this.gridster.add_widget(w, config.width, config.height); //"<li><header class='chart-title'><div class='fa fa-times' style='float:right' ng-click='vm.reset()'></div>" + config.title + "</header><div id='" + config.elementId + "'></li>",config.width,config.height);
+        };
+        Idv.prototype.addChart = function (config) {
+            if (typeof config.enabled === 'undefined')
+                config.enabled = true;
+            if (!config.enabled)
+                return;
+            if (!config.id)
+                config.id = csComp.Helpers.getGuid();
+            if (!config.containerId)
+                config.containerId = this.config.containerId;
+            config.elementId = "ddchart-" + config.id;
+            if (!config.title)
+                config.title = config.property;
+            if (!config.type)
+                config.type = "row";
+            switch (config.type) {
+                case "search":
+                    this.addSearchWidget(config);
+                    break;
+                case "layer":
+                    this.addLayerLink(config);
+                    break;
+                case "sumcompare":
+                    this.addSumCompare(config);
+                    break;
+                default:
+                    this.addChartItem(config);
+                    break;
+            }
+        };
+        Idv.days_nl = ["zondag", "maandag", "dinsdag", "woensdag", "donderdag", "vrijdag", "zaterdag"];
+        Idv.days_en = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saterday"];
+        Idv.months = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "okt", "nov", "dec"];
+        return Idv;
+    }());
+    Idv_1.Idv = Idv;
+})(Idv || (Idv = {}));
+//# sourceMappingURL=IdvHelper.js.map
 var Heatmap;
 (function (Heatmap) {
     'use strict';
@@ -9673,836 +10511,6 @@ var Heatmap;
     Heatmap.IdealityMeasure = IdealityMeasure;
 })(Heatmap || (Heatmap = {}));
 //# sourceMappingURL=IdealityMeasure.js.map
-var IdvEdit;
-(function (IdvEdit) {
-    /**
-      * Config
-      */
-    var moduleName = 'csComp';
-    try {
-        IdvEdit.myModule = angular.module(moduleName);
-    }
-    catch (err) {
-        // named module does not exist, so create one
-        IdvEdit.myModule = angular.module(moduleName, []);
-    }
-    var IdvEditCtrl = /** @class */ (function () {
-        // dependencies are injected via AngularJS $injector
-        // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
-        function IdvEditCtrl($scope, $mapService, $layerService, $messageBusService) {
-            this.$scope = $scope;
-            this.$mapService = $mapService;
-            this.$layerService = $layerService;
-            this.$messageBusService = $messageBusService;
-            this.scope = $scope;
-            $scope.vm = this;
-            this.scan = $scope.$parent.data;
-            console.log(this);
-        }
-        IdvEditCtrl.prototype.toggleChart = function (chart) {
-            chart.enabled = !chart.enabled;
-        };
-        IdvEditCtrl.prototype.update = function () {
-            this.scan.updateCharts();
-        };
-        IdvEditCtrl.prototype.reset = function () {
-            alert('reset');
-        };
-        IdvEditCtrl.prototype.export = function () {
-            this.scan.exportCsv();
-        };
-        IdvEditCtrl.$inject = [
-            '$scope',
-            'mapService',
-            'layerService',
-            'messageBusService',
-        ];
-        return IdvEditCtrl;
-    }());
-    IdvEdit.IdvEditCtrl = IdvEditCtrl;
-    /**
-    * Directive to display the available map layers.
-    */
-    IdvEdit.myModule.directive('idvedit', [
-        '$window', '$compile',
-        function ($window, $compile) {
-            return {
-                terminal: true,
-                restrict: 'E',
-                scope: {},
-                templateUrl: 'directives/IdvHelper/IdvEdit.tpl.html',
-                link: function (scope, element, attrs) {
-                    // Deal with resizing the element list
-                },
-                replace: false,
-                transclude: false,
-                controller: IdvEditCtrl
-            };
-        }
-    ]);
-})(IdvEdit || (IdvEdit = {}));
-//# sourceMappingURL=IdvEdit.js.map
-var Idv;
-(function (Idv_1) {
-    var Idv = /** @class */ (function () {
-        function Idv() {
-            this.defaultWidth = 180;
-        }
-        Idv.prototype.reduceAddSum = function (properties) {
-            return function (p, v) {
-                ++p.count;
-                properties.forEach(function (pr) {
-                    var t = parseFloat(v[pr]);
-                    if (t > p.max)
-                        p.max = t;
-                    p[pr] += t;
-                });
-                return p;
-            };
-        };
-        Idv.prototype.reduceRemoveSum = function (properties) {
-            return function (p, v) {
-                --p.count;
-                properties.forEach(function (pr) {
-                    var t = parseFloat(v[pr]);
-                    if (t > p.max)
-                        p.max = t;
-                    p[pr] -= t;
-                });
-                //p.avg = p.sum / p.count;
-                return p;
-            };
-        };
-        Idv.prototype.reduceInitSum = function (properties) {
-            var r = {};
-            properties.forEach(function (pr) {
-                r[pr] = 0;
-            });
-            return r;
-        };
-        Idv.prototype.reduceAddAvg = function (attr) {
-            return function (p, v) {
-                ++p.count;
-                var t = parseFloat(v[attr]);
-                if (t > p.max)
-                    p.max = t;
-                p.sum += t;
-                p.avg = p.sum / p.count;
-                return p;
-            };
-        };
-        Idv.prototype.reduceRemoveAvg = function (attr) {
-            return function (p, v) {
-                --p.count;
-                p.sum -= parseFloat(v[attr]);
-                p.avg = p.sum / p.count;
-                return p;
-            };
-        };
-        Idv.prototype.reduceInitAvg = function () {
-            return { count: 0, sum: 0, avg: 0, max: 0 };
-        };
-        Idv.prototype.stop = function () {
-            this.ndx = null;
-            // this.config.charts.forEach(c=>{
-            //     if (c.dimension) c.dimension.remove();
-            //     if (c.group) c.group.remove();
-            // });
-        };
-        Idv.prototype.updateCharts = function () {
-            var _this = this;
-            if (this.gridster) {
-                $("#" + this.config.containerId).empty();
-                this.gridster.destroy();
-            }
-            $(".chart-title").css("visibility", "visible");
-            function getTops(source_group, count) {
-                return {
-                    all: function () {
-                        return source_group.top(count);
-                    }
-                };
-            }
-            var elastic = true;
-            this.gridster = $("#" + this.config.containerId).gridster({
-                widget_margins: [5, 5],
-                widget_base_dimensions: [this.defaultWidth - 20, 125],
-                min_cols: 6,
-                resize: {
-                    enabled: false
-                },
-                autogrow_cols: true,
-                draggable: {
-                    handle: 'header'
-                }
-            }).data('gridster');
-            this.ndx = crossfilter(this.data);
-            if (this.config.charts) {
-                this.config.charts.forEach(function (c) {
-                    _this.addChart(c);
-                });
-            }
-            dc.renderAll();
-            this.triggerFilter(this.config.charts[0]);
-            if (this.scope.$root.$$phase !== '$apply' && this.scope.$root.$$phase !== '$digest') {
-                this.scope.$apply();
-            }
-        };
-        Idv.prototype.loadDataSource = function (done) {
-            done();
-        };
-        Idv.prototype.resize = function () {
-            $("#g-parent").css("height", $(window).height() - 100);
-            $("#g-parent").css("width", $(window).width() - 100);
-        };
-        Idv.prototype.loadData = function (prepare, done) {
-            var _this = this;
-            var store = 'records3';
-            async.series([
-                // get enums
-                function (cb) {
-                    if (typeof _this.config.config !== 'undefined') {
-                        d3.json(_this.config.config, function (error, result) {
-                            if (!error)
-                                _this.enums = result.Enums;
-                            cb();
-                        });
-                    }
-                    else {
-                        cb();
-                    }
-                },
-                // get data
-                function (cb) {
-                    _this.state = "Laden data";
-                    if (!window.indexedDB) {
-                        window.alert("Deze browser is verouderd. Hierdoor zal de informatie trager laden");
-                    }
-                    else {
-                        // if (this.config.localStorage) {
-                        //     var request = window.indexedDB.open(this.config.data, 9);
-                        //     request.onerror = (e => {
-                        //         window.indexedDB.deleteDatabase(this.config.data);
-                        //     });
-                        //     request.onsuccess = (e => {
-                        //         var db = <IDBDatabase>(<any>event.target).result;
-                        //         //if (!db.objectStoreNames.contains(store)) var objStore = db.createObjectStore(store, { autoIncrement : true });
-                        //         if (db.objectStoreNames.contains(store)) {
-                        //             var experiments = [];
-                        //             async.series(
-                        //                 [(cb) => {
-                        //                     db.transaction(store, 'readonly').objectStore(store).openCursor().onsuccess = (d) => {
-                        //                         var r = <IDBCursorWithValue>(<IDBRequest>d.target).result;
-                        //                         if (r) {
-                        //                             var v = r.value;
-                        //                             v.data.forEach(d => experiments.push(d));
-                        //                             //r.advance(1);
-                        //                             r.continue();
-                        //                         }
-                        //                         else {
-                        //                             cb();
-                        //                         }
-                        //                     }
-                        //                 },
-                        //                     (cb) => {
-                        //                         if (experiments.length > 0) {
-                        //                             this.parseData(experiments, prepare, done);
-                        //                             cb();
-                        //                         }
-                        //                         else {
-                        //                             this.state = "Verversen data";
-                        //                             d3.csv(this.config.data, (error, experiments) => {
-                        //                                 this.state = "Opslaan data";
-                        //                                 var s = db.transaction(store, "readwrite").objectStore(store);
-                        //                                 var l = [];
-                        //                                 var id = 0;
-                        //                                 experiments.forEach(e => {
-                        //                                     l.push(e);
-                        //                                     if (l.length > 100000) {
-                        //                                         s.add({ id: id, data: l });
-                        //                                         l = [];
-                        //                                         id += 1;
-                        //                                     }
-                        //                                 });
-                        //                                 this.parseData(experiments, prepare, done);
-                        //                                 cb();
-                        //                             });
-                        //                         }
-                        //                     }]
-                        //                 , (done) => {
-                        //                     cb();
-                        //                 });
-                        //         }
-                        //         else {
-                        //             db.close();
-                        //         }
-                        //     });
-                        //     request.onupgradeneeded = (e => {
-                        //         var db = <IDBDatabase>(<any>event.target).result;
-                        //         var objStore = db.createObjectStore(store, { keyPath: "id" });
-                        //     });
-                        // }
-                        // else {
-                        //     d3.csv(this.config.data, (error, experiments) => {
-                        //         this.parseData(experiments, prepare, done);
-                        //         cb();
-                        //     });
-                        // }
-                        d3.csv(_this.config.data, function (error, experiments) {
-                            _this.parseData(experiments, prepare, done);
-                            cb();
-                        });
-                    }
-                }
-            ], function (done) {
-            });
-        };
-        Idv.prototype.initCharts = function (scope, layerService, prepare, done) {
-            var _this = this;
-            this.layerService = layerService;
-            this.scope = scope;
-            this.state = "Laden configuratie";
-            this.resize();
-            if (this.config.refreshTimer) {
-                setInterval(function () {
-                    _this.loadData(prepare, done);
-                }, (this.config.refreshTimer));
-            }
-            this.loadData(prepare, done);
-            $(window).resize(function () {
-                _this.resize();
-            });
-        };
-        Idv.prototype.parseData = function (data, prepare, done) {
-            this.state = "Verwerken data";
-            if (this.scope.$$phase !== '$apply' && this.scope.$$phase !== '$digest') {
-                this.scope.$apply();
-            }
-            this.data = data;
-            this.DataLoaded = true;
-            prepare(this.enums, data);
-            this.updateCharts();
-            done();
-        };
-        Idv.prototype.reset = function (id) {
-            var cc = _.findWhere(this.config.charts, { id: id });
-            if (!_.isUndefined(cc)) {
-                cc.chart.filterAll();
-                dc.renderAll();
-            }
-        };
-        Idv.prototype.resetAll = function () {
-            this.config.charts.forEach(function (c) {
-                if (!_.isUndefined(c.chart))
-                    c.chart.filterAll();
-            });
-            dc.renderAll();
-        };
-        Idv.prototype.savePng = function (title, elementId) {
-            var _this = this;
-            domtoimage.toPng(document.querySelector('#' + elementId))
-                .then(function (image) {
-                //image = image.replace('image/png;base64', '');
-                csComp.Helpers.saveImage(image, title, "png");
-                // var img = new Image();
-                // img.src = dataUrl;
-                // document.body.appendChild(img);
-            })
-                .catch(function (error) {
-                _this.layerService.$messageBusService.notify("Error saving chart", "When saving charts, only the latest version of chrome is supported");
-            });
-        };
-        Idv.prototype.exportCsv = function () {
-            this.layerService.$messageBusService.notify("Export to CSV", "Export started, your download will start in a little while");
-            var data = this.config.charts[0].dimension.filterAll().top(Infinity);
-            var res = d3.csv.format(data);
-            var blob = new Blob([res], { type: "text/plain;charset=utf-8" });
-            saveAs(blob, this.config.title + "_export.csv");
-            //csComp.Helpers.saveData(res, "export.csv", 'csv');
-        };
-        Idv.prototype.hasFilter = function (id) {
-            return true;
-        };
-        Idv.prototype.addSearchWidget = function (config) {
-            var _this = this;
-            this.createGridsterItem(config);
-            config.dimension = this.ndx.dimension(function (d) {
-                if (d.hasOwnProperty(config.property)) {
-                    return d[config.property];
-                }
-                else
-                    return null;
-            });
-            var searchHtml = "<input class='searchbutton' id='#" + config.id + "'></input><div id='data-count'><span class='filter-count'></span> geselecteerd van de <span class='total-count'></span> " + config.record + "</div>";
-            $("#" + config.elementId).html(searchHtml);
-            $(".searchbutton").keyup(function (e) {
-                var id = e.target.id.replace('#', '');
-                var filterString = e.target.value;
-                if (_.isUndefined(filterString))
-                    return;
-                var chart = _.findWhere(_this.config.charts, { id: id });
-                if (!_.isUndefined(chart)) {
-                    chart.dimension.filterFunction(function (d) {
-                        if (d != null && typeof d.toLowerCase === 'function')
-                            return (d.toLowerCase().indexOf(filterString.toLowerCase()) > -1);
-                        return false;
-                    });
-                    chart.dimension.top(Infinity);
-                    dc.redrawAll();
-                }
-                _this.triggerFilter(config);
-            });
-            var all = this.ndx.groupAll();
-            dc.dataCount("#data-count").dimension(this.ndx).group(all); // set group to ndx.groupAll()
-        };
-        Idv.prototype.addSumCompare = function (config) {
-            this.createGridsterItem(config);
-            var updateChart = function (values) {
-                try {
-                    var vgspec = {
-                        'width': 200,
-                        'height': 200,
-                        'data': [
-                            {
-                                'name': 'table',
-                                'values': values,
-                                'transform': [{ 'type': 'pie', 'field': 'value' }]
-                            }
-                        ],
-                        'scales': [
-                            {
-                                'name': 'r',
-                                'type': 'sqrt',
-                                'domain': { 'data': 'table', 'field': 'value' },
-                                'range': [20, 100]
-                            },
-                            {
-                                "name": "color",
-                                "type": "ordinal",
-                                "domain": { "data": "table", "field": "position" },
-                                "range": "category20"
-                            }
-                        ],
-                        'marks': [
-                            {
-                                'type': 'arc',
-                                'from': { 'data': 'table' },
-                                'properties': {
-                                    'enter': {
-                                        'x': { 'field': { 'group': 'width' }, 'mult': 0.5 },
-                                        'y': { 'field': { 'group': 'height' }, 'mult': 0.5 },
-                                        'startAngle': { 'field': 'layout_start' },
-                                        'endAngle': { 'field': 'layout_end' },
-                                        'innerRadius': { 'value': 20 },
-                                        'outerRadius': { 'scale': 'r', 'field': 'value' },
-                                        'stroke': { 'value': '#fff' }
-                                    },
-                                    'update': { 'fill': { "scale": "color", "field": "position" } },
-                                    'hover': { 'fill': { 'value': 'pink' } }
-                                }
-                            },
-                            {
-                                'type': 'text',
-                                'from': { 'data': 'table' },
-                                'properties': {
-                                    'enter': {
-                                        'x': { 'field': { 'group': 'width' }, 'mult': 0.5 },
-                                        'y': { 'field': { 'group': 'height' }, 'mult': 0.5 },
-                                        'radius': { 'scale': 'r', 'field': 'value', 'offset': 8 },
-                                        'theta': { 'field': 'layout_mid' },
-                                        'fill': { 'value': '#000' },
-                                        'align': { 'value': 'center' },
-                                        'baseline': { 'value': 'middle' },
-                                        'text': { 'field': 'title' }
-                                    }
-                                }
-                            },
-                            {
-                                'type': 'text',
-                                'from': { 'data': 'table' },
-                                'properties': {
-                                    'enter': {
-                                        'x': { 'field': { 'group': 'width' }, 'mult': 0.5 },
-                                        'y': { 'field': { 'group': 'height' }, 'mult': 0.5, 'offset': -10 },
-                                        'radius': { 'scale': 'r', 'field': 'value', 'offset': 8 },
-                                        'theta': { 'field': 'layout_mid' },
-                                        'fill': { 'value': '#000' },
-                                        'align': { 'value': 'center' },
-                                        'baseline': { 'value': 'middle' },
-                                        'text': { 'field': 'value' }
-                                    }
-                                }
-                            }
-                        ]
-                    };
-                    //parse(vgspec);
-                    if (vgspec)
-                        var res = vg.embed("#" + config.elementId, vgspec, function (view, vega_spec) {
-                            config._view = view;
-                            $("#" + config.elementId).css("margin-left", "30px");
-                            //$('.vega-actions').css("display","none");
-                            // Callback receiving the View instance and parsed Vega spec...
-                            // The View resides under the '#vis' element
-                        });
-                }
-                catch (e) {
-                }
-            };
-            updateChart([]);
-            config.filtered = function (result) {
-                var res = {};
-                config.properties.forEach(function (p) { return res[p] = 0; });
-                result.forEach(function (i) {
-                    config.properties.forEach(function (p) { if (i.hasOwnProperty(p))
-                        res[p] += Math.round(+i[p]); });
-                });
-                var values = [];
-                var pos = 0;
-                for (var i in res) {
-                    if (res[i] > 0)
-                        values.push({ title: i, value: res[i], position: pos });
-                    pos += 1;
-                }
-                updateChart(values);
-            };
-        };
-        Idv.prototype.addLayerLink = function (config) {
-            var _this = this;
-            config.dimension = this.ndx.dimension(function (d) { return d[config.property]; });
-            config.group = config.dimension.group().reduceCount();
-            config.filtered = function (result) {
-                if (!_.isUndefined(config.layer)) {
-                    var l = _this.layerService.findLayer(config.layer);
-                    if (!_.isUndefined(l) && l.enabled) {
-                        var mapping = {};
-                        l.data.features.forEach(function (f) {
-                            if (f.properties.hasOwnProperty(config.featureProperty))
-                                mapping[f.properties[config.featureProperty]] = f;
-                            delete f.properties[config.featureTargetProperty];
-                        });
-                        var res = config.group.all();
-                        res.forEach(function (r) {
-                            if (mapping.hasOwnProperty(r.key)) {
-                                var f = mapping[r.key];
-                                f.properties[config.featureTargetProperty] = r.value;
-                            }
-                        });
-                        _this.layerService.updateLayerFeatures(l);
-                        l.group.styles.forEach(function (s) {
-                            _this.layerService.removeStyle(s);
-                        });
-                        _this.layerService.setStyleForProperty(l, config.featureTargetProperty);
-                    }
-                }
-                console.log('do filter with result');
-            };
-        };
-        Idv.prototype.addChartItem = function (config) {
-            var _this = this;
-            this.createGridsterItem(config);
-            if (!config.stat)
-                config.stat = "count";
-            switch (config.stat) {
-                case "sum":
-                    config.dimension = this.ndx.dimension(function (d) { return d[config.property]; });
-                    config.group = config.dimension.group().reduceSum(function (d) {
-                        return { totaal_mensen_auto: +d[config.property] };
-                    });
-                    switch (config.type) {
-                        case "pie":
-                            config.dimension = this.ndx.dimension(function (d) { return d; });
-                            config.group = config.dimension.group().reduce(this.reduceAddSum(config.properties), this.reduceRemoveSum(config.properties), this.reduceInitSum(config.properties));
-                            break;
-                    }
-                    break;
-                case "average":
-                    switch (config.type) {
-                        case "row":
-                            config.dimension = this.ndx.dimension(function (d) { return d[config.property]; });
-                            config.group = config.dimension.group().reduce(this.reduceAddAvg(config.secondProperty), this.reduceRemoveAvg(config.secondProperty), this.reduceInitAvg);
-                            break;
-                        case "line":
-                        case "bar":
-                            config.dimension = this.ndx.dimension(function (d) { return d[config.time]; });
-                            config.group = config.dimension.group().reduce(this.reduceAddAvg(config.property), this.reduceRemoveAvg(config.property), this.reduceInitAvg);
-                        case "time":
-                            config.dimension = this.ndx.dimension(function (d) { return d[config.time]; });
-                            config.group = config.dimension.group().reduce(this.reduceAddAvg(config.property), this.reduceRemoveAvg(config.property), this.reduceInitAvg);
-                            break;
-                    }
-                    break;
-                case "pie":
-                    config.dimension = config.dimension;
-                    config.group = config.group;
-                    break;
-                case "scatter":
-                    config.dimension = this.ndx.dimension(function (d) {
-                        var r = +d[config.property];
-                        return r;
-                    });
-                    config.group = config.dimension.group();
-                    break;
-                case "time":
-                    config.dimension = this.ndx.dimension(function (d) { return d[config.time]; });
-                    break;
-                case "group":
-                    if (!config.bins)
-                        config.bins = 20;
-                    var n_bins = config.bins;
-                    var xExtent = d3.extent(this.data, function (d) { return parseFloat(d[config.property]); });
-                    var binWidth = (xExtent[1] - xExtent[0]) / n_bins;
-                    config.dimension = this.ndx.dimension(function (d) {
-                        var c = Math.floor(parseFloat(d[config.property]) / binWidth) * binWidth;
-                        return c;
-                    });
-                    config.group = config.dimension.group().reduceCount();
-                    break;
-                case "count":
-                    config.dimension = this.ndx.dimension(function (d) { return d[config.property]; });
-                    config.group = config.dimension.group().reduceCount();
-                    break;
-            }
-            var width = (config.width * this.defaultWidth) - 25;
-            var height = (config.height * 125) - 25;
-            switch (config.type) {
-                case "table":
-                    var c = [];
-                    config.columns.forEach(function (ci) {
-                        c.push({
-                            label: ci.title, format: function (d) {
-                                if (ci.hasOwnProperty("type") && ci["type"] === "number")
-                                    return d3.round(d[ci.property], 1);
-                                return d[ci.property];
-                            }
-                        });
-                    });
-                    console.log('table:' + config.elementId);
-                    $("#" + config.elementId).addClass("widget-scrollable");
-                    config.chart = dc.dataTable("#" + config.elementId);
-                    config.chart
-                        .width(width)
-                        .height(height)
-                        .dimension(config.dimension)
-                        .group(function (d) {
-                        var date = d[config.time];
-                        return "";
-                    })
-                        .size(1000)
-                        .columns(c);
-                    break;
-                case "time":
-                    config.chart = dc.lineChart("#" + config.elementId);
-                    config.chart
-                        .width(width)
-                        .height(height)
-                        .x(d3.time.scale().domain([new Date(2011, 0, 1), new Date(2016, 11, 31)]))
-                        .elasticX(true)
-                        .elasticY(true)
-                        .mouseZoomable(true)
-                        .renderHorizontalGridLines(true)
-                        .brushOn(true)
-                        .dimension(config.dimension)
-                        .group(function (d) {
-                        //var format = d3.format('02d');
-                        return d[config.time];
-                    })
-                        .renderHorizontalGridLines(true)
-                        .on('renderlet', function (chart) {
-                        chart.selectAll('rect').on("click", function (d) {
-                            // console.log("click!", d);
-                        });
-                    });
-                    break;
-                case "line":
-                    config.chart = dc.lineChart("#" + config.elementId);
-                    config.chart
-                        .width(width)
-                        .height(height)
-                        .x(d3.scale.linear())
-                        .elasticX(true)
-                        .elasticY(true)
-                        .renderHorizontalGridLines(false)
-                        .dimension(config.dimension)
-                        .group(config.group)
-                        .mouseZoomable(true)
-                        .on('renderlet', function (chart) {
-                        chart.selectAll('rect').on("click", function (d) {
-                            // console.log("click!", d);
-                        });
-                    });
-                    break;
-                case "pie":
-                    config.chart = dc.pieChart("#" + config.elementId);
-                    config.chart
-                        .width(width)
-                        .height(height)
-                        .slicesCap(10)
-                        .innerRadius(10)
-                        .dimension(config.dimension)
-                        .group(config.group);
-                    break;
-                case "bar":
-                    config.chart = dc.barChart("#" + config.elementId);
-                    config.chart
-                        .width(width)
-                        .height(height)
-                        .x(d3.scale.linear())
-                        .centerBar(true)
-                        .xUnits(function () { return 20; })
-                        .elasticX(true)
-                        .elasticY(true)
-                        .renderHorizontalGridLines(true)
-                        .dimension(config.dimension)
-                        .group(config.group);
-                    break;
-                case "stackedbar":
-                    config.chart = dc.barChart("#" + config.elementId);
-                    config.chart
-                        .width(width)
-                        .height(height)
-                        .x(d3.scale.linear())
-                        .centerBar(false)
-                        .xUnits(function () { return 20; })
-                        .elasticX(true)
-                        .elasticY(true)
-                        .renderHorizontalGridLines(true)
-                        .dimension(config.dimension)
-                        .group(config.group);
-                    break;
-                case "scatter":
-                    config.chart = dc.scatterPlot("#" + config.elementId);
-                    config.chart
-                        .width(width)
-                        .height(height)
-                        .symbolSize(3)
-                        .x(d3.scale.linear())
-                        .y(d3.scale.linear())
-                        .elasticX(true)
-                        .elasticY(true)
-                        .dimension(config.dimension)
-                        .group(config.group);
-                    break;
-                case "row":
-                    config.chart = dc.rowChart("#" + config.elementId);
-                    config.chart
-                        .width(width)
-                        .height(height)
-                        .gap(1)
-                        .elasticX(true)
-                        .dimension(config.dimension)
-                        .group(config.group)
-                        .xAxis().ticks(4);
-                    if (!config.ordering)
-                        config.ordering = "value";
-                    switch (config.ordering) {
-                        case "days":
-                            config.chart.ordering(function (d) {
-                                return Idv.days_en.indexOf(d.key);
-                            });
-                            break;
-                        case "months":
-                            config.chart.ordering(function (d) {
-                                return Idv.months.indexOf(d.key);
-                            });
-                            break;
-                        case "value":
-                            config.chart.ordering(function (d) {
-                                return -d.value;
-                            });
-                            break;
-                    }
-                    if (config.cap)
-                        config.chart.cap(config.cap);
-                    break;
-            }
-            if (!_.isUndefined(config.xaxis) && _.isFunction(config.chart.xAxisLabel)) {
-                config.chart.xAxisLabel(config.xaxis);
-            }
-            if (!_.isUndefined(config.yaxis) && _.isFunction(config.chart.yAxisLabel)) {
-                config.chart.yAxisLabel(config.yaxis);
-            }
-            if (config.marginLeft)
-                config.chart.margins().left = config.marginLeft;
-            config.chart.on("filtered", function (chart, filter) {
-                _this.triggerFilter(config);
-            });
-            if (config.stat === "average") {
-                config.chart.valueAccessor(function (d) {
-                    return d.value.avg;
-                });
-            }
-            console.log("Add chart " + config.title);
-        };
-        Idv.prototype.triggerFilter = function (config) {
-            var res = config.dimension.top(Infinity);
-            this.config.charts.forEach(function (c) {
-                if (!_.isUndefined(c.filtered) && _.isFunction(c.filtered)) {
-                    c.filtered(res);
-                }
-                //this.addChart(c)
-            });
-        };
-        Idv.prototype.createGridsterItem = function (config) {
-            var _this = this;
-            var html = "<li id='li" + config.id + "'  style='padding:4px'><header class='chart-title'><div class='fa fa-ellipsis-v dropdown-toggle' data-toggle='dropdown'  style='float:right;cursor:pointer' type='button'></div>";
-            html += "<ul class='dropdown-menu pull-right'><li class='dropdown-item'><a ng-click=\"resetFilter('" + config.id + "')\"'>reset filter</a></li><li class='dropdown-item'><a ng-click=\"resetAll()\">reset all filters</a></li><li class='dropdown-item'><a ng-click=\"disableFilter('" + config.id + "')\">disable filter</a></li><li class='dropdown-item'><a ng-click=\"savePng('" + config.title + "','" + config.elementId + "')\"'>save image</a></li>";
-            html += "</ul>" + config.title + "</header><div id='" + config.elementId + "' ></li>";
-            this.scope.resetFilter = function (id) {
-                _this.reset(id);
-            };
-            this.scope.resetAll = function () {
-                _this.resetAll();
-            };
-            this.scope.savePng = function (title, elementId) {
-                _this.savePng(title, elementId);
-            };
-            this.scope.disableFilter = function (id) {
-                var c = _.findWhere(_this.config.charts, { id: id });
-                if (!_.isUndefined(c)) {
-                    c.enabled = false;
-                    _this.updateCharts();
-                }
-            };
-            var w = this.layerService.$compile(html)(this.scope);
-            this.gridster.add_widget(w, config.width, config.height); //"<li><header class='chart-title'><div class='fa fa-times' style='float:right' ng-click='vm.reset()'></div>" + config.title + "</header><div id='" + config.elementId + "'></li>",config.width,config.height);
-        };
-        Idv.prototype.addChart = function (config) {
-            if (typeof config.enabled === 'undefined')
-                config.enabled = true;
-            if (!config.enabled)
-                return;
-            if (!config.id)
-                config.id = csComp.Helpers.getGuid();
-            if (!config.containerId)
-                config.containerId = this.config.containerId;
-            config.elementId = "ddchart-" + config.id;
-            if (!config.title)
-                config.title = config.property;
-            if (!config.type)
-                config.type = "row";
-            switch (config.type) {
-                case "search":
-                    this.addSearchWidget(config);
-                    break;
-                case "layer":
-                    this.addLayerLink(config);
-                    break;
-                case "sumcompare":
-                    this.addSumCompare(config);
-                    break;
-                default:
-                    this.addChartItem(config);
-                    break;
-            }
-        };
-        Idv.days_nl = ["zondag", "maandag", "dinsdag", "woensdag", "donderdag", "vrijdag", "zaterdag"];
-        Idv.days_en = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saterday"];
-        Idv.months = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "okt", "nov", "dec"];
-        return Idv;
-    }());
-    Idv_1.Idv = Idv;
-})(Idv || (Idv = {}));
-//# sourceMappingURL=IdvHelper.js.map
 var KanbanBoard;
 (function (KanbanBoard) {
     /**
@@ -12107,81 +12115,6 @@ var Legend;
     Legend.LegendCtrl = LegendCtrl;
 })(Legend || (Legend = {}));
 //# sourceMappingURL=LegendCtrl.js.map
-var MapElement;
-(function (MapElement) {
-    /**
-      * Config
-      */
-    var moduleName = 'csComp';
-    try {
-        MapElement.myModule = angular.module(moduleName);
-    }
-    catch (err) {
-        // named module does not exist, so create one
-        MapElement.myModule = angular.module(moduleName, []);
-    }
-    /**
-      * Directive to display the available map layers.
-      */
-    MapElement.myModule.directive('map', [
-        '$window', '$compile',
-        function ($window, $compile) {
-            return {
-                terminal: false,
-                restrict: 'E',
-                scope: {
-                    mapid: '='
-                },
-                //templateUrl: 'directives/MapElement/MapElement.tpl.html',
-                templateUrl: 'directives/MapElement/MapElement.tpl.html',
-                link: function (scope, element, attrs) {
-                    //scope.mapid = attrs.mapid;
-                    //var s = jQuery.parseJSON(attrs.param);
-                    //scope.initDashboard();
-                },
-                replace: false,
-                transclude: true,
-                controller: MapElement.MapElementCtrl
-            };
-        }
-    ]);
-})(MapElement || (MapElement = {}));
-//# sourceMappingURL=MapElement.js.map
-var MapElement;
-(function (MapElement) {
-    var MapElementCtrl = /** @class */ (function () {
-        // dependencies are injected via AngularJS $injector
-        // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
-        function MapElementCtrl($scope, $layerService, mapService, $messageBusService) {
-            var _this = this;
-            this.$scope = $scope;
-            this.$layerService = $layerService;
-            this.mapService = mapService;
-            this.$messageBusService = $messageBusService;
-            this.locale = 'en-us';
-            this.options = ['test', 'boe'];
-            $scope.vm = this;
-            this.initMap();
-            $scope.initMap = function () { return _this.initMap(); };
-        }
-        MapElementCtrl.prototype.initMap = function () {
-            this.$layerService.selectRenderer('leaflet');
-        };
-        // $inject annotation.
-        // It provides $injector with information a'bout dependencies to be injected into constructor
-        // it is better to have it close to the constructor, because the parameters must match in count and type.
-        // See http://docs.angularjs.org/guide/di
-        MapElementCtrl.$inject = [
-            '$scope',
-            'layerService',
-            'mapService',
-            'messageBusService'
-        ];
-        return MapElementCtrl;
-    }());
-    MapElement.MapElementCtrl = MapElementCtrl;
-})(MapElement || (MapElement = {}));
-//# sourceMappingURL=MapElementCtrl.js.map
 var LegendList;
 (function (LegendList) {
     /**
@@ -12462,10 +12395,88 @@ var LegendList;
     LegendList.LegendListCtrl = LegendListCtrl;
 })(LegendList || (LegendList = {}));
 //# sourceMappingURL=LegendListCtrl.js.map
+var MapElement;
+(function (MapElement) {
+    /**
+      * Config
+      */
+    var moduleName = 'csComp';
+    try {
+        MapElement.myModule = angular.module(moduleName);
+    }
+    catch (err) {
+        // named module does not exist, so create one
+        MapElement.myModule = angular.module(moduleName, []);
+    }
+    /**
+      * Directive to display the available map layers.
+      */
+    MapElement.myModule.directive('map', [
+        '$window', '$compile',
+        function ($window, $compile) {
+            return {
+                terminal: false,
+                restrict: 'E',
+                scope: {
+                    mapid: '='
+                },
+                //templateUrl: 'directives/MapElement/MapElement.tpl.html',
+                templateUrl: 'directives/MapElement/MapElement.tpl.html',
+                link: function (scope, element, attrs) {
+                    //scope.mapid = attrs.mapid;
+                    //var s = jQuery.parseJSON(attrs.param);
+                    //scope.initDashboard();
+                },
+                replace: false,
+                transclude: true,
+                controller: MapElement.MapElementCtrl
+            };
+        }
+    ]);
+})(MapElement || (MapElement = {}));
+//# sourceMappingURL=MapElement.js.map
+var MapElement;
+(function (MapElement) {
+    var MapElementCtrl = /** @class */ (function () {
+        // dependencies are injected via AngularJS $injector
+        // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
+        function MapElementCtrl($scope, $layerService, mapService, $messageBusService) {
+            var _this = this;
+            this.$scope = $scope;
+            this.$layerService = $layerService;
+            this.mapService = mapService;
+            this.$messageBusService = $messageBusService;
+            this.locale = 'en-us';
+            this.options = ['test', 'boe'];
+            $scope.vm = this;
+            this.initMap();
+            $scope.initMap = function () { return _this.initMap(); };
+        }
+        MapElementCtrl.prototype.initMap = function () {
+            this.$layerService.selectRenderer('leaflet');
+        };
+        // $inject annotation.
+        // It provides $injector with information a'bout dependencies to be injected into constructor
+        // it is better to have it close to the constructor, because the parameters must match in count and type.
+        // See http://docs.angularjs.org/guide/di
+        MapElementCtrl.$inject = [
+            '$scope',
+            'layerService',
+            'mapService',
+            'messageBusService'
+        ];
+        return MapElementCtrl;
+    }());
+    MapElement.MapElementCtrl = MapElementCtrl;
+})(MapElement || (MapElement = {}));
+//# sourceMappingURL=MapElementCtrl.js.map
 var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
     return function (d, b) {
         extendStatics(d, b);
         function __() { this.constructor = d; }
@@ -18560,6 +18571,354 @@ var csComp;
     })(Services = csComp.Services || (csComp.Services = {}));
 })(csComp || (csComp = {}));
 //# sourceMappingURL=geolocation.js.map
+var csComp;
+(function (csComp) {
+    var Services;
+    (function (Services) {
+        'use strict';
+        /*
+         * Singleton service that holds a reference to the map.
+         * In case other controllers need access to the map, they can inject this service.
+         */
+        var MapService = /** @class */ (function () {
+            function MapService($localStorageService, $timeout, $messageBusService) {
+                var _this = this;
+                this.$localStorageService = $localStorageService;
+                this.$timeout = $timeout;
+                this.$messageBusService = $messageBusService;
+                this.showLocation = false;
+                this.mapVisible = true;
+                this.rightMenuVisible = true;
+                /** Padding from the top-left of the screen to compensate for part of the map that
+                 * is overlayed by the menu */
+                this.menuPaddingTopLeft = new L.Point(0, 0);
+                this._timelineVisible = false;
+                this.initExpertMode();
+                this.baseLayers = {};
+                $messageBusService.subscribe('timeline', function (title, data) {
+                    switch (title) {
+                        case 'isEnabled':
+                            _this.timelineVisible = data;
+                            if (_this.timelineVisible) {
+                                _this.$timeout(function () {
+                                    _this.$messageBusService.publish('timeline', 'loadProjectTimeRange');
+                                }, 100);
+                            }
+                            break;
+                    }
+                });
+                var mapClicked = function (e) { return _this.mapClicked(e); };
+                $messageBusService.subscribe('map', function (action, data) {
+                    switch (action.toLowerCase()) {
+                        case 'setpadding':
+                            _this.menuPaddingTopLeft = new L.Point(data.x, data.y);
+                            break;
+                        case 'setextent':
+                            // console.log(data);
+                            // take the navbar and leftpanel into account using padding (15+50px height, 25+400px left)
+                            _this.map.fitBounds(new L.LatLngBounds(data.southWest, data.northEast), { paddingTopLeft: _this.menuPaddingTopLeft });
+                            break;
+                        case 'setzoom':
+                            // Zoom to a location on the map.
+                            _this.map.setZoomAround(data.loc, data.zoom || 16);
+                            break;
+                        case 'showscale':
+                            if (data) {
+                                _this.scale = L.control.scale({
+                                    // Position, i.e. bottomleft, topright, topleft, bottomright
+                                    position: 'bottomleft',
+                                    maxWidth: 100,
+                                    metric: true,
+                                    imperial: false,
+                                    // If true, the control is updated on moveend, otherwise it's always up-to-date (updated on move).
+                                    updateWhenIdle: true
+                                }).addTo(_this.map);
+                            }
+                            else if (_this.scale) {
+                                _this.map.removeControl(_this.scale);
+                            }
+                            break;
+                        case 'showlocation':
+                            if (typeof data !== 'undefined')
+                                _this.showLocation = !data; // Use !data, since the normal behaviour is to toggle.
+                            if (_this.showLocation) {
+                                _this.showLocation = false;
+                                _this.map.off('click', mapClicked);
+                            }
+                            else {
+                                _this.showLocation = true;
+                                _this.map.on('click', mapClicked);
+                            }
+                            break;
+                    }
+                });
+            }
+            Object.defineProperty(MapService.prototype, "timelineVisible", {
+                get: function () { return this._timelineVisible; },
+                set: function (val) {
+                    var _this = this;
+                    this._timelineVisible = val;
+                    setTimeout(function () {
+                        var windowHeight = $(window).height();
+                        $('#map').height(windowHeight - (_this._timelineVisible ? $('#timeline').height() : 0));
+                    }, 300);
+                },
+                enumerable: true,
+                configurable: true
+            });
+            MapService.prototype.mapClicked = function (e) {
+                if (this.$messageBusService)
+                    this.$messageBusService.publish('geocoding', 'reverselookup', e.latlng);
+            };
+            /**
+             * The expert mode can either be set manually, e.g. using this directive, or by setting the expertMode property in the
+             * project.json file. In neither are set, we assume that we are dealing with an expert, so all features should be enabled.
+             *
+             * Precedence:
+             * - when a declaration is absent, assume Expert.
+             * - when the mode is set in local storage, take that value.
+             * - when the mode is set in the project.json file, take that value.
+             */
+            MapService.prototype.initExpertMode = function () {
+                var _this = this;
+                this.expertMode = this.$localStorageService.get(MapService.expertModeKey);
+                if (!this.expertMode) {
+                    this.expertMode = Services.Expertise.Expert; // Default behaviour
+                    // When a project defines the expert mode, overrules default behaviour
+                    this.$messageBusService.subscribe('project', function (title, project) {
+                        switch (title) {
+                            case 'loaded':
+                                if (project != null && typeof project.expertMode !== 'undefined')
+                                    _this.$messageBusService.publish('expertMode', 'newExpertise', project.expertMode);
+                                break;
+                        }
+                    });
+                }
+                this.$messageBusService.subscribe('expertMode', function (title, expertMode) {
+                    if (title !== 'newExpertise')
+                        return;
+                    _this.expertMode = expertMode;
+                    _this.$localStorageService.set(csComp.Services.MapService.expertModeKey, expertMode); // You first need to set the key
+                });
+            };
+            Object.defineProperty(MapService.prototype, "isExpert", {
+                get: function () {
+                    return this.expertMode === Services.Expertise.Expert || this.expertMode === Services.Expertise.Admin;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(MapService.prototype, "isIntermediate", {
+                get: function () {
+                    return this.expertMode === Services.Expertise.Expert
+                        || this.expertMode === Services.Expertise.Intermediate || this.expertMode === Services.Expertise.Admin;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(MapService.prototype, "isAdminExpert", {
+                get: function () {
+                    return this.expertMode === Services.Expertise.Admin;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            MapService.prototype.getBaselayer = function (layer) {
+                var layerObj = this.baseLayers[layer];
+                return layerObj;
+            };
+            MapService.prototype.changeBaseLayer = function (layer) {
+                var layerObj = this.getBaselayer(layer);
+                this.activeBaseLayer = layerObj;
+                this.activeBaseLayerId = layer;
+                this.$messageBusService.publish("baselayer", "activated", layer);
+            };
+            MapService.prototype.invalidate = function () {
+                this.map.invalidateSize(true);
+            };
+            /**
+             * Zoom to a location on the map.
+             */
+            MapService.prototype.zoomToLocation = function (center, zoomFactor) {
+                this.map.setView(center, zoomFactor || 14);
+            };
+            /**
+             * Zoom to a feature on the map.
+             */
+            MapService.prototype.zoomTo = function (feature, zoomLevel) {
+                var _this = this;
+                if (zoomLevel === void 0) { zoomLevel = 14; }
+                try {
+                    var center;
+                    if (feature.geometry.type.toUpperCase() === 'POINT') {
+                        center = new L.LatLng(feature.geometry.coordinates[1], feature.geometry.coordinates[0]);
+                        this.map.setView(center, zoomLevel);
+                    }
+                    else {
+                        var bb;
+                        if (feature.geometry.type.toUpperCase().indexOf('MULTI') < 0) {
+                            bb = this.getBoundingBox(feature.geometry.coordinates[0]);
+                        }
+                        else { // MULTIPOLYGON or MULTILINESTRING
+                            bb = [1000, -1000, 1000, -1000];
+                            feature.geometry.coordinates.forEach(function (c) {
+                                var b = _this.getBoundingBox(c[0]);
+                                bb = [Math.min(bb[0], b[0]), Math.max(bb[1], b[1]), Math.min(bb[2], b[2]), Math.max(bb[3], b[3])];
+                            });
+                        }
+                        var spacingLon = 0.05; // extra spacing left and right, where the menus are.
+                        var southWest = L.latLng(Math.min(bb[2], bb[3]), Math.min(bb[0], bb[1]) - spacingLon);
+                        var northEast = L.latLng(Math.max(bb[2], bb[3]), Math.max(bb[0], bb[1]) + spacingLon);
+                        this.map.fitBounds(new L.LatLngBounds(southWest, northEast));
+                    }
+                    this.$messageBusService.publish('sidebar', 'show');
+                    this.$messageBusService.publish('feature', 'onFeatureSelect', feature);
+                }
+                catch (e) {
+                    console.log('error zooming to feature');
+                }
+            };
+            MapService.prototype.zoomIn = function () {
+                this.map.zoomIn();
+            };
+            MapService.prototype.zoomOut = function () {
+                this.map.zoomOut();
+            };
+            //private getCentroid(arr) {
+            //    return arr.reduce((x, y) => [x[0] + y[0] / arr.length, x[1] + y[1] / arr.length], [0, 0]);
+            //}
+            /**
+             * Compute the bounding box.
+             * Returns [min_x, max_x, min_y, max_y]
+             */
+            MapService.prototype.getBoundingBox = function (arr) {
+                // p is the previous value of the callback, c the current element of the array.
+                return arr.reduce(function (p, c) { return [Math.min(p[0], c[0]), Math.max(p[1], c[0]), Math.min(p[2], c[1]), Math.max(p[3], c[1])]; }, [1000, -1000, 1000, -1000]);
+            };
+            MapService.prototype.getMap = function () { return this.map; };
+            MapService.prototype.initDraw = function (layerService) {
+                var _this = this;
+                this.map.on('draw:created', function (e) {
+                    if (_this.drawingLayer) {
+                        if (_this.drawingNotification)
+                            _this.drawingNotification.remove();
+                        var geometryType = "Point";
+                        var c = [];
+                        switch (_this.drawingFeatureType.style.drawingMode) {
+                            case "Line":
+                                geometryType = "LineString";
+                                e.layer._latlngs.forEach(function (ll) {
+                                    c.push([ll.lng, ll.lat]);
+                                });
+                                break;
+                            case "Polygon":
+                                geometryType = "Polygon";
+                                e.layer._latlngs.forEach(function (g) {
+                                    var inner = [];
+                                    g.forEach(function (ll) {
+                                        inner.push([ll.lng, ll.lat]);
+                                    });
+                                    //Make sure first and last point are the same
+                                    if (inner.length > 1 && !_.isEqual(_.first(inner), _.last(inner))) {
+                                        inner.push(_.first(inner));
+                                    }
+                                    c.push(inner);
+                                });
+                                break;
+                        }
+                        var f = {
+                            type: 'Feature',
+                            geometry: { type: geometryType, 'coordinates': c },
+                            fType: _this.drawingFeatureType,
+                            properties: {}
+                        };
+                        f.properties['featureTypeId'] = csComp.Helpers.getFeatureTypeName(_this.drawingFeatureType.id);
+                        // Initialize properties
+                        if (_.isArray(_this.drawingFeatureType._propertyTypeData)) {
+                            for (var k in _this.drawingFeatureType._propertyTypeData) {
+                                // var pt: IPropertyType = this.drawingFeatureType._propertyTypeData[k];
+                                _this.drawingFeatureType._propertyTypeData.forEach(function (pt) {
+                                    f.properties[pt.label] = _.isUndefined(pt.defaultValue) ? '' : pt.defaultValue;
+                                });
+                            }
+                        }
+                        var l = _this.drawingLayer;
+                        if (!l.data)
+                            l.data = {};
+                        if (!l.data.features)
+                            l.data.features = [];
+                        l.data.features.push(f);
+                        layerService.initFeature(f, l);
+                        layerService.calculateFeatureStyle(f);
+                        layerService.activeMapRenderer.addFeature(f);
+                        f.type = 'Feature';
+                        layerService.saveFeature(f);
+                        console.log(f);
+                    }
+                    _this.drawInstance.removeHooks();
+                    _this.drawingFeatureType = null;
+                });
+            };
+            /** start drawing line/polygon */
+            MapService.prototype.startDraw = function (layer, featureType) {
+                var _this = this;
+                if (this.drawingFeatureType)
+                    return;
+                this.drawingLayer = layer;
+                this.drawingFeatureType = featureType;
+                var opts = {
+                    stroke: true,
+                    color: this.drawingFeatureType.style.strokeColor,
+                    weight: 4,
+                    opacity: 0.5,
+                    fill: false,
+                    clickable: true
+                };
+                switch (featureType.style.drawingMode) {
+                    case "Line":
+                        this.drawInstance = new L.Draw.Polyline(this.map, opts);
+                        break;
+                    case "Polygon":
+                        opts.showArea = true;
+                        this.drawInstance = new L.Draw.Polygon(this.map, opts);
+                        opts.fill = true;
+                        break;
+                }
+                this.drawInstance.addHooks();
+                this.drawingNotification = this.$messageBusService.confirm("Drawing started", "Use double-click or one of these options to end your drawing", function (r) {
+                    if (r) {
+                        _this.drawInstance.completeShape();
+                    }
+                    else {
+                        _this.drawInstance.removeHooks();
+                        _this.drawingFeatureType = null;
+                    }
+                });
+            };
+            MapService.expertModeKey = 'expertMode';
+            MapService.$inject = [
+                'localStorageService',
+                '$timeout',
+                'messageBusService'
+            ];
+            return MapService;
+        }());
+        Services.MapService = MapService;
+        /**
+          * Register service
+          */
+        var moduleName = 'csComp';
+        try {
+            Services.myModule = angular.module(moduleName);
+        }
+        catch (err) {
+            // named module does not exist, so create one
+            Services.myModule = angular.module(moduleName, []);
+        }
+        Services.myModule.service('mapService', csComp.Services.MapService);
+    })(Services = csComp.Services || (csComp.Services = {}));
+})(csComp || (csComp = {}));
+//# sourceMappingURL=MapService.js.map
 var ContourAction;
 (function (ContourAction) {
     var ContourActionModel = /** @class */ (function () {
@@ -18840,9 +19199,12 @@ var csComp;
 })(csComp || (csComp = {}));
 //# sourceMappingURL=ExpressionService.js.map
 var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
     return function (d, b) {
         extendStatics(d, b);
         function __() { this.constructor = d; }
@@ -22681,9 +23043,12 @@ var csComp;
 })(csComp || (csComp = {}));
 //# sourceMappingURL=LayerService.js.map
 var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
     return function (d, b) {
         extendStatics(d, b);
         function __() { this.constructor = d; }
@@ -22759,9 +23124,12 @@ var MatrixAction;
 })(MatrixAction || (MatrixAction = {}));
 //# sourceMappingURL=MatrixAction.js.map
 var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
     return function (d, b) {
         extendStatics(d, b);
         function __() { this.constructor = d; }
@@ -22843,354 +23211,6 @@ var RelationAction;
     RelationAction.RelationActionModel = RelationActionModel;
 })(RelationAction || (RelationAction = {}));
 //# sourceMappingURL=RelationAction.js.map
-var csComp;
-(function (csComp) {
-    var Services;
-    (function (Services) {
-        'use strict';
-        /*
-         * Singleton service that holds a reference to the map.
-         * In case other controllers need access to the map, they can inject this service.
-         */
-        var MapService = /** @class */ (function () {
-            function MapService($localStorageService, $timeout, $messageBusService) {
-                var _this = this;
-                this.$localStorageService = $localStorageService;
-                this.$timeout = $timeout;
-                this.$messageBusService = $messageBusService;
-                this.showLocation = false;
-                this.mapVisible = true;
-                this.rightMenuVisible = true;
-                /** Padding from the top-left of the screen to compensate for part of the map that
-                 * is overlayed by the menu */
-                this.menuPaddingTopLeft = new L.Point(0, 0);
-                this._timelineVisible = false;
-                this.initExpertMode();
-                this.baseLayers = {};
-                $messageBusService.subscribe('timeline', function (title, data) {
-                    switch (title) {
-                        case 'isEnabled':
-                            _this.timelineVisible = data;
-                            if (_this.timelineVisible) {
-                                _this.$timeout(function () {
-                                    _this.$messageBusService.publish('timeline', 'loadProjectTimeRange');
-                                }, 100);
-                            }
-                            break;
-                    }
-                });
-                var mapClicked = function (e) { return _this.mapClicked(e); };
-                $messageBusService.subscribe('map', function (action, data) {
-                    switch (action.toLowerCase()) {
-                        case 'setpadding':
-                            _this.menuPaddingTopLeft = new L.Point(data.x, data.y);
-                            break;
-                        case 'setextent':
-                            // console.log(data);
-                            // take the navbar and leftpanel into account using padding (15+50px height, 25+400px left)
-                            _this.map.fitBounds(new L.LatLngBounds(data.southWest, data.northEast), { paddingTopLeft: _this.menuPaddingTopLeft });
-                            break;
-                        case 'setzoom':
-                            // Zoom to a location on the map.
-                            _this.map.setZoomAround(data.loc, data.zoom || 16);
-                            break;
-                        case 'showscale':
-                            if (data) {
-                                _this.scale = L.control.scale({
-                                    // Position, i.e. bottomleft, topright, topleft, bottomright
-                                    position: 'bottomleft',
-                                    maxWidth: 100,
-                                    metric: true,
-                                    imperial: false,
-                                    // If true, the control is updated on moveend, otherwise it's always up-to-date (updated on move).
-                                    updateWhenIdle: true
-                                }).addTo(_this.map);
-                            }
-                            else if (_this.scale) {
-                                _this.map.removeControl(_this.scale);
-                            }
-                            break;
-                        case 'showlocation':
-                            if (typeof data !== 'undefined')
-                                _this.showLocation = !data; // Use !data, since the normal behaviour is to toggle.
-                            if (_this.showLocation) {
-                                _this.showLocation = false;
-                                _this.map.off('click', mapClicked);
-                            }
-                            else {
-                                _this.showLocation = true;
-                                _this.map.on('click', mapClicked);
-                            }
-                            break;
-                    }
-                });
-            }
-            Object.defineProperty(MapService.prototype, "timelineVisible", {
-                get: function () { return this._timelineVisible; },
-                set: function (val) {
-                    var _this = this;
-                    this._timelineVisible = val;
-                    setTimeout(function () {
-                        var windowHeight = $(window).height();
-                        $('#map').height(windowHeight - (_this._timelineVisible ? $('#timeline').height() : 0));
-                    }, 300);
-                },
-                enumerable: true,
-                configurable: true
-            });
-            MapService.prototype.mapClicked = function (e) {
-                if (this.$messageBusService)
-                    this.$messageBusService.publish('geocoding', 'reverselookup', e.latlng);
-            };
-            /**
-             * The expert mode can either be set manually, e.g. using this directive, or by setting the expertMode property in the
-             * project.json file. In neither are set, we assume that we are dealing with an expert, so all features should be enabled.
-             *
-             * Precedence:
-             * - when a declaration is absent, assume Expert.
-             * - when the mode is set in local storage, take that value.
-             * - when the mode is set in the project.json file, take that value.
-             */
-            MapService.prototype.initExpertMode = function () {
-                var _this = this;
-                this.expertMode = this.$localStorageService.get(MapService.expertModeKey);
-                if (!this.expertMode) {
-                    this.expertMode = Services.Expertise.Expert; // Default behaviour
-                    // When a project defines the expert mode, overrules default behaviour
-                    this.$messageBusService.subscribe('project', function (title, project) {
-                        switch (title) {
-                            case 'loaded':
-                                if (project != null && typeof project.expertMode !== 'undefined')
-                                    _this.$messageBusService.publish('expertMode', 'newExpertise', project.expertMode);
-                                break;
-                        }
-                    });
-                }
-                this.$messageBusService.subscribe('expertMode', function (title, expertMode) {
-                    if (title !== 'newExpertise')
-                        return;
-                    _this.expertMode = expertMode;
-                    _this.$localStorageService.set(csComp.Services.MapService.expertModeKey, expertMode); // You first need to set the key
-                });
-            };
-            Object.defineProperty(MapService.prototype, "isExpert", {
-                get: function () {
-                    return this.expertMode === Services.Expertise.Expert || this.expertMode === Services.Expertise.Admin;
-                },
-                enumerable: true,
-                configurable: true
-            });
-            Object.defineProperty(MapService.prototype, "isIntermediate", {
-                get: function () {
-                    return this.expertMode === Services.Expertise.Expert
-                        || this.expertMode === Services.Expertise.Intermediate || this.expertMode === Services.Expertise.Admin;
-                },
-                enumerable: true,
-                configurable: true
-            });
-            Object.defineProperty(MapService.prototype, "isAdminExpert", {
-                get: function () {
-                    return this.expertMode === Services.Expertise.Admin;
-                },
-                enumerable: true,
-                configurable: true
-            });
-            MapService.prototype.getBaselayer = function (layer) {
-                var layerObj = this.baseLayers[layer];
-                return layerObj;
-            };
-            MapService.prototype.changeBaseLayer = function (layer) {
-                var layerObj = this.getBaselayer(layer);
-                this.activeBaseLayer = layerObj;
-                this.activeBaseLayerId = layer;
-                this.$messageBusService.publish("baselayer", "activated", layer);
-            };
-            MapService.prototype.invalidate = function () {
-                this.map.invalidateSize(true);
-            };
-            /**
-             * Zoom to a location on the map.
-             */
-            MapService.prototype.zoomToLocation = function (center, zoomFactor) {
-                this.map.setView(center, zoomFactor || 14);
-            };
-            /**
-             * Zoom to a feature on the map.
-             */
-            MapService.prototype.zoomTo = function (feature, zoomLevel) {
-                var _this = this;
-                if (zoomLevel === void 0) { zoomLevel = 14; }
-                try {
-                    var center;
-                    if (feature.geometry.type.toUpperCase() === 'POINT') {
-                        center = new L.LatLng(feature.geometry.coordinates[1], feature.geometry.coordinates[0]);
-                        this.map.setView(center, zoomLevel);
-                    }
-                    else {
-                        var bb;
-                        if (feature.geometry.type.toUpperCase().indexOf('MULTI') < 0) {
-                            bb = this.getBoundingBox(feature.geometry.coordinates[0]);
-                        }
-                        else { // MULTIPOLYGON or MULTILINESTRING
-                            bb = [1000, -1000, 1000, -1000];
-                            feature.geometry.coordinates.forEach(function (c) {
-                                var b = _this.getBoundingBox(c[0]);
-                                bb = [Math.min(bb[0], b[0]), Math.max(bb[1], b[1]), Math.min(bb[2], b[2]), Math.max(bb[3], b[3])];
-                            });
-                        }
-                        var spacingLon = 0.05; // extra spacing left and right, where the menus are.
-                        var southWest = L.latLng(Math.min(bb[2], bb[3]), Math.min(bb[0], bb[1]) - spacingLon);
-                        var northEast = L.latLng(Math.max(bb[2], bb[3]), Math.max(bb[0], bb[1]) + spacingLon);
-                        this.map.fitBounds(new L.LatLngBounds(southWest, northEast));
-                    }
-                    this.$messageBusService.publish('sidebar', 'show');
-                    this.$messageBusService.publish('feature', 'onFeatureSelect', feature);
-                }
-                catch (e) {
-                    console.log('error zooming to feature');
-                }
-            };
-            MapService.prototype.zoomIn = function () {
-                this.map.zoomIn();
-            };
-            MapService.prototype.zoomOut = function () {
-                this.map.zoomOut();
-            };
-            //private getCentroid(arr) {
-            //    return arr.reduce((x, y) => [x[0] + y[0] / arr.length, x[1] + y[1] / arr.length], [0, 0]);
-            //}
-            /**
-             * Compute the bounding box.
-             * Returns [min_x, max_x, min_y, max_y]
-             */
-            MapService.prototype.getBoundingBox = function (arr) {
-                // p is the previous value of the callback, c the current element of the array.
-                return arr.reduce(function (p, c) { return [Math.min(p[0], c[0]), Math.max(p[1], c[0]), Math.min(p[2], c[1]), Math.max(p[3], c[1])]; }, [1000, -1000, 1000, -1000]);
-            };
-            MapService.prototype.getMap = function () { return this.map; };
-            MapService.prototype.initDraw = function (layerService) {
-                var _this = this;
-                this.map.on('draw:created', function (e) {
-                    if (_this.drawingLayer) {
-                        if (_this.drawingNotification)
-                            _this.drawingNotification.remove();
-                        var geometryType = "Point";
-                        var c = [];
-                        switch (_this.drawingFeatureType.style.drawingMode) {
-                            case "Line":
-                                geometryType = "LineString";
-                                e.layer._latlngs.forEach(function (ll) {
-                                    c.push([ll.lng, ll.lat]);
-                                });
-                                break;
-                            case "Polygon":
-                                geometryType = "Polygon";
-                                e.layer._latlngs.forEach(function (g) {
-                                    var inner = [];
-                                    g.forEach(function (ll) {
-                                        inner.push([ll.lng, ll.lat]);
-                                    });
-                                    //Make sure first and last point are the same
-                                    if (inner.length > 1 && !_.isEqual(_.first(inner), _.last(inner))) {
-                                        inner.push(_.first(inner));
-                                    }
-                                    c.push(inner);
-                                });
-                                break;
-                        }
-                        var f = {
-                            type: 'Feature',
-                            geometry: { type: geometryType, 'coordinates': c },
-                            fType: _this.drawingFeatureType,
-                            properties: {}
-                        };
-                        f.properties['featureTypeId'] = csComp.Helpers.getFeatureTypeName(_this.drawingFeatureType.id);
-                        // Initialize properties
-                        if (_.isArray(_this.drawingFeatureType._propertyTypeData)) {
-                            for (var k in _this.drawingFeatureType._propertyTypeData) {
-                                // var pt: IPropertyType = this.drawingFeatureType._propertyTypeData[k];
-                                _this.drawingFeatureType._propertyTypeData.forEach(function (pt) {
-                                    f.properties[pt.label] = _.isUndefined(pt.defaultValue) ? '' : pt.defaultValue;
-                                });
-                            }
-                        }
-                        var l = _this.drawingLayer;
-                        if (!l.data)
-                            l.data = {};
-                        if (!l.data.features)
-                            l.data.features = [];
-                        l.data.features.push(f);
-                        layerService.initFeature(f, l);
-                        layerService.calculateFeatureStyle(f);
-                        layerService.activeMapRenderer.addFeature(f);
-                        f.type = 'Feature';
-                        layerService.saveFeature(f);
-                        console.log(f);
-                    }
-                    _this.drawInstance.removeHooks();
-                    _this.drawingFeatureType = null;
-                });
-            };
-            /** start drawing line/polygon */
-            MapService.prototype.startDraw = function (layer, featureType) {
-                var _this = this;
-                if (this.drawingFeatureType)
-                    return;
-                this.drawingLayer = layer;
-                this.drawingFeatureType = featureType;
-                var opts = {
-                    stroke: true,
-                    color: this.drawingFeatureType.style.strokeColor,
-                    weight: 4,
-                    opacity: 0.5,
-                    fill: false,
-                    clickable: true
-                };
-                switch (featureType.style.drawingMode) {
-                    case "Line":
-                        this.drawInstance = new L.Draw.Polyline(this.map, opts);
-                        break;
-                    case "Polygon":
-                        opts.showArea = true;
-                        this.drawInstance = new L.Draw.Polygon(this.map, opts);
-                        opts.fill = true;
-                        break;
-                }
-                this.drawInstance.addHooks();
-                this.drawingNotification = this.$messageBusService.confirm("Drawing started", "Use double-click or one of these options to end your drawing", function (r) {
-                    if (r) {
-                        _this.drawInstance.completeShape();
-                    }
-                    else {
-                        _this.drawInstance.removeHooks();
-                        _this.drawingFeatureType = null;
-                    }
-                });
-            };
-            MapService.expertModeKey = 'expertMode';
-            MapService.$inject = [
-                'localStorageService',
-                '$timeout',
-                'messageBusService'
-            ];
-            return MapService;
-        }());
-        Services.MapService = MapService;
-        /**
-          * Register service
-          */
-        var moduleName = 'csComp';
-        try {
-            Services.myModule = angular.module(moduleName);
-        }
-        catch (err) {
-            // named module does not exist, so create one
-            Services.myModule = angular.module(moduleName, []);
-        }
-        Services.myModule.service('mapService', csComp.Services.MapService);
-    })(Services = csComp.Services || (csComp.Services = {}));
-})(csComp || (csComp = {}));
-//# sourceMappingURL=MapService.js.map
 var csComp;
 (function (csComp) {
     var Services;
@@ -24887,92 +24907,6 @@ var FeatureTypes;
     FeatureTypes.FeatureTypesCtrl = FeatureTypesCtrl;
 })(FeatureTypes || (FeatureTypes = {}));
 //# sourceMappingURL=FeatureTypesCtrl.js.map
-var GroupEdit;
-(function (GroupEdit) {
-    /**
-      * Config
-      */
-    var moduleName = 'csComp';
-    try {
-        GroupEdit.myModule = angular.module(moduleName);
-    }
-    catch (err) {
-        // named module does not exist, so create one
-        GroupEdit.myModule = angular.module(moduleName, []);
-    }
-    /**
-      * Directive to display a feature's properties in a panel.
-      *
-      * @seealso          : http://www.youtube.com/watch?v=gjJ5vLRK8R8&list=UUGD_0i6L48hucTiiyhb5QzQ
-      * @seealso          : http://plnkr.co/edit/HyBP9d?p=preview
-      */
-    GroupEdit.myModule.directive('groupedit', ['$compile',
-        function ($compile) {
-            return {
-                terminal: true,
-                restrict: 'E',
-                scope: {},
-                templateUrl: 'directives/Editors/GroupEditor/GroupEdit.tpl.html',
-                replace: true,
-                transclude: true,
-                controller: GroupEdit.GroupEditCtrl
-            };
-        }
-    ]);
-})(GroupEdit || (GroupEdit = {}));
-//# sourceMappingURL=GroupEdit.js.map
-var GroupEdit;
-(function (GroupEdit) {
-    var GroupEditCtrl = /** @class */ (function () {
-        // dependencies are injected via AngularJS $injector
-        // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
-        function GroupEditCtrl($scope, $mapService, $layerService, $messageBusService, $dashboardService) {
-            var _this = this;
-            this.$scope = $scope;
-            this.$mapService = $mapService;
-            this.$layerService = $layerService;
-            this.$messageBusService = $messageBusService;
-            this.$dashboardService = $dashboardService;
-            this.noLayerSelected = true;
-            this.scope = $scope;
-            $scope.vm = this;
-            $scope.group = $scope.$parent["data"];
-            console.log($scope.group);
-            this.updateLayers();
-            this.$messageBusService.subscribe('layer', function () {
-                _this.updateLayers();
-            });
-        }
-        GroupEditCtrl.prototype.updateLayers = function () {
-            this.noLayerSelected = this.$scope.group.layers.some(function (l) { return l.enabled; });
-            //console.log("selected " + this.noLayerSelected)
-            //this.$scope.group.oneLayerActive
-        };
-        GroupEditCtrl.prototype.removeGroup = function () {
-            this.$layerService.removeGroup(this.$scope.group);
-        };
-        GroupEditCtrl.prototype.toggleClustering = function () {
-            console.log('toggle clustering');
-        };
-        GroupEditCtrl.prototype.updateOws = function () {
-            this.$scope.group.loadLayersFromOWS();
-        };
-        // $inject annotation.
-        // It provides $injector with information about dependencies to be injected into constructor
-        // it is better to have it close to the constructor, because the parameters must match in count and type.
-        // See http://docs.angularjs.org/guide/di
-        GroupEditCtrl.$inject = [
-            '$scope',
-            'mapService',
-            'layerService',
-            'messageBusService',
-            'dashboardService'
-        ];
-        return GroupEditCtrl;
-    }());
-    GroupEdit.GroupEditCtrl = GroupEditCtrl;
-})(GroupEdit || (GroupEdit = {}));
-//# sourceMappingURL=GroupEditCtrl.js.map
 var LayerEditor;
 (function (LayerEditor) {
     /**
@@ -25278,6 +25212,92 @@ var LayerSettings;
     LayerSettings.LayerSettingsCtrl = LayerSettingsCtrl;
 })(LayerSettings || (LayerSettings = {}));
 //# sourceMappingURL=LayerSettingsCtrl.js.map
+var GroupEdit;
+(function (GroupEdit) {
+    /**
+      * Config
+      */
+    var moduleName = 'csComp';
+    try {
+        GroupEdit.myModule = angular.module(moduleName);
+    }
+    catch (err) {
+        // named module does not exist, so create one
+        GroupEdit.myModule = angular.module(moduleName, []);
+    }
+    /**
+      * Directive to display a feature's properties in a panel.
+      *
+      * @seealso          : http://www.youtube.com/watch?v=gjJ5vLRK8R8&list=UUGD_0i6L48hucTiiyhb5QzQ
+      * @seealso          : http://plnkr.co/edit/HyBP9d?p=preview
+      */
+    GroupEdit.myModule.directive('groupedit', ['$compile',
+        function ($compile) {
+            return {
+                terminal: true,
+                restrict: 'E',
+                scope: {},
+                templateUrl: 'directives/Editors/GroupEditor/GroupEdit.tpl.html',
+                replace: true,
+                transclude: true,
+                controller: GroupEdit.GroupEditCtrl
+            };
+        }
+    ]);
+})(GroupEdit || (GroupEdit = {}));
+//# sourceMappingURL=GroupEdit.js.map
+var GroupEdit;
+(function (GroupEdit) {
+    var GroupEditCtrl = /** @class */ (function () {
+        // dependencies are injected via AngularJS $injector
+        // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
+        function GroupEditCtrl($scope, $mapService, $layerService, $messageBusService, $dashboardService) {
+            var _this = this;
+            this.$scope = $scope;
+            this.$mapService = $mapService;
+            this.$layerService = $layerService;
+            this.$messageBusService = $messageBusService;
+            this.$dashboardService = $dashboardService;
+            this.noLayerSelected = true;
+            this.scope = $scope;
+            $scope.vm = this;
+            $scope.group = $scope.$parent["data"];
+            console.log($scope.group);
+            this.updateLayers();
+            this.$messageBusService.subscribe('layer', function () {
+                _this.updateLayers();
+            });
+        }
+        GroupEditCtrl.prototype.updateLayers = function () {
+            this.noLayerSelected = this.$scope.group.layers.some(function (l) { return l.enabled; });
+            //console.log("selected " + this.noLayerSelected)
+            //this.$scope.group.oneLayerActive
+        };
+        GroupEditCtrl.prototype.removeGroup = function () {
+            this.$layerService.removeGroup(this.$scope.group);
+        };
+        GroupEditCtrl.prototype.toggleClustering = function () {
+            console.log('toggle clustering');
+        };
+        GroupEditCtrl.prototype.updateOws = function () {
+            this.$scope.group.loadLayersFromOWS();
+        };
+        // $inject annotation.
+        // It provides $injector with information about dependencies to be injected into constructor
+        // it is better to have it close to the constructor, because the parameters must match in count and type.
+        // See http://docs.angularjs.org/guide/di
+        GroupEditCtrl.$inject = [
+            '$scope',
+            'mapService',
+            'layerService',
+            'messageBusService',
+            'dashboardService'
+        ];
+        return GroupEditCtrl;
+    }());
+    GroupEdit.GroupEditCtrl = GroupEditCtrl;
+})(GroupEdit || (GroupEdit = {}));
+//# sourceMappingURL=GroupEditCtrl.js.map
 var PropertyTypes;
 (function (PropertyTypes) {
     /**
@@ -25484,6 +25504,188 @@ var PropertyTypes;
     PropertyTypes.PropertyTypesCtrl = PropertyTypesCtrl;
 })(PropertyTypes || (PropertyTypes = {}));
 //# sourceMappingURL=PropertyTypesCtrl.js.map
+var Agenda;
+(function (Agenda) {
+    /** Config */
+    var moduleName = 'csComp';
+    try {
+        Agenda.myModule = angular.module(moduleName);
+    }
+    catch (err) {
+        // named module does not exist, so create one
+        Agenda.myModule = angular.module(moduleName, []);
+    }
+    /** Directive to send a message to a REST endpoint. Similar in goal to the Chrome plugin POSTMAN. */
+    Agenda.myModule.directive('agendaEdit', [function () {
+            return {
+                restrict: 'E',
+                scope: {},
+                templateUrl: 'directives/Widgets/Agenda/AgendaWidget-edit.tpl.html',
+                replace: true,
+                transclude: false,
+                controller: AgendaWidgetEditCtrl
+            };
+        }
+    ]);
+    var AgendaWidgetEditCtrl = /** @class */ (function () {
+        function AgendaWidgetEditCtrl($scope, $http, layerService, messageBusService, $timeout) {
+            var _this = this;
+            this.$scope = $scope;
+            this.$http = $http;
+            this.layerService = layerService;
+            this.messageBusService = messageBusService;
+            this.$timeout = $timeout;
+            this.layers = [];
+            $scope.vm = this;
+            var par = $scope.$parent;
+            this.widget = par.widget || par.data;
+            if (!this.widget)
+                return;
+            $scope.data = this.widget.data;
+            var selectedLayerId = $scope.data.selectedLayerId;
+            layerService.project.groups.forEach(function (g) {
+                g.layers.forEach(function (l) {
+                    _this.layers.push(l);
+                    if (l.id === selectedLayerId) {
+                        _this.selectedLayer = l;
+                    }
+                });
+            });
+        }
+        AgendaWidgetEditCtrl.prototype.update = function () {
+            if (this.selectedLayer)
+                this.widget.data.selectedLayerId = this.selectedLayer.id;
+        };
+        AgendaWidgetEditCtrl.$inject = [
+            '$scope',
+            '$http',
+            'layerService',
+            'messageBusService',
+            '$timeout'
+        ];
+        return AgendaWidgetEditCtrl;
+    }());
+    Agenda.AgendaWidgetEditCtrl = AgendaWidgetEditCtrl;
+})(Agenda || (Agenda = {}));
+//# sourceMappingURL=AgendaWidget-edit.js.map
+var Agenda;
+(function (Agenda) {
+    /** Config */
+    var moduleName = 'csComp';
+    try {
+        Agenda.myModule = angular.module(moduleName);
+    }
+    catch (err) {
+        // named module does not exist, so create one
+        Agenda.myModule = angular.module(moduleName, []);
+    }
+    /** Directive to send a message to a REST endpoint. Similar in goal to the Chrome plugin POSTMAN. */
+    Agenda.myModule.directive('agenda', [function () {
+            return {
+                restrict: 'E',
+                scope: {},
+                templateUrl: 'directives/Widgets/Agenda/AgendaWidget.tpl.html',
+                replace: true,
+                transclude: false,
+                controller: AgendaWidgetCtrl
+            };
+        }
+    ]);
+    /**
+     * The agenda widget does two things:
+     * - it shows the relations of the currently selected feature, if any, as an agenda.
+     * - it analyses a layer, if the 'agenda' tag is present in the ProjectLayer, for all events, i.e.
+     *   features with a start and end time, and displays them on the timeline.
+     */
+    var AgendaWidgetCtrl = /** @class */ (function () {
+        function AgendaWidgetCtrl($scope, $http, layerService, messageBusService, $timeout) {
+            var _this = this;
+            this.$scope = $scope;
+            this.$http = $http;
+            this.layerService = layerService;
+            this.messageBusService = messageBusService;
+            this.$timeout = $timeout;
+            this.agenda = [];
+            $scope.vm = this;
+            var par = $scope.$parent;
+            this.widget = par.widget;
+            if (this.widget) {
+                $scope.data = this.widget.data;
+            }
+            else {
+                $scope.data = par.data;
+            }
+            var selectedLayerId = $scope.data.selectedLayerId;
+            if (layerService.project) {
+                this.selectedLayer = layerService.findLayer(selectedLayerId);
+            }
+            else {
+                messageBusService.subscribe('project', function (title) {
+                    _this.selectedLayer = layerService.findLayer(selectedLayerId);
+                });
+            }
+            messageBusService.subscribe('feature', function (action, feature) {
+                switch (action) {
+                    case 'onFeatureSelect':
+                    case 'onRelationsUpdated':
+                        _this.updateAgenda(feature);
+                        break;
+                    case 'onFeatureDeselect':
+                        _this.clearAgenda();
+                        break;
+                }
+            });
+        }
+        AgendaWidgetCtrl.prototype.clearAgenda = function () {
+            this.title = '';
+            this.agenda.length = 0;
+        };
+        AgendaWidgetCtrl.prototype.updateAgenda = function (feature) {
+            var _this = this;
+            if (!feature || !feature._gui)
+                return;
+            var eventStyle = feature.fType.eventStyle;
+            if (!eventStyle || !feature._gui.hasOwnProperty('relations') || !feature._gui['relations'].hasOwnProperty(eventStyle.relationName))
+                return;
+            this.clearAgenda();
+            this.title = feature.properties['Name'];
+            var titleProp = eventStyle.title || 'Name', descProp = eventStyle.description || 'description', startProp = eventStyle.startTime || 'startTime', endProp = eventStyle.endTime || 'endTime';
+            var eventList = feature._gui['relations'][eventStyle.relationName];
+            eventList.forEach(function (e) {
+                _this.agenda.push({
+                    title: _this.getProperty(e, titleProp),
+                    description: _this.getProperty(e, descProp),
+                    startTime: _this.getProperty(e, startProp),
+                    endTime: _this.getProperty(e, endProp)
+                });
+            });
+        };
+        AgendaWidgetCtrl.prototype.getProperty = function (feature, prop, defaultValue) {
+            if (defaultValue === void 0) { defaultValue = ''; }
+            var props = feature.properties;
+            var propValue = props.hasOwnProperty(prop)
+                ? props[prop]
+                : defaultValue;
+            feature.fType._propertyTypeData.some(function (pt) {
+                if (pt.label !== prop)
+                    return false;
+                propValue = csComp.Helpers.convertPropertyInfo(pt, propValue);
+                return true;
+            });
+            return propValue;
+        };
+        AgendaWidgetCtrl.$inject = [
+            '$scope',
+            '$http',
+            'layerService',
+            'messageBusService',
+            '$timeout'
+        ];
+        return AgendaWidgetCtrl;
+    }());
+    Agenda.AgendaWidgetCtrl = AgendaWidgetCtrl;
+})(Agenda || (Agenda = {}));
+//# sourceMappingURL=AgendaWidget.js.map
 var ButtonWidget;
 (function (ButtonWidget) {
     /** Config */
@@ -25897,188 +26099,6 @@ var ButtonWidget;
     ButtonWidget.ButtonWidgetCtrl = ButtonWidgetCtrl;
 })(ButtonWidget || (ButtonWidget = {}));
 //# sourceMappingURL=ButtonWidget.js.map
-var Agenda;
-(function (Agenda) {
-    /** Config */
-    var moduleName = 'csComp';
-    try {
-        Agenda.myModule = angular.module(moduleName);
-    }
-    catch (err) {
-        // named module does not exist, so create one
-        Agenda.myModule = angular.module(moduleName, []);
-    }
-    /** Directive to send a message to a REST endpoint. Similar in goal to the Chrome plugin POSTMAN. */
-    Agenda.myModule.directive('agendaEdit', [function () {
-            return {
-                restrict: 'E',
-                scope: {},
-                templateUrl: 'directives/Widgets/Agenda/AgendaWidget-edit.tpl.html',
-                replace: true,
-                transclude: false,
-                controller: AgendaWidgetEditCtrl
-            };
-        }
-    ]);
-    var AgendaWidgetEditCtrl = /** @class */ (function () {
-        function AgendaWidgetEditCtrl($scope, $http, layerService, messageBusService, $timeout) {
-            var _this = this;
-            this.$scope = $scope;
-            this.$http = $http;
-            this.layerService = layerService;
-            this.messageBusService = messageBusService;
-            this.$timeout = $timeout;
-            this.layers = [];
-            $scope.vm = this;
-            var par = $scope.$parent;
-            this.widget = par.widget || par.data;
-            if (!this.widget)
-                return;
-            $scope.data = this.widget.data;
-            var selectedLayerId = $scope.data.selectedLayerId;
-            layerService.project.groups.forEach(function (g) {
-                g.layers.forEach(function (l) {
-                    _this.layers.push(l);
-                    if (l.id === selectedLayerId) {
-                        _this.selectedLayer = l;
-                    }
-                });
-            });
-        }
-        AgendaWidgetEditCtrl.prototype.update = function () {
-            if (this.selectedLayer)
-                this.widget.data.selectedLayerId = this.selectedLayer.id;
-        };
-        AgendaWidgetEditCtrl.$inject = [
-            '$scope',
-            '$http',
-            'layerService',
-            'messageBusService',
-            '$timeout'
-        ];
-        return AgendaWidgetEditCtrl;
-    }());
-    Agenda.AgendaWidgetEditCtrl = AgendaWidgetEditCtrl;
-})(Agenda || (Agenda = {}));
-//# sourceMappingURL=AgendaWidget-edit.js.map
-var Agenda;
-(function (Agenda) {
-    /** Config */
-    var moduleName = 'csComp';
-    try {
-        Agenda.myModule = angular.module(moduleName);
-    }
-    catch (err) {
-        // named module does not exist, so create one
-        Agenda.myModule = angular.module(moduleName, []);
-    }
-    /** Directive to send a message to a REST endpoint. Similar in goal to the Chrome plugin POSTMAN. */
-    Agenda.myModule.directive('agenda', [function () {
-            return {
-                restrict: 'E',
-                scope: {},
-                templateUrl: 'directives/Widgets/Agenda/AgendaWidget.tpl.html',
-                replace: true,
-                transclude: false,
-                controller: AgendaWidgetCtrl
-            };
-        }
-    ]);
-    /**
-     * The agenda widget does two things:
-     * - it shows the relations of the currently selected feature, if any, as an agenda.
-     * - it analyses a layer, if the 'agenda' tag is present in the ProjectLayer, for all events, i.e.
-     *   features with a start and end time, and displays them on the timeline.
-     */
-    var AgendaWidgetCtrl = /** @class */ (function () {
-        function AgendaWidgetCtrl($scope, $http, layerService, messageBusService, $timeout) {
-            var _this = this;
-            this.$scope = $scope;
-            this.$http = $http;
-            this.layerService = layerService;
-            this.messageBusService = messageBusService;
-            this.$timeout = $timeout;
-            this.agenda = [];
-            $scope.vm = this;
-            var par = $scope.$parent;
-            this.widget = par.widget;
-            if (this.widget) {
-                $scope.data = this.widget.data;
-            }
-            else {
-                $scope.data = par.data;
-            }
-            var selectedLayerId = $scope.data.selectedLayerId;
-            if (layerService.project) {
-                this.selectedLayer = layerService.findLayer(selectedLayerId);
-            }
-            else {
-                messageBusService.subscribe('project', function (title) {
-                    _this.selectedLayer = layerService.findLayer(selectedLayerId);
-                });
-            }
-            messageBusService.subscribe('feature', function (action, feature) {
-                switch (action) {
-                    case 'onFeatureSelect':
-                    case 'onRelationsUpdated':
-                        _this.updateAgenda(feature);
-                        break;
-                    case 'onFeatureDeselect':
-                        _this.clearAgenda();
-                        break;
-                }
-            });
-        }
-        AgendaWidgetCtrl.prototype.clearAgenda = function () {
-            this.title = '';
-            this.agenda.length = 0;
-        };
-        AgendaWidgetCtrl.prototype.updateAgenda = function (feature) {
-            var _this = this;
-            if (!feature || !feature._gui)
-                return;
-            var eventStyle = feature.fType.eventStyle;
-            if (!eventStyle || !feature._gui.hasOwnProperty('relations') || !feature._gui['relations'].hasOwnProperty(eventStyle.relationName))
-                return;
-            this.clearAgenda();
-            this.title = feature.properties['Name'];
-            var titleProp = eventStyle.title || 'Name', descProp = eventStyle.description || 'description', startProp = eventStyle.startTime || 'startTime', endProp = eventStyle.endTime || 'endTime';
-            var eventList = feature._gui['relations'][eventStyle.relationName];
-            eventList.forEach(function (e) {
-                _this.agenda.push({
-                    title: _this.getProperty(e, titleProp),
-                    description: _this.getProperty(e, descProp),
-                    startTime: _this.getProperty(e, startProp),
-                    endTime: _this.getProperty(e, endProp)
-                });
-            });
-        };
-        AgendaWidgetCtrl.prototype.getProperty = function (feature, prop, defaultValue) {
-            if (defaultValue === void 0) { defaultValue = ''; }
-            var props = feature.properties;
-            var propValue = props.hasOwnProperty(prop)
-                ? props[prop]
-                : defaultValue;
-            feature.fType._propertyTypeData.some(function (pt) {
-                if (pt.label !== prop)
-                    return false;
-                propValue = csComp.Helpers.convertPropertyInfo(pt, propValue);
-                return true;
-            });
-            return propValue;
-        };
-        AgendaWidgetCtrl.$inject = [
-            '$scope',
-            '$http',
-            'layerService',
-            'messageBusService',
-            '$timeout'
-        ];
-        return AgendaWidgetCtrl;
-    }());
-    Agenda.AgendaWidgetCtrl = AgendaWidgetCtrl;
-})(Agenda || (Agenda = {}));
-//# sourceMappingURL=AgendaWidget.js.map
 var ChartsWidget;
 (function (ChartsWidget) {
     /**
@@ -26601,6 +26621,219 @@ var CompareWidget;
     CompareWidget.CompareWidgetCtrl = CompareWidgetCtrl;
 })(CompareWidget || (CompareWidget = {}));
 //# sourceMappingURL=CompareWidgetCtrl.js.map
+var FilterStyleWidget;
+(function (FilterStyleWidget) {
+    /**
+      * Config
+      */
+    var moduleName = 'csComp';
+    try {
+        FilterStyleWidget.myModule = angular.module(moduleName);
+    }
+    catch (err) {
+        // named module does not exist, so create one
+        FilterStyleWidget.myModule = angular.module(moduleName, []);
+    }
+    /**
+      * Directive to display the available map layers.
+      */
+    FilterStyleWidget.myModule.directive('filterstylewidget', [function () {
+            return {
+                restrict: 'E',
+                scope: {},
+                templateUrl: 'directives/Widgets/FilterStyleWidget/FilterStyleWidget.tpl.html',
+                replace: true,
+                transclude: false,
+                controller: FilterStyleWidget.FilterStyleWidgetCtrl
+            };
+        }
+    ]);
+})(FilterStyleWidget || (FilterStyleWidget = {}));
+//# sourceMappingURL=FilterStyleWidget.js.map
+var FilterStyleWidget;
+(function (FilterStyleWidget) {
+    var FilterStyleWidgetData = /** @class */ (function () {
+        function FilterStyleWidgetData() {
+        }
+        return FilterStyleWidgetData;
+    }());
+    FilterStyleWidget.FilterStyleWidgetData = FilterStyleWidgetData;
+    var FilterStyleWidgetCtrl = /** @class */ (function () {
+        function FilterStyleWidgetCtrl($scope, $timeout, $translate, $layerService, $messageBus, $mapService) {
+            var _this = this;
+            this.$scope = $scope;
+            this.$timeout = $timeout;
+            this.$translate = $translate;
+            this.$layerService = $layerService;
+            this.$messageBus = $messageBus;
+            this.$mapService = $mapService;
+            this.mBusHandles = [];
+            $scope.vm = this;
+            var par = $scope.$parent;
+            this.widget = par.widget;
+            this.parentWidget = $("#" + this.widget.elementId).parent();
+            $scope.data = this.widget.data;
+            $scope.minimized = false;
+            if (window.canvg) {
+                this.exporterAvailable = true;
+            }
+            else {
+                this.exporterAvailable = false;
+            }
+            // this.mBusHandles.push(this.$messageBus.subscribe('feature', (action: string, feature: csComp.Services.IFeature) => {
+            //     switch (action) {
+            //         case 'onFeatureDeselect':
+            //         case 'onFeatureSelect':
+            //             this.selectFeature(feature);
+            //             break;
+            //         default:
+            //             break;
+            //     }
+            // }));
+            this.parentWidget.hide();
+            this.mBusHandles.push(this.$messageBus.subscribe('layer', function (title, l) {
+                if (title === 'activated') {
+                    if ($scope.filter) {
+                        _this.updateChart();
+                    }
+                }
+            }));
+            this.mBusHandles.push(this.$messageBus.subscribe('updatelegend', function (title, gs) {
+                switch (title) {
+                    case 'hidelegend':
+                        _this.close();
+                        break;
+                    default:
+                        if (gs) {
+                            delete $scope.filter;
+                            $scope.style = gs;
+                            _this.createChart();
+                        }
+                        break;
+                }
+            }));
+        }
+        FilterStyleWidgetCtrl.prototype.canMinimize = function () {
+            return (this.$scope.data.hasOwnProperty('canMinimize'))
+                ? this.$scope.data['canMinimize']
+                : true;
+        };
+        FilterStyleWidgetCtrl.prototype.minimize = function () {
+            this.$scope.minimized = !this.$scope.minimized;
+            if (this.$scope.minimized) {
+                this.parentWidget.css("height", "30px");
+            }
+            else {
+                this.parentWidget.css("height", this.widget.height);
+            }
+        };
+        FilterStyleWidgetCtrl.prototype.canClose = function () {
+            return (this.$scope.data.hasOwnProperty('canClose'))
+                ? this.$scope.data['canClose']
+                : true;
+        };
+        FilterStyleWidgetCtrl.prototype.close = function () {
+            this.parentWidget.hide();
+        };
+        FilterStyleWidgetCtrl.prototype.stop = function () {
+            var _this = this;
+            if (this.mBusHandles && this.mBusHandles.length > 0) {
+                this.mBusHandles.forEach(function (mbh) {
+                    _this.$messageBus.unsubscribe(mbh);
+                });
+            }
+        };
+        FilterStyleWidgetCtrl.prototype.selectFeature = function (feature) {
+            if (!feature || !feature.isSelected) {
+                return;
+            }
+            else {
+                this.parentWidget.show();
+            }
+        };
+        FilterStyleWidgetCtrl.prototype.createChart = function () {
+            var _this = this;
+            var gf = new csComp.Services.GroupFilter();
+            gf.property = this.$scope.style.property;
+            gf.id = this.widget.id;
+            gf.group = this.$scope.style.group;
+            gf.group.ndx = crossfilter([]);
+            gf.group.ndx.add(_.map(gf.group.markers, function (item, key) { return item.feature; }));
+            gf.title = this.$scope.style.title;
+            gf.filterLabel = null;
+            gf.filterType = 'row';
+            gf.group.filters = [];
+            gf.group.filters.push(gf);
+            this.$timeout(function () {
+                _this.$scope.filter = gf;
+                _this.$scope.filter.showInWidget = true;
+            });
+            this.$timeout(function () {
+                _this.updateRowFilterScope(gf);
+            });
+            this.parentWidget.show();
+            // var propType = this.$layerService.findPropertyTypeById(this.$scope.layer.typeUrl + '#' + gf.property);
+            // this.$layerService.setGroupStyle(this.$scope.style.group, propType);
+        };
+        FilterStyleWidgetCtrl.prototype.updateChart = function () {
+            var _this = this;
+            this.$scope.filter.group.ndx = crossfilter([]);
+            this.$scope.filter.group.ndx.add(_.map(this.$scope.filter.group.markers, function (item, key) { return item.feature; }));
+            this.$timeout(function () {
+                _this.updateRowFilterScope(_this.$scope.filter);
+            });
+        };
+        FilterStyleWidgetCtrl.prototype.updateRowFilterScope = function (gf) {
+            if (!gf || !gf.group) {
+                console.log('No filter provided.');
+                return;
+            }
+            var rowFilterElm = angular.element($("#filter_" + this.widget.id));
+            if (!rowFilterElm) {
+                console.log('rowFilterElm not found.');
+                return;
+            }
+            var rowFilterScope = rowFilterElm.scope();
+            if (!rowFilterScope) {
+                console.log('rowFilterScope not found.');
+                return;
+            }
+            else {
+                rowFilterScope.filter = gf;
+                rowFilterScope.vm.initRowFilter();
+                return;
+            }
+        };
+        FilterStyleWidgetCtrl.prototype.exportToImage = function () {
+            var _this = this;
+            var canvg = window.canvg || undefined;
+            if (!canvg)
+                return;
+            var svg = new XMLSerializer().serializeToString(document.getElementById("filter_" + this.widget.id).firstChild);
+            var canvas = document.createElement('canvas');
+            document.body.appendChild(canvas);
+            canvg(canvas, svg, {
+                renderCallback: function () {
+                    var img = canvas.toDataURL("image/png");
+                    var fileName = _this.$scope.filter.title || 'rowfilter-export';
+                    csComp.Helpers.saveImage(img, fileName + '.png', 'png');
+                    canvas.parentElement.removeChild(canvas);
+                }
+            });
+        };
+        FilterStyleWidgetCtrl.$inject = [
+            '$scope',
+            '$timeout',
+            '$translate',
+            'layerService',
+            'messageBusService',
+            'mapService'
+        ];
+        return FilterStyleWidgetCtrl;
+    }());
+    FilterStyleWidget.FilterStyleWidgetCtrl = FilterStyleWidgetCtrl;
+})(FilterStyleWidget || (FilterStyleWidget = {}));
+//# sourceMappingURL=FilterStyleWidgetCtrl.js.map
 var AreaFilter;
 (function (AreaFilter) {
     var AreaFilterModel = /** @class */ (function () {
@@ -27961,552 +28194,6 @@ var Filters;
     Filters.TextFilterCtrl = TextFilterCtrl;
 })(Filters || (Filters = {}));
 //# sourceMappingURL=TextFilterCtrl.js.map
-var Filters;
-(function (Filters) {
-    /* Custom implementation of the rowfilter for wodk */
-    var WodkRowFilterCtrl = (function () {
-        // dependencies are injected via AngularJS $injector
-        // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
-        function WodkRowFilterCtrl($scope, $layerService, $messageBus, $timeout, $translate) {
-            var _this = this;
-            this.$scope = $scope;
-            this.$layerService = $layerService;
-            this.$messageBus = $messageBus;
-            this.$timeout = $timeout;
-            this.$translate = $translate;
-            $scope.vm = this;
-            $translate('REMOVE').then(function (translation) {
-                $scope.removeString = translation;
-            });
-            $translate('CREATE_SCATTER').then(function (translation) {
-                $scope.createScatterString = translation;
-            });
-            $translate('SAVE_AS_IMAGE').then(function (translation) {
-                $scope.saveAsImageString = translation;
-            });
-            var par = $scope.$parent.$parent;
-            if (par.hasOwnProperty('filter')) {
-                $scope.filter = par['filter'];
-            }
-            else {
-            }
-            if (window.canvg) {
-                this.exporterAvailable = true;
-            }
-            else {
-                this.exporterAvailable = false;
-            }
-            this.$messageBus.subscribe('filters', function (title, groupId) {
-                switch (title) {
-                    case 'updateGroup':
-                        if ($scope.filter && $scope.filter.group.id === groupId) {
-                            _this.updateFilter();
-                        }
-                        break;
-                }
-            });
-            if ($scope && $scope.filter) {
-                setTimeout(function () { return _this.initRowFilter(); });
-                //$timeout.call(()=>this.initBarFilter());
-                $scope.options = (function () {
-                    var res = [];
-                    res.push([$scope.removeString, function () { return _this.remove(); }]);
-                    $scope.filter.group.filters.forEach(function (gf) {
-                        if (gf.filterType == "row" && gf.property != $scope.filter.property) {
-                            res.push([$scope.createScatterString + ' ' + gf.title, function () { return _this.createScatter(gf); }]);
-                        }
-                    });
-                    if (_this.exporterAvailable) {
-                        res.push([$scope.saveAsImageString, function () { return _this.exportToImage(); }]);
-                    }
-                    return res;
-                });
-            }
-        }
-        WodkRowFilterCtrl.prototype.createScatter = function (gf) {
-            this.$layerService.createScatterFilter(this.$scope.filter.group, this.$scope.filter.property, gf.property);
-        };
-        WodkRowFilterCtrl.prototype.initRowFilter = function () {
-            var _this = this;
-            var filter = this.$scope.filter;
-            var group = filter.group;
-            var divid = 'filter_' + filter.id;
-            // Use the default dc-rowChart, unless a customRowChart is available
-            if (window.customRowChart) {
-                dc.customRowChart = window.customRowChart;
-                this.dcChart = dc.customRowChart('#' + divid);
-            }
-            else {
-                this.dcChart = dc.rowChart('#' + divid);
-            }
-            this.$scope.$apply();
-            var pt;
-            var orderList = {};
-            var dcDim = group.ndx.dimension(function (d) {
-                if (!pt)
-                    pt = _this.$layerService.getPropertyType(d, filter.property);
-                if (!d.properties.hasOwnProperty(filter.property)) {
-                    if (pt && pt.legend && pt.legend.hasOwnProperty('defaultLabel')) {
-                        return pt.legend.defaultLabel;
-                    }
-                    else {
-                        return null;
-                    }
-                }
-                else {
-                    if (d.properties[filter.property] != null) {
-                        var a = d.properties[filter.property];
-                        if (pt.type === 'options') {
-                            var r;
-                            if (pt && pt.options && pt.options.hasOwnProperty(a)) {
-                                r = pt.options[a];
-                            }
-                            else {
-                                r = a;
-                            }
-                            return r;
-                        }
-                        else if (pt.type === 'number' && pt.hasOwnProperty('legend')) {
-                            var label;
-                            pt.legend.legendEntries.some(function (le) {
-                                if (a >= le.interval.min && le.interval.max >= a) {
-                                    label = le.label;
-                                    return true;
-                                }
-                            });
-                            if (!label) {
-                                if (pt && pt.legend && pt.legend.hasOwnProperty('defaultLabel')) {
-                                    label = pt.legend.defaultLabel;
-                                }
-                                else {
-                                    label = 'Onbekend';
-                                }
-                            }
-                            return label;
-                        }
-                        else if (pt.type === 'text' || pt.type === 'textarea' || pt.type === 'textarea-right') {
-                            return a;
-                        }
-                    }
-                    return null;
-                }
-            });
-            filter.dimension = dcDim;
-            var dcGroup = dcDim.group();
-            // If a legend is present, add a group for each entry, such that it is shown in the filter even when there are no such features in the group (yet).
-            if (pt && pt.legend) {
-                var allEntries = [];
-                _.each(pt.legend.legendEntries, function (le) { allEntries.push(le.label); });
-                var fakeNdx = crossfilter(allEntries);
-                var fakeDim = fakeNdx.dimension(function (d) {
-                    return d;
-                });
-                var fakeGroup = fakeDim.group();
-                //Sort ordering
-                pt.legend.legendEntries.forEach(function (le) {
-                    if (le.hasOwnProperty('sortKey')) {
-                        var sk = le.sortKey;
-                        if (!orderList.hasOwnProperty(sk)) {
-                            orderList[le.label] = { nr: Object.keys(orderList).length, sortKey: sk };
-                        }
-                    }
-                });
-                var sortKeys = _.map(orderList, function (item) { return item.sortKey; });
-                sortKeys = sortKeys.sort();
-                _.each(orderList, function (val, key) { val.nr = sortKeys.indexOf(val.sortKey); });
-            }
-            var ensuredGroup = (fakeGroup ? this.ensureAllBins(dcGroup, fakeGroup) : null);
-            var h = (ensuredGroup && ensuredGroup.size() < 6) ? 180 : 250;
-            this.dcChart.width(275)
-                .height(h)
-                .margins({ top: 2, right: 2, bottom: 2, left: 2 })
-                .dimension(dcDim)
-                .group(ensuredGroup || dcGroup)
-                .title(function (d) {
-                return d.key;
-            })
-                .elasticX(true)
-                .colors(function (d) {
-                if (pt && pt.legend) {
-                    if (pt.options) {
-                        return csComp.Helpers.getColorFromLegend(d, pt.legend);
-                    }
-                    else if (pt.type === 'number' && !isNaN(d)) {
-                        var arr = pt.legend.legendEntries.filter(function (le) {
-                            return (d >= le.interval.min && le.interval.max >= d);
-                        });
-                        if (arr.length > 0) {
-                            return arr[0].color.substring(0, 7);
-                        }
-                        else {
-                            if (pt && pt.legend && pt.legend.hasOwnProperty('defaultLabel')) {
-                                return _.find((pt.legend.legendEntries), function (le) { return le.label === pt.legend.defaultLabel; });
-                            }
-                            else {
-                                return '#444444';
-                            }
-                        }
-                    }
-                    else if (!pt.options) {
-                        var arr = pt.legend.legendEntries.filter((function (le) { return le.label === d; }));
-                        return (arr.length > 0 ? arr[0].color.substring(0, 7) : '#444444');
-                    }
-                }
-                else {
-                    return "red";
-                }
-            })
-                .cap(10)
-                .ordering(function (d) {
-                if (pt && pt.legend) {
-                    if (orderList.hasOwnProperty(d.key)) {
-                        return orderList[d.key].nr;
-                    }
-                    else {
-                        return d.key || d.value;
-                    }
-                }
-                else {
-                    return d.key || d.value;
-                }
-            })
-                .on('renderlet', function (e) {
-                dc.events.trigger(function () {
-                    _this.$layerService.updateFilterGroupCount(group);
-                }, 0);
-                dc.events.trigger(function () {
-                    console.log('WodkRowFilterCtrl: renderlet');
-                    if (dcDim && dcDim.top(Infinity).length > 0 && typeof dcDim.top(Infinity)[0] === 'undefined') {
-                        console.log('dcDim contains undefined objects');
-                    }
-                    else {
-                        group.filterResult = dcDim.top(Infinity);
-                        _this.$layerService.updateMapFilter(group);
-                    }
-                }, 100);
-            })
-                .on('filtered', function (e) {
-                console.log('Filtered rowchart ' + e.dimension().top(1000).length + ' ' + e.anchorName());
-                group.filterResult = dcDim.top(Infinity);
-                _this.$layerService.updateMapFilter(group);
-            });
-            this.dcChart.xAxis().ticks(8);
-            this.dcChart.selectAll();
-            this.updateRange();
-        };
-        WodkRowFilterCtrl.prototype.ensureAllBins = function (source_group, fake_group) {
-            var bins = fake_group.all().slice(0);
-            return {
-                all: function () {
-                    var result = source_group.all().slice(0); // copy original results (we mustn't modify them)
-                    var found = {};
-                    result.forEach(function (d) {
-                        found[d.key] = true;
-                    });
-                    bins.forEach(function (d) {
-                        if (!found[d.key])
-                            result.push({ key: d.key, value: 0 });
-                    });
-                    return result;
-                },
-                top: function (n) {
-                    var result = source_group.all().slice(0); // copy original results (we mustn't modify them)
-                    var found = {};
-                    result.forEach(function (d) {
-                        found[d.key] = true;
-                    });
-                    bins.forEach(function (d) {
-                        if (!found[d.key])
-                            result.push({ key: d.key, value: 0 });
-                    });
-                    return result.slice(0, n);
-                },
-                size: function () {
-                    return bins.length;
-                }
-            };
-        };
-        ;
-        WodkRowFilterCtrl.prototype.updateFilter = function () {
-            var _this = this;
-            setTimeout(function () {
-                console.log('WodkRowFilterCtrl: updateFilter()');
-                if (_this.$scope.filter.filterLabel) {
-                    _this.dcChart.filter(_this.$scope.filter.filterLabel);
-                }
-                _this.dcChart.render();
-                dc.renderAll();
-                _this.$layerService.updateMapFilter(_this.$scope.filter.group);
-            }, 20);
-        };
-        WodkRowFilterCtrl.prototype.updateRange = function () {
-            var _this = this;
-            setTimeout(function () {
-                console.log('WodkRowFilterCtrl: updateRange()');
-                var filter = _this.$scope.filter;
-                var group = filter.group;
-                _this.dcChart.filterAll();
-                if (_this.$scope.filter.filterLabel) {
-                    _this.dcChart.filter(_this.$scope.filter.filterLabel);
-                }
-                _this.dcChart.render();
-                // dc.redrawAll();
-                // dc.renderAll();
-                group.filterResult = filter.dimension.top(Infinity);
-                _this.$layerService.updateMapFilter(_this.$scope.filter.group);
-                _this.$layerService.triggerUpdateFilter(_this.$scope.filter.group.id);
-                _this.$scope.$apply();
-            }, 0);
-        };
-        WodkRowFilterCtrl.prototype.remove = function () {
-            if (this.$scope.filter) {
-                this.$layerService.removeFilter(this.$scope.filter);
-            }
-        };
-        WodkRowFilterCtrl.prototype.exportToImage = function () {
-            var _this = this;
-            var canvg = window.canvg || undefined;
-            if (!canvg)
-                return;
-            var svg = new XMLSerializer().serializeToString(this.dcChart.root().node().firstChild);
-            var canvas = document.createElement('canvas');
-            document.body.appendChild(canvas);
-            canvg(canvas, svg, { renderCallback: function () {
-                    var img = canvas.toDataURL("image/png");
-                    var fileName = _this.$scope.filter.title || 'rowfilter-export';
-                    csComp.Helpers.saveImage(img, fileName + '.png', 'png');
-                    canvas.parentElement.removeChild(canvas);
-                } });
-        };
-        return WodkRowFilterCtrl;
-    }());
-    // $inject annotation.
-    // It provides $injector with information about dependencies to be injected into constructor
-    // it is better to have it close to the constructor, because the parameters must match in count and type.
-    // See http://docs.angularjs.org/guide/di
-    WodkRowFilterCtrl.$inject = [
-        '$scope',
-        'layerService',
-        'messageBusService',
-        '$timeout',
-        '$translate'
-    ];
-    Filters.WodkRowFilterCtrl = WodkRowFilterCtrl;
-})(Filters || (Filters = {}));
-//# sourceMappingURL=WodkRowFilter.js.map
-var FilterStyleWidget;
-(function (FilterStyleWidget) {
-    /**
-      * Config
-      */
-    var moduleName = 'csComp';
-    try {
-        FilterStyleWidget.myModule = angular.module(moduleName);
-    }
-    catch (err) {
-        // named module does not exist, so create one
-        FilterStyleWidget.myModule = angular.module(moduleName, []);
-    }
-    /**
-      * Directive to display the available map layers.
-      */
-    FilterStyleWidget.myModule.directive('filterstylewidget', [function () {
-            return {
-                restrict: 'E',
-                scope: {},
-                templateUrl: 'directives/Widgets/FilterStyleWidget/FilterStyleWidget.tpl.html',
-                replace: true,
-                transclude: false,
-                controller: FilterStyleWidget.FilterStyleWidgetCtrl
-            };
-        }
-    ]);
-})(FilterStyleWidget || (FilterStyleWidget = {}));
-//# sourceMappingURL=FilterStyleWidget.js.map
-var FilterStyleWidget;
-(function (FilterStyleWidget) {
-    var FilterStyleWidgetData = /** @class */ (function () {
-        function FilterStyleWidgetData() {
-        }
-        return FilterStyleWidgetData;
-    }());
-    FilterStyleWidget.FilterStyleWidgetData = FilterStyleWidgetData;
-    var FilterStyleWidgetCtrl = /** @class */ (function () {
-        function FilterStyleWidgetCtrl($scope, $timeout, $translate, $layerService, $messageBus, $mapService) {
-            var _this = this;
-            this.$scope = $scope;
-            this.$timeout = $timeout;
-            this.$translate = $translate;
-            this.$layerService = $layerService;
-            this.$messageBus = $messageBus;
-            this.$mapService = $mapService;
-            this.mBusHandles = [];
-            $scope.vm = this;
-            var par = $scope.$parent;
-            this.widget = par.widget;
-            this.parentWidget = $("#" + this.widget.elementId).parent();
-            $scope.data = this.widget.data;
-            $scope.minimized = false;
-            if (window.canvg) {
-                this.exporterAvailable = true;
-            }
-            else {
-                this.exporterAvailable = false;
-            }
-            // this.mBusHandles.push(this.$messageBus.subscribe('feature', (action: string, feature: csComp.Services.IFeature) => {
-            //     switch (action) {
-            //         case 'onFeatureDeselect':
-            //         case 'onFeatureSelect':
-            //             this.selectFeature(feature);
-            //             break;
-            //         default:
-            //             break;
-            //     }
-            // }));
-            this.parentWidget.hide();
-            this.mBusHandles.push(this.$messageBus.subscribe('layer', function (title, l) {
-                if (title === 'activated') {
-                    if ($scope.filter) {
-                        _this.updateChart();
-                    }
-                }
-            }));
-            this.mBusHandles.push(this.$messageBus.subscribe('updatelegend', function (title, gs) {
-                switch (title) {
-                    case 'hidelegend':
-                        _this.close();
-                        break;
-                    default:
-                        if (gs) {
-                            delete $scope.filter;
-                            $scope.style = gs;
-                            _this.createChart();
-                        }
-                        break;
-                }
-            }));
-        }
-        FilterStyleWidgetCtrl.prototype.canMinimize = function () {
-            return (this.$scope.data.hasOwnProperty('canMinimize'))
-                ? this.$scope.data['canMinimize']
-                : true;
-        };
-        FilterStyleWidgetCtrl.prototype.minimize = function () {
-            this.$scope.minimized = !this.$scope.minimized;
-            if (this.$scope.minimized) {
-                this.parentWidget.css("height", "30px");
-            }
-            else {
-                this.parentWidget.css("height", this.widget.height);
-            }
-        };
-        FilterStyleWidgetCtrl.prototype.canClose = function () {
-            return (this.$scope.data.hasOwnProperty('canClose'))
-                ? this.$scope.data['canClose']
-                : true;
-        };
-        FilterStyleWidgetCtrl.prototype.close = function () {
-            this.parentWidget.hide();
-        };
-        FilterStyleWidgetCtrl.prototype.stop = function () {
-            var _this = this;
-            if (this.mBusHandles && this.mBusHandles.length > 0) {
-                this.mBusHandles.forEach(function (mbh) {
-                    _this.$messageBus.unsubscribe(mbh);
-                });
-            }
-        };
-        FilterStyleWidgetCtrl.prototype.selectFeature = function (feature) {
-            if (!feature || !feature.isSelected) {
-                return;
-            }
-            else {
-                this.parentWidget.show();
-            }
-        };
-        FilterStyleWidgetCtrl.prototype.createChart = function () {
-            var _this = this;
-            var gf = new csComp.Services.GroupFilter();
-            gf.property = this.$scope.style.property;
-            gf.id = this.widget.id;
-            gf.group = this.$scope.style.group;
-            gf.group.ndx = crossfilter([]);
-            gf.group.ndx.add(_.map(gf.group.markers, function (item, key) { return item.feature; }));
-            gf.title = this.$scope.style.title;
-            gf.filterLabel = null;
-            gf.filterType = 'row';
-            gf.group.filters = [];
-            gf.group.filters.push(gf);
-            this.$timeout(function () {
-                _this.$scope.filter = gf;
-                _this.$scope.filter.showInWidget = true;
-            });
-            this.$timeout(function () {
-                _this.updateRowFilterScope(gf);
-            });
-            this.parentWidget.show();
-            // var propType = this.$layerService.findPropertyTypeById(this.$scope.layer.typeUrl + '#' + gf.property);
-            // this.$layerService.setGroupStyle(this.$scope.style.group, propType);
-        };
-        FilterStyleWidgetCtrl.prototype.updateChart = function () {
-            var _this = this;
-            this.$scope.filter.group.ndx = crossfilter([]);
-            this.$scope.filter.group.ndx.add(_.map(this.$scope.filter.group.markers, function (item, key) { return item.feature; }));
-            this.$timeout(function () {
-                _this.updateRowFilterScope(_this.$scope.filter);
-            });
-        };
-        FilterStyleWidgetCtrl.prototype.updateRowFilterScope = function (gf) {
-            if (!gf || !gf.group) {
-                console.log('No filter provided.');
-                return;
-            }
-            var rowFilterElm = angular.element($("#filter_" + this.widget.id));
-            if (!rowFilterElm) {
-                console.log('rowFilterElm not found.');
-                return;
-            }
-            var rowFilterScope = rowFilterElm.scope();
-            if (!rowFilterScope) {
-                console.log('rowFilterScope not found.');
-                return;
-            }
-            else {
-                rowFilterScope.filter = gf;
-                rowFilterScope.vm.initRowFilter();
-                return;
-            }
-        };
-        FilterStyleWidgetCtrl.prototype.exportToImage = function () {
-            var _this = this;
-            var canvg = window.canvg || undefined;
-            if (!canvg)
-                return;
-            var svg = new XMLSerializer().serializeToString(document.getElementById("filter_" + this.widget.id).firstChild);
-            var canvas = document.createElement('canvas');
-            document.body.appendChild(canvas);
-            canvg(canvas, svg, {
-                renderCallback: function () {
-                    var img = canvas.toDataURL("image/png");
-                    var fileName = _this.$scope.filter.title || 'rowfilter-export';
-                    csComp.Helpers.saveImage(img, fileName + '.png', 'png');
-                    canvas.parentElement.removeChild(canvas);
-                }
-            });
-        };
-        FilterStyleWidgetCtrl.$inject = [
-            '$scope',
-            '$timeout',
-            '$translate',
-            'layerService',
-            'messageBusService',
-            'mapService'
-        ];
-        return FilterStyleWidgetCtrl;
-    }());
-    FilterStyleWidget.FilterStyleWidgetCtrl = FilterStyleWidgetCtrl;
-})(FilterStyleWidget || (FilterStyleWidget = {}));
-//# sourceMappingURL=FilterStyleWidgetCtrl.js.map
 var FocusTimeWidget;
 (function (FocusTimeWidget) {
     /** Config */
@@ -28876,6 +28563,115 @@ var IFrameWidget;
     IFrameWidget.IFrameWidgetCtrl = IFrameWidgetCtrl;
 })(IFrameWidget || (IFrameWidget = {}));
 //# sourceMappingURL=IFrameWidgetCtrl.js.map
+var LocationWidget;
+(function (LocationWidget) {
+    /** Config */
+    var moduleName = 'csComp';
+    try {
+        LocationWidget.myModule = angular.module(moduleName);
+    }
+    catch (err) {
+        // named module does not exist, so create one
+        LocationWidget.myModule = angular.module(moduleName, []);
+    }
+    /** Directive to send a message to a REST endpoint. Similar in goal to the Chrome plugin POSTMAN. */
+    LocationWidget.myModule.directive('locationwidget', [function () {
+            return {
+                restrict: 'E',
+                scope: {},
+                templateUrl: 'directives/Widgets/LocationWidget/LocationWidget.tpl.html',
+                replace: true,
+                transclude: false,
+                controller: LocationWidgetCtrl
+            };
+        }]);
+    var LocationWidgetCtrl = /** @class */ (function () {
+        function LocationWidgetCtrl($scope, $http, layerService, messageBusService, actionService, $timeout) {
+            var _this = this;
+            this.$scope = $scope;
+            this.$http = $http;
+            this.layerService = layerService;
+            this.messageBusService = messageBusService;
+            this.actionService = actionService;
+            this.$timeout = $timeout;
+            this.streetViewUrl = 'https://maps.googleapis.com/maps/api/streetview';
+            this.location = {};
+            $scope.vm = this;
+            var par = $scope.$parent;
+            $scope.data = par.widget.data;
+            if ($scope.data.streetViewUrl)
+                this.streetViewUrl = $scope.data.streetViewUrl;
+            this.parentWidget = $('#' + par.widget.elementId + '-parent');
+            this.parentWidget.hide();
+            messageBusService.subscribe('geocoding', function (action, data) {
+                if (action !== 'reverseLookupResult')
+                    return;
+                _this.parentWidget.show();
+                _this.updateWidget(data);
+            });
+        }
+        LocationWidgetCtrl.prototype.updateWidget = function (data) {
+            this.location = {};
+            if (!data || !data.annotations)
+                return;
+            if (data.formatted)
+                this.location.title = data.formatted;
+            // Set address
+            if (data.components) {
+                if (data.components.postcode)
+                    this.location.postcode = data.components.postcode;
+                if (data.components.city)
+                    this.location.city = data.components.city;
+                if (data.components.neighbourhood)
+                    this.location.neighbourhood = data.components.neighbourhood;
+                if (data.components.road || data.components.pedestrian) {
+                    this.location.address = data.components.road || data.components.pedestrian;
+                    if (data.components.house_number)
+                        this.location.address += " " + data.components.house_number;
+                    this.location.streetViewUrlThumb = this.streetViewUrl + "?size=200x200&location=" + this.location.address + "," + this.location.city + "&key=" + this.$scope.data.streetViewApiKey;
+                    this.location.streetViewUrlFull = this.streetViewUrl + "?size=640x640&location=" + this.location.address + "," + this.location.city + "&key=" + this.$scope.data.streetViewApiKey;
+                }
+            }
+            // Set locations
+            this.location.locations = [];
+            if (data.geometry)
+                this.location.locations.push(data.geometry.lat + ", " + data.geometry.lng);
+            if (data.annotations.DMS)
+                this.location.locations.push("DMS latitude: " + data.annotations.DMS.lat + ", longitude: " + data.annotations.DMS.lng);
+            if (data.geometry)
+                this.location.locations.push("WGS84 latitude: " + data.geometry.lat + ", longitude: " + data.geometry.lng);
+            if (data.annotations.MGRS)
+                this.location.locations.push("MGRS: " + data.annotations.MGRS);
+            if (data.annotations.Mercator)
+                this.location.locations.push("Mercator x: " + data.annotations.Mercator.x + ", y: " + data.annotations.Mercator.y);
+            if (this.location.locations.length > 0)
+                this.selectedLocationFormat = this.location.locations[0];
+            this.location.defaultLocation = this.location.locations[0];
+            // Set sunrise and sunset
+            if (data.annotations.sun) {
+                var sunrise = new Date(data.annotations.sun.rise.apparent * 1000);
+                this.location.sunrise = String.format('{0:HH}:{0:mm}:{0:ss}', sunrise);
+                var sunset = new Date(data.annotations.sun.set.apparent * 1000);
+                this.location.sunset = String.format('{0:HH}:{0:mm}:{0:ss}', sunset);
+            }
+        };
+        LocationWidgetCtrl.prototype.close = function () {
+            this.location = {};
+            this.parentWidget.hide();
+        };
+        LocationWidgetCtrl.$inject = [
+            '$scope',
+            '$http',
+            'layerService',
+            'messageBusService',
+            'actionService',
+            '$timeout'
+        ];
+        return LocationWidgetCtrl;
+    }());
+    LocationWidget.LocationWidgetCtrl = LocationWidgetCtrl;
+})(LocationWidget || (LocationWidget = {}));
+//# sourceMappingURL=LocationWidget.js.map
 var Indicators;
 (function (Indicators) {
     /**
@@ -29392,115 +29188,6 @@ var Indicators;
     Indicators.IndicatorsCtrl = IndicatorsCtrl;
 })(Indicators || (Indicators = {}));
 //# sourceMappingURL=IndicatorsCtrl.js.map
-var LocationWidget;
-(function (LocationWidget) {
-    /** Config */
-    var moduleName = 'csComp';
-    try {
-        LocationWidget.myModule = angular.module(moduleName);
-    }
-    catch (err) {
-        // named module does not exist, so create one
-        LocationWidget.myModule = angular.module(moduleName, []);
-    }
-    /** Directive to send a message to a REST endpoint. Similar in goal to the Chrome plugin POSTMAN. */
-    LocationWidget.myModule.directive('locationwidget', [function () {
-            return {
-                restrict: 'E',
-                scope: {},
-                templateUrl: 'directives/Widgets/LocationWidget/LocationWidget.tpl.html',
-                replace: true,
-                transclude: false,
-                controller: LocationWidgetCtrl
-            };
-        }]);
-    var LocationWidgetCtrl = /** @class */ (function () {
-        function LocationWidgetCtrl($scope, $http, layerService, messageBusService, actionService, $timeout) {
-            var _this = this;
-            this.$scope = $scope;
-            this.$http = $http;
-            this.layerService = layerService;
-            this.messageBusService = messageBusService;
-            this.actionService = actionService;
-            this.$timeout = $timeout;
-            this.streetViewUrl = 'https://maps.googleapis.com/maps/api/streetview';
-            this.location = {};
-            $scope.vm = this;
-            var par = $scope.$parent;
-            $scope.data = par.widget.data;
-            if ($scope.data.streetViewUrl)
-                this.streetViewUrl = $scope.data.streetViewUrl;
-            this.parentWidget = $('#' + par.widget.elementId + '-parent');
-            this.parentWidget.hide();
-            messageBusService.subscribe('geocoding', function (action, data) {
-                if (action !== 'reverseLookupResult')
-                    return;
-                _this.parentWidget.show();
-                _this.updateWidget(data);
-            });
-        }
-        LocationWidgetCtrl.prototype.updateWidget = function (data) {
-            this.location = {};
-            if (!data || !data.annotations)
-                return;
-            if (data.formatted)
-                this.location.title = data.formatted;
-            // Set address
-            if (data.components) {
-                if (data.components.postcode)
-                    this.location.postcode = data.components.postcode;
-                if (data.components.city)
-                    this.location.city = data.components.city;
-                if (data.components.neighbourhood)
-                    this.location.neighbourhood = data.components.neighbourhood;
-                if (data.components.road || data.components.pedestrian) {
-                    this.location.address = data.components.road || data.components.pedestrian;
-                    if (data.components.house_number)
-                        this.location.address += " " + data.components.house_number;
-                    this.location.streetViewUrlThumb = this.streetViewUrl + "?size=200x200&location=" + this.location.address + "," + this.location.city + "&key=" + this.$scope.data.streetViewApiKey;
-                    this.location.streetViewUrlFull = this.streetViewUrl + "?size=640x640&location=" + this.location.address + "," + this.location.city + "&key=" + this.$scope.data.streetViewApiKey;
-                }
-            }
-            // Set locations
-            this.location.locations = [];
-            if (data.geometry)
-                this.location.locations.push(data.geometry.lat + ", " + data.geometry.lng);
-            if (data.annotations.DMS)
-                this.location.locations.push("DMS latitude: " + data.annotations.DMS.lat + ", longitude: " + data.annotations.DMS.lng);
-            if (data.geometry)
-                this.location.locations.push("WGS84 latitude: " + data.geometry.lat + ", longitude: " + data.geometry.lng);
-            if (data.annotations.MGRS)
-                this.location.locations.push("MGRS: " + data.annotations.MGRS);
-            if (data.annotations.Mercator)
-                this.location.locations.push("Mercator x: " + data.annotations.Mercator.x + ", y: " + data.annotations.Mercator.y);
-            if (this.location.locations.length > 0)
-                this.selectedLocationFormat = this.location.locations[0];
-            this.location.defaultLocation = this.location.locations[0];
-            // Set sunrise and sunset
-            if (data.annotations.sun) {
-                var sunrise = new Date(data.annotations.sun.rise.apparent * 1000);
-                this.location.sunrise = String.format('{0:HH}:{0:mm}:{0:ss}', sunrise);
-                var sunset = new Date(data.annotations.sun.set.apparent * 1000);
-                this.location.sunset = String.format('{0:HH}:{0:mm}:{0:ss}', sunset);
-            }
-        };
-        LocationWidgetCtrl.prototype.close = function () {
-            this.location = {};
-            this.parentWidget.hide();
-        };
-        LocationWidgetCtrl.$inject = [
-            '$scope',
-            '$http',
-            'layerService',
-            'messageBusService',
-            'actionService',
-            '$timeout'
-        ];
-        return LocationWidgetCtrl;
-    }());
-    LocationWidget.LocationWidgetCtrl = LocationWidgetCtrl;
-})(LocationWidget || (LocationWidget = {}));
-//# sourceMappingURL=LocationWidget.js.map
 var Markdown;
 (function (Markdown) {
     /**
@@ -29761,197 +29448,6 @@ var MarkdownWidget;
     MarkdownWidget.MarkdownWidgetCtrl = MarkdownWidgetCtrl;
 })(MarkdownWidget || (MarkdownWidget = {}));
 //# sourceMappingURL=MarkdownWidgetCtrl.js.map
-var MCAWidget;
-(function (MCAWidget) {
-    /**
-      * Config
-      */
-    var moduleName = 'csComp';
-    try {
-        MCAWidget.myModule = angular.module(moduleName);
-    }
-    catch (err) {
-        // named module does not exist, so create one
-        MCAWidget.myModule = angular.module(moduleName, []);
-    }
-    /**
-      * Directive to display the available map layers.
-      */
-    MCAWidget.myModule.directive('mcawidget', [function () {
-            return {
-                restrict: 'E',
-                scope: {},
-                templateUrl: 'directives/Widgets/MCAWidget/MCAWidget.tpl.html',
-                replace: true,
-                transclude: false,
-                controller: MCAWidget.MCAWidgetCtrl
-            };
-        }
-    ]);
-})(MCAWidget || (MCAWidget = {}));
-//# sourceMappingURL=MCAWidget.js.map
-var MCAWidget;
-(function (MCAWidget) {
-    var MCAWidgetData = /** @class */ (function () {
-        function MCAWidgetData() {
-        }
-        return MCAWidgetData;
-    }());
-    MCAWidget.MCAWidgetData = MCAWidgetData;
-    var MCAWidgetCtrl = /** @class */ (function () {
-        function MCAWidgetCtrl($scope, $timeout, $controller, $layerService, $messageBus, $mapService) {
-            var _this = this;
-            this.$scope = $scope;
-            this.$timeout = $timeout;
-            this.$controller = $controller;
-            this.$layerService = $layerService;
-            this.$messageBus = $messageBus;
-            this.$mapService = $mapService;
-            this.mBusHandles = [];
-            $scope.vm = this;
-            var par = $scope.$parent;
-            this.widget = par.widget;
-            $scope.data = this.widget.data;
-            $scope.data.filterByDefaultFeatureType = $scope.data.filterByDefaultFeatureType || false;
-            if (typeof $scope.data.layerId !== 'undefined') {
-                // Hide widget
-                this.parentWidget = $("#" + this.widget.elementId).parent();
-                this.parentWidget.hide();
-                this.mBusHandles.push(this.$messageBus.subscribe('layer', function (action, layer) {
-                    switch (action) {
-                        case 'activated':
-                        case 'deactivate':
-                            _this.activateLayer(layer);
-                            break;
-                        default:
-                            break;
-                    }
-                }));
-                this.mBusHandles.push(this.$messageBus.subscribe('mca', function (action, mca) {
-                    switch (action) {
-                        case 'updated':
-                        case 'deactivate':
-                            if (!mca)
-                                break;
-                            $timeout(function () {
-                                if (_this.selectedMCA !== mca.id) {
-                                    _this.selectedMCA = mca.id;
-                                    _this.setMcaAsStyle(_this.selectedMCA);
-                                }
-                            }, 0);
-                            break;
-                        default:
-                            break;
-                    }
-                }));
-                // Activate widget when layer is already loaded
-                var l = this.$layerService.findLoadedLayer($scope.data.layerId);
-                if (l) {
-                    this.activateLayer(l);
-                }
-            }
-        }
-        MCAWidgetCtrl.prototype.stop = function () {
-            var _this = this;
-            if (this.mBusHandles) {
-                this.mBusHandles.forEach(function (mbh) {
-                    _this.$messageBus.unsubscribe(mbh);
-                });
-                this.mBusHandles.length = 0;
-            }
-        };
-        MCAWidgetCtrl.prototype.activateLayer = function (layer) {
-            var _this = this;
-            this.mcaScope = this.getMcaScope();
-            if (!this.mcaScope)
-                return;
-            this.selectedMCA = this.mcaScope.vm.mca.id;
-            if (layer.id !== this.$scope.data.layerId || (layer.id === this.$scope.data.layerId && !layer.enabled)) {
-                this.parentWidget.hide();
-                return;
-            }
-            this.layer = layer;
-            if (this.$scope.data.autoApplyStyle) {
-                this.setStyleForProperty();
-            }
-            this.$timeout(function () {
-                _this.parentWidget.show();
-            }, 0);
-        };
-        MCAWidgetCtrl.prototype.getMcaScope = function () {
-            var mcaElm = angular.element('div[id="mca"]');
-            if (!mcaElm) {
-                console.log('Mca element not found.');
-                return;
-            }
-            var mcaScope = mcaElm.scope();
-            if (!mcaScope) {
-                console.log('Mca controller scope not found.');
-                return;
-            }
-            else {
-                var l = this.$layerService.findLoadedLayer(this.$scope.data.layerId);
-                if (l && this.$scope.data.filterByDefaultFeatureType) {
-                    this.$scope.data.availableMcas = mcaScope.vm.availableMcas.filter(function (mca) {
-                        return mca.featureIds[0].split('#').pop() === l.defaultFeatureType;
-                    });
-                }
-                else {
-                    this.$scope.data.availableMcas = mcaScope.vm.availableMcas;
-                }
-            }
-            return mcaScope;
-        };
-        MCAWidgetCtrl.prototype.setStyleForProperty = function () {
-            if (!this.mcaScope || !this.mcaScope.vm.mca) {
-                console.log('Mca controller scope not found.');
-                return;
-            }
-            var gs = this.$layerService.setStyleForProperty(this.layer, this.mcaScope.vm.mca.label);
-            if (!gs)
-                return;
-            gs.activeLegend = this.mcaScope.vm.getLegend(this.mcaScope.vm.mca);
-            this.mcaScope.vm.groupStyle = gs;
-            this.$layerService.updateStyle(gs);
-        };
-        MCAWidgetCtrl.prototype.setMcaAsStyle = function (mcaId) {
-            if (!this.mcaScope || !this.mcaScope.vm.mca) {
-                console.log('Mca controller scope not found.');
-                return;
-            }
-            var vm = this.mcaScope.vm;
-            var mca = vm.findMcaById(mcaId);
-            vm.updateAvailableMcas(mca);
-            vm.updateMca();
-            if (!this.$layerService.lastSelectedFeature) {
-                // this.$messageBus.notifyWithTranslation('SELECT_A_FEATURE', 'SELECT_FEATURE_FOR_STYLE');
-                this.setStyleForProperty();
-                return;
-            }
-            vm.updateSelectedFeature(this.$layerService.lastSelectedFeature);
-            if (!vm.showFeature) {
-                this.$messageBus.notifyWithTranslation('SELECT_A_FEATURE', 'SELECT_FEATURE_FOR_STYLE');
-                return;
-            }
-            if (vm.properties.length > 0) {
-                vm.updateMca();
-                console.log('Set mca style.');
-                vm.setStyle(vm.properties[0]);
-            }
-        };
-        MCAWidgetCtrl.$inject = [
-            '$scope',
-            '$timeout',
-            '$controller',
-            'layerService',
-            'messageBusService',
-            'mapService'
-        ];
-        return MCAWidgetCtrl;
-    }());
-    MCAWidget.MCAWidgetCtrl = MCAWidgetCtrl;
-})(MCAWidget || (MCAWidget = {}));
-//# sourceMappingURL=MCAWidgetCtrl.js.map
 var MarvelWidget;
 (function (MarvelWidget) {
     /**
@@ -30180,6 +29676,197 @@ var MarvelWidget;
     MarvelWidget.MarvelWidgetCtrl = MarvelWidgetCtrl;
 })(MarvelWidget || (MarvelWidget = {}));
 //# sourceMappingURL=MarvelWidgetCtrl.js.map
+var MCAWidget;
+(function (MCAWidget) {
+    /**
+      * Config
+      */
+    var moduleName = 'csComp';
+    try {
+        MCAWidget.myModule = angular.module(moduleName);
+    }
+    catch (err) {
+        // named module does not exist, so create one
+        MCAWidget.myModule = angular.module(moduleName, []);
+    }
+    /**
+      * Directive to display the available map layers.
+      */
+    MCAWidget.myModule.directive('mcawidget', [function () {
+            return {
+                restrict: 'E',
+                scope: {},
+                templateUrl: 'directives/Widgets/MCAWidget/MCAWidget.tpl.html',
+                replace: true,
+                transclude: false,
+                controller: MCAWidget.MCAWidgetCtrl
+            };
+        }
+    ]);
+})(MCAWidget || (MCAWidget = {}));
+//# sourceMappingURL=MCAWidget.js.map
+var MCAWidget;
+(function (MCAWidget) {
+    var MCAWidgetData = /** @class */ (function () {
+        function MCAWidgetData() {
+        }
+        return MCAWidgetData;
+    }());
+    MCAWidget.MCAWidgetData = MCAWidgetData;
+    var MCAWidgetCtrl = /** @class */ (function () {
+        function MCAWidgetCtrl($scope, $timeout, $controller, $layerService, $messageBus, $mapService) {
+            var _this = this;
+            this.$scope = $scope;
+            this.$timeout = $timeout;
+            this.$controller = $controller;
+            this.$layerService = $layerService;
+            this.$messageBus = $messageBus;
+            this.$mapService = $mapService;
+            this.mBusHandles = [];
+            $scope.vm = this;
+            var par = $scope.$parent;
+            this.widget = par.widget;
+            $scope.data = this.widget.data;
+            $scope.data.filterByDefaultFeatureType = $scope.data.filterByDefaultFeatureType || false;
+            if (typeof $scope.data.layerId !== 'undefined') {
+                // Hide widget
+                this.parentWidget = $("#" + this.widget.elementId).parent();
+                this.parentWidget.hide();
+                this.mBusHandles.push(this.$messageBus.subscribe('layer', function (action, layer) {
+                    switch (action) {
+                        case 'activated':
+                        case 'deactivate':
+                            _this.activateLayer(layer);
+                            break;
+                        default:
+                            break;
+                    }
+                }));
+                this.mBusHandles.push(this.$messageBus.subscribe('mca', function (action, mca) {
+                    switch (action) {
+                        case 'updated':
+                        case 'deactivate':
+                            if (!mca)
+                                break;
+                            $timeout(function () {
+                                if (_this.selectedMCA !== mca.id) {
+                                    _this.selectedMCA = mca.id;
+                                    _this.setMcaAsStyle(_this.selectedMCA);
+                                }
+                            }, 0);
+                            break;
+                        default:
+                            break;
+                    }
+                }));
+                // Activate widget when layer is already loaded
+                var l = this.$layerService.findLoadedLayer($scope.data.layerId);
+                if (l) {
+                    this.activateLayer(l);
+                }
+            }
+        }
+        MCAWidgetCtrl.prototype.stop = function () {
+            var _this = this;
+            if (this.mBusHandles) {
+                this.mBusHandles.forEach(function (mbh) {
+                    _this.$messageBus.unsubscribe(mbh);
+                });
+                this.mBusHandles.length = 0;
+            }
+        };
+        MCAWidgetCtrl.prototype.activateLayer = function (layer) {
+            var _this = this;
+            this.mcaScope = this.getMcaScope();
+            if (!this.mcaScope)
+                return;
+            this.selectedMCA = this.mcaScope.vm.mca.id;
+            if (layer.id !== this.$scope.data.layerId || (layer.id === this.$scope.data.layerId && !layer.enabled)) {
+                this.parentWidget.hide();
+                return;
+            }
+            this.layer = layer;
+            if (this.$scope.data.autoApplyStyle) {
+                this.setStyleForProperty();
+            }
+            this.$timeout(function () {
+                _this.parentWidget.show();
+            }, 0);
+        };
+        MCAWidgetCtrl.prototype.getMcaScope = function () {
+            var mcaElm = angular.element('div[id="mca"]');
+            if (!mcaElm) {
+                console.log('Mca element not found.');
+                return;
+            }
+            var mcaScope = mcaElm.scope();
+            if (!mcaScope) {
+                console.log('Mca controller scope not found.');
+                return;
+            }
+            else {
+                var l = this.$layerService.findLoadedLayer(this.$scope.data.layerId);
+                if (l && this.$scope.data.filterByDefaultFeatureType) {
+                    this.$scope.data.availableMcas = mcaScope.vm.availableMcas.filter(function (mca) {
+                        return mca.featureIds[0].split('#').pop() === l.defaultFeatureType;
+                    });
+                }
+                else {
+                    this.$scope.data.availableMcas = mcaScope.vm.availableMcas;
+                }
+            }
+            return mcaScope;
+        };
+        MCAWidgetCtrl.prototype.setStyleForProperty = function () {
+            if (!this.mcaScope || !this.mcaScope.vm.mca) {
+                console.log('Mca controller scope not found.');
+                return;
+            }
+            var gs = this.$layerService.setStyleForProperty(this.layer, this.mcaScope.vm.mca.label);
+            if (!gs)
+                return;
+            gs.activeLegend = this.mcaScope.vm.getLegend(this.mcaScope.vm.mca);
+            this.mcaScope.vm.groupStyle = gs;
+            this.$layerService.updateStyle(gs);
+        };
+        MCAWidgetCtrl.prototype.setMcaAsStyle = function (mcaId) {
+            if (!this.mcaScope || !this.mcaScope.vm.mca) {
+                console.log('Mca controller scope not found.');
+                return;
+            }
+            var vm = this.mcaScope.vm;
+            var mca = vm.findMcaById(mcaId);
+            vm.updateAvailableMcas(mca);
+            vm.updateMca();
+            if (!this.$layerService.lastSelectedFeature) {
+                // this.$messageBus.notifyWithTranslation('SELECT_A_FEATURE', 'SELECT_FEATURE_FOR_STYLE');
+                this.setStyleForProperty();
+                return;
+            }
+            vm.updateSelectedFeature(this.$layerService.lastSelectedFeature);
+            if (!vm.showFeature) {
+                this.$messageBus.notifyWithTranslation('SELECT_A_FEATURE', 'SELECT_FEATURE_FOR_STYLE');
+                return;
+            }
+            if (vm.properties.length > 0) {
+                vm.updateMca();
+                console.log('Set mca style.');
+                vm.setStyle(vm.properties[0]);
+            }
+        };
+        MCAWidgetCtrl.$inject = [
+            '$scope',
+            '$timeout',
+            '$controller',
+            'layerService',
+            'messageBusService',
+            'mapService'
+        ];
+        return MCAWidgetCtrl;
+    }());
+    MCAWidget.MCAWidgetCtrl = MCAWidgetCtrl;
+})(MCAWidget || (MCAWidget = {}));
+//# sourceMappingURL=MCAWidgetCtrl.js.map
 var NavigatorWidget;
 (function (NavigatorWidget) {
     /**
@@ -30247,171 +29934,6 @@ var NavigatorWidget;
     NavigatorWidget.NavigatorWidgetCtrl = NavigatorWidgetCtrl;
 })(NavigatorWidget || (NavigatorWidget = {}));
 //# sourceMappingURL=NavigatorWidgetCtrl.js.map
-var PostMan;
-(function (PostMan) {
-    /** Config */
-    var moduleName = 'csComp';
-    try {
-        PostMan.myModule = angular.module(moduleName);
-    }
-    catch (err) {
-        // named module does not exist, so create one
-        PostMan.myModule = angular.module(moduleName, []);
-    }
-    /**
-     * Directive (editor) to send a message to a REST endpoint. Similar in goal to the Chrome plugin POSTMAN.
-     * Since this is an editor, the name of the directive is a convention: always use main directive name, plus Edit!
-     */
-    PostMan.myModule.directive('postmanEdit', [function () {
-            return {
-                restrict: 'E',
-                scope: {},
-                templateUrl: 'directives/Widgets/PostMan/PostMan-edit.tpl.html',
-                replace: true,
-                transclude: false,
-                controller: PostMan.PostManEditCtrl
-            };
-        }
-    ]);
-})(PostMan || (PostMan = {}));
-//# sourceMappingURL=PostMan-edit.js.map
-var PostMan;
-(function (PostMan) {
-    /** Config */
-    var moduleName = 'csComp';
-    try {
-        PostMan.myModule = angular.module(moduleName);
-    }
-    catch (err) {
-        // named module does not exist, so create one
-        PostMan.myModule = angular.module(moduleName, []);
-    }
-    /** Directive to send a message to a REST endpoint. Similar in goal to the Chrome plugin POSTMAN. */
-    PostMan.myModule.directive('postman', [function () {
-            return {
-                restrict: 'E',
-                scope: {},
-                templateUrl: 'directives/Widgets/PostMan/PostMan.tpl.html',
-                replace: true,
-                transclude: false,
-                controller: PostMan.PostManCtrl
-            };
-        }
-    ]);
-})(PostMan || (PostMan = {}));
-//# sourceMappingURL=PostMan.js.map
-var PostMan;
-(function (PostMan) {
-    var PostManCtrl = /** @class */ (function () {
-        function PostManCtrl($scope, $http, messageBusService, $timeout) {
-            this.$scope = $scope;
-            this.$http = $http;
-            this.messageBusService = messageBusService;
-            this.$timeout = $timeout;
-            $scope.vm = this;
-            var par = $scope.$parent;
-            $scope.data = par.widget.data;
-            if ($scope.data.messages) {
-                $scope.selectedMessage = $scope.data.messages[0];
-            }
-        }
-        PostManCtrl.prototype.execute = function () {
-            var _this = this;
-            if (!this.$scope.selectedMessage)
-                return;
-            var msg = this.$scope.selectedMessage;
-            this.result = '';
-            switch (msg.httpMethod.name.toUpperCase()) {
-                case 'POST':
-                    this.$http.post(msg.url, msg.message)
-                        .then(function () { _this.result = 'OK'; })
-                        .catch(function (err) { _this.result = "Error: " + err; });
-                    break;
-                case 'PUT':
-                    this.$http.put(msg.url, msg.message)
-                        .then(function () { _this.result = 'OK'; })
-                        .catch(function (err) { _this.result = "Error: " + err; });
-                    break;
-                case 'GET':
-                    this.$http.get(msg.url)
-                        .then(function (data) { _this.result = "Result: " + data.data; })
-                        .catch(function (err) { _this.result = "Error: " + err; });
-                    break;
-                case 'DELETE':
-                    this.$http.delete(msg.url)
-                        .then(function () { _this.result = 'OK'; })
-                        .catch(function (err) { _this.result = "Error: " + err; });
-                    break;
-            }
-        };
-        PostManCtrl.$inject = [
-            '$scope',
-            '$http',
-            'messageBusService',
-            '$timeout'
-        ];
-        return PostManCtrl;
-    }());
-    PostMan.PostManCtrl = PostManCtrl;
-})(PostMan || (PostMan = {}));
-//# sourceMappingURL=PostManCtrl.js.map
-var PostMan;
-(function (PostMan) {
-    var PostManEditCtrl = /** @class */ (function () {
-        function PostManEditCtrl($scope, $timeout, $messageBus, $dashboardService) {
-            this.$scope = $scope;
-            this.$timeout = $timeout;
-            this.$messageBus = $messageBus;
-            this.$dashboardService = $dashboardService;
-            $scope.vm = this;
-            $scope.methods = [
-                { name: 'GET' },
-                { name: 'PUT' },
-                { name: 'POST' },
-                { name: 'DELETE' }
-            ];
-            var par = $scope.$parent;
-            this.widget = par.data;
-            $scope.data = this.widget.data;
-            if (!$scope.data.messages) {
-                $scope.data.messages = [];
-                this.addMessage();
-            }
-            else {
-                $scope.selectedMessage = $scope.data.messages[0];
-            }
-        }
-        PostManEditCtrl.prototype.addMessage = function () {
-            this.$scope.selectedMessage = {
-                name: 'New message...',
-                httpMethod: this.$scope.methods[2]
-            };
-            this.$scope.data.messages.push(this.$scope.selectedMessage);
-        };
-        PostManEditCtrl.prototype.deleteMessage = function () {
-            if (!this.$scope.selectedMessage)
-                return;
-            var index = this.$scope.data.messages.indexOf(this.$scope.selectedMessage);
-            if (index < 0)
-                return;
-            this.$scope.data.messages.slice(index, 1);
-            if (this.$scope.data.messages.length === 0)
-                this.addMessage();
-            else
-                this.$scope.selectedMessage = this.$scope.data.messages[0];
-        };
-        // $inject annotation.
-        PostManEditCtrl.$inject = [
-            '$scope',
-            '$timeout',
-            'messageBusService',
-            'dashboardService'
-        ];
-        return PostManEditCtrl;
-    }());
-    PostMan.PostManEditCtrl = PostManEditCtrl;
-})(PostMan || (PostMan = {}));
-//# sourceMappingURL=PostManEditCtrl.js.map
 var Presentation;
 (function (Presentation) {
     /**
@@ -30853,6 +30375,171 @@ var Presentation;
     Presentation.PresentationWidgetCtrl = PresentationWidgetCtrl;
 })(Presentation || (Presentation = {}));
 //# sourceMappingURL=PresentationWidget.js.map
+var PostMan;
+(function (PostMan) {
+    /** Config */
+    var moduleName = 'csComp';
+    try {
+        PostMan.myModule = angular.module(moduleName);
+    }
+    catch (err) {
+        // named module does not exist, so create one
+        PostMan.myModule = angular.module(moduleName, []);
+    }
+    /**
+     * Directive (editor) to send a message to a REST endpoint. Similar in goal to the Chrome plugin POSTMAN.
+     * Since this is an editor, the name of the directive is a convention: always use main directive name, plus Edit!
+     */
+    PostMan.myModule.directive('postmanEdit', [function () {
+            return {
+                restrict: 'E',
+                scope: {},
+                templateUrl: 'directives/Widgets/PostMan/PostMan-edit.tpl.html',
+                replace: true,
+                transclude: false,
+                controller: PostMan.PostManEditCtrl
+            };
+        }
+    ]);
+})(PostMan || (PostMan = {}));
+//# sourceMappingURL=PostMan-edit.js.map
+var PostMan;
+(function (PostMan) {
+    /** Config */
+    var moduleName = 'csComp';
+    try {
+        PostMan.myModule = angular.module(moduleName);
+    }
+    catch (err) {
+        // named module does not exist, so create one
+        PostMan.myModule = angular.module(moduleName, []);
+    }
+    /** Directive to send a message to a REST endpoint. Similar in goal to the Chrome plugin POSTMAN. */
+    PostMan.myModule.directive('postman', [function () {
+            return {
+                restrict: 'E',
+                scope: {},
+                templateUrl: 'directives/Widgets/PostMan/PostMan.tpl.html',
+                replace: true,
+                transclude: false,
+                controller: PostMan.PostManCtrl
+            };
+        }
+    ]);
+})(PostMan || (PostMan = {}));
+//# sourceMappingURL=PostMan.js.map
+var PostMan;
+(function (PostMan) {
+    var PostManCtrl = /** @class */ (function () {
+        function PostManCtrl($scope, $http, messageBusService, $timeout) {
+            this.$scope = $scope;
+            this.$http = $http;
+            this.messageBusService = messageBusService;
+            this.$timeout = $timeout;
+            $scope.vm = this;
+            var par = $scope.$parent;
+            $scope.data = par.widget.data;
+            if ($scope.data.messages) {
+                $scope.selectedMessage = $scope.data.messages[0];
+            }
+        }
+        PostManCtrl.prototype.execute = function () {
+            var _this = this;
+            if (!this.$scope.selectedMessage)
+                return;
+            var msg = this.$scope.selectedMessage;
+            this.result = '';
+            switch (msg.httpMethod.name.toUpperCase()) {
+                case 'POST':
+                    this.$http.post(msg.url, msg.message)
+                        .then(function () { _this.result = 'OK'; })
+                        .catch(function (err) { _this.result = "Error: " + err; });
+                    break;
+                case 'PUT':
+                    this.$http.put(msg.url, msg.message)
+                        .then(function () { _this.result = 'OK'; })
+                        .catch(function (err) { _this.result = "Error: " + err; });
+                    break;
+                case 'GET':
+                    this.$http.get(msg.url)
+                        .then(function (data) { _this.result = "Result: " + data.data; })
+                        .catch(function (err) { _this.result = "Error: " + err; });
+                    break;
+                case 'DELETE':
+                    this.$http.delete(msg.url)
+                        .then(function () { _this.result = 'OK'; })
+                        .catch(function (err) { _this.result = "Error: " + err; });
+                    break;
+            }
+        };
+        PostManCtrl.$inject = [
+            '$scope',
+            '$http',
+            'messageBusService',
+            '$timeout'
+        ];
+        return PostManCtrl;
+    }());
+    PostMan.PostManCtrl = PostManCtrl;
+})(PostMan || (PostMan = {}));
+//# sourceMappingURL=PostManCtrl.js.map
+var PostMan;
+(function (PostMan) {
+    var PostManEditCtrl = /** @class */ (function () {
+        function PostManEditCtrl($scope, $timeout, $messageBus, $dashboardService) {
+            this.$scope = $scope;
+            this.$timeout = $timeout;
+            this.$messageBus = $messageBus;
+            this.$dashboardService = $dashboardService;
+            $scope.vm = this;
+            $scope.methods = [
+                { name: 'GET' },
+                { name: 'PUT' },
+                { name: 'POST' },
+                { name: 'DELETE' }
+            ];
+            var par = $scope.$parent;
+            this.widget = par.data;
+            $scope.data = this.widget.data;
+            if (!$scope.data.messages) {
+                $scope.data.messages = [];
+                this.addMessage();
+            }
+            else {
+                $scope.selectedMessage = $scope.data.messages[0];
+            }
+        }
+        PostManEditCtrl.prototype.addMessage = function () {
+            this.$scope.selectedMessage = {
+                name: 'New message...',
+                httpMethod: this.$scope.methods[2]
+            };
+            this.$scope.data.messages.push(this.$scope.selectedMessage);
+        };
+        PostManEditCtrl.prototype.deleteMessage = function () {
+            if (!this.$scope.selectedMessage)
+                return;
+            var index = this.$scope.data.messages.indexOf(this.$scope.selectedMessage);
+            if (index < 0)
+                return;
+            this.$scope.data.messages.slice(index, 1);
+            if (this.$scope.data.messages.length === 0)
+                this.addMessage();
+            else
+                this.$scope.selectedMessage = this.$scope.data.messages[0];
+        };
+        // $inject annotation.
+        PostManEditCtrl.$inject = [
+            '$scope',
+            '$timeout',
+            'messageBusService',
+            'dashboardService'
+        ];
+        return PostManEditCtrl;
+    }());
+    PostMan.PostManEditCtrl = PostManEditCtrl;
+})(PostMan || (PostMan = {}));
+//# sourceMappingURL=PostManEditCtrl.js.map
 var SimState;
 (function (SimState) {
     /** Config */
@@ -31486,3397 +31173,6 @@ var TableWidget;
     TableWidget.TableWidgetCtrl = TableWidgetCtrl;
 })(TableWidget || (TableWidget = {}));
 //# sourceMappingURL=TableWidgetCtrl.js.map
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-var csComp;
-(function (csComp) {
-    var Services;
-    (function (Services) {
-        var BingSearchAction = /** @class */ (function (_super) {
-            __extends(BingSearchAction, _super);
-            /**
-             * @param  {string} apiKey: route to the search api (optional, followed by a |), and the Bing maps key (required)
-             */
-            function BingSearchAction($http, apiKey, searchUrl, data) {
-                if (searchUrl === void 0) { searchUrl = 'http://dev.virtualearth.net/REST/v1/Locations'; }
-                if (data === void 0) { data = {
-                    culture: 'nl',
-                    userLocation: '52.077857,4.316639'
-                }; }
-                var _this = _super.call(this) || this;
-                _this.$http = $http;
-                _this.apiKey = apiKey;
-                _this.searchUrl = searchUrl;
-                _this.data = data;
-                _this.isReady = true;
-                _this.id = 'BingSearchActions';
-                _this.searchCache = {};
-                _this.debouncedFn = _.debounce(function (query, result) { return _this.bingRestRequest(query, result); }, 2500);
-                return _this;
-            }
-            BingSearchAction.prototype.init = function (layerService) {
-                _super.prototype.init.call(this, layerService);
-            };
-            BingSearchAction.prototype.search = function (query, result) {
-                if (query.query.length < 4)
-                    return;
-                this.debouncedFn(query, result);
-            };
-            /** Create the geocode request uri and call it using JSONP. */
-            BingSearchAction.prototype.bingRestRequest = function (query, handler) {
-                var _this = this;
-                if (this.searchCache.hasOwnProperty(query.query)) {
-                    this.geocodeCallback(this.searchCache[query.query], handler, query.query);
-                    return;
-                }
-                var geocodeRequest = this.searchUrl + "?query="
-                    + encodeURIComponent(query.query)
-                    + ("&culture=" + this.data.culture + "&userLocation=" + this.data.userLocation + "&maxResults=10&jsonp=JSON_CALLBACK&key=" + this.apiKey);
-                this.callRestService(geocodeRequest, function (result, handler, query) { return _this.geocodeCallback(result, handler, query); }, handler, query.query);
-            };
-            /** JSONP callback wrapper */
-            BingSearchAction.prototype.callRestService = function (request, callback, handler, query) {
-                this.$http.jsonp(request)
-                    .then(function (res) {
-                    var r = res.data;
-                    callback(r, handler, query);
-                })
-                    .catch(function (error) {
-                    alert(error);
-                });
-            };
-            BingSearchAction.prototype.geocodeCallback = function (result, handler, query) {
-                var _this = this;
-                console.log('BING location search result:');
-                console.log(JSON.stringify(result, null, 2));
-                this.searchCache[query] = result;
-                var searchResults = [];
-                result.resourceSets.forEach(function (rs) {
-                    rs.resources.forEach(function (r) {
-                        searchResults.push({
-                            type: r.entityType,
-                            description: r.entityType,
-                            title: r.name,
-                            score: r.confidence === 'High' ? 1 : 0.3,
-                            icon: result.brandLogoUri,
-                            service: _this.id,
-                            click: function () { return _this.onSelect(r); },
-                            location: _this.swapLatLonInPoint(r.point)
-                        });
-                    });
-                });
-                handler(null, searchResults);
-            };
-            BingSearchAction.prototype.swapLatLonInPoint = function (location) {
-                return {
-                    type: location.type,
-                    coordinates: [location.coordinates[1], location.coordinates[0]]
-                };
-            };
-            BingSearchAction.prototype.onSelect = function (selectedItem) {
-                var geoLoc = selectedItem.point;
-                if (selectedItem.bbox) {
-                    this.layerService.map.getMap().fitBounds(new L.LatLngBounds(selectedItem.bbox.slice(0, 2), selectedItem.bbox.slice(2, 4)));
-                }
-                else {
-                    this.layerService.$mapService.zoomToLocation(new L.LatLng(geoLoc.coordinates[1], geoLoc.coordinates[0]), 19);
-                }
-            };
-            return BingSearchAction;
-        }(Services.BasicActionService));
-        Services.BingSearchAction = BingSearchAction;
-    })(Services = csComp.Services || (csComp.Services = {}));
-})(csComp || (csComp = {}));
-//# sourceMappingURL=BingSearchAction.js.map
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-var csComp;
-(function (csComp) {
-    var Services;
-    (function (Services) {
-        var EsriBagSearchAction = /** @class */ (function (_super) {
-            __extends(EsriBagSearchAction, _super);
-            /**
-             * @param  {string} apiKey: route to the search api (optional, followed by a |), and the Bing maps key (required)
-             */
-            function EsriBagSearchAction($http, apiKey, searchUrl, data) {
-                if (searchUrl === void 0) { searchUrl = 'https://services.arcgisonline.nl/arcgis/rest/services/Geocoder_BAG/GeocodeServer/findAddressCandidates'; }
-                var _this = _super.call(this) || this;
-                _this.$http = $http;
-                _this.apiKey = apiKey;
-                _this.searchUrl = searchUrl;
-                _this.data = data;
-                _this.isReady = true;
-                _this.id = 'EsriBagSearchAction';
-                _this.searchCache = {};
-                _this.queryUrl = _this.searchUrl + "?f=pjson";
-                _this.debouncedFn = _.debounce(function (query, result) { return _this.esriRestRequest(query, result); }, 1000);
-                return _this;
-            }
-            EsriBagSearchAction.prototype.init = function (layerService) {
-                _super.prototype.init.call(this, layerService);
-            };
-            EsriBagSearchAction.prototype.search = function (query, result) {
-                if (query.query.length < 3)
-                    return;
-                this.debouncedFn(query, result);
-            };
-            /** Create the geocode request uri and call it using JSONP. */
-            EsriBagSearchAction.prototype.esriRestRequest = function (query, handler) {
-                var _this = this;
-                if (this.searchCache.hasOwnProperty(query.query)) {
-                    this.geocodeCallback(this.searchCache[query.query], handler, query.query);
-                    return;
-                }
-                var geocodeRequest = this.queryUrl + "&SingleLine=" + encodeURIComponent(query.query);
-                this.callRestService(geocodeRequest, function (result, handler, query) { return _this.geocodeCallback(result, handler, query); }, handler, query.query);
-            };
-            /** JSONP callback wrapper */
-            EsriBagSearchAction.prototype.callRestService = function (request, callback, handler, query) {
-                this.$http.get(request)
-                    .then(function (res) {
-                    var r = res.data;
-                    callback(r, handler, query);
-                })
-                    .catch(function (error) {
-                    console.log('Error contacting Esri');
-                });
-            };
-            EsriBagSearchAction.prototype.geocodeCallback = function (result, handler, query) {
-                var _this = this;
-                this.searchCache[query] = result;
-                var searchResults = [];
-                result.candidates.forEach(function (f) {
-                    searchResults.push({
-                        title: f.address,
-                        type: 'BAG',
-                        service: _this.id,
-                        description: '',
-                        score: (f.score / 101),
-                        icon: 'bower_components/csweb/dist-bower/images/large-marker.png',
-                        click: function () { return _this.onSelect(f); },
-                        location: {
-                            type: 'Point',
-                            coordinates: [f.location.x, f.location.y]
-                        }
-                    });
-                });
-                handler(null, searchResults);
-            };
-            EsriBagSearchAction.prototype.convertRD = function (location) {
-                var res = csComp.Helpers.GeoExtensions.convertRDToWGS84(location.x, location.y);
-                return {
-                    type: 'Point',
-                    coordinates: [res.latitude, res.longitude]
-                };
-            };
-            EsriBagSearchAction.prototype.onSelect = function (feature) {
-                this.layerService.$mapService.zoomToLocation(new L.LatLng((feature.location.y), (feature.location.x)), 16);
-            };
-            return EsriBagSearchAction;
-        }(Services.BasicActionService));
-        Services.EsriBagSearchAction = EsriBagSearchAction;
-    })(Services = csComp.Services || (csComp.Services = {}));
-})(csComp || (csComp = {}));
-//# sourceMappingURL=EsriBagSearchAction.js.map
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-var csComp;
-(function (csComp) {
-    var Services;
-    (function (Services) {
-        var KeywordIndex = /** @class */ (function () {
-            function KeywordIndex() {
-            }
-            return KeywordIndex;
-        }());
-        Services.KeywordIndex = KeywordIndex;
-        /** An index entry that contains a search result. */
-        var Entry = /** @class */ (function () {
-            function Entry(layerIndexOrArray, featureIndex, propertyIndex) {
-                this.v = Array(2);
-                if (typeof layerIndexOrArray === 'number') {
-                    this.v[0] = layerIndexOrArray;
-                    this.v[1] = featureIndex;
-                }
-                else {
-                    this.v = layerIndexOrArray;
-                }
-            }
-            Object.defineProperty(Entry.prototype, "layerIndex", {
-                get: function () { return this.v[0]; },
-                enumerable: true,
-                configurable: true
-            });
-            Object.defineProperty(Entry.prototype, "featureIndex", {
-                get: function () { return this.v[1]; },
-                enumerable: true,
-                configurable: true
-            });
-            return Entry;
-        }());
-        Services.Entry = Entry;
-        var OfflineSearchResult = /** @class */ (function () {
-            function OfflineSearchResult(title, layerTitle, groupTitle, entry, score) {
-                this.title = title;
-                this.layerTitle = layerTitle;
-                this.groupTitle = groupTitle;
-                this.entry = entry;
-                this.score = score;
-                this.firstInGroup = false;
-            }
-            OfflineSearchResult.prototype.toString = function () {
-                return this.title;
-            };
-            Object.defineProperty(OfflineSearchResult.prototype, "fullTitle", {
-                get: function () {
-                    return this.groupTitle + ' >> ' + this.layerTitle + ' >> ' + this.title;
-                },
-                enumerable: true,
-                configurable: true
-            });
-            return OfflineSearchResult;
-        }());
-        Services.OfflineSearchResult = OfflineSearchResult;
-        var OfflineSearchActions = /** @class */ (function (_super) {
-            __extends(OfflineSearchActions, _super);
-            /**
-             * @param  {string} projectUri: path to the project.json file
-             */
-            function OfflineSearchActions($http, projectUri) {
-                var _this = _super.call(this) || this;
-                _this.$http = $http;
-                _this.isReady = true;
-                _this.id = 'OfflineSearchActions';
-                var offlineSearchResultUri = projectUri.replace('project.json', 'offline_search_result.json');
-                _this.loadIndex(offlineSearchResultUri);
-                return _this;
-            }
-            /** Load the offline search index from a json file. */
-            OfflineSearchActions.prototype.loadIndex = function (url) {
-                var _this = this;
-                this.$http.get(url)
-                    .then(function (res) {
-                    var offlineSearchResult = res.data;
-                    _this.offlineSearchResult = offlineSearchResult;
-                    var kwi = offlineSearchResult.keywordIndex;
-                    var keywordIndex = {};
-                    for (var key in kwi) {
-                        if (!kwi.hasOwnProperty(key))
-                            continue;
-                        kwi[key].forEach(function (entry) {
-                            if (!keywordIndex.hasOwnProperty(key))
-                                keywordIndex[key] = [];
-                            keywordIndex[key].push(new Entry(entry));
-                        });
-                    }
-                    _this.offlineSearchResult.keywordIndex = keywordIndex;
-                    _this.isReady = true;
-                })
-                    .catch(function () { console.log("OfflineSearch: error with $http "); });
-            };
-            OfflineSearchActions.prototype.search = function (query, result) {
-                var _this = this;
-                var r = [];
-                var searchResults = this.getHits(query.query, 15);
-                searchResults.sort(function (a, b) { return b.score - a.score; }).forEach(function (sr) {
-                    r.push({
-                        title: sr.title,
-                        description: sr.layerTitle + " (" + sr.groupTitle + ")",
-                        score: sr.score,
-                        icon: 'bower_components/csweb/dist-bower/images/large-marker.png',
-                        service: _this.id,
-                        click: function () { return _this.onSelect(sr); }
-                    });
-                });
-                result(null, r);
-            };
-            /**
-             * Get the features based on the entered text.
-             */
-            OfflineSearchActions.prototype.getHits = function (text, resultCount) {
-                if (resultCount === void 0) { resultCount = 15; }
-                if (!this.isReady || text === null || text.length < 1)
-                    return [];
-                var searchWords = text.toLowerCase().split(' ');
-                // test if last word in text might be a (part of) a stopword, if so remove it
-                // var lastSearchTerm = searchWords[searchWords.length - 1];
-                // var possibleStopWords = this.offlineSearchResult.options.stopWords.filter(stopword => stopword.indexOf(lastSearchTerm) > -1);
-                // if (possibleStopWords.length > 0) {
-                //   searchWords.splice(searchWords.length - 1, 1);
-                // }
-                // remove all exact stopwords
-                // this.offlineSearchResult.options.stopWords.forEach(stopWord => {
-                //   while (searchWords.indexOf(stopWord) > -1) {
-                //     searchWords.splice(searchWords.indexOf(stopWord), 1);
-                //   }
-                // });
-                var totResults;
-                for (var j in searchWords) {
-                    var result = this.getKeywordHits(searchWords[j]);
-                    totResults = !totResults
-                        ? result
-                        : this.mergeResults(totResults, result);
-                }
-                var searchResults = [];
-                var layers = this.offlineSearchResult.layers;
-                var count = resultCount;
-                var resultIndex = 0;
-                while (count > 0 && resultIndex < totResults.length) {
-                    var r = totResults[resultIndex++];
-                    var subCount = Math.min(count, r.entries.length);
-                    for (var i = 0; i < subCount; i++) {
-                        var entry = r.entries[i];
-                        var layer = layers[entry.layerIndex];
-                        count--;
-                        searchResults.push(new OfflineSearchResult(layer.featureNames[entry.featureIndex], layer.title, layer.groupTitle, entry, r.score));
-                    }
-                }
-                // Group search results by groupTitle | layerTitle
-                var groups = {};
-                searchResults.forEach(function (sr) {
-                    var group = sr.groupTitle + ' >> ' + sr.layerTitle;
-                    if (!groups.hasOwnProperty(group))
-                        groups[group] = [];
-                    groups[group].push(sr);
-                });
-                searchResults = [];
-                for (var key in groups) {
-                    if (!groups.hasOwnProperty(key))
-                        continue;
-                    var firstInGroup = true;
-                    groups[key].forEach(function (sr) {
-                        sr.firstInGroup = firstInGroup;
-                        searchResults.push(sr);
-                        firstInGroup = false;
-                    });
-                }
-                return searchResults;
-            };
-            /**
-             * Merge the resuls of two keyword lookups by checking whether different entries refer
-             * to the same layer and feature.
-             * @result1 {ILookupResult[]}
-             * @result2 {ILookupResult[]}
-             */
-            OfflineSearchActions.prototype.mergeResults = function (result1, result2) {
-                var r = [];
-                result1.forEach(function (r1) {
-                    result2.forEach(function (r2) {
-                        r1.entries.forEach(function (entry1) {
-                            r2.entries.forEach(function (entry2) {
-                                if (entry1.layerIndex === entry2.layerIndex && entry1.featureIndex === entry2.featureIndex)
-                                    r.push({ score: r1.score * r2.score, key: r1.key + ' ' + r2.key, entries: [entry1] });
-                            });
-                        });
-                    });
-                });
-                r = r.sort(function (a, b) { return b.score - a.score; });
-                return r;
-            };
-            /**
-             * Do a fuzzy keyword comparison between the entered text and the list of keywords,
-             * and return a subset.
-             * @text: {string}
-             */
-            OfflineSearchActions.prototype.getKeywordHits = function (text) {
-                var results = [];
-                var keywordIndex = this.offlineSearchResult.keywordIndex;
-                var keywords = Object.getOwnPropertyNames(keywordIndex);
-                keywords.forEach(function (key) {
-                    var score = key.score(text, null);
-                    if (score < 0.5)
-                        return;
-                    results.push({ score: score, key: key, entries: keywordIndex[key] });
-                });
-                results = results.sort(function (a, b) { return b.score - a.score; });
-                return results;
-            };
-            OfflineSearchActions.prototype.init = function (layerService) {
-                _super.prototype.init.call(this, layerService);
-            };
-            OfflineSearchActions.prototype.onSelect = function (selectedItem) {
-                var _this = this;
-                var layerIndex = selectedItem.entry.layerIndex;
-                var layer = this.offlineSearchResult.layers[layerIndex];
-                var projectLayer = this.layerService.findLayer(layer.id);
-                if (!projectLayer)
-                    return;
-                if (projectLayer.enabled) {
-                    this.selectFeatureById(layer.id, selectedItem.entry.featureIndex);
-                    return;
-                }
-                else {
-                    var handle = this.layerService.$messageBusService.subscribe('layer', function (title, layer) {
-                        if (title !== 'activated' || projectLayer.url !== layer.url)
-                            return;
-                        _this.selectFeatureById(layer.id, selectedItem.entry.featureIndex);
-                        _this.layerService.$messageBusService.unsubscribe(handle);
-                    });
-                    this.layerService.addLayer(projectLayer);
-                }
-                var group = $('#layergroup_' + projectLayer.groupId);
-                group.collapse('show');
-            };
-            OfflineSearchActions.prototype.selectFeatureById = function (layerId, featureIndex) {
-                var feature = this.layerService.findFeatureByIndex(layerId, featureIndex);
-                if (feature == null)
-                    return;
-                this.layerService.$mapService.zoomTo(feature);
-                // Force-select feature, otherwise we might deselect the feature immediately after it was selected.
-                this.layerService.selectFeature(feature, false, true);
-            };
-            OfflineSearchActions.prototype.selectFeature = function (feature) {
-            };
-            return OfflineSearchActions;
-        }(Services.BasicActionService));
-        Services.OfflineSearchActions = OfflineSearchActions;
-    })(Services = csComp.Services || (csComp.Services = {}));
-})(csComp || (csComp = {}));
-//# sourceMappingURL=OfflineSearchAction.js.map
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-var csComp;
-(function (csComp) {
-    var Services;
-    (function (Services) {
-        var OnlineSearchActions = /** @class */ (function (_super) {
-            __extends(OnlineSearchActions, _super);
-            /**
-             * @param  {string} searchUrl: route to the search api
-             */
-            function OnlineSearchActions($http, searchUrl) {
-                var _this = _super.call(this) || this;
-                _this.$http = $http;
-                _this.isReady = true;
-                _this.id = 'OnlineSearchActions';
-                _this.searchUrl = searchUrl;
-                return _this;
-            }
-            OnlineSearchActions.prototype.search = function (query, result) {
-                var _this = this;
-                var r = [];
-                this.getHits(query.query, 10, function (searchResults) {
-                    searchResults.forEach(function (sr) {
-                        r.push({
-                            title: sr.title,
-                            description: sr.description,
-                            icon: 'bower_components/csweb/dist-bower/images/large-marker.png',
-                            service: _this.id,
-                            location: JSON.parse(sr.location),
-                            score: (sr.description == 'Gemeente') ? 0.99 : 0.98,
-                            click: function () { return _this.onSelect(sr); }
-                        });
-                    });
-                    result(null, r);
-                });
-            };
-            /**
-             * Get the features based on the entered text.
-             */
-            OnlineSearchActions.prototype.getHits = function (text, resultCount, cb) {
-                if (resultCount === void 0) { resultCount = 10; }
-                if (!this.isReady || text === null || text.length < 2) {
-                    cb([]);
-                    return;
-                }
-                var sqlSearch = text.toLowerCase();
-                var searchObject = { query: sqlSearch, nrItems: resultCount };
-                var searchResults = [];
-                $.ajax({
-                    type: 'POST',
-                    url: this.searchUrl,
-                    data: JSON.stringify(searchObject),
-                    contentType: 'application/json',
-                    dataType: 'json',
-                    statusCode: {
-                        200: function (data) {
-                            console.log('Received online search result');
-                            if (data.hasOwnProperty('result')) {
-                                searchResults = data.result;
-                            }
-                            cb(searchResults);
-                        },
-                        404: function (data) {
-                            console.log('Could not get online search result');
-                            cb(searchResults);
-                        }
-                    },
-                    error: function () {
-                        console.log('Error getting online search results');
-                        cb(searchResults);
-                    }
-                });
-            };
-            OnlineSearchActions.prototype.init = function (layerService) {
-                _super.prototype.init.call(this, layerService);
-            };
-            OnlineSearchActions.prototype.onSelect = function (selectedItem) {
-                var geoLoc;
-                if (typeof selectedItem.location === 'string') {
-                    try {
-                        geoLoc = JSON.parse(selectedItem.location);
-                    }
-                    catch (error) {
-                        console.log(error);
-                    }
-                }
-                if (geoLoc && geoLoc.hasOwnProperty('coordinates') && geoLoc.hasOwnProperty('type')) {
-                    switch (geoLoc.type) {
-                        case 'Point':
-                            this.layerService.$mapService.zoomToLocation(new L.LatLng(geoLoc.coordinates[1], geoLoc.coordinates[0]), 18);
-                            break;
-                        case 'MultiPolygon':
-                        case 'Polygon':
-                        default:
-                            this.layerService.map.getMap().fitBounds(L.geoJson(geoLoc).getBounds());
-                            // this.layerService.map.getMap().setZoom(14);
-                            break;
-                    }
-                }
-                this.layerService.visual.leftPanelVisible = false;
-                this.layerService.$messageBusService.publish('search', 'reset');
-            };
-            OnlineSearchActions.prototype.selectFeatureById = function (layerId, featureIndex) {
-            };
-            OnlineSearchActions.prototype.selectFeature = function (feature) {
-            };
-            return OnlineSearchActions;
-        }(Services.BasicActionService));
-        Services.OnlineSearchActions = OnlineSearchActions;
-    })(Services = csComp.Services || (csComp.Services = {}));
-})(csComp || (csComp = {}));
-//# sourceMappingURL=OnlineSearchAction.js.map
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-var csComp;
-(function (csComp) {
-    var Services;
-    (function (Services) {
-        var OpenCageDataSearchAction = /** @class */ (function (_super) {
-            __extends(OpenCageDataSearchAction, _super);
-            /**
-             * @param  {string} apiKey: route to the search api (optional, followed by a |), and the Bing maps key (required)
-             */
-            function OpenCageDataSearchAction($http, apiKey, searchUrl, data) {
-                if (searchUrl === void 0) { searchUrl = 'https://api.opencagedata.com/geocode/v1/geojson'; }
-                var _this = _super.call(this) || this;
-                _this.$http = $http;
-                _this.apiKey = apiKey;
-                _this.searchUrl = searchUrl;
-                _this.data = data;
-                _this.isReady = true;
-                _this.id = 'OpenCageDataSearchAction';
-                _this.searchCache = {};
-                _this.queryUrl = _this.searchUrl
-                    + ("?pretty=1&no_dedupe=1&limit=10&key=" + _this.apiKey)
-                    + (_this.data.bounds ? "&bounds=" + _this.data.bounds : '')
-                    + (_this.data.culture ? "&countrycode=" + _this.data.culture : '&nl')
-                    + (_this.data.language ? "&language=" + _this.data.language : '&nl-NL');
-                _this.debouncedFn = _.debounce(function (query, result) { return _this.ocdRestRequest(query, result); }, 2500);
-                _this.messageBus = data.messageBus;
-                _this.messageBus.subscribe('geocoding', function (action, point) {
-                    if (action.toLowerCase() !== 'reverselookup') {
-                        return;
-                    }
-                    _this.reverseGeocodeLookup(point);
-                });
-                return _this;
-            }
-            OpenCageDataSearchAction.prototype.init = function (layerService) {
-                _super.prototype.init.call(this, layerService);
-            };
-            /** Perform a reverse geocode query for the current point and publish the results. */
-            OpenCageDataSearchAction.prototype.reverseGeocodeLookup = function (point) {
-                var _this = this;
-                var geocodeRequest = this.queryUrl + "&q=" + point.lat + "," + point.lng;
-                this.$http.get(geocodeRequest)
-                    .then(function (res) {
-                    var r = res.data;
-                    if (!r.results || r.results.length === 0)
-                        return;
-                    _this.messageBus.publish('geocoding', 'reverseLookupResult', r.results[0]);
-                })
-                    .catch(function (error) {
-                    console.log(error);
-                });
-            };
-            OpenCageDataSearchAction.prototype.search = function (query, result) {
-                if (query.query.length < 4)
-                    return;
-                this.debouncedFn(query, result);
-            };
-            /** Create the geocode request uri and call it using JSONP. */
-            OpenCageDataSearchAction.prototype.ocdRestRequest = function (query, handler) {
-                var _this = this;
-                if (this.searchCache.hasOwnProperty(query.query)) {
-                    this.geocodeCallback(this.searchCache[query.query], handler, query.query);
-                    return;
-                }
-                var geocodeRequest = this.queryUrl + "&q=" + encodeURIComponent(query.query);
-                this.callRestService(geocodeRequest, function (result, handler, query) { return _this.geocodeCallback(result, handler, query); }, handler, query.query);
-            };
-            /** JSONP callback wrapper */
-            OpenCageDataSearchAction.prototype.callRestService = function (request, callback, handler, query) {
-                this.$http.jsonp(request)
-                    .then(function (res) {
-                    var r = res.data;
-                    callback(r, handler, query);
-                })
-                    .catch(function (error) {
-                    alert(error);
-                });
-            };
-            OpenCageDataSearchAction.prototype.geocodeCallback = function (result, handler, query) {
-                var _this = this;
-                console.log('Open cache location search result:');
-                console.log(JSON.stringify(result, null, 2));
-                this.searchCache[query] = result;
-                var searchResults = [];
-                result.results.forEach(function (f) {
-                    searchResults.push({
-                        title: f.formatted,
-                        type: f.annotations ? f.annotations.DMS.lat + ", " + f.annotations.DMS.lng : '',
-                        service: _this.id,
-                        description: f.annotations && f.annotations.what3words ? f.annotations.what3words.words : '',
-                        score: f.confidence / 10,
-                        icon: 'bower_components/csweb/dist-bower/images/large-marker.png',
-                        click: function () { return _this.onSelect(f); },
-                        location: {
-                            type: 'Point',
-                            coordinates: [f.geometry.lng, f.geometry.lat]
-                        }
-                    });
-                });
-                handler(null, searchResults);
-            };
-            OpenCageDataSearchAction.prototype.swapLatLonInPoint = function (location) {
-                return {
-                    type: location.type,
-                    coordinates: [location.coordinates[1], location.coordinates[0]]
-                };
-            };
-            OpenCageDataSearchAction.prototype.onSelect = function (feature) {
-                if (feature.bounds) {
-                    var bounds = new L.LatLngBounds(feature.bounds.southwest, feature.bounds.northeast);
-                    this.layerService.map.getMap().fitBounds(bounds);
-                }
-                else {
-                    this.layerService.$mapService.zoomToLocation(new L.LatLng((feature.geometry.lat), (feature.geometry.lng)), 18);
-                }
-            };
-            return OpenCageDataSearchAction;
-        }(Services.BasicActionService));
-        Services.OpenCageDataSearchAction = OpenCageDataSearchAction;
-    })(Services = csComp.Services || (csComp.Services = {}));
-})(csComp || (csComp = {}));
-//# sourceMappingURL=OpenCageDataSearchAction.js.map
-var csComp;
-(function (csComp) {
-    var Services;
-    (function (Services) {
-        var GeometryTemplateStore = /** @class */ (function () {
-            function GeometryTemplateStore($http) {
-                this.$http = $http;
-                this.TEMPLATE_URL = 'data/templates'; //'http://www.zorgopdekaart.nl/zelfkaartenmaken/public/data/empty-templates';
-                this.templateList = {};
-            }
-            /* Make sure the geometry is loaded. Calls back true if ok, false if the geometry could not be loaded */
-            GeometryTemplateStore.prototype.loadGeometry = function (name, cb) {
-                var _this = this;
-                if (!name) {
-                    cb(null);
-                    return;
-                }
-                if (this.templateList.hasOwnProperty(name)) {
-                    cb(true);
-                    return;
-                }
-                var template = this.getTemplateFromServer(name, function (data) {
-                    if (!data) {
-                        cb(null);
-                        return;
-                    }
-                    _this.templateList[name] = data;
-                    cb(true);
-                });
-            };
-            GeometryTemplateStore.prototype.getTemplate = function (name) {
-                return this.templateList[name];
-            };
-            GeometryTemplateStore.prototype.getTemplateFromServer = function (name, cb) {
-                this.$http.get((this.TEMPLATE_URL + "/" + name + ".json").toLowerCase())
-                    .then(function (res) {
-                    cb(res.data);
-                })
-                    .catch(function (msg) {
-                    console.warn("Could not load " + name + " from server");
-                });
-            };
-            return GeometryTemplateStore;
-        }());
-        Services.GeometryTemplateStore = GeometryTemplateStore;
-    })(Services = csComp.Services || (csComp.Services = {}));
-})(csComp || (csComp = {}));
-//# sourceMappingURL=GeometryTemplate.js.map
-var csComp;
-(function (csComp) {
-    var Services;
-    (function (Services) {
-        'use strict';
-        var DatabaseSource = /** @class */ (function () {
-            function DatabaseSource(service) {
-                this.service = service;
-                this.title = 'database';
-                this.requiresLayer = false;
-            }
-            DatabaseSource.prototype.refreshLayer = function (layer) {
-                var _this = this;
-                if (layer.isLoading) {
-                    var handle = this.service.$messageBusService.subscribe('layer', function (a, l) {
-                        if (a === 'activated' && l.id === layer.id) {
-                            // this.service.removeLayer(layer);
-                            _this.service.addLayer(layer);
-                            _this.service.$messageBusService.unsubscribe(handle);
-                        }
-                    });
-                    return;
-                }
-                if (!layer.enabled) {
-                    // this.service.removeLayer(layer);
-                    // this.service.addLayer(layer);
-                    this.baseAddLayer(layer, function () { }, false);
-                }
-                else {
-                    this.service.$messageBusService.publish('layer', 'loading', layer);
-                    this.baseAddLayer(layer, function () { }, true);
-                }
-            };
-            DatabaseSource.prototype.addLayer = function (layer, callback) {
-                this.baseAddLayer(layer, callback);
-            };
-            /** zoom to boundaries of layer */
-            DatabaseSource.prototype.fitMap = function (layer) {
-                if (!layer.data.features || layer.data.features.length === 0)
-                    return;
-                var b = csComp.Helpers.GeoExtensions.getBoundingBox(layer.data);
-                if (b.xMax == 180 || b.yMax == 90)
-                    return;
-                this.service.$messageBusService.publish('map', 'setextent', b);
-            };
-            DatabaseSource.prototype.layerMenuOptions = function (layer) {
-                var _this = this;
-                return [
-                    ['Fit map', (function ($itemScope) { return _this.fitMap(layer); })],
-                    null,
-                    ['Refresh', (function ($itemScope) { return _this.refreshLayer(layer); })]
-                ];
-            };
-            DatabaseSource.prototype.baseAddLayer = function (layer, callback, isRefresh) {
-                var _this = this;
-                if (isRefresh === void 0) { isRefresh = false; }
-                this.layer = layer;
-                async.series([
-                    function (cb) {
-                        layer.renderType = 'geojson';
-                        layer.isLoading = true;
-                        var minZoom;
-                        var searchProperty;
-                        var useFeatureBounds;
-                        if (layer.dataSourceParameters && layer.dataSourceParameters.hasOwnProperty('minZoom')) {
-                            minZoom = layer.dataSourceParameters['minZoom'];
-                        }
-                        else {
-                            minZoom = 15;
-                        }
-                        if (layer.dataSourceParameters && layer.dataSourceParameters.hasOwnProperty('searchProperty')) {
-                            searchProperty = layer.dataSourceParameters['searchProperty'];
-                        }
-                        if (layer.dataSourceParameters && layer.dataSourceParameters.hasOwnProperty('useFeatureBounds')) {
-                            useFeatureBounds = layer.dataSourceParameters['useFeatureBounds'];
-                        }
-                        var corners;
-                        if (_this.service.$mapService.map.getZoom() < minZoom && typeof searchProperty === 'undefined' && !useFeatureBounds) {
-                            _this.service.$messageBusService.notifyWithTranslation('ZOOM_LEVEL_LOW', 'ZOOM_IN_FOR_CONTOURS', null, csComp.Services.NotifyLocation.TopRight, csComp.Services.NotifyType.Info, 1500);
-                            // initialize empty layer and return
-                            _this.initLayer(layer, callback);
-                            return;
-                        }
-                        else {
-                            var bagRequestData;
-                            if (typeof searchProperty !== 'undefined') {
-                                bagRequestData = {
-                                    searchProp: searchProperty,
-                                    layer: Services.ProjectLayer.serializeableData(layer)
-                                };
-                            }
-                            else if (useFeatureBounds === true) {
-                                var coordinates = layer.dataSourceParameters['coordinates'] || [[[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]]];
-                                bagRequestData = {
-                                    bounds: JSON.stringify({ type: 'Polygon', coordinates: coordinates, crs: { type: 'name', properties: { 'name': 'EPSG:4326' } } }),
-                                    layer: Services.ProjectLayer.serializeableData(layer)
-                                };
-                            }
-                            else {
-                                // When the zoomlevel is valid:
-                                corners = _this.service.$mapService.map.getBounds();
-                                var coords = [[
-                                        [corners.getSouthWest().lng, corners.getSouthWest().lat],
-                                        [corners.getNorthWest().lng, corners.getNorthWest().lat],
-                                        [corners.getNorthEast().lng, corners.getNorthEast().lat],
-                                        [corners.getSouthEast().lng, corners.getSouthEast().lat],
-                                        [corners.getSouthWest().lng, corners.getSouthWest().lat]
-                                    ]];
-                                var bounds = JSON.stringify({ type: 'Polygon', coordinates: coords, crs: { type: 'name', properties: { 'name': 'EPSG:4326' } } });
-                                // get data from BAG
-                                bagRequestData = {
-                                    bounds: bounds,
-                                    layer: Services.ProjectLayer.serializeableData(layer)
-                                };
-                            }
-                            $.ajax({
-                                type: 'POST',
-                                url: layer.url,
-                                data: JSON.stringify(bagRequestData),
-                                contentType: 'application/json',
-                                dataType: 'json',
-                                statusCode: {
-                                    200: function (data) {
-                                        console.log('Received bag contours');
-                                        (isRefresh) ? _this.updateLayer(data.layer, callback) : _this.initLayer(data.layer, callback);
-                                    },
-                                    404: function (data) {
-                                        console.log('Could not get bag contours');
-                                        (isRefresh) ? _this.updateLayer(data.layer, callback) : _this.initLayer(layer, callback);
-                                    }
-                                },
-                                error: function () { return _this.service.$messageBusService.publish('layer', 'error', layer); }
-                            });
-                        }
-                    }
-                ]);
-            };
-            DatabaseSource.prototype.initLayer = function (layer, callback) {
-                var _this = this;
-                var projLayer = this.service.findLayer(layer.id);
-                if (projLayer) {
-                    layer.count = 0;
-                    projLayer.enabled = true;
-                    projLayer.data = layer.data;
-                }
-                var count = 0;
-                if (projLayer.data && projLayer.data.features && projLayer.data.features.forEach) {
-                    projLayer.data.features.forEach(function (f) {
-                        count += 1;
-                        _this.service.initFeature(f, projLayer, false, false);
-                        // this.service.calculateFeatureStyle(f);
-                        // this.service.activeMapRenderer.addFeature(f);
-                    });
-                }
-                else {
-                    projLayer.data = {};
-                    projLayer.data['features'] = [];
-                }
-                if (projLayer.typeUrl && projLayer.defaultFeatureType) {
-                    var featureTypeName = projLayer.typeUrl + '#' + projLayer.defaultFeatureType;
-                    var fType = this.service.getFeatureTypeById(featureTypeName);
-                    var fTypes = {};
-                    fTypes[featureTypeName] = fType;
-                    // this.service.evaluateLayerExpressions(projLayer, fTypes);
-                    if (fType._propertyTypeData && fType._propertyTypeData.length > 0) {
-                        fType._propertyTypeData.forEach(function (pt) {
-                            csComp.Helpers.updateSection(projLayer, pt);
-                        });
-                    }
-                }
-                projLayer.isLoading = false;
-                this.service.$messageBusService.publish('layer', 'activated', layer);
-                if (this.service.$rootScope.$root.$$phase !== '$apply' && this.service.$rootScope.$root.$$phase !== '$digest') {
-                    this.service.$rootScope.$apply();
-                }
-                console.log("Initialized " + count + " features in " + layer.id);
-                callback(projLayer);
-            };
-            DatabaseSource.prototype.updateLayer = function (layer, callback) {
-                var _this = this;
-                if (!layer || !layer.id) {
-                    console.log('No layer id found');
-                    return;
-                }
-                var projLayer = this.service.findLayer(layer.id);
-                if (!projLayer || !projLayer.data || !projLayer.data.features) {
-                    this.initLayer(layer, callback);
-                    return;
-                }
-                if (projLayer) {
-                    projLayer.enabled = true;
-                }
-                // Add new features
-                var count = 0;
-                if (layer.data && layer.data.features && layer.data.features.forEach) {
-                    layer.data.features.forEach(function (f) {
-                        if (!projLayer.data.features.some(function (pf) { return pf.id === f.id; })) {
-                            projLayer.data.features.push(f);
-                            count += 1;
-                            _this.service.initFeature(f, projLayer, false, false);
-                            // this.service.evaluateFeatureExpressions(f);
-                            _this.service.calculateFeatureStyle(f);
-                            _this.service.activeMapRenderer.addFeature(f);
-                        }
-                    });
-                }
-                projLayer.isLoading = false;
-                this.service.$messageBusService.publish('layer', 'activated', layer);
-                console.log("Added " + count + " features in " + layer.id);
-                if (this.service.$rootScope.$root.$$phase !== '$apply' && this.service.$rootScope.$root.$$phase !== '$digest') {
-                    this.service.$rootScope.$apply();
-                }
-                callback(projLayer);
-            };
-            DatabaseSource.prototype.removeLayer = function (layer) {
-                var _this = this;
-                var projLayer = this.service.findLayer(layer.id);
-                if (projLayer)
-                    projLayer.enabled = false;
-                if (projLayer.data && projLayer.data.features && projLayer.data.features.forEach) {
-                    projLayer.data.features.forEach(function (f) {
-                        _this.service.removeFeature(f);
-                    });
-                }
-                if (layer.data) {
-                    layer.data['features'].length = 0;
-                }
-                //alert('remove layer');
-            };
-            return DatabaseSource;
-        }());
-        Services.DatabaseSource = DatabaseSource;
-    })(Services = csComp.Services || (csComp.Services = {}));
-})(csComp || (csComp = {}));
-//# sourceMappingURL=DatabaseSource.js.map
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-var csComp;
-(function (csComp) {
-    var Services;
-    (function (Services) {
-        var GeoJsonSource = /** @class */ (function () {
-            function GeoJsonSource(service, $http, $storage) {
-                this.service = service;
-                this.$storage = $storage;
-                this.title = 'geojson';
-                this.requiresLayer = false;
-                this.$http = $http;
-                this.geometryStore = new Services.GeometryTemplateStore(this.$http);
-            }
-            GeoJsonSource.prototype.refreshLayer = function (layer, newLayer) {
-                var _this = this;
-                if (!_.isNull(newLayer)) {
-                    var diffs = this.findFeatureDiff(layer, newLayer);
-                    if (diffs) {
-                        diffs.forEach(function (d) {
-                            switch (d.type) {
-                                case Services.ChangeType.Create:
-                                    _this.service.initFeature(d.value, layer, true, false);
-                                    layer.data.features.push(d.value);
-                                    var m = _this.service.activeMapRenderer.addFeature(d.value);
-                                    break;
-                                case Services.ChangeType.Update:
-                                    _this.service.updateFeature(d.value);
-                                    break;
-                                case Services.ChangeType.Delete:
-                                    _this.service.removeFeature(d.value);
-                                    break;
-                            }
-                        });
-                    }
-                }
-                else {
-                    var isEnabled = layer.enabled;
-                    this.service.removeLayer(layer);
-                    this.service.addLayer(layer);
-                    layer.enabled = isEnabled;
-                }
-            };
-            GeoJsonSource.prototype.findFeatureDiff = function (layer, newLayer) {
-                var _this = this;
-                if (!layer || !layer.data || !layer.data.features)
-                    return;
-                var featuresUpdates = [];
-                var updateTime = new Date().getTime();
-                var notUpdated = 0, updated = 0, added = 0, removed = 0;
-                var fts = newLayer.features;
-                var fCollectionIds = [];
-                if (_.isArray(fts)) {
-                    fts.forEach(function (f) {
-                        fCollectionIds.push(f.id);
-                        var feature = _.find(layer.data.features, function (of) { return of.id === f.id; });
-                        if (!feature) {
-                            // ADD FEATURE
-                            //layer.features[f.id] = { f: f, updated: updateTime };
-                            featuresUpdates.push({ value: feature, type: Services.ChangeType.Create, id: f.id });
-                            added += 1;
-                        }
-                        else if (!_this.isFeatureUpdated(f, feature)) {
-                            // NO UPDATE
-                            notUpdated += 1;
-                        }
-                        else {
-                            // UPDATE
-                            //layer.features[f.id] = { f: f, updated: updateTime };
-                            featuresUpdates.push({ value: feature, type: Services.ChangeType.Update, id: f.id });
-                            updated += 1;
-                        }
-                    });
-                }
-                // // CHECK INACTIVE FEATURES
-                // let inactiveFeatures = _.difference(Object.keys(layer.features), fCollectionIds);
-                // if (inactiveFeatures && inactiveFeatures.length > 0) {
-                //     inactiveFeatures.forEach((fId) => {
-                //         if ((updateTime - layer.features[fId].updated) >= (this.restDataSourceOpts.pruneIntervalSeconds * 1000)) {
-                //             // REMOVE
-                //             featuresUpdates.push(<IChangeEvent>{ value: this.features[fId].f, type: Api.ChangeType.Delete, id: this.features[fId].f.id });
-                //             delete this.features[this.features[fId].f.id];
-                //             removed += 1;
-                //         }
-                //     });
-                // }
-                return featuresUpdates;
-            };
-            GeoJsonSource.prototype.isFeatureUpdated = function (f, old) {
-                if (!f)
-                    return false;
-                // // Check geometry
-                // if (!this.restDataSourceOpts.diffIgnoreGeometry && !_.isEqual(f.geometry, this.features[f.id].f.geometry)) {
-                //     return true;
-                // }
-                if (!f.properties)
-                    return false;
-                // Check all properties
-                if (_.isEqual(f.properties, old.properties)) {
-                    return false;
-                }
-                old.properties = f.properties;
-                old.geometry = f.geometry;
-                return true;
-            };
-            GeoJsonSource.prototype.addLayer = function (layer, callback, data) {
-                if (data === void 0) { data = null; }
-                this.baseAddLayer(layer, callback, data);
-            };
-            /** zoom to boundaries of layer */
-            GeoJsonSource.prototype.fitMap = function (layer) {
-                var b = csComp.Helpers.GeoExtensions.getBoundingBox(layer.data);
-                if (b && b.northEast && b.northEast[0] != undefined) {
-                    this.service.$messageBusService.publish('map', 'setextent', b);
-                }
-            };
-            /** zoom to boundaries of layer */
-            GeoJsonSource.prototype.fitTimeline = function (layer) {
-                if (layer.hasSensorData) {
-                    if (layer.timestamps && layer.timestamps.length > 0) {
-                        var min = layer.timestamps[0];
-                        var max = layer.timestamps[layer.timestamps.length - 1];
-                        this.service.$messageBusService.publish('timeline', 'updateTimerange', { start: min, end: max });
-                    }
-                    else {
-                        var min_1 = null;
-                        var max_1 = null;
-                        layer.data.features.forEach(function (f) {
-                            if (f.timestamps) {
-                                if (min_1 === null) {
-                                    min_1 = f.timestamps[0];
-                                }
-                                else {
-                                    if (min_1 > f.timestamps[0])
-                                        min_1 = f.timestamps[0];
-                                }
-                                if (max_1 === null) {
-                                    max_1 = f.timestamps[f.timestamps.length - 1];
-                                }
-                                else {
-                                    if (max_1 < f.timestamps[f.timestamps.length - 1])
-                                        max_1 = f.timestamps[f.timestamps.length - 1];
-                                }
-                                ;
-                            }
-                        });
-                        if (min_1 !== null && max_1 !== null)
-                            this.service.$messageBusService.publish('timeline', 'updateTimerange', { start: min_1, end: max_1 });
-                    }
-                }
-            };
-            GeoJsonSource.prototype.layerMenuOptions = function (layer) {
-                var _this = this;
-                var result = [
-                    ['Fit map', (function ($itemScope) { return _this.fitMap(layer); })]
-                ];
-                if (layer.hasSensorData && layer.timestamps)
-                    result.push(['Fit time', (function ($itemScope) { return _this.fitTimeline(layer); })]);
-                result.push(null);
-                result.push(['Refresh', (function ($itemScope) { return _this.refreshLayer(layer); })]);
-                return result;
-            };
-            GeoJsonSource.prototype.baseAddLayer = function (layer, callback, data) {
-                var _this = this;
-                if (data === void 0) { data = null; }
-                this.layer = layer;
-                async.series([
-                    function (cb) {
-                        // find geometries for the features if they don't have any
-                        if (layer.dataSourceParameters && layer.dataSourceParameters.geometryTemplate) {
-                            var geometryTemplate = layer.dataSourceParameters.geometryTemplate;
-                            var geometryName_1 = geometryTemplate.name;
-                            _this.geometryStore.loadGeometry(geometryName_1, function (success) {
-                                if (!success)
-                                    console.warn("Could not load geomtery template for " + geometryName_1);
-                                cb(null, null);
-                            });
-                        }
-                        else {
-                            cb(null, null);
-                        }
-                    },
-                    function (cb) {
-                        layer.renderType = 'geojson';
-                        // already got data (propably from drop action)
-                        if (data) {
-                            layer.enabled = true;
-                            _this.initLayer(data, layer);
-                            cb(null, null);
-                        }
-                        else if (!layer.url && layer.data && layer.data.type) {
-                            if (!layer.count)
-                                layer.count = 0;
-                            layer.enabled = true;
-                            layer.isLoading = false;
-                            layer.isConnected = false;
-                            _this.initLayer(layer.data, layer);
-                            cb(null, null);
-                        }
-                        else {
-                            // Open a layer URL
-                            layer.isLoading = true;
-                            // get data
-                            var u = (layer.url) ? layer.url.replace('[BBOX]', layer.BBOX) : "/api/layers/" + layer.id;
-                            // check proxy
-                            if (layer.useProxy)
-                                u = '/api/proxy?url=' + u;
-                            // check local storage
-                            if (layer.localStorage) {
-                                var d = window.localStorage.getItem('layer.' + layer.id);
-                                if (d) {
-                                    layer.count = 0;
-                                    layer.isLoading = false;
-                                    layer.enabled = true;
-                                    _this.initLayer(JSON.parse(d), layer);
-                                    if (layer.hasSensorData)
-                                        _this.fitTimeline(layer);
-                                    cb(null, null);
-                                }
-                            }
-                            if (layer.isLoading) {
-                                _this.$http.get(u)
-                                    .then(function (res) {
-                                    var data = res.data;
-                                    layer.count = 0;
-                                    layer.isLoading = false;
-                                    layer.enabled = true;
-                                    if (layer.localStorage) {
-                                        var d = JSON.stringify(data);
-                                        window.localStorage.setItem('layer.' + layer.id, d);
-                                        //this.$storage.set('layer.' + layer.id, JSON.stringify(data));
-                                    }
-                                    _this.initLayer(data, layer);
-                                    if (layer.hasSensorData)
-                                        _this.fitTimeline(layer);
-                                    cb(null, null);
-                                }, function () {
-                                    layer.count = 0;
-                                    layer.isLoading = false;
-                                    layer.enabled = false;
-                                    layer.isConnected = false;
-                                    _this.service.$messageBusService.notifyErrorWithTranslation('ERROR_LOADING_LAYER', layer.title + " \nurl: " + u);
-                                    _this.service.$messageBusService.publish('layer', 'error', layer);
-                                    cb(null, null);
-                                });
-                            }
-                        }
-                    },
-                    // Callback
-                    function () {
-                        callback(layer);
-                    }
-                ]);
-            };
-            /**
-             *  Loops over all layer features and adds geometry based on a geometry template layer.
-             *  Existing geometries take precedence over template geometries.
-             */
-            GeoJsonSource.prototype.addGeometry = function (template, geomKey, featureProp, layer) {
-                if (!template || !featureProp)
-                    return;
-                console.log('Adding geometry to datalayer');
-                var geom = template['features'];
-                var notFound = [];
-                layer.data.features.forEach(function (f) {
-                    if (f.geometry && f.geometry.coordinates)
-                        return;
-                    if (!f.properties || !f.properties.hasOwnProperty(featureProp))
-                        return;
-                    var val = f.properties[featureProp];
-                    var entry = _.find(geom, function (g) { return g.properties[geomKey] === val; });
-                    if (entry) {
-                        f.geometry = entry.geometry;
-                    }
-                    else {
-                        notFound.push(val);
-                    }
-                });
-                if (!_.isEmpty(notFound))
-                    console.log("Could not find " + notFound.length + " geometries");
-            };
-            GeoJsonSource.prototype.initLayer = function (data, layer) {
-                var _this = this;
-                // if this is a topojson layer, convert to geojson first
-                if (layer.type.toLowerCase() === 'topojson') {
-                    data = csComp.Helpers.GeoExtensions.convertTopoToGeoJson(data);
-                }
-                if (layer.id.toLowerCase() === 'accessibility' || layer.id.toLowerCase() === 'tripplanner') {
-                    layer.disableMoveSelectionToFront = true;
-                    this.processAccessibilityReply(data, layer, function (processedLayer) {
-                        data = layer.data;
-                        layer = processedLayer;
-                    });
-                }
-                // add featuretypes to global featuretype list
-                if (data.featureTypes)
-                    for (var featureTypeName in data.featureTypes) {
-                        if (!data.featureTypes.hasOwnProperty(featureTypeName))
-                            continue;
-                        var featureType = data.featureTypes[featureTypeName];
-                        // give it a unique name
-                        featureTypeName = layer.url + '#' + featureTypeName;
-                        this.service._featureTypes[featureTypeName] = featureType;
-                    }
-                if (data.timestamps)
-                    layer.timestamps = data.timestamps;
-                // store raw result in layer
-                layer.data = data;
-                if (!_.isUndefined(layer.data)) {
-                    if (layer.data.geometries && !layer.data.features) {
-                        layer.data.features = layer.data.geometries;
-                    }
-                    //Filter duplicate features (by feature.id)
-                    var featuresWithoutId = layer.data.features.filter(function (f) { return !f.hasOwnProperty('id'); }); // Allow all features without id
-                    if (featuresWithoutId.length !== layer.data.features.length) {
-                        layer.data.features = featuresWithoutId.concat(_.uniq(layer.data.features, false, function (f) { return f.id; }));
-                    }
-                    // find geometries for the features if they don't have any
-                    if (layer.dataSourceParameters && layer.dataSourceParameters.geometryTemplate) {
-                        var geom = this.geometryStore.getTemplate(layer.dataSourceParameters.geometryTemplate.name);
-                        this.addGeometry(geom, layer.dataSourceParameters.geometryTemplate.key, layer.dataSourceParameters.geometryTemplate.featureProp, layer);
-                    }
-                    if (!_.isUndefined(layer.data.features)) {
-                        layer.data.features.forEach(function (f) {
-                            _this.service.initFeature(f, layer, false, false);
-                        });
-                        if (data.features.length > 0) {
-                            var firstFeature = data.features[0];
-                            var resource = this.service.findResourceByFeature(firstFeature);
-                            csComp.Helpers.addPropertyTypes(firstFeature, firstFeature.fType, resource);
-                        }
-                    }
-                }
-                layer.isTransparent = false;
-                // Subscribe to zoom events
-                if (layer.minZoom || layer.maxZoom) {
-                    if (!layer.minZoom)
-                        layer.minZoom = 0;
-                    if (!layer.maxZoom)
-                        layer.maxZoom = 25;
-                    layer.zoomHandle = this.service.$messageBusService.subscribe('map', function (topic, level) {
-                        if (!topic || !level || topic !== 'zoom' || level < 0)
-                            return;
-                        if ((level < layer.minZoom || level > layer.maxZoom)) {
-                            if (!layer.isTransparent) {
-                                layer.isTransparent = true;
-                                _this.service.updateLayerFeatures(layer);
-                            }
-                        }
-                        else {
-                            if (layer.isTransparent) {
-                                layer.isTransparent = false;
-                                _this.service.updateLayerFeatures(layer);
-                            }
-                        }
-                    });
-                }
-                if (layer.timeAware)
-                    this.service.$messageBusService.publish('timeline', 'updateFeatures');
-            };
-            GeoJsonSource.prototype.removeLayer = function (layer) {
-                layer.isTransparent = false;
-                if (layer.zoomHandle)
-                    this.service.$messageBusService.unsubscribe(layer.zoomHandle);
-                //Reset the default zoom when deactivating a layer with the parameter 'fitToMap' set to true.
-                // if (layer.fitToMap) {
-                //     if (!this.service.project.viewBounds) return;
-                //     this.service.$messageBusService.publish('map', 'setextent', this.service.project.viewBounds);
-                // }
-            };
-            GeoJsonSource.prototype.processAccessibilityReply = function (data, layer, clbk) {
-                if (data.hasOwnProperty('error')) {
-                    console.log('Error in opentripplanner: ' + data['error'].msg);
-                    clbk(layer);
-                    return;
-                }
-                var latlng;
-                var urlParameters = csComp.Helpers.parseUrlParameters(layer.url, '?', '&', '=');
-                if (urlParameters.hasOwnProperty('fromPlace')) {
-                    var coords = urlParameters['fromPlace'].split('%2C');
-                    if (isNaN(+coords[0]) || isNaN(+coords[1]))
-                        clbk(layer);
-                    latlng = new L.LatLng(+coords[0], +coords[1]);
-                }
-                var parsedData = data;
-                if (parsedData.hasOwnProperty('features')) { // Reply is in geoJson format
-                    //Add arrival times when leaving now
-                    var startTime = new Date(Date.now());
-                    parsedData.features.forEach(function (f) {
-                        f.properties['seconds'] = f.properties['time'];
-                        f.properties['time'] = f.properties['seconds'] * 1000;
-                        f.properties['arriveTime'] = (new Date(startTime.getTime() + f.properties['time'])).toISOString();
-                        f.properties['latlng'] = [latlng.lat, latlng.lng];
-                    });
-                    if (layer.hasOwnProperty('data') && layer.data.hasOwnProperty('features')) {
-                        for (var index = 0; index < layer.data.features.length; index++) {
-                            var f = layer.data.features[index];
-                            if (f.properties.hasOwnProperty('latlng') && f.properties['latlng'][0] === latlng.lat && f.properties['latlng'][1] === latlng.lng) {
-                                layer.data.features.splice(index--, 1);
-                            }
-                        }
-                        parsedData.features.forEach(function (f) {
-                            layer.data.features.push(f);
-                        });
-                    }
-                    else {
-                        layer.count = 0;
-                        layer.data = parsedData;
-                    }
-                }
-                else { // Reply is in routeplanner format
-                    var fromLoc = parsedData.plan.from;
-                    var toLoc = parsedData.plan.to;
-                    layer.data = {};
-                    layer.data.type = 'FeatureCollection';
-                    layer.data.features = [];
-                    parsedData.plan.itineraries.forEach(function (it) {
-                        var route = new L.Polyline([]);
-                        var legs = [];
-                        var transfers = -1;
-                        it.legs.forEach(function (leg) {
-                            var polyLeg = L.Polyline.fromEncoded(leg.legGeometry.points);
-                            polyLeg.getLatLngs().forEach(function (ll) {
-                                route.addLatLng(ll);
-                            });
-                            var legDetails = {
-                                mode: leg.mode,
-                                start: new Date(leg.startTime).toISOString(),
-                                arrive: new Date(leg.endTime).toISOString(),
-                                duration: csComp.Helpers.convertPropertyInfo({ type: 'duration' }, (+leg.duration) * 1000)
-                            };
-                            (leg.agencyName) ? legDetails.agency = leg.agencyName : null;
-                            (leg.routeShortName) ? legDetails.route = leg.routeShortName : null;
-                            (leg.routeLongName) ? legDetails.routeName = leg.routeLongName : null;
-                            if (leg.mode !== 'WALK' && leg.mode !== 'BICYCLE')
-                                transfers = transfers + 1;
-                            legs.push(legDetails);
-                        });
-                        var geoRoute = route.toGeoJSON();
-                        layer.data.features.push(csComp.Helpers.GeoExtensions.createLineFeature(geoRoute.geometry.coordinates, {
-                            fromLoc: fromLoc.name,
-                            toLoc: toLoc.name,
-                            duration: (+it.duration) * 1000,
-                            startTime: new Date(it.startTime).toISOString(),
-                            arriveTime: new Date(it.endTime).toISOString(),
-                            legs: legs,
-                            transfers: (transfers >= 0) ? transfers : 0
-                        }));
-                    });
-                }
-                clbk(layer);
-            };
-            return GeoJsonSource;
-        }());
-        Services.GeoJsonSource = GeoJsonSource;
-        var EditableGeoJsonSource = /** @class */ (function (_super) {
-            __extends(EditableGeoJsonSource, _super);
-            function EditableGeoJsonSource(service, $http, $storage) {
-                var _this = _super.call(this, service, $http, $storage) || this;
-                _this.service = service;
-                _this.title = 'editablegeojson';
-                return _this;
-                // subscribe
-            }
-            EditableGeoJsonSource.prototype.updateFeatureByProperty = function (key, id, value, layer) {
-                var _this = this;
-                if (layer === void 0) { layer = null; }
-                var configSettings = {};
-                if (layer.id === 'newsfeed') {
-                    configSettings = { titleKey: 'Name', descriptionKey: 'news_title', dateKey: 'news_date' };
-                }
-                ;
-                try {
-                    var features = layer.data.features;
-                    if (features == null)
-                        return;
-                    var done = false;
-                    features.some(function (f) {
-                        if (f.hasOwnProperty(key) && f[key] === id) {
-                            f.properties = value.properties;
-                            f.geometry = value.geometry;
-                            _this.service.updateFeature(f);
-                            done = true;
-                            if (_this.service.project.eventTab) {
-                                _this.service.$messageBusService.publish('eventtab', 'updated', { feature: f, config: configSettings });
-                            }
-                            else {
-                                if (layer.showFeatureNotifications)
-                                    _this.service.$messageBusService.notify(layer.title, f.properties['Name'] + ' updated');
-                            }
-                            //  console.log('updating feature');
-                            return true;
-                        }
-                        else {
-                            return false;
-                        }
-                    });
-                    if (!done) {
-                        // console.log('adding feature');
-                        if (layer && layer.data && layer.data.features) {
-                            layer.data.features.push(value);
-                            this.service.initFeature(value, layer, false);
-                            var m = this.service.activeMapRenderer.addFeature(value);
-                            if (this.service.project.eventTab) {
-                                this.service.$messageBusService.publish('eventtab', 'added', { feature: value, config: configSettings });
-                            }
-                            else {
-                                if (layer.showFeatureNotifications)
-                                    this.service.$messageBusService.notify(layer.title, value.properties['Name'] + ' added');
-                            }
-                        }
-                        else {
-                            features.push(value);
-                            this.service.initFeature(value, layer);
-                            var m = this.service.activeMapRenderer.addFeature(value);
-                            if (this.service.project.eventTab) {
-                                this.service.$messageBusService.publish('eventtab', 'added', { feature: value, config: configSettings });
-                            }
-                            else {
-                                if (layer.showFeatureNotifications)
-                                    this.service.$messageBusService.notify(layer.title, value.properties['Name'] + ' added');
-                            }
-                        }
-                    }
-                }
-                catch (e) {
-                    console.log('error');
-                }
-            };
-            EditableGeoJsonSource.prototype.deleteFeatureByProperty = function (key, id, value, layer) {
-                try {
-                    var feature = this.service.findFeature(layer, id);
-                    if (feature) {
-                        if (layer.showFeatureNotifications)
-                            this.service.$messageBusService.notify(layer.title, feature.properties['Name'] + ' removed');
-                        this.service.removeFeature(feature, false);
-                    }
-                }
-                catch (e) {
-                    console.log('error');
-                }
-            };
-            EditableGeoJsonSource.prototype.addLayer = function (layer, callback, data) {
-                if (data === void 0) { data = null; }
-                layer.isEditable = true;
-                this.baseAddLayer(layer, function (layer) {
-                    callback(layer);
-                }, data);
-            };
-            EditableGeoJsonSource.prototype.removeLayer = function (layer) {
-                layer.isConnected = false;
-                if (layer._gui['editing'])
-                    this.service.stopEditingLayer(layer);
-            };
-            EditableGeoJsonSource.prototype.layerMenuOptions = function (layer) {
-                var _this = this;
-                var result = [
-                    ['Fit map', (function ($itemScope) { return _this.fitMap(layer); })]
-                ];
-                if (layer.hasSensorData && layer.timestamps)
-                    result.push(['Fit time', (function ($itemScope) { return _this.fitTimeline(layer); })]);
-                result.push(null);
-                result.push(['Refresh', (function ($itemScope) { return _this.refreshLayer(layer); })]);
-                return result;
-            };
-            /** enable edit mode for @layer and disable it for the others */
-            EditableGeoJsonSource.prototype.startEditing = function (layer) {
-                this.service.project.groups.forEach(function (g) {
-                    var v = false;
-                    g.layers.forEach(function (l) {
-                        if (l === layer) {
-                            v = true;
-                            l._gui['editing'] = true;
-                        }
-                        else {
-                            delete l._gui['editing'];
-                        }
-                    });
-                    g._gui.editing = v;
-                });
-                this.service.editing = true;
-                this.initAvailableFeatureTypesEditing(layer);
-            };
-            EditableGeoJsonSource.prototype.stopEditing = function (layer) {
-                this.service.stopEditingLayer(layer);
-            };
-            /** prepare layer for editing, add featuretypes to temp. _gui object */
-            EditableGeoJsonSource.prototype.initAvailableFeatureTypesEditing = function (layer) {
-                var featureTypes = {};
-                layer._gui['featureTypes'] = featureTypes;
-                if (!layer || !layer.typeUrl || !this.service.typesResources.hasOwnProperty(layer.typeUrl))
-                    return;
-                for (var ft in this.service.typesResources[layer.typeUrl].featureTypes) {
-                    var t = this.service.typesResources[layer.typeUrl].featureTypes[ft];
-                    if (!t.style.drawingMode)
-                        t.style.drawingMode = 'Point';
-                    featureTypes[ft] = this.service.typesResources[layer.typeUrl].featureTypes[ft];
-                    featureTypes[ft].u = csComp.Helpers.getImageUri(t);
-                    featureTypes[ft]._guid = csComp.Helpers.getGuid();
-                }
-            };
-            return EditableGeoJsonSource;
-        }(GeoJsonSource));
-        Services.EditableGeoJsonSource = EditableGeoJsonSource;
-        var DynamicGeoJsonSource = /** @class */ (function (_super) {
-            __extends(DynamicGeoJsonSource, _super);
-            function DynamicGeoJsonSource(service, $http, $storage) {
-                var _this = _super.call(this, service, $http, $storage) || this;
-                _this.service = service;
-                return _this;
-            }
-            DynamicGeoJsonSource.prototype.addLayer = function (layer, callback, data) {
-                if (data === void 0) { data = null; }
-                layer.isDynamic = true;
-                _super.prototype.addLayer.call(this, layer, callback, data);
-                if (layer.enabled) {
-                    this.initSubscriptions(layer);
-                }
-            };
-            DynamicGeoJsonSource.prototype.removeLayer = function (layer) {
-                _super.prototype.removeLayer.call(this, layer);
-                this.service.$messageBusService.serverUnsubscribe(layer.serverHandle);
-            };
-            DynamicGeoJsonSource.prototype.initSubscriptions = function (layer) {
-                var _this = this;
-                layer.serverHandle = this.service.$messageBusService.serverSubscribe(layer.id, 'layer', function (topic, msg) {
-                    console.log('action:' + msg.action + ' ' + layer.id);
-                    switch (msg.action) {
-                        case 'unsubscribed':
-                            _this.service.$rootScope.$apply(function () {
-                                layer.isConnected = false;
-                            });
-                            break;
-                        case 'subscribed':
-                            layer.isConnected = true;
-                            //console.log('sucesfully subscribed');
-                            break;
-                        case 'msg':
-                            var d = msg.data;
-                            if (d.hasOwnProperty('message')) {
-                                _this.service.$messageBusService.notify(layer.title, d.message);
-                            }
-                            break;
-                        case 'layer':
-                            if (msg.data != null) {
-                                try {
-                                    var lu = msg.data;
-                                    switch (lu.action) {
-                                        case Services.LayerUpdateAction.updateLog:
-                                            // find feature
-                                            var fId = lu.featureId;
-                                            var logs = lu.item;
-                                            var ff = layer.data.features;
-                                            ff.forEach(function (f) {
-                                                if (f.id === fId) {
-                                                    if (!f.logs)
-                                                        f.logs = {};
-                                                    for (var k in logs) {
-                                                        if (!f.logs.hasOwnProperty(k))
-                                                            f.logs[k] = [];
-                                                        logs[k].forEach(function (li) { return f.logs[k].push(li); });
-                                                    }
-                                                    // update logs
-                                                    _this.service.$rootScope.$apply(function () {
-                                                        _this.service.updateLog(f);
-                                                    });
-                                                    return true;
-                                                }
-                                                return false;
-                                            });
-                                            break;
-                                        case Services.LayerUpdateAction.updateFeature:
-                                            var f = lu.item;
-                                            if (layer.id === lu.layerId) {
-                                                _this.service.$rootScope.$apply(function () {
-                                                    _this.updateFeatureByProperty('id', f.id, f, layer);
-                                                });
-                                            }
-                                            break;
-                                        case Services.LayerUpdateAction.addUpdateFeatureBatch:
-                                            var fChanges = lu.item;
-                                            if (layer.id === lu.layerId && fChanges && fChanges.length > 0) {
-                                                _this.service.$rootScope.$apply(function () {
-                                                    fChanges.forEach(function (fc) {
-                                                        switch (fc.type) {
-                                                            case Services.ChangeType.Create:
-                                                            case Services.ChangeType.Update:
-                                                                _this.updateFeatureByProperty('id', fc.id, fc.value, layer);
-                                                                break;
-                                                            case Services.ChangeType.Delete:
-                                                                _this.deleteFeatureByProperty('id', fc.id, fc.value, layer);
-                                                                break;
-                                                        }
-                                                    });
-                                                });
-                                            }
-                                            break;
-                                        case Services.LayerUpdateAction.deleteFeature:
-                                            var feature = _this.service.findFeature(layer, lu.featureId);
-                                            if (feature) {
-                                                if (layer.showFeatureNotifications)
-                                                    _this.service.$messageBusService.notify(layer.title, feature.properties['Name'] + ' removed');
-                                                _this.service.removeFeature(feature, false);
-                                            }
-                                            // lu.featureId
-                                            // lu.object.forEach((f) => {
-                                            //
-                                            //     //this.service.removeFeature(f);
-                                            // });
-                                            break;
-                                    }
-                                }
-                                catch (e) {
-                                    console.warn('Error updating feature: ' + JSON.stringify(e, null, 2));
-                                }
-                                _this.service.$messageBusService.publish('layer', 'updated', layer);
-                            }
-                            break;
-                    }
-                });
-            };
-            return DynamicGeoJsonSource;
-        }(EditableGeoJsonSource));
-        Services.DynamicGeoJsonSource = DynamicGeoJsonSource;
-        var EsriJsonSource = /** @class */ (function (_super) {
-            __extends(EsriJsonSource, _super);
-            function EsriJsonSource(service, $http, $storage) {
-                var _this = _super.call(this, service, $http, $storage) || this;
-                _this.service = service;
-                _this.title = 'esrijson';
-                return _this;
-                // subscribe
-            }
-            EsriJsonSource.prototype.addLayer = function (layer, callback) {
-                var _this = this;
-                layer.renderType = 'geojson';
-                // Open a layer URL
-                layer.isLoading = true;
-                var url = (layer.useProxy) ? '/api/proxy' : layer.url;
-                this.$http({
-                    url: url,
-                    method: 'GET',
-                    params: { url: layer.url }
-                }).then(function (res) {
-                    var data = res.data;
-                    if (typeof data === 'string') {
-                        data = JSON.parse(data);
-                    }
-                    var s = new esriJsonConverter.esriJsonConverter();
-                    var geojson = s.toGeoJson(data);
-                    layer.data = geojson; //csComp.Helpers.GeoExtensions.createFeatureCollection(features);
-                    if (layer.data.geometries && !layer.data.features) {
-                        layer.data.features = layer.data.geometries;
-                    }
-                    if (layer.dataSourceParameters && layer.dataSourceParameters['convertFromRD']) {
-                        csComp.Helpers.GeoExtensions.convertRDFeaturesToWGS84(layer.data.features);
-                    }
-                    layer.data.features.forEach(function (f) {
-                        _this.service.initFeature(f, layer, false, false);
-                    });
-                    if (layer.timeAware)
-                        _this.service.$messageBusService.publish('timeline', 'updateFeatures');
-                }, function (e) {
-                    console.log('EsriJsonSource called $HTTP with errors: ' + e);
-                }).finally(function () {
-                    layer.isLoading = false;
-                    callback(layer);
-                });
-            };
-            return EsriJsonSource;
-        }(GeoJsonSource));
-        Services.EsriJsonSource = EsriJsonSource;
-    })(Services = csComp.Services || (csComp.Services = {}));
-})(csComp || (csComp = {}));
-//# sourceMappingURL=GeoJsonSource.js.map
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-var csComp;
-(function (csComp) {
-    var Services;
-    (function (Services) {
-        /**
-         * A GRID data source is a raster or grid in which the grid cells are delimited by spaces
-         * and each newline indicates a new row of data.
-         */
-        var GridDataSource = /** @class */ (function (_super) {
-            __extends(GridDataSource, _super);
-            function GridDataSource(service, $http, $storage) {
-                var _this = _super.call(this, service, $http, $storage) || this;
-                _this.service = service;
-                _this.title = "grid";
-                return _this;
-            }
-            GridDataSource.prototype.addLayer = function (layer, callback) {
-                var _this = this;
-                this.layer = layer;
-                if (typeof layer.dataSourceParameters === 'undefined') {
-                    throw new Error("Undefined IGridData data property in GridDataSource.");
-                    //return;
-                }
-                this.gridParams = layer.dataSourceParameters;
-                // Select the appropriate converter for converting points to features:
-                if (this.gridParams.useContour) {
-                    this.convertDataToFeatureCollection = this.convertDataToIsoLines;
-                }
-                else {
-                    this.convertDataToFeatureCollection = this.convertDataToPolygonGrid;
-                }
-                // Open a layer URL
-                layer.isLoading = true;
-                // get data from layer data if present, otherwise fetch from server
-                if (layer.data && layer.quickRefresh) {
-                    this.processData(layer, layer.data, callback);
-                }
-                else {
-                    $.get(layer.url, function (result, status) {
-                        _this.processData(layer, result, callback);
-                    }).fail(function (err) {
-                        layer.isLoading = false;
-                        _this.service.$messageBusService.notifyErrorWithTranslation('ERROR_LOADING_LAYER', layer.title + " \nurl: " + layer.url);
-                        _this.service.$messageBusService.publish('layer', 'error');
-                        console.log("Failed loading layer " + layer.title + " due to " + JSON.stringify(err) + ".");
-                    });
-                }
-            };
-            GridDataSource.prototype.processData = function (layer, result, callback) {
-                var _this = this;
-                // https://github.com/caolan/async#seriestasks-callback
-                async.series([
-                    function (cb) {
-                        layer.count = 0;
-                        if (typeof _this.gridParams.gridType !== 'undefined' && _this.gridParams.gridType === 'esri') {
-                            _this.convertEsriHeaderToGridParams(result);
-                        }
-                        if (layer.renderType === 'gridlayer') {
-                            layer.data = _this.convertDataToGrid(result, _this.gridParams);
-                            ;
-                            layer.isLoading = false;
-                            cb(null, null);
-                            return;
-                        }
-                        var data = _this.convertDataToFeatureCollection(result, _this.gridParams);
-                        if (data.fc.features.length > 10000) {
-                            console.warn('Grid is very big! Number of features: ' + data.fc.features.length);
-                        }
-                        if (data.fc.features.length === 0) {
-                            _this.service.$messageBusService.notify('Warning', 'Data loaded successfully, but all points are outside the specified range.', csComp.Services.NotifyLocation.TopRight, csComp.Services.NotifyType.Error);
-                            layer.isLoading = false;
-                            cb(null, null);
-                            return;
-                        }
-                        // store raw result in layer
-                        layer.data = data.fc;
-                        //layer.description = data.desc;
-                        if (layer.data.geometries && !layer.data.features) {
-                            layer.data.features = layer.data.geometries;
-                        }
-                        var count = 0;
-                        var last = layer.data.features.length - 1;
-                        layer.data.features.forEach(function (f) {
-                            _this.service.initFeature(f, layer, false, false);
-                        });
-                        layer.isLoading = false;
-                        cb(null, null);
-                    },
-                    function () {
-                        callback(layer);
-                    }
-                ]);
-            };
-            /**
-             * Convert the ESRI ASCII GRID header to grid parameters.
-             *
-                ESRI ASCII Raster format
-                The ESRI ASCII raster format can be used to transfer information to or from other cell-based or raster systems. When an existing raster is output to an ESRI ASCII format raster, the file will begin with header information that defines the properties of the raster such as the cell size, the number of rows and columns, and the coordinates of the origin of the raster. The header information is followed by cell value information specified in space-delimited row-major order, with each row seperated by a carraige return.
-                In order to convert an ASCII file to a raster, the data must be in this same format. The parameters in the header part of the file must match correctly with the structure of the data values.
-                The basic structure of the ESRI ASCII raster has the header information at the beginning of the file followed by the cell value data:
-                    NCOLS xxx
-                    NROWS xxx
-                    XLLCENTER xxx | XLLCORNER xxx
-                    YLLCENTER xxx | YLLCORNER xxx
-                    CELLSIZE xxx
-                    NODATA_VALUE xxx
-                    row 1
-                    row 2
-                    ...
-                    row n
-                *
-                Row 1 of the data is at the top of the raster, row 2 is just under row 1, and so on.
-                Header format
-                The syntax of the header information is a keyword paired with the value of that keyword. The definitions of the kewords are:
-                *
-                Parameter	Description	Requirements
-                NCOLS	Number of cell columns.	Integer greater than 0.
-                NROWS	Number of cell rows.	Integer greater than 0.
-                XLLCENTER or XLLCORNER	X coordinate of the origin (by center or lower left corner of the cell).	Match with Y coordinate type.
-                YLLCENTER or YLLCORNER	Y coordinate of the origin (by center or lower left corner of the cell).	Match with X coordinate type.
-                CELLSIZE	Cell size.	Greater than 0.
-                NODATA_VALUE	The input values to be NoData in the output raster.	Optional. Default is -9999.
-                Data format
-                The data component of the ESRI ASCII raster follows the header information.
-                Cell values should be delimited by spaces.
-                No carriage returns are necessary at the end of each row in the raster. The number of columns in the header determines when a new row begins.
-                Row 1 of the data is at the top of the raster, row 2 is just under row 1, and so on.
-             */
-            GridDataSource.prototype.convertEsriHeaderToGridParams = function (input) {
-                var _this = this;
-                var regex = /(\S*)\s*([\d-.]*)/;
-                var data = this.getData(input);
-                if (!data)
-                    return;
-                var lines = data.split('\n', 6);
-                var x, y;
-                var isCenter = false;
-                this.gridParams.skipLines = 0;
-                lines.forEach(function (line) {
-                    var matches = line.match(regex);
-                    if (matches.length !== 3)
-                        return;
-                    _this.gridParams.skipLines++;
-                    var value = +matches[2];
-                    switch (matches[1].toLowerCase()) {
-                        case 'ncols':
-                            // Number of cell columns. Integer greater than 0.
-                            _this.gridParams.columns = value;
-                            break;
-                        case 'nrows':
-                            // Number of cell rows. Integer greater than 0.
-                            _this.gridParams.rows = value;
-                            break;
-                        case 'xllcorner':
-                            x = value;
-                            // X coordinate of the origin (by lower left corner of the cell).
-                            break;
-                        case 'yllcorner':
-                            y = value;
-                            // Y coordinate of the origin (by lower left corner of the cell).
-                            break;
-                        case 'xllcenter':
-                            // X coordinate of the origin (by center corner of the cell).
-                            x = value;
-                            isCenter = true;
-                            break;
-                        case 'yllcenter':
-                            // Y coordinate of the origin (by center corner of the cell).
-                            y = value;
-                            isCenter = true;
-                            break;
-                        case 'cellsize':
-                            // Cell size. Greater than 0.
-                            _this.gridParams.deltaLon = value;
-                            _this.gridParams.deltaLat = -value;
-                            break;
-                        case 'nodata_value':
-                            // The input values to be NoData in the output raster. Optional. Default is -9999.
-                            _this.gridParams.noDataValue = value;
-                            break;
-                    }
-                });
-                if (isCenter) {
-                    this.gridParams.startLon = x;
-                    this.gridParams.startLat = y;
-                }
-                else {
-                    this.gridParams.startLon = x + this.gridParams.deltaLon / 2;
-                    this.gridParams.startLat = y - this.gridParams.deltaLat / 2;
-                }
-                /* WARNING: The below RD projection is NOT correct!!! To convert an RD grid to a WGS84 grid requires a complex
-                 * translation using shearing and approximating pixels. It's better to use gdal (standalone, or with QGIS).
-                 *
-                 * For example, execute the following in a batch file:
-                 * First, convert the input data to vrt, reprojecting from RD to wgs84, and replacing the nodata value at the same time.
-                 * As gdalwarp does not support AAIGrid as output, we first convert it to VRT, and use gdal_translate to translate it to an ESRI ASCII GRID file.
-                 *
-                 * for %%f in (*.asc) do (
-                 * 		echo Processing %%f
-                 * 		"c:/Program Files/QGIS Pisa/bin/gdalwarp.exe" --config GDAL_DATA "c:/OSGeo4W64/share/gdal" -srcnodata -999.0 -dstnodata -1 -t_srs EPSG:4296 -s_srs EPSG:28992 -of VRT -r average %%f %%f_intermediate.vrt
-                 * 		"c:/Program Files/QGIS Pisa/bin/gdal_translate.exe" -of AAIGrid %%f_intermediate.vrt %%f.out
-                 * 		del %%f_intermediate.vrt
-                 * 	)
-                 */
-                switch (this.gridParams.projection || 'wgs84') {
-                    case 'rd':
-                    case 'RD':
-                        var startLoc = csComp.Helpers.GeoExtensions.convertRDToWGS84(this.gridParams.startLon, this.gridParams.startLat - (this.gridParams.rows - 1) * this.gridParams.deltaLat);
-                        var endLoc = csComp.Helpers.GeoExtensions.convertRDToWGS84(this.gridParams.startLon + (this.gridParams.columns - 1) * this.gridParams.deltaLon, this.gridParams.startLat);
-                        this.gridParams.deltaLon = (endLoc.longitude - startLoc.longitude) / (this.gridParams.columns - 1);
-                        this.gridParams.deltaLat = (endLoc.latitude - startLoc.latitude) / (this.gridParams.rows - 1);
-                        this.gridParams.startLon = startLoc.longitude;
-                        this.gridParams.startLat = startLoc.latitude;
-                        break;
-                    case 'WGS84':
-                    case 'wgs84':
-                        this.gridParams.startLat -= (this.gridParams.rows - 1) * this.gridParams.deltaLat;
-                        break;
-                    default:
-                        throw new Error('Current projection is not supported!');
-                    // break;
-                }
-            };
-            /** Extract the grid data from the input */
-            GridDataSource.prototype.getData = function (input) {
-                if (typeof input === 'string') {
-                    return input;
-                }
-                else if (input.hasOwnProperty('data') && typeof input['data'] === 'string') {
-                    return input['data'];
-                }
-                else {
-                    console.log('GridDataSource error: could not read grid data!');
-                    return '';
-                }
-            };
-            /**
-             * Convert the incoming data to a matrix grid.
-             * The incoming data can be in two formats: either it is a string, representing the ASCII grid data,
-             * or it is an (ILayer) object, in which case the data should be in the input.data property.
-             */
-            GridDataSource.prototype.convertDataToGrid = function (input, gridParams) {
-                var data = this.getData(input);
-                if (!data)
-                    return;
-                var propertyName = (typeof gridParams.propertyName !== 'undefined') ? gridParams.propertyName : 'v';
-                var noDataValue = (typeof gridParams.noDataValue !== 'undefined') ? gridParams.noDataValue : -9999;
-                var skipLinesAfterComment = gridParams.skipLinesAfterComment, skipSpacesFromLine = gridParams.skipSpacesFromLine, skipFirstRow = gridParams.skipFirstRow || false, skipFirstColumn = gridParams.skipFirstColumn || false;
-                var separatorCharacter = gridParams.separatorCharacter || ' ', splitCellsRegex = new RegExp("[^" + separatorCharacter + "]+", "g");
-                var deltaLon = gridParams.deltaLon, deltaLat = gridParams.deltaLat, lat = gridParams.startLat, lon = gridParams.startLon;
-                var max = (typeof gridParams.maxThreshold !== 'undefined') ? gridParams.maxThreshold : Number.MAX_VALUE, min = (typeof gridParams.minThreshold !== 'undefined') ? gridParams.minThreshold : -Number.MAX_VALUE;
-                var lines = data.split('\n'), i = 0, gridData = [];
-                if (gridParams.skipLines)
-                    lines.splice(0, gridParams.skipLines);
-                var rowsToProcess = gridParams.rows || Number.MAX_VALUE;
-                lines.forEach(function (line) {
-                    if (gridParams.commentCharacter)
-                        if (line.substr(0, 1) === gridParams.commentCharacter) {
-                            console.log(line);
-                            return;
-                        }
-                    if (skipLinesAfterComment && skipLinesAfterComment > 0) {
-                        skipLinesAfterComment--;
-                        return;
-                    }
-                    if (skipFirstRow) {
-                        skipFirstRow = false;
-                        return;
-                    }
-                    rowsToProcess--;
-                    if (rowsToProcess < 0)
-                        return gridData;
-                    var cells;
-                    if (skipSpacesFromLine)
-                        cells = line.substr(skipSpacesFromLine).match(splitCellsRegex);
-                    else
-                        cells = line.match(splitCellsRegex);
-                    if (skipFirstColumn && cells.length > 1)
-                        cells = cells.splice(1);
-                    if (!cells || (!gridParams.skipFirstColumn && cells.length < gridParams.columns))
-                        return;
-                    gridData[i] = [];
-                    cells.forEach(function (c) { return gridData[i].push(+c); });
-                    //Why is the minThreshold parameter overwritten by the smallest value in the grid???
-                    //max = Math.max(max, ...gridData[i]);
-                    //min = Math.min(min, ...gridData[i]);
-                    i++;
-                });
-                gridParams.maxThreshold = max;
-                gridParams.minThreshold = min;
-                return gridData;
-            };
-            /**
-             * Convert data to a set of isolines.
-             */
-            GridDataSource.prototype.convertDataToIsoLines = function (data, gridParams) {
-                var gridData = this.convertDataToGrid(data, gridParams);
-                var propertyName = gridParams.propertyName || "v";
-                var longitudes = [], latitudes = [];
-                var lat = gridParams.startLat, lon = gridParams.startLon, deltaLat = gridParams.deltaLat, deltaLon = gridParams.deltaLon;
-                var max = gridParams.maxThreshold, min = gridParams.minThreshold;
-                gridData.forEach(function (row) {
-                    latitudes.push(lat);
-                    lat += deltaLat;
-                });
-                gridData[0].forEach(function (col) {
-                    longitudes.push(lon);
-                    lon += deltaLon;
-                    if (lon > 180)
-                        lon -= 360;
-                });
-                var features = [];
-                var conrec = new csComp.Helpers.Conrec(), nrIsoLevels, isoLevels;
-                if (typeof gridParams.contourLevels === 'undefined') {
-                    nrIsoLevels = 10;
-                }
-                else {
-                    var cl = gridParams.contourLevels;
-                    if (typeof cl === 'number') {
-                        nrIsoLevels = cl;
-                    }
-                    else {
-                        isoLevels = cl;
-                        nrIsoLevels = cl.length;
-                    }
-                }
-                if (typeof isoLevels === 'undefined') {
-                    isoLevels = [];
-                    var dl = (max - min) / nrIsoLevels;
-                    for (var l = min + dl / 2; l < max; l += dl)
-                        isoLevels.push(Math.round(l * 10) / 10); // round to nearest decimal.
-                }
-                conrec.contour(gridData, 0, gridData.length - 1, 0, gridData[0].length - 1, latitudes, longitudes, nrIsoLevels, isoLevels, gridParams.noDataValue || -9999);
-                var contourList = conrec.contourList;
-                contourList.forEach(function (contour) {
-                    var result = {};
-                    result[propertyName] = contour.level;
-                    var feature = {
-                        type: 'Feature',
-                        geometry: {
-                            type: 'Polygon'
-                        },
-                        properties: result
-                    };
-                    var ring = [];
-                    feature.geometry.coordinates = [ring];
-                    contour.forEach(function (p) {
-                        ring.push([p.y, p.x]);
-                    });
-                    features.push(feature);
-                });
-                var desc = "# Number of features above the threshold: " + features.length + ".\r\n";
-                return {
-                    fc: csComp.Helpers.GeoExtensions.createFeatureCollection(features),
-                    desc: desc
-                };
-            };
-            /**
-             * Convert data to a grid of square GeoJSON polygons, so each drawable point is converted to a square polygon.
-             */
-            GridDataSource.prototype.convertDataToPolygonGrid = function (data, gridParams) {
-                var propertyName = gridParams.propertyName || "v";
-                var gridData = this.convertDataToGrid(data, gridParams);
-                var lat = gridParams.startLat, deltaLat = gridParams.deltaLat, deltaLon = gridParams.deltaLon, noDataValue = gridParams.noDataValue;
-                var minThreshold = gridParams.minThreshold || -Number.MAX_VALUE, maxThreshold = gridParams.maxThreshold || Number.MAX_VALUE;
-                var features = [];
-                gridData.forEach(function (row) {
-                    var lon = gridParams.startLon;
-                    row.forEach(function (n) {
-                        var value = +n;
-                        if (value !== noDataValue && minThreshold <= value && value <= maxThreshold) {
-                            var result = {};
-                            result[propertyName] = value;
-                            var tl = [lon, lat + deltaLat], tr = [lon + deltaLon, lat + deltaLat], bl = [lon, lat], br = [lon + deltaLon, lat];
-                            var pg = csComp.Helpers.GeoExtensions.createPolygonFeature([[tl, tr, br, bl, tl]], result);
-                            features.push(pg);
-                        }
-                        lon += deltaLon;
-                        if (lon > 180)
-                            lon -= 360;
-                    });
-                    lat += deltaLat;
-                });
-                //
-                // var propertyName = gridParams.propertyName || "v";
-                // var noDataValue = gridParams.noDataValue || -9999;
-                //
-                // var skipLinesAfterComment = gridParams.skipLinesAfterComment,
-                //     skipSpacesFromLine = gridParams.skipSpacesFromLine,
-                //     skipFirstRow = gridParams.skipFirstRow || false,
-                //     skipFirstColumn = gridParams.skipFirstColumn || false;
-                //
-                // var separatorCharacter = gridParams.separatorCharacter || ' ',
-                //     splitCellsRegex = new RegExp("[^" + separatorCharacter + "]+", "g");
-                //
-                // var deltaLon = gridParams.deltaLon,
-                //     deltaLat = gridParams.deltaLat,
-                //     lat = gridParams.startLat,
-                //     lon = gridParams.startLon;
-                //
-                // var features: csComp.Helpers.IGeoFeature[] = [];
-                //
-                // var lines = data.split('\n');
-                // if (gridParams.skipLines) lines.splice(0, gridParams.skipLines);
-                //
-                // var rowsToProcess = gridParams.rows || Number.MAX_VALUE;
-                // lines.forEach((line) => {
-                //     if (gridParams.commentCharacter)
-                //         if (line.substr(0, 1) === gridParams.commentCharacter) {
-                //             console.log(line);
-                //             return;
-                //         }
-                //
-                //     if (skipLinesAfterComment && skipLinesAfterComment > 0) {
-                //         skipLinesAfterComment--;
-                //         return;
-                //     }
-                //
-                //     if (skipFirstRow) {
-                //         skipFirstRow = false;
-                //         return;
-                //     }
-                //     rowsToProcess--;
-                //     if (rowsToProcess < 0) return;
-                //
-                //     var cells: RegExpMatchArray;
-                //     if (skipSpacesFromLine)
-                //         cells = line.substr(skipSpacesFromLine).match(splitCellsRegex);
-                //     else
-                //         cells = line.match(splitCellsRegex);
-                //
-                //     if (skipFirstColumn && cells.length > 1) cells = cells.splice(1);
-                //
-                //     if (!cells || (!gridParams.skipFirstColumn && cells.length < gridParams.columns)) return;
-                //
-                //     lon = gridParams.startLon;
-                //     var minThreshold = gridParams.minThreshold || -Number.MAX_VALUE,
-                //         maxThreshold = gridParams.maxThreshold || Number.MAX_VALUE;
-                //     cells.forEach((n) => {
-                //         var value = +n;
-                //         if (value !== noDataValue && minThreshold <= value && value <= maxThreshold) {
-                //             var result: IProperty = {};
-                //             result[propertyName] = value;
-                //             var tl = [lon, lat + deltaLat],
-                //                 tr = [lon + deltaLon, lat + deltaLat],
-                //                 bl = [lon, lat],
-                //                 br = [lon + deltaLon, lat];
-                //
-                //             var pg = csComp.Helpers.GeoExtensions.createPolygonFeature([[tl, tr, br, bl, tl]], result);
-                //             features.push(pg);
-                //         }
-                //         lon += deltaLon;
-                //         if (lon > 180) lon -= 360;
-                //     });
-                //     lat += deltaLat;
-                // });
-                var desc = "# Number of features above the threshold: " + features.length + ".\r\n";
-                return {
-                    fc: csComp.Helpers.GeoExtensions.createFeatureCollection(features),
-                    desc: desc
-                };
-            }; // convertDataToGeoJSON
-            return GridDataSource;
-        }(csComp.Services.GeoJsonSource));
-        Services.GridDataSource = GridDataSource;
-    })(Services = csComp.Services || (csComp.Services = {}));
-})(csComp || (csComp = {}));
-//# sourceMappingURL=GridDataSource.js.map
-var csComp;
-(function (csComp) {
-    var Services;
-    (function (Services) {
-        'use strict';
-        var HeatmapSource = /** @class */ (function () {
-            function HeatmapSource(service) {
-                this.service = service;
-                this.title = 'heatmap';
-                this.requiresLayer = true;
-                //service: LayerService;
-                this.heatmapModel = new Heatmap.HeatmapModel('ProjectHeatmap');
-            }
-            //public init(service: LayerService) {
-            //    this.service = service;
-            //}
-            HeatmapSource.prototype.refreshLayer = function (layer) {
-                this.generateHeatmap(layer);
-            };
-            HeatmapSource.prototype.layerMenuOptions = function (layer) {
-                return null;
-            };
-            HeatmapSource.prototype.addLayer = function (layer, callback, data) {
-                var _this = this;
-                if (data === void 0) { data = null; }
-                async.series([
-                    function (cb) {
-                        layer.renderType = 'heatmap';
-                        layer.isLoading = true;
-                        if (layer.quickRefresh && layer.quickRefresh === true) {
-                            // In case the map has not moved, the heatmap cells do not need to be calculated again, only the style of the markers need to be updated.
-                            _this.heatmapModel.deserialize(layer);
-                            _this.heatmapModel.id = layer.id;
-                            _this.heatmapModel.updateWeights();
-                            if (layer.heatmapItems) {
-                                var hiWeights = {};
-                                _this.heatmapModel.heatmapItems.forEach(function (hi) {
-                                    hiWeights[hi.toString()] = hi.weight;
-                                });
-                                var weightedIntensityScale = ((_this.heatmapModel.heatmapSettings.intensityScale / 3) * (_this.heatmapModel.heatmapSettings.intensityScale / 3)); // Convert intensityscale from [1,...,5] to ~[0.1, 0.5, 1, 2, 3]
-                                _this.service.project.features.forEach(function (f) {
-                                    if (f.properties.hasOwnProperty('intensities') && f.properties.hasOwnProperty('contributors')) {
-                                        var intensities = JSON.parse(f.properties['intensities']);
-                                        var totalIntensity = 0;
-                                        for (var key in intensities) {
-                                            if (intensities.hasOwnProperty(key)) {
-                                                totalIntensity += intensities[key] * hiWeights[key] * weightedIntensityScale;
-                                            }
-                                        }
-                                        f.properties['totalIntensity'] = totalIntensity;
-                                        _this.service.calculateFeatureStyle(f);
-                                        _this.service.activeMapRenderer.updateFeature(f);
-                                    }
-                                });
-                            }
-                        }
-                        else {
-                            // In all other occasions, (re)calculate the complete heatmap
-                            _this.generateHeatmap(layer);
-                            layer.enabled = true;
-                            _this.enableProjectLayer(layer);
-                        }
-                        layer.isLoading = false;
-                        cb(null, null);
-                    },
-                    // Callback
-                    function () {
-                        callback(layer);
-                    }
-                ]);
-            };
-            HeatmapSource.prototype.removeLayer = function (layer) {
-                delete (this.heatmapModel);
-                this.heatmapModel = new Heatmap.HeatmapModel('ProjectHeatmap');
-                layer.enabled = false;
-                layer.data = JSON;
-                this.enableProjectLayer(layer); // Set project layer to disabled
-                //this.updateLayer(layer);
-            };
-            /* Enables the project layer if the 'layer' parameter has the same id as a project layer */
-            HeatmapSource.prototype.enableProjectLayer = function (layer) {
-                if (!layer.id)
-                    return;
-                this.service.project.groups.forEach(function (group) {
-                    group.layers.forEach(function (l) {
-                        if (l.id === layer.id) {
-                            l.enabled = layer.enabled;
-                            if (l.enabled === false) {
-                                layer.data = JSON;
-                            }
-                        }
-                    });
-                });
-            };
-            HeatmapSource.prototype.getRequiredLayers = function (layer) {
-                var _this = this;
-                var requiredLayers = [];
-                if (layer.heatmapSettings && layer.heatmapSettings.referenceList) {
-                    layer.heatmapSettings.referenceList.forEach(function (ref) {
-                        _this.service.project.groups.forEach(function (group) {
-                            group.layers.forEach(function (l) {
-                                if (l.reference === ref) {
-                                    requiredLayers.push(l);
-                                }
-                            });
-                        });
-                    });
-                }
-                return requiredLayers;
-            };
-            HeatmapSource.prototype.getFeatureTypes = function (layer) {
-                var featureTypes = [];
-                layer.heatmapItems.forEach(function (hi) {
-                    featureTypes.push(hi.featureType.name);
-                });
-                return featureTypes;
-            };
-            HeatmapSource.prototype.generateHeatmap = function (layer) {
-                var _this = this;
-                console.log('Generating heatmap');
-                var geoLayer = L.geoJson([]);
-                this.heatmapModel.deserialize(layer);
-                this.heatmapModel.id = layer.id;
-                var currentZoom = this.service.$mapService.getMap().getZoom();
-                if (currentZoom < this.heatmapModel.heatmapSettings.minZoom || currentZoom > this.heatmapModel.heatmapSettings.maxZoom) {
-                    return;
-                }
-                else {
-                    this.heatmapModel.updateWeights();
-                    this.heatmapModel.calculate(this.service, this.service.$mapService, geoLayer);
-                    var time = new Date().getTime();
-                    layer.data = geoLayer.toGeoJSON();
-                }
-                if ((layer.data) && (layer.data).features) {
-                    (layer.data).features.forEach(function (f) {
-                        _this.service.initFeature(f, layer, false, false);
-                        _this.service.activeMapRenderer.addFeature(f);
-                    });
-                    // Set default style for the heatmap:
-                    if ((layer.data).features[0]) {
-                        var calloutProp = new FeatureProps.CallOutProperty("totalIntensity", "0", "totalIntensity", true, true, true, (layer.data).features[0], false, false);
-                        var propinfo = {};
-                        // Tweak the group style info to keep constant min/max color values on panning and zooming.
-                        propinfo.count = (layer.data).features.length;
-                        propinfo.max = 1;
-                        propinfo.min = -1;
-                        propinfo.userMax = propinfo.max;
-                        propinfo.userMin = propinfo.min;
-                        propinfo.mean = 0;
-                        propinfo.varience = 0.67;
-                        propinfo.sd = Math.sqrt(propinfo.varience);
-                        this.service.setStyle(calloutProp, false, propinfo); // Set the style
-                    }
-                }
-                var time2 = new Date().getTime();
-                console.log('Init and style features in ' + (time2 - time).toFixed(1) + ' ms');
-            };
-            return HeatmapSource;
-        }());
-        Services.HeatmapSource = HeatmapSource;
-    })(Services = csComp.Services || (csComp.Services = {}));
-})(csComp || (csComp = {}));
-//# sourceMappingURL=HeatmapSource.js.map
-var csComp;
-(function (csComp) {
-    var Services;
-    (function (Services) {
-        'use strict';
-        var HierarchySource = /** @class */ (function () {
-            function HierarchySource(service, $http) {
-                this.service = service;
-                this.title = "hierarchy";
-                this.requiresLayer = true;
-                this.$http = $http;
-            }
-            HierarchySource.prototype.refreshLayer = function (layer) {
-                this.service.removeLayer(layer);
-                this.service.addLayer(layer);
-            };
-            HierarchySource.prototype.addLayer = function (layer, callback, data) {
-                if (data === void 0) { data = null; }
-                this.baseAddLayer(layer, callback);
-            };
-            HierarchySource.prototype.fitMap = function (layer) {
-                var b = csComp.Helpers.GeoExtensions.getBoundingBox(this.layer.data);
-                this.service.$messageBusService.publish("map", "setextent", b);
-            };
-            HierarchySource.prototype.layerMenuOptions = function (layer) {
-                var _this = this;
-                return [
-                    ["Fit map", (function ($itemScope) { return _this.fitMap(layer); })],
-                    ['Refresh', (function ($itemScope) { return _this.refreshLayer(layer); })]
-                ];
-            };
-            HierarchySource.prototype.getRequiredLayers = function (layer) {
-                var _this = this;
-                var requiredLayers = [];
-                if (layer.hierarchySettings && layer.hierarchySettings.referenceList) {
-                    layer.hierarchySettings.referenceList.forEach(function (ref) {
-                        _this.service.project.groups.forEach(function (group) {
-                            group.layers.forEach(function (l) {
-                                if (l.reference == ref) {
-                                    requiredLayers.push(l);
-                                }
-                            });
-                        });
-                    });
-                }
-                return requiredLayers;
-            };
-            HierarchySource.prototype.baseAddLayer = function (layer, callback) {
-                var _this = this;
-                this.layer = layer;
-                async.series([
-                    function (cb) {
-                        layer.renderType = "geojson";
-                        // Open a layer URL
-                        layer.isLoading = true;
-                        // get data
-                        _this.$http.get(layer.url)
-                            .then(function (res) {
-                            var data = res.data;
-                            layer.count = 0;
-                            layer.isLoading = false;
-                            // if this is a topojson layer, convert to geojson first
-                            if (layer.type.toLowerCase() === 'topojson') {
-                                data = csComp.Helpers.GeoExtensions.convertTopoToGeoJson(data);
-                            }
-                            // add featuretypes to global featuretype list
-                            if (data.featureTypes)
-                                for (var featureTypeName in data.featureTypes) {
-                                    if (!data.featureTypes.hasOwnProperty(featureTypeName))
-                                        continue;
-                                    var featureType = data.featureTypes[featureTypeName];
-                                    // give it a unique name
-                                    featureTypeName = layer.id + '_' + featureTypeName;
-                                    _this.service._featureTypes[featureTypeName] = featureType;
-                                }
-                            if (data.timestamps)
-                                layer.timestamps = data.timestamps;
-                            // store raw result in layer
-                            layer.data = data;
-                            if (layer.data.geometries && !layer.data.features) {
-                                layer.data.features = layer.data.geometries;
-                            }
-                            layer.data.features.forEach(function (f) {
-                                _this.service.initFeature(f, layer, false, false);
-                            });
-                            _this.service.$messageBusService.publish("timeline", "updateFeatures");
-                            cb(null, null);
-                        })
-                            .catch(function () {
-                            layer.count = 0;
-                            layer.isLoading = false;
-                            _this.service.$messageBusService.notifyErrorWithTranslation('ERROR_LOADING_LAYER', layer.title + " \nurl: " + layer.url);
-                            _this.service.$messageBusService.publish('layer', 'error', layer);
-                            cb(null, null);
-                        });
-                    },
-                    // Callback
-                    function () {
-                        callback(layer);
-                    }
-                ]);
-            };
-            HierarchySource.prototype.removeLayer = function (layer) {
-                //alert('remove layer');
-            };
-            return HierarchySource;
-        }());
-        Services.HierarchySource = HierarchySource;
-    })(Services = csComp.Services || (csComp.Services = {}));
-})(csComp || (csComp = {}));
-//# sourceMappingURL=HierarchySource.js.map
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-var csComp;
-(function (csComp) {
-    var Services;
-    (function (Services) {
-        var KmlDataSource = /** @class */ (function (_super) {
-            __extends(KmlDataSource, _super);
-            function KmlDataSource(service, $http, $storage) {
-                var _this = _super.call(this, service, $http, $storage) || this;
-                _this.service = service;
-                _this.title = "kml";
-                return _this;
-            }
-            KmlDataSource.prototype.get = function (x, y) { return x.getElementsByTagName(y); };
-            KmlDataSource.prototype.attr = function (x, y) { return x.getAttribute(y); };
-            KmlDataSource.prototype.addLayer = function (layer, callback) {
-                var _this = this;
-                this.layer = layer;
-                layer.renderType = "geojson";
-                // Open a layer URL
-                layer.isLoading = true;
-                // get data
-                $.ajax(layer.url)
-                    .done(function (xml) {
-                    layer.count = 0;
-                    layer.isLoading = false;
-                    switch (layer.type.toLowerCase()) {
-                        case "kml":
-                            _this.convertKmlToGeoJSON(layer, xml);
-                            break;
-                        case "gpx":
-                            _this.convertGpxToGeoJSON(layer, xml);
-                            break;
-                    }
-                    callback(layer);
-                })
-                    .fail(function (error) {
-                    layer.isLoading = false;
-                    _this.service.$messageBusService.notifyErrorWithTranslation('ERROR_LOADING_LAYER', layer.title + " \n" + layer.url);
-                    _this.service.$messageBusService.publish('layer', 'error', layer);
-                    console.log("Failed loading layer " + layer.title + " due to " + JSON.stringify(error) + ".");
-                    callback(layer);
-                });
-            };
-            KmlDataSource.prototype.convertGpxToGeoJSON = function (layer, gpx) {
-                var data = toGeoJSON.gpx(gpx);
-                this.initLayer(data, layer);
-            };
-            KmlDataSource.prototype.convertKmlToGeoJSON = function (layer, kml) {
-                var _this = this;
-                // Convert kml to geojson
-                var data = toGeoJSON.kml(kml);
-                // Extract style information: first, get all styles
-                var styleIndex = {}, styles = this.get(kml, 'Style'), styleMaps = this.get(kml, 'StyleMap');
-                for (var k = 0; k < styles.length; k++) {
-                    styleIndex['#' + this.attr(styles[k], 'id')] = styles[k];
-                }
-                // Next, get all stylemaps (and link the normal version to its style)
-                for (var k = 0; k < styleMaps.length; k++) {
-                    var styleMap = styleMaps[k];
-                    var pairs = this.get(styleMap, 'Pair');
-                    if (!pairs)
-                        continue;
-                    for (var i = 0; i < pairs.length; i++) {
-                        var p = pairs[i];
-                        var key = this.get(p, 'key');
-                        if (!key || key.length === 0 || key[0].childNodes[0].nodeValue !== 'normal')
-                            continue;
-                        var styleNames = this.get(p, 'styleUrl');
-                        if (styleNames && styleNames.length > 0) {
-                            var styleMapName = '#' + this.attr(styleMap, 'id');
-                            var styleName = styleNames[0].childNodes[0].nodeValue;
-                            styleIndex[styleMapName] = styleIndex[styleName];
-                        }
-                        break;
-                    }
-                }
-                // Create the style and add it to the service._featureTypes.
-                data.features.forEach(function (f) {
-                    if (!f.properties.hasOwnProperty('styleUrl'))
-                        return;
-                    var styleUrl = f.properties['styleUrl'], styleName = layer.typeUrl + styleUrl;
-                    // Strip the # from the style name and copy it to the featureTypeId
-                    f.properties['featureTypeId'] = styleUrl.substring(1);
-                    // Remove the styleUrl and styleHash
-                    delete f.properties['styleUrl'];
-                    delete f.properties['styleHash'];
-                    if (_this.service._featureTypes.hasOwnProperty(styleName))
-                        return;
-                    var style = styleIndex[styleUrl];
-                    _this.service._featureTypes[styleName] = {
-                        name: styleName,
-                        showAllProperties: false,
-                        style: {
-                            fillColor: _this.getFillColor(style),
-                            strokeColor: _this.getLineColor(style),
-                            strokeWidth: _this.getLineWidth(style),
-                            stroke: true,
-                            iconUri: _this.getIcon(layer, style)
-                        }
-                    };
-                    //console.log(toGeoJSON.xml2str(styleIndex[f.properties['featureTypeId']]));
-                });
-                this.initLayer(data, layer);
-            };
-            KmlDataSource.prototype.getIcon = function (layer, style) {
-                try {
-                    var url = style.getElementsByTagName('href')[0].childNodes[0].nodeValue;
-                    return (url.match(/^http/i))
-                        ? url
-                        : layer.url.substr(0, layer.url.lastIndexOf('/') + 1) + url;
-                }
-                catch (error) {
-                    return '';
-                }
-            };
-            KmlDataSource.prototype.getLineColor = function (style) {
-                try {
-                    return '#' + style
-                        .getElementsByTagName('LineStyle')[0]
-                        .getElementsByTagName('color')[0]
-                        .childNodes[0].nodeValue;
-                }
-                catch (error) {
-                    return '#000000';
-                }
-            };
-            KmlDataSource.prototype.getLineWidth = function (style) {
-                try {
-                    return +style
-                        .getElementsByTagName('LineStyle')[0]
-                        .getElementsByTagName('width')[0]
-                        .childNodes[0].nodeValue;
-                }
-                catch (error) {
-                    return 1;
-                }
-            };
-            KmlDataSource.prototype.getFillColor = function (style) {
-                try {
-                    return '#' + style
-                        .getElementsByTagName('PolyStyle')[0]
-                        .getElementsByTagName('color')[0]
-                        .childNodes[0].nodeValue;
-                }
-                catch (error) {
-                    return '#ff0000';
-                }
-            };
-            return KmlDataSource;
-        }(csComp.Services.GeoJsonSource));
-        Services.KmlDataSource = KmlDataSource;
-    })(Services = csComp.Services || (csComp.Services = {}));
-})(csComp || (csComp = {}));
-//# sourceMappingURL=KmlDataSource.js.map
-/* Terminator.js -- Overlay day/night region on a Leaflet map
- * Source: https://github.com/joergdietrich/Leaflet.Terminator/blob/master/L.Terminator.js
- * See also: http://joergdietrich.github.io/Leaflet.Terminator/
- http://www.lizard-tail.com/isana/lab/astro_calc/terminator.html,
- http://stackoverflow.com/questions/7100718/calculating-an-overlay-of-day-night-for-google-maps,
- https://github.com/rossengeorgiev/nite-overlay,
- http://mathematica.stackexchange.com/questions/3326/composition-how-to-make-a-day-and-night-world-map
-*/
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-L.Terminator = L.Polygon.extend({
-    options: {
-        color: '#00',
-        opacity: 0.5,
-        fillColor: '#00',
-        fillOpacity: 0.5,
-        resolution: 2,
-        showNight: true
-    },
-    initialize: function (options) {
-        this.version = '0.1.0';
-        this._R2D = 180 / Math.PI;
-        this._D2R = Math.PI / 180;
-        L.Util.setOptions(this, options);
-        var latLng = this._compute(this.options.showNight, this.options.time || null);
-        this.setLatLngs(latLng);
-    },
-    setTime: function (date) {
-        this.options.time = date;
-        var latLng = this._compute(this.options.showNight, date || null);
-        this.setLatLngs(latLng);
-    },
-    _sunEclipticPosition: function (julianDay) {
-        /* Compute the position of the Sun in ecliptic coordinates at
-           julianDay.  Following
-           http://en.wikipedia.org/wiki/Position_of_the_Sun */
-        // Days since start of J2000.0
-        var n = julianDay - 2451545.0;
-        // mean longitude of the Sun
-        var L = 280.460 + 0.9856474 * n;
-        L %= 360;
-        // mean anomaly of the Sun
-        var g = 357.528 + 0.9856003 * n;
-        g %= 360;
-        // ecliptic longitude of Sun
-        var lambda = L + 1.915 * Math.sin(g * this._D2R) +
-            0.02 * Math.sin(2 * g * this._D2R);
-        // distance from Sun in AU
-        var R = 1.00014 - 0.01671 * Math.cos(g * this._D2R) -
-            0.0014 * Math.cos(2 * g * this._D2R);
-        return { "lambda": lambda, "R": R };
-    },
-    _eclipticObliquity: function (julianDay) {
-        // Following the short term expression in
-        // http://en.wikipedia.org/wiki/Axial_tilt#Obliquity_of_the_ecliptic_.28Earth.27s_axial_tilt.29
-        var n = julianDay - 2451545.0;
-        // Julian centuries since J2000.0
-        var T = n / 36525;
-        var epsilon = 23.43929111 -
-            T * (46.836769 / 3600
-                - T * (0.0001831 / 3600
-                    + T * (0.00200340 / 3600
-                        - T * (0.576e-6 / 3600
-                            - T * 4.34e-8 / 3600))));
-        return epsilon;
-    },
-    _sunEquatorialPosition: function (sunEclLng, eclObliq) {
-        /* Compute the Sun's equatorial position from its ecliptic
-         * position. Inputs are expected in degrees. Outputs are in
-         * degrees as well. */
-        var alpha = Math.atan(Math.cos(eclObliq * this._D2R)
-            * Math.tan(sunEclLng * this._D2R)) * this._R2D;
-        var delta = Math.asin(Math.sin(eclObliq * this._D2R)
-            * Math.sin(sunEclLng * this._D2R)) * this._R2D;
-        var lQuadrant = Math.floor(sunEclLng / 90) * 90;
-        var raQuadrant = Math.floor(alpha / 90) * 90;
-        alpha = alpha + (lQuadrant - raQuadrant);
-        return { "alpha": alpha, "delta": delta };
-    },
-    _hourAngle: function (lng, sunPos, gst) {
-        /* Compute the hour angle of the sun for a longitude on
-         * Earth. Return the hour angle in degrees. */
-        var lst = gst + lng / 15;
-        return lst * 15 - sunPos.alpha;
-    },
-    _latitude: function (ha, sunPos) {
-        /* For a given hour angle and sun position, compute the
-         * latitude of the terminator in degrees. */
-        var lat = Math.atan(-Math.cos(ha * this._D2R) /
-            Math.tan(sunPos.delta * this._D2R)) * this._R2D;
-        return lat;
-    },
-    _compute: function (showNight, time) {
-        if (time == null)
-            var today = new Date();
-        else
-            var today = new Date(time);
-        var julianDay = today.getJulian();
-        var gst = today.getGMST();
-        var latLng = [];
-        var ha, lat;
-        var sunEclPos = this._sunEclipticPosition(julianDay);
-        var eclObliq = this._eclipticObliquity(julianDay);
-        var sunEqPos = this._sunEquatorialPosition(sunEclPos.lambda, eclObliq);
-        for (var i = 0; i <= 720 * this.options.resolution; i++) {
-            var lng = -360 + i / this.options.resolution;
-            ha = this._hourAngle(lng, sunEqPos, gst);
-            lat = this._latitude(ha, sunEqPos);
-            latLng[i + 1] = [lat, lng];
-        }
-        if (showNight) {
-            if (sunEqPos.delta < 0) {
-                latLng[0] = [90, -360];
-                latLng[latLng.length] = [90, 360];
-            }
-            else {
-                latLng[0] = [-90, -360];
-                latLng[latLng.length] = [-90, 360];
-            }
-        }
-        else {
-            if (sunEqPos.delta < 0) {
-                latLng[0] = [-90, -360];
-                latLng[latLng.length] = [-90, 360];
-            }
-            else {
-                latLng[0] = [90, -360];
-                latLng[latLng.length] = [90, 360];
-            }
-        }
-        return latLng;
-    }
-});
-var csComp;
-(function (csComp) {
-    var Services;
-    (function (Services) {
-        'use strict';
-        var NightDayDataSource = /** @class */ (function (_super) {
-            __extends(NightDayDataSource, _super);
-            function NightDayDataSource(service, $http, $storage) {
-                var _this = _super.call(this, service, $http, $storage) || this;
-                _this.service = service;
-                _this.title = "Day Night regions on the Earth";
-                return _this;
-            }
-            NightDayDataSource.prototype.addLayer = function (layer, callback) {
-                var _this = this;
-                this.layer = layer;
-                layer.isLoading = true;
-                layer.count = 0;
-                var defaultValue = 0;
-                // Check if an url to a file containing the intensity value is specified. If so, set it as defaultValue.
-                if (layer.url) {
-                    this.$http.get(layer.url)
-                        .then(function (res) {
-                        var data = res.data;
-                        defaultValue = parseFloat(data.toString());
-                        _this.continueInit(defaultValue, layer, callback);
-                    })
-                        .catch(function () {
-                        console.log('Error reading day/night intensity file');
-                        _this.continueInit(defaultValue, layer, callback);
-                    });
-                }
-                else {
-                    this.continueInit(defaultValue, layer, callback);
-                }
-            };
-            NightDayDataSource.prototype.continueInit = function (defaultValue, layer, callback) {
-                var _this = this;
-                var showNight = true;
-                var nightName = 'Night';
-                var dayName = 'Day';
-                if (typeof layer.dataSourceParameters !== 'undefined') {
-                    var gridParams = layer.dataSourceParameters;
-                    if (typeof gridParams.showNight !== 'undefined')
-                        showNight = gridParams.showNight;
-                    if (typeof gridParams.nightName !== 'undefined')
-                        nightName = gridParams.nightName;
-                    if (typeof gridParams.dayName !== 'undefined')
-                        dayName = gridParams.dayName;
-                    if (typeof gridParams.value !== 'undefined')
-                        defaultValue = gridParams.value;
-                }
-                var terminator = new L.Terminator({ "showNight": showNight });
-                var geojson = terminator.toGeoJSON();
-                if (showNight) {
-                    geojson.properties["Name"] = nightName;
-                    geojson.properties["night_intensity"] = defaultValue;
-                }
-                else {
-                    geojson.properties["Name"] = dayName;
-                    geojson.properties["day_intensity"] = defaultValue;
-                }
-                var features = [];
-                features.push({
-                    type: "Feature",
-                    geometry: geojson.geometry,
-                    properties: geojson.properties
-                });
-                layer.data = csComp.Helpers.GeoExtensions.createFeatureCollection(features);
-                if (layer.data.geometries && !layer.data.features) {
-                    layer.data.features = layer.data.geometries;
-                }
-                layer.data.features.forEach(function (f) {
-                    _this.service.initFeature(f, layer, false, false);
-                });
-                layer.isLoading = false;
-                callback(layer);
-            };
-            return NightDayDataSource;
-        }(csComp.Services.GeoJsonSource));
-        Services.NightDayDataSource = NightDayDataSource;
-    })(Services = csComp.Services || (csComp.Services = {}));
-})(csComp || (csComp = {}));
-//# sourceMappingURL=NightDayDataSource.js.map
-L.Terminator = L.Polygon.extend({
-    options: {
-        color: '#00',
-        opacity: 0.5,
-        fillColor: '#00',
-        fillOpacity: 0.5,
-        resolution: 2,
-        showNight: true
-    },
-    initialize: function (options) {
-        this.version = '0.1.0';
-        this._R2D = 180 / Math.PI;
-        this._D2R = Math.PI / 180;
-        L.Util.setOptions(this, options);
-        var latLng = this._compute(this.options.showNight, this.options.time || null);
-        this.setLatLngs(latLng);
-    },
-    setTime: function (date) {
-        this.options.time = date;
-        var latLng = this._compute(this.options.showNight, date || null);
-        this.setLatLngs(latLng);
-    },
-    _sunEclipticPosition: function (julianDay) {
-        /* Compute the position of the Sun in ecliptic coordinates at
-           julianDay.  Following
-           http://en.wikipedia.org/wiki/Position_of_the_Sun */
-        // Days since start of J2000.0
-        var n = julianDay - 2451545.0;
-        // mean longitude of the Sun
-        var L = 280.460 + 0.9856474 * n;
-        L %= 360;
-        // mean anomaly of the Sun
-        var g = 357.528 + 0.9856003 * n;
-        g %= 360;
-        // ecliptic longitude of Sun
-        var lambda = L + 1.915 * Math.sin(g * this._D2R) +
-            0.02 * Math.sin(2 * g * this._D2R);
-        // distance from Sun in AU
-        var R = 1.00014 - 0.01671 * Math.cos(g * this._D2R) -
-            0.0014 * Math.cos(2 * g * this._D2R);
-        return { "lambda": lambda, "R": R };
-    },
-    _eclipticObliquity: function (julianDay) {
-        // Following the short term expression in
-        // http://en.wikipedia.org/wiki/Axial_tilt#Obliquity_of_the_ecliptic_.28Earth.27s_axial_tilt.29
-        var n = julianDay - 2451545.0;
-        // Julian centuries since J2000.0
-        var T = n / 36525;
-        var epsilon = 23.43929111 -
-            T * (46.836769 / 3600
-                - T * (0.0001831 / 3600
-                    + T * (0.00200340 / 3600
-                        - T * (0.576e-6 / 3600
-                            - T * 4.34e-8 / 3600))));
-        return epsilon;
-    },
-    _sunEquatorialPosition: function (sunEclLng, eclObliq) {
-        /* Compute the Sun's equatorial position from its ecliptic
-         * position. Inputs are expected in degrees. Outputs are in
-         * degrees as well. */
-        var alpha = Math.atan(Math.cos(eclObliq * this._D2R)
-            * Math.tan(sunEclLng * this._D2R)) * this._R2D;
-        var delta = Math.asin(Math.sin(eclObliq * this._D2R)
-            * Math.sin(sunEclLng * this._D2R)) * this._R2D;
-        var lQuadrant = Math.floor(sunEclLng / 90) * 90;
-        var raQuadrant = Math.floor(alpha / 90) * 90;
-        alpha = alpha + (lQuadrant - raQuadrant);
-        return { "alpha": alpha, "delta": delta };
-    },
-    _hourAngle: function (lng, sunPos, gst) {
-        /* Compute the hour angle of the sun for a longitude on
-         * Earth. Return the hour angle in degrees. */
-        var lst = gst + lng / 15;
-        return lst * 15 - sunPos.alpha;
-    },
-    _latitude: function (ha, sunPos) {
-        /* For a given hour angle and sun position, compute the
-         * latitude of the terminator in degrees. */
-        var lat = Math.atan(-Math.cos(ha * this._D2R) /
-            Math.tan(sunPos.delta * this._D2R)) * this._R2D;
-        return lat;
-    },
-    _compute: function (showNight, time) {
-        if (time == null)
-            var today = new Date();
-        else
-            var today = new Date(time);
-        var julianDay = today.getJulian();
-        var gst = today.getGMST();
-        var latLng = [];
-        var ha, lat;
-        var sunEclPos = this._sunEclipticPosition(julianDay);
-        var eclObliq = this._eclipticObliquity(julianDay);
-        var sunEqPos = this._sunEquatorialPosition(sunEclPos.lambda, eclObliq);
-        for (var i = 0; i <= 720 * this.options.resolution; i++) {
-            var lng = -360 + i / this.options.resolution;
-            ha = this._hourAngle(lng, sunEqPos, gst);
-            lat = this._latitude(ha, sunEqPos);
-            latLng[i + 1] = [lat, lng];
-        }
-        if (showNight) {
-            if (sunEqPos.delta < 0) {
-                latLng[0] = [90, -360];
-                latLng[latLng.length] = [90, 360];
-            }
-            else {
-                latLng[0] = [-90, -360];
-                latLng[latLng.length] = [-90, 360];
-            }
-        }
-        else {
-            if (sunEqPos.delta < 0) {
-                latLng[0] = [-90, -360];
-                latLng[latLng.length] = [-90, 360];
-            }
-            else {
-                latLng[0] = [90, -360];
-                latLng[latLng.length] = [90, 360];
-            }
-        }
-        return latLng;
-    }
-});
-//# sourceMappingURL=NightDayTerminator.js.map
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-var csComp;
-(function (csComp) {
-    var Services;
-    (function (Services) {
-        var RssDataSource = /** @class */ (function (_super) {
-            __extends(RssDataSource, _super);
-            function RssDataSource(service, $http, $storage) {
-                var _this = _super.call(this, service, $http, $storage) || this;
-                _this.service = service;
-                _this.title = "RSS datasource";
-                return _this;
-            }
-            RssDataSource.prototype.addLayer = function (layer, callback) {
-                var _this = this;
-                this.layer = layer;
-                layer.type = 'geojson';
-                // Open a layer URL
-                layer.isLoading = true;
-                layer.count = 0;
-                this.$http({
-                    url: '/api/rss',
-                    method: "GET",
-                    params: { url: layer.url }
-                }).then(function (res) {
-                    var data = res.data;
-                    layer.data = data; //csComp.Helpers.GeoExtensions.createFeatureCollection(features);
-                    if (layer.data.geometries && !layer.data.features) {
-                        layer.data.features = layer.data.geometries;
-                    }
-                    layer.data.features.forEach(function (f) {
-                        _this.service.initFeature(f, layer, false, false);
-                    });
-                    _this.service.$messageBusService.publish("timeline", "updateFeatures");
-                    layer.isLoading = false;
-                    callback(layer);
-                })
-                    .catch(function () {
-                    console.log('RssDataSource called $HTTP with errors...');
-                });
-            };
-            return RssDataSource;
-        }(csComp.Services.GeoJsonSource));
-        Services.RssDataSource = RssDataSource;
-    })(Services = csComp.Services || (csComp.Services = {}));
-})(csComp || (csComp = {}));
-//# sourceMappingURL=RssDataSource.js.map
-var csComp;
-(function (csComp) {
-    var Services;
-    (function (Services) {
-        var TileLayerSource = /** @class */ (function () {
-            function TileLayerSource(service) {
-                this.service = service;
-                this.title = 'tilelayer';
-                //service : LayerService;
-                this.requiresLayer = false;
-                this.prevDateTimes = {};
-            }
-            TileLayerSource.prototype.refreshLayer = function (layer) {
-                //console.log('refreshing');
-                if (layer.mapLayer.getLayers().length > 0) {
-                    var l = layer.mapLayer.getLayers()[0];
-                    //console.log('layer ID: ' + layer.id);
-                    var u = layer.url;
-                    if (layer.timeDependent) {
-                        // convert epoch to time string parameter
-                        var ft = this.service.project.timeLine.focus;
-                        if (layer.timeResolution) {
-                            var tr = layer.timeResolution;
-                            ft = Math.floor(ft / tr) * tr;
-                            //console.log(ft.toString())
-                        }
-                        ;
-                        var d = new Date(0);
-                        d.setUTCSeconds(ft / 1000);
-                        //d.setFullYear(2011); // so the current year becomes 2011. For easier testing.
-                        // this is for the Env4U project
-                        var sDate = d.yyyymmdd();
-                        var hrs = d.getHours();
-                        var mins = d.getMinutes();
-                        var secs = d.getSeconds();
-                        var sDateTime = sDate + csComp.Utils.twoDigitStr(hrs) +
-                            csComp.Utils.twoDigitStr(mins) + csComp.Utils.twoDigitStr(secs);
-                        //console.log('DateTime: ' + sDateTime);
-                        if (sDateTime === this.prevDateTimes[layer.id]) {
-                            //console.log('Same time stamp. No refresh');
-                            return;
-                        }
-                        this.prevDateTimes[layer.id] = sDateTime;
-                        u += '&time=' + sDateTime;
-                        //console.log(u);
-                    }
-                    else if (layer.disableCache) {
-                        // check if we need to create a unique url to force a refresh
-                        layer.cacheKey = new Date().getTime().toString();
-                        u += '&cache=' + layer.cacheKey;
-                    }
-                    l.setUrl(u);
-                }
-            };
-            TileLayerSource.prototype.layerMenuOptions = function (layer) {
-                var _this = this;
-                return [
-                    ['Refresh', (function ($itemScope) { return _this.refreshLayer(layer); })]
-                ];
-            };
-            TileLayerSource.prototype.addLayer = function (layer, callback, data) {
-                if (data === void 0) { data = null; }
-                layer.renderType = 'tilelayer';
-                callback(layer);
-                //this.$rootScope.$apply();
-            };
-            TileLayerSource.prototype.removeLayer = function (layer) {
-            };
-            return TileLayerSource;
-        }());
-        Services.TileLayerSource = TileLayerSource;
-    })(Services = csComp.Services || (csComp.Services = {}));
-})(csComp || (csComp = {}));
-//# sourceMappingURL=TileLayerSource.js.map
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-var csComp;
-(function (csComp) {
-    var Services;
-    (function (Services) {
-        var VectorTileSource = /** @class */ (function (_super) {
-            __extends(VectorTileSource, _super);
-            function VectorTileSource(service, $http, $storage) {
-                var _this = _super.call(this, service, $http, $storage) || this;
-                _this.service = service;
-                _this.title = 'vectortile';
-                _this.requiresLayer = false;
-                _this.tileCount = -1;
-                /** Store obtained results in the cache, */
-                _this.cache = {};
-                /** The urls that are cached (in order to keep the cache from only growing). */
-                _this.cachedUrls = [];
-                return _this;
-            }
-            VectorTileSource.prototype.addLayer = function (layer, callback) {
-                var _this = this;
-                layer.renderType = 'geojson';
-                // Open a layer URL
-                layer.isLoading = true;
-                layer.data = {};
-                layer.data.features = [];
-                var zoom = this.service.$mapService.map.getZoom();
-                var slippyTiles = csComp.Helpers.GeoExtensions.slippyMapTiles(zoom, this.service.$mapService.map.getBounds());
-                this.tileCount = slippyTiles.width * slippyTiles.height;
-                for (var x = slippyTiles.left; x <= slippyTiles.right; x++) {
-                    for (var y = slippyTiles.top; y <= slippyTiles.bottom; y++) {
-                        var url = layer.url.replace('{z}/{x}/{y}', zoom + "/" + x + "/" + y);
-                        if (this.cache.hasOwnProperty(url)) {
-                            this.addFeatures(layer, this.cache[url], true);
-                            this.checkIfFinished(layer, callback);
-                            continue;
-                        }
-                        this.$http.get(url)
-                            .then(function (result) {
-                            var data;
-                            if (result.data.hasOwnProperty('objects')) {
-                                if (!result.data.objects.hasOwnProperty('vectile')) {
-                                    // Multiple groups are returned: set the group name as featureTypeId
-                                    for (var group in result.data.objects) {
-                                        result.data.objects[group].geometries.forEach(function (f) {
-                                            f.properties.featureTypeId = group;
-                                        });
-                                    }
-                                }
-                                data = csComp.Helpers.GeoExtensions.convertTopoToGeoJson(result.data);
-                            }
-                            else {
-                                data = result.data;
-                            }
-                            _this.addToCache(result.config.url, data);
-                            _this.addFeatures(layer, data);
-                            _this.checkIfFinished(layer, callback);
-                        }, function (e) {
-                            console.log('VectorTileSource error: ' + e);
-                            _this.checkIfFinished(layer, callback);
-                        });
-                    }
-                }
-            };
-            /**
-             * Add a received object to the cache, and, if full, delete an old entry.
-             */
-            VectorTileSource.prototype.addToCache = function (url, data) {
-                this.cache[url] = data;
-                this.cachedUrls.push(url);
-                if (this.cachedUrls.length < VectorTileSource.CACHE_SIZE)
-                    return;
-                var oldUrl = this.cachedUrls.pop();
-                delete this.cache[oldUrl];
-            };
-            VectorTileSource.prototype.checkIfFinished = function (layer, callback) {
-                this.tileCount--;
-                if (this.tileCount <= 0) {
-                    layer.isLoading = false;
-                    callback(layer);
-                }
-            };
-            VectorTileSource.prototype.addFeatures = function (layer, data, fromCache) {
-                var _this = this;
-                if (fromCache === void 0) { fromCache = false; }
-                if (data.hasOwnProperty('features')) {
-                    var geojson = data;
-                    geojson.features.forEach(function (f) {
-                        if (fromCache)
-                            f._isInitialized = false;
-                        layer.data.features.push(f);
-                        _this.service.initFeature(f, layer, false, false);
-                    });
-                }
-                else {
-                    var col = data;
-                    for (var key in col) {
-                        if (!col.hasOwnProperty(key))
-                            continue;
-                        col[key].features.forEach(function (f) {
-                            if (fromCache)
-                                f._isInitialized = false;
-                            f.properties['featureTypeId'] = key;
-                            layer.data.features.push(f);
-                            _this.service.initFeature(f, layer, false, false);
-                        });
-                    }
-                }
-            };
-            VectorTileSource.prototype.removeLayer = function (layer) {
-                var projLayer = this.service.findLayer(layer.id);
-                if (projLayer)
-                    projLayer.enabled = false;
-                layer.data.features = {};
-                //alert('remove layer');
-            };
-            VectorTileSource.CACHE_SIZE = 99;
-            return VectorTileSource;
-        }(Services.GeoJsonSource));
-        Services.VectorTileSource = VectorTileSource;
-    })(Services = csComp.Services || (csComp.Services = {}));
-})(csComp || (csComp = {}));
-//# sourceMappingURL=VectorTileSource.js.map
-var csComp;
-(function (csComp) {
-    var Services;
-    (function (Services) {
-        var WmsSource = /** @class */ (function () {
-            //service : LayerService;
-            function WmsSource(service) {
-                this.service = service;
-                this.title = 'wms';
-                this.requiresLayer = false;
-            }
-            WmsSource.prototype.refreshLayer = function (layer) {
-            };
-            WmsSource.prototype.layerMenuOptions = function (layer) {
-                return null;
-            };
-            WmsSource.prototype.getUrl = function (layer, date) {
-                var url = layer.url;
-                if (layer.timeDependent) {
-                    date.setMinutes(Math.floor(date.getMinutes() / 5) * 5);
-                    url = layer.url.replace(/time=?([^&]*)/g, 'time=' + moment(date).utc().format('YYYY-MM-DDTHH:mm:SS') + 'Z');
-                    //layer.url += '&time=' +
-                }
-                ;
-                layer._gui['wmsurl'] = url;
-                return url;
-            };
-            WmsSource.prototype.addLayer = function (layer, callback, data) {
-                var _this = this;
-                if (data === void 0) { data = null; }
-                var url = this.getUrl(layer, this.service.project.timeLine.focusDate());
-                if (layer.timeDependent) {
-                    this.delay = _.debounce(this.updateTime, 250, false);
-                    this.service.$messageBusService.subscribe('timeline', function (a, date) {
-                        if (a === 'focusChange')
-                            _this.delay(layer, date);
-                    });
-                }
-                var wms = L.tileLayer.wms(layer.url, {
-                    layers: layer.wmsLayers,
-                    styles: 'default',
-                    opacity: layer.opacity / 100,
-                    format: 'image/png',
-                    transparent: true,
-                    attribution: layer.description,
-                    srs: 'EPSG:4326'
-                });
-                layer.renderType = 'wms';
-                layer._gui['wms'] = wms;
-                callback(layer);
-            };
-            WmsSource.prototype.updateTime = function (layer, date) {
-                if (layer._gui.hasOwnProperty('wms')) {
-                    var wms = layer._gui['wms'];
-                    var url = this.getUrl(layer, date);
-                    // if (url !== layer._gui['wmsurl']) {
-                    // }
-                    //this.refreshLayer(layer);
-                    //layer._gui['wmsleaflet'].redraw();
-                    layer._gui['wmsleaflet'].setUrl(url);
-                    // (<any>wms).update();
-                    console.log(url);
-                }
-            };
-            WmsSource.prototype.removeLayer = function (layer) {
-            };
-            return WmsSource;
-        }());
-        Services.WmsSource = WmsSource;
-    })(Services = csComp.Services || (csComp.Services = {}));
-})(csComp || (csComp = {}));
-//# sourceMappingURL=WmsSource.js.map
 /*
  Generic  Canvas Overlay for leaflet,
  Stanislav Sumbera, April , 2014
@@ -36909,3 +33205,3303 @@ var csComp;
     })(Services = csComp.Services || (csComp.Services = {}));
 })(csComp || (csComp = {}));
 //# sourceMappingURL=leafletRenderer.js.map
+var csComp;
+(function (csComp) {
+    var Services;
+    (function (Services) {
+        var GeometryTemplateStore = /** @class */ (function () {
+            function GeometryTemplateStore($http) {
+                this.$http = $http;
+                this.TEMPLATE_URL = 'data/templates'; //'http://www.zorgopdekaart.nl/zelfkaartenmaken/public/data/empty-templates';
+                this.templateList = {};
+            }
+            /* Make sure the geometry is loaded. Calls back true if ok, false if the geometry could not be loaded */
+            GeometryTemplateStore.prototype.loadGeometry = function (name, cb) {
+                var _this = this;
+                if (!name) {
+                    cb(null);
+                    return;
+                }
+                if (this.templateList.hasOwnProperty(name)) {
+                    cb(true);
+                    return;
+                }
+                var template = this.getTemplateFromServer(name, function (data) {
+                    if (!data) {
+                        cb(null);
+                        return;
+                    }
+                    _this.templateList[name] = data;
+                    cb(true);
+                });
+            };
+            GeometryTemplateStore.prototype.getTemplate = function (name) {
+                return this.templateList[name];
+            };
+            GeometryTemplateStore.prototype.getTemplateFromServer = function (name, cb) {
+                this.$http.get((this.TEMPLATE_URL + "/" + name + ".json").toLowerCase())
+                    .then(function (res) {
+                    cb(res.data);
+                })
+                    .catch(function (msg) {
+                    console.warn("Could not load " + name + " from server");
+                });
+            };
+            return GeometryTemplateStore;
+        }());
+        Services.GeometryTemplateStore = GeometryTemplateStore;
+    })(Services = csComp.Services || (csComp.Services = {}));
+})(csComp || (csComp = {}));
+//# sourceMappingURL=GeometryTemplate.js.map
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var csComp;
+(function (csComp) {
+    var Services;
+    (function (Services) {
+        var BingSearchAction = /** @class */ (function (_super) {
+            __extends(BingSearchAction, _super);
+            /**
+             * @param  {string} apiKey: route to the search api (optional, followed by a |), and the Bing maps key (required)
+             */
+            function BingSearchAction($http, apiKey, searchUrl, data) {
+                if (searchUrl === void 0) { searchUrl = 'http://dev.virtualearth.net/REST/v1/Locations'; }
+                if (data === void 0) { data = {
+                    culture: 'nl',
+                    userLocation: '52.077857,4.316639'
+                }; }
+                var _this = _super.call(this) || this;
+                _this.$http = $http;
+                _this.apiKey = apiKey;
+                _this.searchUrl = searchUrl;
+                _this.data = data;
+                _this.isReady = true;
+                _this.id = 'BingSearchActions';
+                _this.searchCache = {};
+                _this.debouncedFn = _.debounce(function (query, result) { return _this.bingRestRequest(query, result); }, 2500);
+                return _this;
+            }
+            BingSearchAction.prototype.init = function (layerService) {
+                _super.prototype.init.call(this, layerService);
+            };
+            BingSearchAction.prototype.search = function (query, result) {
+                if (query.query.length < 4)
+                    return;
+                this.debouncedFn(query, result);
+            };
+            /** Create the geocode request uri and call it using JSONP. */
+            BingSearchAction.prototype.bingRestRequest = function (query, handler) {
+                var _this = this;
+                if (this.searchCache.hasOwnProperty(query.query)) {
+                    this.geocodeCallback(this.searchCache[query.query], handler, query.query);
+                    return;
+                }
+                var geocodeRequest = this.searchUrl + "?query="
+                    + encodeURIComponent(query.query)
+                    + ("&culture=" + this.data.culture + "&userLocation=" + this.data.userLocation + "&maxResults=10&jsonp=JSON_CALLBACK&key=" + this.apiKey);
+                this.callRestService(geocodeRequest, function (result, handler, query) { return _this.geocodeCallback(result, handler, query); }, handler, query.query);
+            };
+            /** JSONP callback wrapper */
+            BingSearchAction.prototype.callRestService = function (request, callback, handler, query) {
+                this.$http.jsonp(request)
+                    .then(function (res) {
+                    var r = res.data;
+                    callback(r, handler, query);
+                })
+                    .catch(function (error) {
+                    alert(error);
+                });
+            };
+            BingSearchAction.prototype.geocodeCallback = function (result, handler, query) {
+                var _this = this;
+                console.log('BING location search result:');
+                console.log(JSON.stringify(result, null, 2));
+                this.searchCache[query] = result;
+                var searchResults = [];
+                result.resourceSets.forEach(function (rs) {
+                    rs.resources.forEach(function (r) {
+                        searchResults.push({
+                            type: r.entityType,
+                            description: r.entityType,
+                            title: r.name,
+                            score: r.confidence === 'High' ? 1 : 0.3,
+                            icon: result.brandLogoUri,
+                            service: _this.id,
+                            click: function () { return _this.onSelect(r); },
+                            location: _this.swapLatLonInPoint(r.point)
+                        });
+                    });
+                });
+                handler(null, searchResults);
+            };
+            BingSearchAction.prototype.swapLatLonInPoint = function (location) {
+                return {
+                    type: location.type,
+                    coordinates: [location.coordinates[1], location.coordinates[0]]
+                };
+            };
+            BingSearchAction.prototype.onSelect = function (selectedItem) {
+                var geoLoc = selectedItem.point;
+                if (selectedItem.bbox) {
+                    this.layerService.map.getMap().fitBounds(new L.LatLngBounds(selectedItem.bbox.slice(0, 2), selectedItem.bbox.slice(2, 4)));
+                }
+                else {
+                    this.layerService.$mapService.zoomToLocation(new L.LatLng(geoLoc.coordinates[1], geoLoc.coordinates[0]), 19);
+                }
+            };
+            return BingSearchAction;
+        }(Services.BasicActionService));
+        Services.BingSearchAction = BingSearchAction;
+    })(Services = csComp.Services || (csComp.Services = {}));
+})(csComp || (csComp = {}));
+//# sourceMappingURL=BingSearchAction.js.map
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var csComp;
+(function (csComp) {
+    var Services;
+    (function (Services) {
+        var EsriBagSearchAction = /** @class */ (function (_super) {
+            __extends(EsriBagSearchAction, _super);
+            /**
+             * @param  {string} apiKey: route to the search api (optional, followed by a |), and the Bing maps key (required)
+             */
+            function EsriBagSearchAction($http, apiKey, searchUrl, data) {
+                if (searchUrl === void 0) { searchUrl = 'https://services.arcgisonline.nl/arcgis/rest/services/Geocoder_BAG/GeocodeServer/findAddressCandidates'; }
+                var _this = _super.call(this) || this;
+                _this.$http = $http;
+                _this.apiKey = apiKey;
+                _this.searchUrl = searchUrl;
+                _this.data = data;
+                _this.isReady = true;
+                _this.id = 'EsriBagSearchAction';
+                _this.searchCache = {};
+                _this.queryUrl = _this.searchUrl + "?f=pjson";
+                _this.debouncedFn = _.debounce(function (query, result) { return _this.esriRestRequest(query, result); }, 1000);
+                return _this;
+            }
+            EsriBagSearchAction.prototype.init = function (layerService) {
+                _super.prototype.init.call(this, layerService);
+            };
+            EsriBagSearchAction.prototype.search = function (query, result) {
+                if (query.query.length < 3)
+                    return;
+                this.debouncedFn(query, result);
+            };
+            /** Create the geocode request uri and call it using JSONP. */
+            EsriBagSearchAction.prototype.esriRestRequest = function (query, handler) {
+                var _this = this;
+                if (this.searchCache.hasOwnProperty(query.query)) {
+                    this.geocodeCallback(this.searchCache[query.query], handler, query.query);
+                    return;
+                }
+                var geocodeRequest = this.queryUrl + "&SingleLine=" + encodeURIComponent(query.query);
+                this.callRestService(geocodeRequest, function (result, handler, query) { return _this.geocodeCallback(result, handler, query); }, handler, query.query);
+            };
+            /** JSONP callback wrapper */
+            EsriBagSearchAction.prototype.callRestService = function (request, callback, handler, query) {
+                this.$http.get(request)
+                    .then(function (res) {
+                    var r = res.data;
+                    callback(r, handler, query);
+                })
+                    .catch(function (error) {
+                    console.log('Error contacting Esri');
+                });
+            };
+            EsriBagSearchAction.prototype.geocodeCallback = function (result, handler, query) {
+                var _this = this;
+                this.searchCache[query] = result;
+                var searchResults = [];
+                result.candidates.forEach(function (f) {
+                    searchResults.push({
+                        title: f.address,
+                        type: 'BAG',
+                        service: _this.id,
+                        description: '',
+                        score: (f.score / 101),
+                        icon: 'bower_components/csweb/dist-bower/images/large-marker.png',
+                        click: function () { return _this.onSelect(f); },
+                        location: {
+                            type: 'Point',
+                            coordinates: [f.location.x, f.location.y]
+                        }
+                    });
+                });
+                handler(null, searchResults);
+            };
+            EsriBagSearchAction.prototype.convertRD = function (location) {
+                var res = csComp.Helpers.GeoExtensions.convertRDToWGS84(location.x, location.y);
+                return {
+                    type: 'Point',
+                    coordinates: [res.latitude, res.longitude]
+                };
+            };
+            EsriBagSearchAction.prototype.onSelect = function (feature) {
+                this.layerService.$mapService.zoomToLocation(new L.LatLng((feature.location.y), (feature.location.x)), 16);
+            };
+            return EsriBagSearchAction;
+        }(Services.BasicActionService));
+        Services.EsriBagSearchAction = EsriBagSearchAction;
+    })(Services = csComp.Services || (csComp.Services = {}));
+})(csComp || (csComp = {}));
+//# sourceMappingURL=EsriBagSearchAction.js.map
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var csComp;
+(function (csComp) {
+    var Services;
+    (function (Services) {
+        var KeywordIndex = /** @class */ (function () {
+            function KeywordIndex() {
+            }
+            return KeywordIndex;
+        }());
+        Services.KeywordIndex = KeywordIndex;
+        /** An index entry that contains a search result. */
+        var Entry = /** @class */ (function () {
+            function Entry(layerIndexOrArray, featureIndex, propertyIndex) {
+                this.v = Array(2);
+                if (typeof layerIndexOrArray === 'number') {
+                    this.v[0] = layerIndexOrArray;
+                    this.v[1] = featureIndex;
+                }
+                else {
+                    this.v = layerIndexOrArray;
+                }
+            }
+            Object.defineProperty(Entry.prototype, "layerIndex", {
+                get: function () { return this.v[0]; },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(Entry.prototype, "featureIndex", {
+                get: function () { return this.v[1]; },
+                enumerable: true,
+                configurable: true
+            });
+            return Entry;
+        }());
+        Services.Entry = Entry;
+        var OfflineSearchResult = /** @class */ (function () {
+            function OfflineSearchResult(title, layerTitle, groupTitle, entry, score) {
+                this.title = title;
+                this.layerTitle = layerTitle;
+                this.groupTitle = groupTitle;
+                this.entry = entry;
+                this.score = score;
+                this.firstInGroup = false;
+            }
+            OfflineSearchResult.prototype.toString = function () {
+                return this.title;
+            };
+            Object.defineProperty(OfflineSearchResult.prototype, "fullTitle", {
+                get: function () {
+                    return this.groupTitle + ' >> ' + this.layerTitle + ' >> ' + this.title;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            return OfflineSearchResult;
+        }());
+        Services.OfflineSearchResult = OfflineSearchResult;
+        var OfflineSearchActions = /** @class */ (function (_super) {
+            __extends(OfflineSearchActions, _super);
+            /**
+             * @param  {string} projectUri: path to the project.json file
+             */
+            function OfflineSearchActions($http, projectUri) {
+                var _this = _super.call(this) || this;
+                _this.$http = $http;
+                _this.isReady = true;
+                _this.id = 'OfflineSearchActions';
+                var offlineSearchResultUri = projectUri.replace('project.json', 'offline_search_result.json');
+                _this.loadIndex(offlineSearchResultUri);
+                return _this;
+            }
+            /** Load the offline search index from a json file. */
+            OfflineSearchActions.prototype.loadIndex = function (url) {
+                var _this = this;
+                this.$http.get(url)
+                    .then(function (res) {
+                    var offlineSearchResult = res.data;
+                    _this.offlineSearchResult = offlineSearchResult;
+                    var kwi = offlineSearchResult.keywordIndex;
+                    var keywordIndex = {};
+                    for (var key in kwi) {
+                        if (!kwi.hasOwnProperty(key))
+                            continue;
+                        kwi[key].forEach(function (entry) {
+                            if (!keywordIndex.hasOwnProperty(key))
+                                keywordIndex[key] = [];
+                            keywordIndex[key].push(new Entry(entry));
+                        });
+                    }
+                    _this.offlineSearchResult.keywordIndex = keywordIndex;
+                    _this.isReady = true;
+                })
+                    .catch(function () { console.log("OfflineSearch: error with $http "); });
+            };
+            OfflineSearchActions.prototype.search = function (query, result) {
+                var _this = this;
+                var r = [];
+                var searchResults = this.getHits(query.query, 15);
+                searchResults.sort(function (a, b) { return b.score - a.score; }).forEach(function (sr) {
+                    r.push({
+                        title: sr.title,
+                        description: sr.layerTitle + " (" + sr.groupTitle + ")",
+                        score: sr.score,
+                        icon: 'bower_components/csweb/dist-bower/images/large-marker.png',
+                        service: _this.id,
+                        click: function () { return _this.onSelect(sr); }
+                    });
+                });
+                result(null, r);
+            };
+            /**
+             * Get the features based on the entered text.
+             */
+            OfflineSearchActions.prototype.getHits = function (text, resultCount) {
+                if (resultCount === void 0) { resultCount = 15; }
+                if (!this.isReady || text === null || text.length < 1)
+                    return [];
+                var searchWords = text.toLowerCase().split(' ');
+                // test if last word in text might be a (part of) a stopword, if so remove it
+                // var lastSearchTerm = searchWords[searchWords.length - 1];
+                // var possibleStopWords = this.offlineSearchResult.options.stopWords.filter(stopword => stopword.indexOf(lastSearchTerm) > -1);
+                // if (possibleStopWords.length > 0) {
+                //   searchWords.splice(searchWords.length - 1, 1);
+                // }
+                // remove all exact stopwords
+                // this.offlineSearchResult.options.stopWords.forEach(stopWord => {
+                //   while (searchWords.indexOf(stopWord) > -1) {
+                //     searchWords.splice(searchWords.indexOf(stopWord), 1);
+                //   }
+                // });
+                var totResults;
+                for (var j in searchWords) {
+                    var result = this.getKeywordHits(searchWords[j]);
+                    totResults = !totResults
+                        ? result
+                        : this.mergeResults(totResults, result);
+                }
+                var searchResults = [];
+                var layers = this.offlineSearchResult.layers;
+                var count = resultCount;
+                var resultIndex = 0;
+                while (count > 0 && resultIndex < totResults.length) {
+                    var r = totResults[resultIndex++];
+                    var subCount = Math.min(count, r.entries.length);
+                    for (var i = 0; i < subCount; i++) {
+                        var entry = r.entries[i];
+                        var layer = layers[entry.layerIndex];
+                        count--;
+                        searchResults.push(new OfflineSearchResult(layer.featureNames[entry.featureIndex], layer.title, layer.groupTitle, entry, r.score));
+                    }
+                }
+                // Group search results by groupTitle | layerTitle
+                var groups = {};
+                searchResults.forEach(function (sr) {
+                    var group = sr.groupTitle + ' >> ' + sr.layerTitle;
+                    if (!groups.hasOwnProperty(group))
+                        groups[group] = [];
+                    groups[group].push(sr);
+                });
+                searchResults = [];
+                for (var key in groups) {
+                    if (!groups.hasOwnProperty(key))
+                        continue;
+                    var firstInGroup = true;
+                    groups[key].forEach(function (sr) {
+                        sr.firstInGroup = firstInGroup;
+                        searchResults.push(sr);
+                        firstInGroup = false;
+                    });
+                }
+                return searchResults;
+            };
+            /**
+             * Merge the resuls of two keyword lookups by checking whether different entries refer
+             * to the same layer and feature.
+             * @result1 {ILookupResult[]}
+             * @result2 {ILookupResult[]}
+             */
+            OfflineSearchActions.prototype.mergeResults = function (result1, result2) {
+                var r = [];
+                result1.forEach(function (r1) {
+                    result2.forEach(function (r2) {
+                        r1.entries.forEach(function (entry1) {
+                            r2.entries.forEach(function (entry2) {
+                                if (entry1.layerIndex === entry2.layerIndex && entry1.featureIndex === entry2.featureIndex)
+                                    r.push({ score: r1.score * r2.score, key: r1.key + ' ' + r2.key, entries: [entry1] });
+                            });
+                        });
+                    });
+                });
+                r = r.sort(function (a, b) { return b.score - a.score; });
+                return r;
+            };
+            /**
+             * Do a fuzzy keyword comparison between the entered text and the list of keywords,
+             * and return a subset.
+             * @text: {string}
+             */
+            OfflineSearchActions.prototype.getKeywordHits = function (text) {
+                var results = [];
+                var keywordIndex = this.offlineSearchResult.keywordIndex;
+                var keywords = Object.getOwnPropertyNames(keywordIndex);
+                keywords.forEach(function (key) {
+                    var score = key.score(text, null);
+                    if (score < 0.5)
+                        return;
+                    results.push({ score: score, key: key, entries: keywordIndex[key] });
+                });
+                results = results.sort(function (a, b) { return b.score - a.score; });
+                return results;
+            };
+            OfflineSearchActions.prototype.init = function (layerService) {
+                _super.prototype.init.call(this, layerService);
+            };
+            OfflineSearchActions.prototype.onSelect = function (selectedItem) {
+                var _this = this;
+                var layerIndex = selectedItem.entry.layerIndex;
+                var layer = this.offlineSearchResult.layers[layerIndex];
+                var projectLayer = this.layerService.findLayer(layer.id);
+                if (!projectLayer)
+                    return;
+                if (projectLayer.enabled) {
+                    this.selectFeatureById(layer.id, selectedItem.entry.featureIndex);
+                    return;
+                }
+                else {
+                    var handle = this.layerService.$messageBusService.subscribe('layer', function (title, layer) {
+                        if (title !== 'activated' || projectLayer.url !== layer.url)
+                            return;
+                        _this.selectFeatureById(layer.id, selectedItem.entry.featureIndex);
+                        _this.layerService.$messageBusService.unsubscribe(handle);
+                    });
+                    this.layerService.addLayer(projectLayer);
+                }
+                var group = $('#layergroup_' + projectLayer.groupId);
+                group.collapse('show');
+            };
+            OfflineSearchActions.prototype.selectFeatureById = function (layerId, featureIndex) {
+                var feature = this.layerService.findFeatureByIndex(layerId, featureIndex);
+                if (feature == null)
+                    return;
+                this.layerService.$mapService.zoomTo(feature);
+                // Force-select feature, otherwise we might deselect the feature immediately after it was selected.
+                this.layerService.selectFeature(feature, false, true);
+            };
+            OfflineSearchActions.prototype.selectFeature = function (feature) {
+            };
+            return OfflineSearchActions;
+        }(Services.BasicActionService));
+        Services.OfflineSearchActions = OfflineSearchActions;
+    })(Services = csComp.Services || (csComp.Services = {}));
+})(csComp || (csComp = {}));
+//# sourceMappingURL=OfflineSearchAction.js.map
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var csComp;
+(function (csComp) {
+    var Services;
+    (function (Services) {
+        var OnlineSearchActions = /** @class */ (function (_super) {
+            __extends(OnlineSearchActions, _super);
+            /**
+             * @param  {string} searchUrl: route to the search api
+             */
+            function OnlineSearchActions($http, searchUrl) {
+                var _this = _super.call(this) || this;
+                _this.$http = $http;
+                _this.isReady = true;
+                _this.id = 'OnlineSearchActions';
+                _this.searchUrl = searchUrl;
+                return _this;
+            }
+            OnlineSearchActions.prototype.search = function (query, result) {
+                var _this = this;
+                var r = [];
+                this.getHits(query.query, 10, function (searchResults) {
+                    searchResults.forEach(function (sr) {
+                        r.push({
+                            title: sr.title,
+                            description: sr.description,
+                            icon: 'bower_components/csweb/dist-bower/images/large-marker.png',
+                            service: _this.id,
+                            location: JSON.parse(sr.location),
+                            score: (sr.description == 'Gemeente') ? 0.99 : 0.98,
+                            click: function () { return _this.onSelect(sr); }
+                        });
+                    });
+                    result(null, r);
+                });
+            };
+            /**
+             * Get the features based on the entered text.
+             */
+            OnlineSearchActions.prototype.getHits = function (text, resultCount, cb) {
+                if (resultCount === void 0) { resultCount = 10; }
+                if (!this.isReady || text === null || text.length < 2) {
+                    cb([]);
+                    return;
+                }
+                var sqlSearch = text.toLowerCase();
+                var searchObject = { query: sqlSearch, nrItems: resultCount };
+                var searchResults = [];
+                $.ajax({
+                    type: 'POST',
+                    url: this.searchUrl,
+                    data: JSON.stringify(searchObject),
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    statusCode: {
+                        200: function (data) {
+                            console.log('Received online search result');
+                            if (data.hasOwnProperty('result')) {
+                                searchResults = data.result;
+                            }
+                            cb(searchResults);
+                        },
+                        404: function (data) {
+                            console.log('Could not get online search result');
+                            cb(searchResults);
+                        }
+                    },
+                    error: function () {
+                        console.log('Error getting online search results');
+                        cb(searchResults);
+                    }
+                });
+            };
+            OnlineSearchActions.prototype.init = function (layerService) {
+                _super.prototype.init.call(this, layerService);
+            };
+            OnlineSearchActions.prototype.onSelect = function (selectedItem) {
+                var geoLoc;
+                if (typeof selectedItem.location === 'string') {
+                    try {
+                        geoLoc = JSON.parse(selectedItem.location);
+                    }
+                    catch (error) {
+                        console.log(error);
+                    }
+                }
+                if (geoLoc && geoLoc.hasOwnProperty('coordinates') && geoLoc.hasOwnProperty('type')) {
+                    switch (geoLoc.type) {
+                        case 'Point':
+                            this.layerService.$mapService.zoomToLocation(new L.LatLng(geoLoc.coordinates[1], geoLoc.coordinates[0]), 18);
+                            break;
+                        case 'MultiPolygon':
+                        case 'Polygon':
+                        default:
+                            this.layerService.map.getMap().fitBounds(L.geoJson(geoLoc).getBounds());
+                            // this.layerService.map.getMap().setZoom(14);
+                            break;
+                    }
+                }
+                this.layerService.visual.leftPanelVisible = false;
+                this.layerService.$messageBusService.publish('search', 'reset');
+            };
+            OnlineSearchActions.prototype.selectFeatureById = function (layerId, featureIndex) {
+            };
+            OnlineSearchActions.prototype.selectFeature = function (feature) {
+            };
+            return OnlineSearchActions;
+        }(Services.BasicActionService));
+        Services.OnlineSearchActions = OnlineSearchActions;
+    })(Services = csComp.Services || (csComp.Services = {}));
+})(csComp || (csComp = {}));
+//# sourceMappingURL=OnlineSearchAction.js.map
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var csComp;
+(function (csComp) {
+    var Services;
+    (function (Services) {
+        var OpenCageDataSearchAction = /** @class */ (function (_super) {
+            __extends(OpenCageDataSearchAction, _super);
+            /**
+             * @param  {string} apiKey: route to the search api (optional, followed by a |), and the Bing maps key (required)
+             */
+            function OpenCageDataSearchAction($http, apiKey, searchUrl, data) {
+                if (searchUrl === void 0) { searchUrl = 'https://api.opencagedata.com/geocode/v1/geojson'; }
+                var _this = _super.call(this) || this;
+                _this.$http = $http;
+                _this.apiKey = apiKey;
+                _this.searchUrl = searchUrl;
+                _this.data = data;
+                _this.isReady = true;
+                _this.id = 'OpenCageDataSearchAction';
+                _this.searchCache = {};
+                _this.queryUrl = _this.searchUrl
+                    + ("?pretty=1&no_dedupe=1&limit=10&key=" + _this.apiKey)
+                    + (_this.data.bounds ? "&bounds=" + _this.data.bounds : '')
+                    + (_this.data.culture ? "&countrycode=" + _this.data.culture : '&nl')
+                    + (_this.data.language ? "&language=" + _this.data.language : '&nl-NL');
+                _this.debouncedFn = _.debounce(function (query, result) { return _this.ocdRestRequest(query, result); }, 2500);
+                _this.messageBus = data.messageBus;
+                _this.messageBus.subscribe('geocoding', function (action, point) {
+                    if (action.toLowerCase() !== 'reverselookup') {
+                        return;
+                    }
+                    _this.reverseGeocodeLookup(point);
+                });
+                return _this;
+            }
+            OpenCageDataSearchAction.prototype.init = function (layerService) {
+                _super.prototype.init.call(this, layerService);
+            };
+            /** Perform a reverse geocode query for the current point and publish the results. */
+            OpenCageDataSearchAction.prototype.reverseGeocodeLookup = function (point) {
+                var _this = this;
+                var geocodeRequest = this.queryUrl + "&q=" + point.lat + "," + point.lng;
+                this.$http.get(geocodeRequest)
+                    .then(function (res) {
+                    var r = res.data;
+                    if (!r.results || r.results.length === 0)
+                        return;
+                    _this.messageBus.publish('geocoding', 'reverseLookupResult', r.results[0]);
+                })
+                    .catch(function (error) {
+                    console.log(error);
+                });
+            };
+            OpenCageDataSearchAction.prototype.search = function (query, result) {
+                if (query.query.length < 4)
+                    return;
+                this.debouncedFn(query, result);
+            };
+            /** Create the geocode request uri and call it using JSONP. */
+            OpenCageDataSearchAction.prototype.ocdRestRequest = function (query, handler) {
+                var _this = this;
+                if (this.searchCache.hasOwnProperty(query.query)) {
+                    this.geocodeCallback(this.searchCache[query.query], handler, query.query);
+                    return;
+                }
+                var geocodeRequest = this.queryUrl + "&q=" + encodeURIComponent(query.query);
+                this.callRestService(geocodeRequest, function (result, handler, query) { return _this.geocodeCallback(result, handler, query); }, handler, query.query);
+            };
+            /** JSONP callback wrapper */
+            OpenCageDataSearchAction.prototype.callRestService = function (request, callback, handler, query) {
+                this.$http.jsonp(request)
+                    .then(function (res) {
+                    var r = res.data;
+                    callback(r, handler, query);
+                })
+                    .catch(function (error) {
+                    alert(error);
+                });
+            };
+            OpenCageDataSearchAction.prototype.geocodeCallback = function (result, handler, query) {
+                var _this = this;
+                console.log('Open cache location search result:');
+                console.log(JSON.stringify(result, null, 2));
+                this.searchCache[query] = result;
+                var searchResults = [];
+                result.results.forEach(function (f) {
+                    searchResults.push({
+                        title: f.formatted,
+                        type: f.annotations ? f.annotations.DMS.lat + ", " + f.annotations.DMS.lng : '',
+                        service: _this.id,
+                        description: f.annotations && f.annotations.what3words ? f.annotations.what3words.words : '',
+                        score: f.confidence / 10,
+                        icon: 'bower_components/csweb/dist-bower/images/large-marker.png',
+                        click: function () { return _this.onSelect(f); },
+                        location: {
+                            type: 'Point',
+                            coordinates: [f.geometry.lng, f.geometry.lat]
+                        }
+                    });
+                });
+                handler(null, searchResults);
+            };
+            OpenCageDataSearchAction.prototype.swapLatLonInPoint = function (location) {
+                return {
+                    type: location.type,
+                    coordinates: [location.coordinates[1], location.coordinates[0]]
+                };
+            };
+            OpenCageDataSearchAction.prototype.onSelect = function (feature) {
+                if (feature.bounds) {
+                    var bounds = new L.LatLngBounds(feature.bounds.southwest, feature.bounds.northeast);
+                    this.layerService.map.getMap().fitBounds(bounds);
+                }
+                else {
+                    this.layerService.$mapService.zoomToLocation(new L.LatLng((feature.geometry.lat), (feature.geometry.lng)), 18);
+                }
+            };
+            return OpenCageDataSearchAction;
+        }(Services.BasicActionService));
+        Services.OpenCageDataSearchAction = OpenCageDataSearchAction;
+    })(Services = csComp.Services || (csComp.Services = {}));
+})(csComp || (csComp = {}));
+//# sourceMappingURL=OpenCageDataSearchAction.js.map
+var csComp;
+(function (csComp) {
+    var Services;
+    (function (Services) {
+        'use strict';
+        var DatabaseSource = /** @class */ (function () {
+            function DatabaseSource(service) {
+                this.service = service;
+                this.title = 'database';
+                this.requiresLayer = false;
+            }
+            DatabaseSource.prototype.refreshLayer = function (layer) {
+                var _this = this;
+                if (layer.isLoading) {
+                    var handle = this.service.$messageBusService.subscribe('layer', function (a, l) {
+                        if (a === 'activated' && l.id === layer.id) {
+                            // this.service.removeLayer(layer);
+                            _this.service.addLayer(layer);
+                            _this.service.$messageBusService.unsubscribe(handle);
+                        }
+                    });
+                    return;
+                }
+                if (!layer.enabled) {
+                    // this.service.removeLayer(layer);
+                    // this.service.addLayer(layer);
+                    this.baseAddLayer(layer, function () { }, false);
+                }
+                else {
+                    this.service.$messageBusService.publish('layer', 'loading', layer);
+                    this.baseAddLayer(layer, function () { }, true);
+                }
+            };
+            DatabaseSource.prototype.addLayer = function (layer, callback) {
+                this.baseAddLayer(layer, callback);
+            };
+            /** zoom to boundaries of layer */
+            DatabaseSource.prototype.fitMap = function (layer) {
+                if (!layer.data.features || layer.data.features.length === 0)
+                    return;
+                var b = csComp.Helpers.GeoExtensions.getBoundingBox(layer.data);
+                if (b.xMax == 180 || b.yMax == 90)
+                    return;
+                this.service.$messageBusService.publish('map', 'setextent', b);
+            };
+            DatabaseSource.prototype.layerMenuOptions = function (layer) {
+                var _this = this;
+                return [
+                    ['Fit map', (function ($itemScope) { return _this.fitMap(layer); })],
+                    null,
+                    ['Refresh', (function ($itemScope) { return _this.refreshLayer(layer); })]
+                ];
+            };
+            DatabaseSource.prototype.baseAddLayer = function (layer, callback, isRefresh) {
+                var _this = this;
+                if (isRefresh === void 0) { isRefresh = false; }
+                this.layer = layer;
+                async.series([
+                    function (cb) {
+                        layer.renderType = 'geojson';
+                        layer.isLoading = true;
+                        var minZoom;
+                        var searchProperty;
+                        var useFeatureBounds;
+                        if (layer.dataSourceParameters && layer.dataSourceParameters.hasOwnProperty('minZoom')) {
+                            minZoom = layer.dataSourceParameters['minZoom'];
+                        }
+                        else {
+                            minZoom = 15;
+                        }
+                        if (layer.dataSourceParameters && layer.dataSourceParameters.hasOwnProperty('searchProperty')) {
+                            searchProperty = layer.dataSourceParameters['searchProperty'];
+                        }
+                        if (layer.dataSourceParameters && layer.dataSourceParameters.hasOwnProperty('useFeatureBounds')) {
+                            useFeatureBounds = layer.dataSourceParameters['useFeatureBounds'];
+                        }
+                        var corners;
+                        if (_this.service.$mapService.map.getZoom() < minZoom && typeof searchProperty === 'undefined' && !useFeatureBounds) {
+                            _this.service.$messageBusService.notifyWithTranslation('ZOOM_LEVEL_LOW', 'ZOOM_IN_FOR_CONTOURS', null, csComp.Services.NotifyLocation.TopRight, csComp.Services.NotifyType.Info, 1500);
+                            // initialize empty layer and return
+                            _this.initLayer(layer, callback);
+                            return;
+                        }
+                        else {
+                            var bagRequestData;
+                            if (typeof searchProperty !== 'undefined') {
+                                bagRequestData = {
+                                    searchProp: searchProperty,
+                                    layer: Services.ProjectLayer.serializeableData(layer)
+                                };
+                            }
+                            else if (useFeatureBounds === true) {
+                                var coordinates = layer.dataSourceParameters['coordinates'] || [[[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]]];
+                                bagRequestData = {
+                                    bounds: JSON.stringify({ type: 'Polygon', coordinates: coordinates, crs: { type: 'name', properties: { 'name': 'EPSG:4326' } } }),
+                                    layer: Services.ProjectLayer.serializeableData(layer)
+                                };
+                            }
+                            else {
+                                // When the zoomlevel is valid:
+                                corners = _this.service.$mapService.map.getBounds();
+                                var coords = [[
+                                        [corners.getSouthWest().lng, corners.getSouthWest().lat],
+                                        [corners.getNorthWest().lng, corners.getNorthWest().lat],
+                                        [corners.getNorthEast().lng, corners.getNorthEast().lat],
+                                        [corners.getSouthEast().lng, corners.getSouthEast().lat],
+                                        [corners.getSouthWest().lng, corners.getSouthWest().lat]
+                                    ]];
+                                var bounds = JSON.stringify({ type: 'Polygon', coordinates: coords, crs: { type: 'name', properties: { 'name': 'EPSG:4326' } } });
+                                // get data from BAG
+                                bagRequestData = {
+                                    bounds: bounds,
+                                    layer: Services.ProjectLayer.serializeableData(layer)
+                                };
+                            }
+                            $.ajax({
+                                type: 'POST',
+                                url: layer.url,
+                                data: JSON.stringify(bagRequestData),
+                                contentType: 'application/json',
+                                dataType: 'json',
+                                statusCode: {
+                                    200: function (data) {
+                                        console.log('Received bag contours');
+                                        (isRefresh) ? _this.updateLayer(data.layer, callback) : _this.initLayer(data.layer, callback);
+                                    },
+                                    404: function (data) {
+                                        console.log('Could not get bag contours');
+                                        (isRefresh) ? _this.updateLayer(data.layer, callback) : _this.initLayer(layer, callback);
+                                    }
+                                },
+                                error: function () { return _this.service.$messageBusService.publish('layer', 'error', layer); }
+                            });
+                        }
+                    }
+                ]);
+            };
+            DatabaseSource.prototype.initLayer = function (layer, callback) {
+                var _this = this;
+                var projLayer = this.service.findLayer(layer.id);
+                if (projLayer) {
+                    layer.count = 0;
+                    projLayer.enabled = true;
+                    projLayer.data = layer.data;
+                }
+                var count = 0;
+                if (projLayer.data && projLayer.data.features && projLayer.data.features.forEach) {
+                    projLayer.data.features.forEach(function (f) {
+                        count += 1;
+                        _this.service.initFeature(f, projLayer, false, false);
+                        // this.service.calculateFeatureStyle(f);
+                        // this.service.activeMapRenderer.addFeature(f);
+                    });
+                }
+                else {
+                    projLayer.data = {};
+                    projLayer.data['features'] = [];
+                }
+                if (projLayer.typeUrl && projLayer.defaultFeatureType) {
+                    var featureTypeName = projLayer.typeUrl + '#' + projLayer.defaultFeatureType;
+                    var fType = this.service.getFeatureTypeById(featureTypeName);
+                    var fTypes = {};
+                    fTypes[featureTypeName] = fType;
+                    // this.service.evaluateLayerExpressions(projLayer, fTypes);
+                    if (fType._propertyTypeData && fType._propertyTypeData.length > 0) {
+                        fType._propertyTypeData.forEach(function (pt) {
+                            csComp.Helpers.updateSection(projLayer, pt);
+                        });
+                    }
+                }
+                projLayer.isLoading = false;
+                this.service.$messageBusService.publish('layer', 'activated', layer);
+                if (this.service.$rootScope.$root.$$phase !== '$apply' && this.service.$rootScope.$root.$$phase !== '$digest') {
+                    this.service.$rootScope.$apply();
+                }
+                console.log("Initialized " + count + " features in " + layer.id);
+                callback(projLayer);
+            };
+            DatabaseSource.prototype.updateLayer = function (layer, callback) {
+                var _this = this;
+                if (!layer || !layer.id) {
+                    console.log('No layer id found');
+                    return;
+                }
+                var projLayer = this.service.findLayer(layer.id);
+                if (!projLayer || !projLayer.data || !projLayer.data.features) {
+                    this.initLayer(layer, callback);
+                    return;
+                }
+                if (projLayer) {
+                    projLayer.enabled = true;
+                }
+                // Add new features
+                var count = 0;
+                if (layer.data && layer.data.features && layer.data.features.forEach) {
+                    layer.data.features.forEach(function (f) {
+                        if (!projLayer.data.features.some(function (pf) { return pf.id === f.id; })) {
+                            projLayer.data.features.push(f);
+                            count += 1;
+                            _this.service.initFeature(f, projLayer, false, false);
+                            // this.service.evaluateFeatureExpressions(f);
+                            _this.service.calculateFeatureStyle(f);
+                            _this.service.activeMapRenderer.addFeature(f);
+                        }
+                    });
+                }
+                projLayer.isLoading = false;
+                this.service.$messageBusService.publish('layer', 'activated', layer);
+                console.log("Added " + count + " features in " + layer.id);
+                if (this.service.$rootScope.$root.$$phase !== '$apply' && this.service.$rootScope.$root.$$phase !== '$digest') {
+                    this.service.$rootScope.$apply();
+                }
+                callback(projLayer);
+            };
+            DatabaseSource.prototype.removeLayer = function (layer) {
+                var _this = this;
+                var projLayer = this.service.findLayer(layer.id);
+                if (projLayer)
+                    projLayer.enabled = false;
+                if (projLayer.data && projLayer.data.features && projLayer.data.features.forEach) {
+                    projLayer.data.features.forEach(function (f) {
+                        _this.service.removeFeature(f);
+                    });
+                }
+                if (layer.data) {
+                    layer.data['features'].length = 0;
+                }
+                //alert('remove layer');
+            };
+            return DatabaseSource;
+        }());
+        Services.DatabaseSource = DatabaseSource;
+    })(Services = csComp.Services || (csComp.Services = {}));
+})(csComp || (csComp = {}));
+//# sourceMappingURL=DatabaseSource.js.map
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var csComp;
+(function (csComp) {
+    var Services;
+    (function (Services) {
+        var GeoJsonSource = /** @class */ (function () {
+            function GeoJsonSource(service, $http, $storage) {
+                this.service = service;
+                this.$storage = $storage;
+                this.title = 'geojson';
+                this.requiresLayer = false;
+                this.$http = $http;
+                this.geometryStore = new Services.GeometryTemplateStore(this.$http);
+            }
+            GeoJsonSource.prototype.refreshLayer = function (layer, newLayer) {
+                var _this = this;
+                if (!_.isNull(newLayer)) {
+                    var diffs = this.findFeatureDiff(layer, newLayer);
+                    if (diffs) {
+                        diffs.forEach(function (d) {
+                            switch (d.type) {
+                                case Services.ChangeType.Create:
+                                    _this.service.initFeature(d.value, layer, true, false);
+                                    layer.data.features.push(d.value);
+                                    var m = _this.service.activeMapRenderer.addFeature(d.value);
+                                    break;
+                                case Services.ChangeType.Update:
+                                    _this.service.updateFeature(d.value);
+                                    break;
+                                case Services.ChangeType.Delete:
+                                    _this.service.removeFeature(d.value);
+                                    break;
+                            }
+                        });
+                    }
+                }
+                else {
+                    var isEnabled = layer.enabled;
+                    this.service.removeLayer(layer);
+                    this.service.addLayer(layer);
+                    layer.enabled = isEnabled;
+                }
+            };
+            GeoJsonSource.prototype.findFeatureDiff = function (layer, newLayer) {
+                var _this = this;
+                if (!layer || !layer.data || !layer.data.features)
+                    return;
+                var featuresUpdates = [];
+                var updateTime = new Date().getTime();
+                var notUpdated = 0, updated = 0, added = 0, removed = 0;
+                var fts = newLayer.features;
+                var fCollectionIds = [];
+                if (_.isArray(fts)) {
+                    fts.forEach(function (f) {
+                        fCollectionIds.push(f.id);
+                        var feature = _.find(layer.data.features, function (of) { return of.id === f.id; });
+                        if (!feature) {
+                            // ADD FEATURE
+                            //layer.features[f.id] = { f: f, updated: updateTime };
+                            featuresUpdates.push({ value: feature, type: Services.ChangeType.Create, id: f.id });
+                            added += 1;
+                        }
+                        else if (!_this.isFeatureUpdated(f, feature)) {
+                            // NO UPDATE
+                            notUpdated += 1;
+                        }
+                        else {
+                            // UPDATE
+                            //layer.features[f.id] = { f: f, updated: updateTime };
+                            featuresUpdates.push({ value: feature, type: Services.ChangeType.Update, id: f.id });
+                            updated += 1;
+                        }
+                    });
+                }
+                // // CHECK INACTIVE FEATURES
+                // let inactiveFeatures = _.difference(Object.keys(layer.features), fCollectionIds);
+                // if (inactiveFeatures && inactiveFeatures.length > 0) {
+                //     inactiveFeatures.forEach((fId) => {
+                //         if ((updateTime - layer.features[fId].updated) >= (this.restDataSourceOpts.pruneIntervalSeconds * 1000)) {
+                //             // REMOVE
+                //             featuresUpdates.push(<IChangeEvent>{ value: this.features[fId].f, type: Api.ChangeType.Delete, id: this.features[fId].f.id });
+                //             delete this.features[this.features[fId].f.id];
+                //             removed += 1;
+                //         }
+                //     });
+                // }
+                return featuresUpdates;
+            };
+            GeoJsonSource.prototype.isFeatureUpdated = function (f, old) {
+                if (!f)
+                    return false;
+                // // Check geometry
+                // if (!this.restDataSourceOpts.diffIgnoreGeometry && !_.isEqual(f.geometry, this.features[f.id].f.geometry)) {
+                //     return true;
+                // }
+                if (!f.properties)
+                    return false;
+                // Check all properties
+                if (_.isEqual(f.properties, old.properties)) {
+                    return false;
+                }
+                old.properties = f.properties;
+                old.geometry = f.geometry;
+                return true;
+            };
+            GeoJsonSource.prototype.addLayer = function (layer, callback, data) {
+                if (data === void 0) { data = null; }
+                this.baseAddLayer(layer, callback, data);
+            };
+            /** zoom to boundaries of layer */
+            GeoJsonSource.prototype.fitMap = function (layer) {
+                var b = csComp.Helpers.GeoExtensions.getBoundingBox(layer.data);
+                if (b && b.northEast && b.northEast[0] != undefined) {
+                    this.service.$messageBusService.publish('map', 'setextent', b);
+                }
+            };
+            /** zoom to boundaries of layer */
+            GeoJsonSource.prototype.fitTimeline = function (layer) {
+                if (layer.hasSensorData) {
+                    if (layer.timestamps && layer.timestamps.length > 0) {
+                        var min = layer.timestamps[0];
+                        var max = layer.timestamps[layer.timestamps.length - 1];
+                        this.service.$messageBusService.publish('timeline', 'updateTimerange', { start: min, end: max });
+                    }
+                    else {
+                        var min_1 = null;
+                        var max_1 = null;
+                        layer.data.features.forEach(function (f) {
+                            if (f.timestamps) {
+                                if (min_1 === null) {
+                                    min_1 = f.timestamps[0];
+                                }
+                                else {
+                                    if (min_1 > f.timestamps[0])
+                                        min_1 = f.timestamps[0];
+                                }
+                                if (max_1 === null) {
+                                    max_1 = f.timestamps[f.timestamps.length - 1];
+                                }
+                                else {
+                                    if (max_1 < f.timestamps[f.timestamps.length - 1])
+                                        max_1 = f.timestamps[f.timestamps.length - 1];
+                                }
+                                ;
+                            }
+                        });
+                        if (min_1 !== null && max_1 !== null)
+                            this.service.$messageBusService.publish('timeline', 'updateTimerange', { start: min_1, end: max_1 });
+                    }
+                }
+            };
+            GeoJsonSource.prototype.layerMenuOptions = function (layer) {
+                var _this = this;
+                var result = [
+                    ['Fit map', (function ($itemScope) { return _this.fitMap(layer); })]
+                ];
+                if (layer.hasSensorData && layer.timestamps)
+                    result.push(['Fit time', (function ($itemScope) { return _this.fitTimeline(layer); })]);
+                result.push(null);
+                result.push(['Refresh', (function ($itemScope) { return _this.refreshLayer(layer); })]);
+                return result;
+            };
+            GeoJsonSource.prototype.baseAddLayer = function (layer, callback, data) {
+                var _this = this;
+                if (data === void 0) { data = null; }
+                this.layer = layer;
+                async.series([
+                    function (cb) {
+                        // find geometries for the features if they don't have any
+                        if (layer.dataSourceParameters && layer.dataSourceParameters.geometryTemplate) {
+                            var geometryTemplate = layer.dataSourceParameters.geometryTemplate;
+                            var geometryName_1 = geometryTemplate.name;
+                            _this.geometryStore.loadGeometry(geometryName_1, function (success) {
+                                if (!success)
+                                    console.warn("Could not load geomtery template for " + geometryName_1);
+                                cb(null, null);
+                            });
+                        }
+                        else {
+                            cb(null, null);
+                        }
+                    },
+                    function (cb) {
+                        layer.renderType = 'geojson';
+                        // already got data (propably from drop action)
+                        if (data) {
+                            layer.enabled = true;
+                            _this.initLayer(data, layer);
+                            cb(null, null);
+                        }
+                        else if (!layer.url && layer.data && layer.data.type) {
+                            if (!layer.count)
+                                layer.count = 0;
+                            layer.enabled = true;
+                            layer.isLoading = false;
+                            layer.isConnected = false;
+                            _this.initLayer(layer.data, layer);
+                            cb(null, null);
+                        }
+                        else {
+                            // Open a layer URL
+                            layer.isLoading = true;
+                            // get data
+                            var u = (layer.url) ? layer.url.replace('[BBOX]', layer.BBOX) : "/api/layers/" + layer.id;
+                            // check proxy
+                            if (layer.useProxy)
+                                u = '/api/proxy?url=' + u;
+                            // check local storage
+                            if (layer.localStorage) {
+                                var d = window.localStorage.getItem('layer.' + layer.id);
+                                if (d) {
+                                    layer.count = 0;
+                                    layer.isLoading = false;
+                                    layer.enabled = true;
+                                    _this.initLayer(JSON.parse(d), layer);
+                                    if (layer.hasSensorData)
+                                        _this.fitTimeline(layer);
+                                    cb(null, null);
+                                }
+                            }
+                            if (layer.isLoading) {
+                                _this.$http.get(u)
+                                    .then(function (res) {
+                                    var data = res.data;
+                                    layer.count = 0;
+                                    layer.isLoading = false;
+                                    layer.enabled = true;
+                                    if (layer.localStorage) {
+                                        var d = JSON.stringify(data);
+                                        window.localStorage.setItem('layer.' + layer.id, d);
+                                        //this.$storage.set('layer.' + layer.id, JSON.stringify(data));
+                                    }
+                                    _this.initLayer(data, layer);
+                                    if (layer.hasSensorData)
+                                        _this.fitTimeline(layer);
+                                    cb(null, null);
+                                }, function () {
+                                    layer.count = 0;
+                                    layer.isLoading = false;
+                                    layer.enabled = false;
+                                    layer.isConnected = false;
+                                    _this.service.$messageBusService.notifyErrorWithTranslation('ERROR_LOADING_LAYER', layer.title + " \nurl: " + u);
+                                    _this.service.$messageBusService.publish('layer', 'error', layer);
+                                    cb(null, null);
+                                });
+                            }
+                        }
+                    },
+                    // Callback
+                    function () {
+                        callback(layer);
+                    }
+                ]);
+            };
+            /**
+             *  Loops over all layer features and adds geometry based on a geometry template layer.
+             *  Existing geometries take precedence over template geometries.
+             */
+            GeoJsonSource.prototype.addGeometry = function (template, geomKey, featureProp, layer) {
+                if (!template || !featureProp)
+                    return;
+                console.log('Adding geometry to datalayer');
+                var geom = template['features'];
+                var notFound = [];
+                layer.data.features.forEach(function (f) {
+                    if (f.geometry && f.geometry.coordinates)
+                        return;
+                    if (!f.properties || !f.properties.hasOwnProperty(featureProp))
+                        return;
+                    var val = f.properties[featureProp];
+                    var entry = _.find(geom, function (g) { return g.properties[geomKey] === val; });
+                    if (entry) {
+                        f.geometry = entry.geometry;
+                    }
+                    else {
+                        notFound.push(val);
+                    }
+                });
+                if (!_.isEmpty(notFound))
+                    console.log("Could not find " + notFound.length + " geometries");
+            };
+            GeoJsonSource.prototype.initLayer = function (data, layer) {
+                var _this = this;
+                // if this is a topojson layer, convert to geojson first
+                if (layer.type.toLowerCase() === 'topojson') {
+                    data = csComp.Helpers.GeoExtensions.convertTopoToGeoJson(data);
+                }
+                if (layer.id.toLowerCase() === 'accessibility' || layer.id.toLowerCase() === 'tripplanner') {
+                    layer.disableMoveSelectionToFront = true;
+                    this.processAccessibilityReply(data, layer, function (processedLayer) {
+                        data = layer.data;
+                        layer = processedLayer;
+                    });
+                }
+                // add featuretypes to global featuretype list
+                if (data.featureTypes)
+                    for (var featureTypeName in data.featureTypes) {
+                        if (!data.featureTypes.hasOwnProperty(featureTypeName))
+                            continue;
+                        var featureType = data.featureTypes[featureTypeName];
+                        // give it a unique name
+                        featureTypeName = layer.url + '#' + featureTypeName;
+                        this.service._featureTypes[featureTypeName] = featureType;
+                    }
+                if (data.timestamps)
+                    layer.timestamps = data.timestamps;
+                // store raw result in layer
+                layer.data = data;
+                if (!_.isUndefined(layer.data)) {
+                    if (layer.data.geometries && !layer.data.features) {
+                        layer.data.features = layer.data.geometries;
+                    }
+                    //Filter duplicate features (by feature.id)
+                    var featuresWithoutId = layer.data.features.filter(function (f) { return !f.hasOwnProperty('id'); }); // Allow all features without id
+                    if (featuresWithoutId.length !== layer.data.features.length) {
+                        layer.data.features = featuresWithoutId.concat(_.uniq(layer.data.features, false, function (f) { return f.id; }));
+                    }
+                    // find geometries for the features if they don't have any
+                    if (layer.dataSourceParameters && layer.dataSourceParameters.geometryTemplate) {
+                        var geom = this.geometryStore.getTemplate(layer.dataSourceParameters.geometryTemplate.name);
+                        this.addGeometry(geom, layer.dataSourceParameters.geometryTemplate.key, layer.dataSourceParameters.geometryTemplate.featureProp, layer);
+                    }
+                    if (!_.isUndefined(layer.data.features)) {
+                        layer.data.features.forEach(function (f) {
+                            _this.service.initFeature(f, layer, false, false);
+                        });
+                        if (data.features.length > 0) {
+                            var firstFeature = data.features[0];
+                            var resource = this.service.findResourceByFeature(firstFeature);
+                            csComp.Helpers.addPropertyTypes(firstFeature, firstFeature.fType, resource);
+                        }
+                    }
+                }
+                layer.isTransparent = false;
+                // Subscribe to zoom events
+                if (layer.minZoom || layer.maxZoom) {
+                    if (!layer.minZoom)
+                        layer.minZoom = 0;
+                    if (!layer.maxZoom)
+                        layer.maxZoom = 25;
+                    layer.zoomHandle = this.service.$messageBusService.subscribe('map', function (topic, level) {
+                        if (!topic || !level || topic !== 'zoom' || level < 0)
+                            return;
+                        if ((level < layer.minZoom || level > layer.maxZoom)) {
+                            if (!layer.isTransparent) {
+                                layer.isTransparent = true;
+                                _this.service.updateLayerFeatures(layer);
+                            }
+                        }
+                        else {
+                            if (layer.isTransparent) {
+                                layer.isTransparent = false;
+                                _this.service.updateLayerFeatures(layer);
+                            }
+                        }
+                    });
+                }
+                if (layer.timeAware)
+                    this.service.$messageBusService.publish('timeline', 'updateFeatures');
+            };
+            GeoJsonSource.prototype.removeLayer = function (layer) {
+                layer.isTransparent = false;
+                if (layer.zoomHandle)
+                    this.service.$messageBusService.unsubscribe(layer.zoomHandle);
+                //Reset the default zoom when deactivating a layer with the parameter 'fitToMap' set to true.
+                // if (layer.fitToMap) {
+                //     if (!this.service.project.viewBounds) return;
+                //     this.service.$messageBusService.publish('map', 'setextent', this.service.project.viewBounds);
+                // }
+            };
+            GeoJsonSource.prototype.processAccessibilityReply = function (data, layer, clbk) {
+                if (data.hasOwnProperty('error')) {
+                    console.log('Error in opentripplanner: ' + data['error'].msg);
+                    clbk(layer);
+                    return;
+                }
+                var latlng;
+                var urlParameters = csComp.Helpers.parseUrlParameters(layer.url, '?', '&', '=');
+                if (urlParameters.hasOwnProperty('fromPlace')) {
+                    var coords = urlParameters['fromPlace'].split('%2C');
+                    if (isNaN(+coords[0]) || isNaN(+coords[1]))
+                        clbk(layer);
+                    latlng = new L.LatLng(+coords[0], +coords[1]);
+                }
+                var parsedData = data;
+                if (parsedData.hasOwnProperty('features')) { // Reply is in geoJson format
+                    //Add arrival times when leaving now
+                    var startTime = new Date(Date.now());
+                    parsedData.features.forEach(function (f) {
+                        f.properties['seconds'] = f.properties['time'];
+                        f.properties['time'] = f.properties['seconds'] * 1000;
+                        f.properties['arriveTime'] = (new Date(startTime.getTime() + f.properties['time'])).toISOString();
+                        f.properties['latlng'] = [latlng.lat, latlng.lng];
+                    });
+                    if (layer.hasOwnProperty('data') && layer.data.hasOwnProperty('features')) {
+                        for (var index = 0; index < layer.data.features.length; index++) {
+                            var f = layer.data.features[index];
+                            if (f.properties.hasOwnProperty('latlng') && f.properties['latlng'][0] === latlng.lat && f.properties['latlng'][1] === latlng.lng) {
+                                layer.data.features.splice(index--, 1);
+                            }
+                        }
+                        parsedData.features.forEach(function (f) {
+                            layer.data.features.push(f);
+                        });
+                    }
+                    else {
+                        layer.count = 0;
+                        layer.data = parsedData;
+                    }
+                }
+                else { // Reply is in routeplanner format
+                    var fromLoc = parsedData.plan.from;
+                    var toLoc = parsedData.plan.to;
+                    layer.data = {};
+                    layer.data.type = 'FeatureCollection';
+                    layer.data.features = [];
+                    parsedData.plan.itineraries.forEach(function (it) {
+                        var route = new L.Polyline([]);
+                        var legs = [];
+                        var transfers = -1;
+                        it.legs.forEach(function (leg) {
+                            var polyLeg = L.Polyline.fromEncoded(leg.legGeometry.points);
+                            polyLeg.getLatLngs().forEach(function (ll) {
+                                route.addLatLng(ll);
+                            });
+                            var legDetails = {
+                                mode: leg.mode,
+                                start: new Date(leg.startTime).toISOString(),
+                                arrive: new Date(leg.endTime).toISOString(),
+                                duration: csComp.Helpers.convertPropertyInfo({ type: 'duration' }, (+leg.duration) * 1000)
+                            };
+                            (leg.agencyName) ? legDetails.agency = leg.agencyName : null;
+                            (leg.routeShortName) ? legDetails.route = leg.routeShortName : null;
+                            (leg.routeLongName) ? legDetails.routeName = leg.routeLongName : null;
+                            if (leg.mode !== 'WALK' && leg.mode !== 'BICYCLE')
+                                transfers = transfers + 1;
+                            legs.push(legDetails);
+                        });
+                        var geoRoute = route.toGeoJSON();
+                        layer.data.features.push(csComp.Helpers.GeoExtensions.createLineFeature(geoRoute.geometry.coordinates, {
+                            fromLoc: fromLoc.name,
+                            toLoc: toLoc.name,
+                            duration: (+it.duration) * 1000,
+                            startTime: new Date(it.startTime).toISOString(),
+                            arriveTime: new Date(it.endTime).toISOString(),
+                            legs: legs,
+                            transfers: (transfers >= 0) ? transfers : 0
+                        }));
+                    });
+                }
+                clbk(layer);
+            };
+            return GeoJsonSource;
+        }());
+        Services.GeoJsonSource = GeoJsonSource;
+        var EditableGeoJsonSource = /** @class */ (function (_super) {
+            __extends(EditableGeoJsonSource, _super);
+            function EditableGeoJsonSource(service, $http, $storage) {
+                var _this = _super.call(this, service, $http, $storage) || this;
+                _this.service = service;
+                _this.title = 'editablegeojson';
+                return _this;
+                // subscribe
+            }
+            EditableGeoJsonSource.prototype.updateFeatureByProperty = function (key, id, value, layer) {
+                var _this = this;
+                if (layer === void 0) { layer = null; }
+                var configSettings = {};
+                if (layer.id === 'newsfeed') {
+                    configSettings = { titleKey: 'Name', descriptionKey: 'news_title', dateKey: 'news_date' };
+                }
+                ;
+                try {
+                    var features = layer.data.features;
+                    if (features == null)
+                        return;
+                    var done = false;
+                    features.some(function (f) {
+                        if (f.hasOwnProperty(key) && f[key] === id) {
+                            f.properties = value.properties;
+                            f.geometry = value.geometry;
+                            _this.service.updateFeature(f);
+                            done = true;
+                            if (_this.service.project.eventTab) {
+                                _this.service.$messageBusService.publish('eventtab', 'updated', { feature: f, config: configSettings });
+                            }
+                            else {
+                                if (layer.showFeatureNotifications)
+                                    _this.service.$messageBusService.notify(layer.title, f.properties['Name'] + ' updated');
+                            }
+                            //  console.log('updating feature');
+                            return true;
+                        }
+                        else {
+                            return false;
+                        }
+                    });
+                    if (!done) {
+                        // console.log('adding feature');
+                        if (layer && layer.data && layer.data.features) {
+                            layer.data.features.push(value);
+                            this.service.initFeature(value, layer, false);
+                            var m = this.service.activeMapRenderer.addFeature(value);
+                            if (this.service.project.eventTab) {
+                                this.service.$messageBusService.publish('eventtab', 'added', { feature: value, config: configSettings });
+                            }
+                            else {
+                                if (layer.showFeatureNotifications)
+                                    this.service.$messageBusService.notify(layer.title, value.properties['Name'] + ' added');
+                            }
+                        }
+                        else {
+                            features.push(value);
+                            this.service.initFeature(value, layer);
+                            var m = this.service.activeMapRenderer.addFeature(value);
+                            if (this.service.project.eventTab) {
+                                this.service.$messageBusService.publish('eventtab', 'added', { feature: value, config: configSettings });
+                            }
+                            else {
+                                if (layer.showFeatureNotifications)
+                                    this.service.$messageBusService.notify(layer.title, value.properties['Name'] + ' added');
+                            }
+                        }
+                    }
+                }
+                catch (e) {
+                    console.log('error');
+                }
+            };
+            EditableGeoJsonSource.prototype.deleteFeatureByProperty = function (key, id, value, layer) {
+                try {
+                    var feature = this.service.findFeature(layer, id);
+                    if (feature) {
+                        if (layer.showFeatureNotifications)
+                            this.service.$messageBusService.notify(layer.title, feature.properties['Name'] + ' removed');
+                        this.service.removeFeature(feature, false);
+                    }
+                }
+                catch (e) {
+                    console.log('error');
+                }
+            };
+            EditableGeoJsonSource.prototype.addLayer = function (layer, callback, data) {
+                if (data === void 0) { data = null; }
+                layer.isEditable = true;
+                this.baseAddLayer(layer, function (layer) {
+                    callback(layer);
+                }, data);
+            };
+            EditableGeoJsonSource.prototype.removeLayer = function (layer) {
+                layer.isConnected = false;
+                if (layer._gui['editing'])
+                    this.service.stopEditingLayer(layer);
+            };
+            EditableGeoJsonSource.prototype.layerMenuOptions = function (layer) {
+                var _this = this;
+                var result = [
+                    ['Fit map', (function ($itemScope) { return _this.fitMap(layer); })]
+                ];
+                if (layer.hasSensorData && layer.timestamps)
+                    result.push(['Fit time', (function ($itemScope) { return _this.fitTimeline(layer); })]);
+                result.push(null);
+                result.push(['Refresh', (function ($itemScope) { return _this.refreshLayer(layer); })]);
+                return result;
+            };
+            /** enable edit mode for @layer and disable it for the others */
+            EditableGeoJsonSource.prototype.startEditing = function (layer) {
+                this.service.project.groups.forEach(function (g) {
+                    var v = false;
+                    g.layers.forEach(function (l) {
+                        if (l === layer) {
+                            v = true;
+                            l._gui['editing'] = true;
+                        }
+                        else {
+                            delete l._gui['editing'];
+                        }
+                    });
+                    g._gui.editing = v;
+                });
+                this.service.editing = true;
+                this.initAvailableFeatureTypesEditing(layer);
+            };
+            EditableGeoJsonSource.prototype.stopEditing = function (layer) {
+                this.service.stopEditingLayer(layer);
+            };
+            /** prepare layer for editing, add featuretypes to temp. _gui object */
+            EditableGeoJsonSource.prototype.initAvailableFeatureTypesEditing = function (layer) {
+                var featureTypes = {};
+                layer._gui['featureTypes'] = featureTypes;
+                if (!layer || !layer.typeUrl || !this.service.typesResources.hasOwnProperty(layer.typeUrl))
+                    return;
+                for (var ft in this.service.typesResources[layer.typeUrl].featureTypes) {
+                    var t = this.service.typesResources[layer.typeUrl].featureTypes[ft];
+                    if (!t.style.drawingMode)
+                        t.style.drawingMode = 'Point';
+                    featureTypes[ft] = this.service.typesResources[layer.typeUrl].featureTypes[ft];
+                    featureTypes[ft].u = csComp.Helpers.getImageUri(t);
+                    featureTypes[ft]._guid = csComp.Helpers.getGuid();
+                }
+            };
+            return EditableGeoJsonSource;
+        }(GeoJsonSource));
+        Services.EditableGeoJsonSource = EditableGeoJsonSource;
+        var DynamicGeoJsonSource = /** @class */ (function (_super) {
+            __extends(DynamicGeoJsonSource, _super);
+            function DynamicGeoJsonSource(service, $http, $storage) {
+                var _this = _super.call(this, service, $http, $storage) || this;
+                _this.service = service;
+                return _this;
+            }
+            DynamicGeoJsonSource.prototype.addLayer = function (layer, callback, data) {
+                if (data === void 0) { data = null; }
+                layer.isDynamic = true;
+                _super.prototype.addLayer.call(this, layer, callback, data);
+                if (layer.enabled) {
+                    this.initSubscriptions(layer);
+                }
+            };
+            DynamicGeoJsonSource.prototype.removeLayer = function (layer) {
+                _super.prototype.removeLayer.call(this, layer);
+                this.service.$messageBusService.serverUnsubscribe(layer.serverHandle);
+            };
+            DynamicGeoJsonSource.prototype.initSubscriptions = function (layer) {
+                var _this = this;
+                layer.serverHandle = this.service.$messageBusService.serverSubscribe(layer.id, 'layer', function (topic, msg) {
+                    console.log('action:' + msg.action + ' ' + layer.id);
+                    switch (msg.action) {
+                        case 'unsubscribed':
+                            _this.service.$rootScope.$apply(function () {
+                                layer.isConnected = false;
+                            });
+                            break;
+                        case 'subscribed':
+                            layer.isConnected = true;
+                            //console.log('sucesfully subscribed');
+                            break;
+                        case 'msg':
+                            var d = msg.data;
+                            if (d.hasOwnProperty('message')) {
+                                _this.service.$messageBusService.notify(layer.title, d.message);
+                            }
+                            break;
+                        case 'layer':
+                            if (msg.data != null) {
+                                try {
+                                    var lu = msg.data;
+                                    switch (lu.action) {
+                                        case Services.LayerUpdateAction.updateLog:
+                                            // find feature
+                                            var fId = lu.featureId;
+                                            var logs = lu.item;
+                                            var ff = layer.data.features;
+                                            ff.forEach(function (f) {
+                                                if (f.id === fId) {
+                                                    if (!f.logs)
+                                                        f.logs = {};
+                                                    for (var k in logs) {
+                                                        if (!f.logs.hasOwnProperty(k))
+                                                            f.logs[k] = [];
+                                                        logs[k].forEach(function (li) { return f.logs[k].push(li); });
+                                                    }
+                                                    // update logs
+                                                    _this.service.$rootScope.$apply(function () {
+                                                        _this.service.updateLog(f);
+                                                    });
+                                                    return true;
+                                                }
+                                                return false;
+                                            });
+                                            break;
+                                        case Services.LayerUpdateAction.updateFeature:
+                                            var f = lu.item;
+                                            if (layer.id === lu.layerId) {
+                                                _this.service.$rootScope.$apply(function () {
+                                                    _this.updateFeatureByProperty('id', f.id, f, layer);
+                                                });
+                                            }
+                                            break;
+                                        case Services.LayerUpdateAction.addUpdateFeatureBatch:
+                                            var fChanges = lu.item;
+                                            if (layer.id === lu.layerId && fChanges && fChanges.length > 0) {
+                                                _this.service.$rootScope.$apply(function () {
+                                                    fChanges.forEach(function (fc) {
+                                                        switch (fc.type) {
+                                                            case Services.ChangeType.Create:
+                                                            case Services.ChangeType.Update:
+                                                                _this.updateFeatureByProperty('id', fc.id, fc.value, layer);
+                                                                break;
+                                                            case Services.ChangeType.Delete:
+                                                                _this.deleteFeatureByProperty('id', fc.id, fc.value, layer);
+                                                                break;
+                                                        }
+                                                    });
+                                                });
+                                            }
+                                            break;
+                                        case Services.LayerUpdateAction.deleteFeature:
+                                            var feature = _this.service.findFeature(layer, lu.featureId);
+                                            if (feature) {
+                                                if (layer.showFeatureNotifications)
+                                                    _this.service.$messageBusService.notify(layer.title, feature.properties['Name'] + ' removed');
+                                                _this.service.removeFeature(feature, false);
+                                            }
+                                            // lu.featureId
+                                            // lu.object.forEach((f) => {
+                                            //
+                                            //     //this.service.removeFeature(f);
+                                            // });
+                                            break;
+                                    }
+                                }
+                                catch (e) {
+                                    console.warn('Error updating feature: ' + JSON.stringify(e, null, 2));
+                                }
+                                _this.service.$messageBusService.publish('layer', 'updated', layer);
+                            }
+                            break;
+                    }
+                });
+            };
+            return DynamicGeoJsonSource;
+        }(EditableGeoJsonSource));
+        Services.DynamicGeoJsonSource = DynamicGeoJsonSource;
+        var EsriJsonSource = /** @class */ (function (_super) {
+            __extends(EsriJsonSource, _super);
+            function EsriJsonSource(service, $http, $storage) {
+                var _this = _super.call(this, service, $http, $storage) || this;
+                _this.service = service;
+                _this.title = 'esrijson';
+                return _this;
+                // subscribe
+            }
+            EsriJsonSource.prototype.addLayer = function (layer, callback) {
+                var _this = this;
+                layer.renderType = 'geojson';
+                // Open a layer URL
+                layer.isLoading = true;
+                var url = (layer.useProxy) ? '/api/proxy' : layer.url;
+                this.$http({
+                    url: url,
+                    method: 'GET',
+                    params: { url: layer.url }
+                }).then(function (res) {
+                    var data = res.data;
+                    if (typeof data === 'string') {
+                        data = JSON.parse(data);
+                    }
+                    var s = new esriJsonConverter.esriJsonConverter();
+                    var geojson = s.toGeoJson(data);
+                    layer.data = geojson; //csComp.Helpers.GeoExtensions.createFeatureCollection(features);
+                    if (layer.data.geometries && !layer.data.features) {
+                        layer.data.features = layer.data.geometries;
+                    }
+                    if (layer.dataSourceParameters && layer.dataSourceParameters['convertFromRD']) {
+                        csComp.Helpers.GeoExtensions.convertRDFeaturesToWGS84(layer.data.features);
+                    }
+                    layer.data.features.forEach(function (f) {
+                        _this.service.initFeature(f, layer, false, false);
+                    });
+                    if (layer.timeAware)
+                        _this.service.$messageBusService.publish('timeline', 'updateFeatures');
+                }, function (e) {
+                    console.log('EsriJsonSource called $HTTP with errors: ' + e);
+                }).finally(function () {
+                    layer.isLoading = false;
+                    callback(layer);
+                });
+            };
+            return EsriJsonSource;
+        }(GeoJsonSource));
+        Services.EsriJsonSource = EsriJsonSource;
+    })(Services = csComp.Services || (csComp.Services = {}));
+})(csComp || (csComp = {}));
+//# sourceMappingURL=GeoJsonSource.js.map
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var csComp;
+(function (csComp) {
+    var Services;
+    (function (Services) {
+        /**
+         * A GRID data source is a raster or grid in which the grid cells are delimited by spaces
+         * and each newline indicates a new row of data.
+         */
+        var GridDataSource = /** @class */ (function (_super) {
+            __extends(GridDataSource, _super);
+            function GridDataSource(service, $http, $storage) {
+                var _this = _super.call(this, service, $http, $storage) || this;
+                _this.service = service;
+                _this.title = "grid";
+                return _this;
+            }
+            GridDataSource.prototype.addLayer = function (layer, callback) {
+                var _this = this;
+                this.layer = layer;
+                if (typeof layer.dataSourceParameters === 'undefined') {
+                    throw new Error("Undefined IGridData data property in GridDataSource.");
+                    //return;
+                }
+                this.gridParams = layer.dataSourceParameters;
+                // Select the appropriate converter for converting points to features:
+                if (this.gridParams.useContour) {
+                    this.convertDataToFeatureCollection = this.convertDataToIsoLines;
+                }
+                else {
+                    this.convertDataToFeatureCollection = this.convertDataToPolygonGrid;
+                }
+                // Open a layer URL
+                layer.isLoading = true;
+                // get data from layer data if present, otherwise fetch from server
+                if (layer.data && layer.quickRefresh) {
+                    this.processData(layer, layer.data, callback);
+                }
+                else {
+                    $.get(layer.url, function (result, status) {
+                        _this.processData(layer, result, callback);
+                    }).fail(function (err) {
+                        layer.isLoading = false;
+                        _this.service.$messageBusService.notifyErrorWithTranslation('ERROR_LOADING_LAYER', layer.title + " \nurl: " + layer.url);
+                        _this.service.$messageBusService.publish('layer', 'error');
+                        console.log("Failed loading layer " + layer.title + " due to " + JSON.stringify(err) + ".");
+                    });
+                }
+            };
+            GridDataSource.prototype.processData = function (layer, result, callback) {
+                var _this = this;
+                // https://github.com/caolan/async#seriestasks-callback
+                async.series([
+                    function (cb) {
+                        layer.count = 0;
+                        if (typeof _this.gridParams.gridType !== 'undefined' && _this.gridParams.gridType === 'esri') {
+                            _this.convertEsriHeaderToGridParams(result);
+                        }
+                        if (layer.renderType === 'gridlayer') {
+                            layer.data = _this.convertDataToGrid(result, _this.gridParams);
+                            ;
+                            layer.isLoading = false;
+                            cb(null, null);
+                            return;
+                        }
+                        var data = _this.convertDataToFeatureCollection(result, _this.gridParams);
+                        if (data.fc.features.length > 10000) {
+                            console.warn('Grid is very big! Number of features: ' + data.fc.features.length);
+                        }
+                        if (data.fc.features.length === 0) {
+                            _this.service.$messageBusService.notify('Warning', 'Data loaded successfully, but all points are outside the specified range.', csComp.Services.NotifyLocation.TopRight, csComp.Services.NotifyType.Error);
+                            layer.isLoading = false;
+                            cb(null, null);
+                            return;
+                        }
+                        // store raw result in layer
+                        layer.data = data.fc;
+                        //layer.description = data.desc;
+                        if (layer.data.geometries && !layer.data.features) {
+                            layer.data.features = layer.data.geometries;
+                        }
+                        var count = 0;
+                        var last = layer.data.features.length - 1;
+                        layer.data.features.forEach(function (f) {
+                            _this.service.initFeature(f, layer, false, false);
+                        });
+                        layer.isLoading = false;
+                        cb(null, null);
+                    },
+                    function () {
+                        callback(layer);
+                    }
+                ]);
+            };
+            /**
+             * Convert the ESRI ASCII GRID header to grid parameters.
+             *
+                ESRI ASCII Raster format
+                The ESRI ASCII raster format can be used to transfer information to or from other cell-based or raster systems. When an existing raster is output to an ESRI ASCII format raster, the file will begin with header information that defines the properties of the raster such as the cell size, the number of rows and columns, and the coordinates of the origin of the raster. The header information is followed by cell value information specified in space-delimited row-major order, with each row seperated by a carraige return.
+                In order to convert an ASCII file to a raster, the data must be in this same format. The parameters in the header part of the file must match correctly with the structure of the data values.
+                The basic structure of the ESRI ASCII raster has the header information at the beginning of the file followed by the cell value data:
+                    NCOLS xxx
+                    NROWS xxx
+                    XLLCENTER xxx | XLLCORNER xxx
+                    YLLCENTER xxx | YLLCORNER xxx
+                    CELLSIZE xxx
+                    NODATA_VALUE xxx
+                    row 1
+                    row 2
+                    ...
+                    row n
+                *
+                Row 1 of the data is at the top of the raster, row 2 is just under row 1, and so on.
+                Header format
+                The syntax of the header information is a keyword paired with the value of that keyword. The definitions of the kewords are:
+                *
+                Parameter	Description	Requirements
+                NCOLS	Number of cell columns.	Integer greater than 0.
+                NROWS	Number of cell rows.	Integer greater than 0.
+                XLLCENTER or XLLCORNER	X coordinate of the origin (by center or lower left corner of the cell).	Match with Y coordinate type.
+                YLLCENTER or YLLCORNER	Y coordinate of the origin (by center or lower left corner of the cell).	Match with X coordinate type.
+                CELLSIZE	Cell size.	Greater than 0.
+                NODATA_VALUE	The input values to be NoData in the output raster.	Optional. Default is -9999.
+                Data format
+                The data component of the ESRI ASCII raster follows the header information.
+                Cell values should be delimited by spaces.
+                No carriage returns are necessary at the end of each row in the raster. The number of columns in the header determines when a new row begins.
+                Row 1 of the data is at the top of the raster, row 2 is just under row 1, and so on.
+             */
+            GridDataSource.prototype.convertEsriHeaderToGridParams = function (input) {
+                var _this = this;
+                var regex = /(\S*)\s*([\d-.]*)/;
+                var data = this.getData(input);
+                if (!data)
+                    return;
+                var lines = data.split('\n', 6);
+                var x, y;
+                var isCenter = false;
+                this.gridParams.skipLines = 0;
+                lines.forEach(function (line) {
+                    var matches = line.match(regex);
+                    if (matches.length !== 3)
+                        return;
+                    _this.gridParams.skipLines++;
+                    var value = +matches[2];
+                    switch (matches[1].toLowerCase()) {
+                        case 'ncols':
+                            // Number of cell columns. Integer greater than 0.
+                            _this.gridParams.columns = value;
+                            break;
+                        case 'nrows':
+                            // Number of cell rows. Integer greater than 0.
+                            _this.gridParams.rows = value;
+                            break;
+                        case 'xllcorner':
+                            x = value;
+                            // X coordinate of the origin (by lower left corner of the cell).
+                            break;
+                        case 'yllcorner':
+                            y = value;
+                            // Y coordinate of the origin (by lower left corner of the cell).
+                            break;
+                        case 'xllcenter':
+                            // X coordinate of the origin (by center corner of the cell).
+                            x = value;
+                            isCenter = true;
+                            break;
+                        case 'yllcenter':
+                            // Y coordinate of the origin (by center corner of the cell).
+                            y = value;
+                            isCenter = true;
+                            break;
+                        case 'cellsize':
+                            // Cell size. Greater than 0.
+                            _this.gridParams.deltaLon = value;
+                            _this.gridParams.deltaLat = -value;
+                            break;
+                        case 'nodata_value':
+                            // The input values to be NoData in the output raster. Optional. Default is -9999.
+                            _this.gridParams.noDataValue = value;
+                            break;
+                    }
+                });
+                if (isCenter) {
+                    this.gridParams.startLon = x;
+                    this.gridParams.startLat = y;
+                }
+                else {
+                    this.gridParams.startLon = x + this.gridParams.deltaLon / 2;
+                    this.gridParams.startLat = y - this.gridParams.deltaLat / 2;
+                }
+                /* WARNING: The below RD projection is NOT correct!!! To convert an RD grid to a WGS84 grid requires a complex
+                 * translation using shearing and approximating pixels. It's better to use gdal (standalone, or with QGIS).
+                 *
+                 * For example, execute the following in a batch file:
+                 * First, convert the input data to vrt, reprojecting from RD to wgs84, and replacing the nodata value at the same time.
+                 * As gdalwarp does not support AAIGrid as output, we first convert it to VRT, and use gdal_translate to translate it to an ESRI ASCII GRID file.
+                 *
+                 * for %%f in (*.asc) do (
+                 * 		echo Processing %%f
+                 * 		"c:/Program Files/QGIS Pisa/bin/gdalwarp.exe" --config GDAL_DATA "c:/OSGeo4W64/share/gdal" -srcnodata -999.0 -dstnodata -1 -t_srs EPSG:4296 -s_srs EPSG:28992 -of VRT -r average %%f %%f_intermediate.vrt
+                 * 		"c:/Program Files/QGIS Pisa/bin/gdal_translate.exe" -of AAIGrid %%f_intermediate.vrt %%f.out
+                 * 		del %%f_intermediate.vrt
+                 * 	)
+                 */
+                switch (this.gridParams.projection || 'wgs84') {
+                    case 'rd':
+                    case 'RD':
+                        var startLoc = csComp.Helpers.GeoExtensions.convertRDToWGS84(this.gridParams.startLon, this.gridParams.startLat - (this.gridParams.rows - 1) * this.gridParams.deltaLat);
+                        var endLoc = csComp.Helpers.GeoExtensions.convertRDToWGS84(this.gridParams.startLon + (this.gridParams.columns - 1) * this.gridParams.deltaLon, this.gridParams.startLat);
+                        this.gridParams.deltaLon = (endLoc.longitude - startLoc.longitude) / (this.gridParams.columns - 1);
+                        this.gridParams.deltaLat = (endLoc.latitude - startLoc.latitude) / (this.gridParams.rows - 1);
+                        this.gridParams.startLon = startLoc.longitude;
+                        this.gridParams.startLat = startLoc.latitude;
+                        break;
+                    case 'WGS84':
+                    case 'wgs84':
+                        this.gridParams.startLat -= (this.gridParams.rows - 1) * this.gridParams.deltaLat;
+                        break;
+                    default:
+                        throw new Error('Current projection is not supported!');
+                    // break;
+                }
+            };
+            /** Extract the grid data from the input */
+            GridDataSource.prototype.getData = function (input) {
+                if (typeof input === 'string') {
+                    return input;
+                }
+                else if (input.hasOwnProperty('data') && typeof input['data'] === 'string') {
+                    return input['data'];
+                }
+                else {
+                    console.log('GridDataSource error: could not read grid data!');
+                    return '';
+                }
+            };
+            /**
+             * Convert the incoming data to a matrix grid.
+             * The incoming data can be in two formats: either it is a string, representing the ASCII grid data,
+             * or it is an (ILayer) object, in which case the data should be in the input.data property.
+             */
+            GridDataSource.prototype.convertDataToGrid = function (input, gridParams) {
+                var data = this.getData(input);
+                if (!data)
+                    return;
+                var propertyName = (typeof gridParams.propertyName !== 'undefined') ? gridParams.propertyName : 'v';
+                var noDataValue = (typeof gridParams.noDataValue !== 'undefined') ? gridParams.noDataValue : -9999;
+                var skipLinesAfterComment = gridParams.skipLinesAfterComment, skipSpacesFromLine = gridParams.skipSpacesFromLine, skipFirstRow = gridParams.skipFirstRow || false, skipFirstColumn = gridParams.skipFirstColumn || false;
+                var separatorCharacter = gridParams.separatorCharacter || ' ', splitCellsRegex = new RegExp("[^" + separatorCharacter + "]+", "g");
+                var deltaLon = gridParams.deltaLon, deltaLat = gridParams.deltaLat, lat = gridParams.startLat, lon = gridParams.startLon;
+                var max = (typeof gridParams.maxThreshold !== 'undefined') ? gridParams.maxThreshold : Number.MAX_VALUE, min = (typeof gridParams.minThreshold !== 'undefined') ? gridParams.minThreshold : -Number.MAX_VALUE;
+                var lines = data.split('\n'), i = 0, gridData = [];
+                if (gridParams.skipLines)
+                    lines.splice(0, gridParams.skipLines);
+                var rowsToProcess = gridParams.rows || Number.MAX_VALUE;
+                lines.forEach(function (line) {
+                    if (gridParams.commentCharacter)
+                        if (line.substr(0, 1) === gridParams.commentCharacter) {
+                            console.log(line);
+                            return;
+                        }
+                    if (skipLinesAfterComment && skipLinesAfterComment > 0) {
+                        skipLinesAfterComment--;
+                        return;
+                    }
+                    if (skipFirstRow) {
+                        skipFirstRow = false;
+                        return;
+                    }
+                    rowsToProcess--;
+                    if (rowsToProcess < 0)
+                        return gridData;
+                    var cells;
+                    if (skipSpacesFromLine)
+                        cells = line.substr(skipSpacesFromLine).match(splitCellsRegex);
+                    else
+                        cells = line.match(splitCellsRegex);
+                    if (skipFirstColumn && cells.length > 1)
+                        cells = cells.splice(1);
+                    if (!cells || (!gridParams.skipFirstColumn && cells.length < gridParams.columns))
+                        return;
+                    gridData[i] = [];
+                    cells.forEach(function (c) { return gridData[i].push(+c); });
+                    //Why is the minThreshold parameter overwritten by the smallest value in the grid???
+                    //max = Math.max(max, ...gridData[i]);
+                    //min = Math.min(min, ...gridData[i]);
+                    i++;
+                });
+                gridParams.maxThreshold = max;
+                gridParams.minThreshold = min;
+                return gridData;
+            };
+            /**
+             * Convert data to a set of isolines.
+             */
+            GridDataSource.prototype.convertDataToIsoLines = function (data, gridParams) {
+                var gridData = this.convertDataToGrid(data, gridParams);
+                var propertyName = gridParams.propertyName || "v";
+                var longitudes = [], latitudes = [];
+                var lat = gridParams.startLat, lon = gridParams.startLon, deltaLat = gridParams.deltaLat, deltaLon = gridParams.deltaLon;
+                var max = gridParams.maxThreshold, min = gridParams.minThreshold;
+                gridData.forEach(function (row) {
+                    latitudes.push(lat);
+                    lat += deltaLat;
+                });
+                gridData[0].forEach(function (col) {
+                    longitudes.push(lon);
+                    lon += deltaLon;
+                    if (lon > 180)
+                        lon -= 360;
+                });
+                var features = [];
+                var conrec = new csComp.Helpers.Conrec(), nrIsoLevels, isoLevels;
+                if (typeof gridParams.contourLevels === 'undefined') {
+                    nrIsoLevels = 10;
+                }
+                else {
+                    var cl = gridParams.contourLevels;
+                    if (typeof cl === 'number') {
+                        nrIsoLevels = cl;
+                    }
+                    else {
+                        isoLevels = cl;
+                        nrIsoLevels = cl.length;
+                    }
+                }
+                if (typeof isoLevels === 'undefined') {
+                    isoLevels = [];
+                    var dl = (max - min) / nrIsoLevels;
+                    for (var l = min + dl / 2; l < max; l += dl)
+                        isoLevels.push(Math.round(l * 10) / 10); // round to nearest decimal.
+                }
+                conrec.contour(gridData, 0, gridData.length - 1, 0, gridData[0].length - 1, latitudes, longitudes, nrIsoLevels, isoLevels, gridParams.noDataValue || -9999);
+                var contourList = conrec.contourList;
+                contourList.forEach(function (contour) {
+                    var result = {};
+                    result[propertyName] = contour.level;
+                    var feature = {
+                        type: 'Feature',
+                        geometry: {
+                            type: 'Polygon'
+                        },
+                        properties: result
+                    };
+                    var ring = [];
+                    feature.geometry.coordinates = [ring];
+                    contour.forEach(function (p) {
+                        ring.push([p.y, p.x]);
+                    });
+                    features.push(feature);
+                });
+                var desc = "# Number of features above the threshold: " + features.length + ".\r\n";
+                return {
+                    fc: csComp.Helpers.GeoExtensions.createFeatureCollection(features),
+                    desc: desc
+                };
+            };
+            /**
+             * Convert data to a grid of square GeoJSON polygons, so each drawable point is converted to a square polygon.
+             */
+            GridDataSource.prototype.convertDataToPolygonGrid = function (data, gridParams) {
+                var propertyName = gridParams.propertyName || "v";
+                var gridData = this.convertDataToGrid(data, gridParams);
+                var lat = gridParams.startLat, deltaLat = gridParams.deltaLat, deltaLon = gridParams.deltaLon, noDataValue = gridParams.noDataValue;
+                var minThreshold = gridParams.minThreshold || -Number.MAX_VALUE, maxThreshold = gridParams.maxThreshold || Number.MAX_VALUE;
+                var features = [];
+                gridData.forEach(function (row) {
+                    var lon = gridParams.startLon;
+                    row.forEach(function (n) {
+                        var value = +n;
+                        if (value !== noDataValue && minThreshold <= value && value <= maxThreshold) {
+                            var result = {};
+                            result[propertyName] = value;
+                            var tl = [lon, lat + deltaLat], tr = [lon + deltaLon, lat + deltaLat], bl = [lon, lat], br = [lon + deltaLon, lat];
+                            var pg = csComp.Helpers.GeoExtensions.createPolygonFeature([[tl, tr, br, bl, tl]], result);
+                            features.push(pg);
+                        }
+                        lon += deltaLon;
+                        if (lon > 180)
+                            lon -= 360;
+                    });
+                    lat += deltaLat;
+                });
+                //
+                // var propertyName = gridParams.propertyName || "v";
+                // var noDataValue = gridParams.noDataValue || -9999;
+                //
+                // var skipLinesAfterComment = gridParams.skipLinesAfterComment,
+                //     skipSpacesFromLine = gridParams.skipSpacesFromLine,
+                //     skipFirstRow = gridParams.skipFirstRow || false,
+                //     skipFirstColumn = gridParams.skipFirstColumn || false;
+                //
+                // var separatorCharacter = gridParams.separatorCharacter || ' ',
+                //     splitCellsRegex = new RegExp("[^" + separatorCharacter + "]+", "g");
+                //
+                // var deltaLon = gridParams.deltaLon,
+                //     deltaLat = gridParams.deltaLat,
+                //     lat = gridParams.startLat,
+                //     lon = gridParams.startLon;
+                //
+                // var features: csComp.Helpers.IGeoFeature[] = [];
+                //
+                // var lines = data.split('\n');
+                // if (gridParams.skipLines) lines.splice(0, gridParams.skipLines);
+                //
+                // var rowsToProcess = gridParams.rows || Number.MAX_VALUE;
+                // lines.forEach((line) => {
+                //     if (gridParams.commentCharacter)
+                //         if (line.substr(0, 1) === gridParams.commentCharacter) {
+                //             console.log(line);
+                //             return;
+                //         }
+                //
+                //     if (skipLinesAfterComment && skipLinesAfterComment > 0) {
+                //         skipLinesAfterComment--;
+                //         return;
+                //     }
+                //
+                //     if (skipFirstRow) {
+                //         skipFirstRow = false;
+                //         return;
+                //     }
+                //     rowsToProcess--;
+                //     if (rowsToProcess < 0) return;
+                //
+                //     var cells: RegExpMatchArray;
+                //     if (skipSpacesFromLine)
+                //         cells = line.substr(skipSpacesFromLine).match(splitCellsRegex);
+                //     else
+                //         cells = line.match(splitCellsRegex);
+                //
+                //     if (skipFirstColumn && cells.length > 1) cells = cells.splice(1);
+                //
+                //     if (!cells || (!gridParams.skipFirstColumn && cells.length < gridParams.columns)) return;
+                //
+                //     lon = gridParams.startLon;
+                //     var minThreshold = gridParams.minThreshold || -Number.MAX_VALUE,
+                //         maxThreshold = gridParams.maxThreshold || Number.MAX_VALUE;
+                //     cells.forEach((n) => {
+                //         var value = +n;
+                //         if (value !== noDataValue && minThreshold <= value && value <= maxThreshold) {
+                //             var result: IProperty = {};
+                //             result[propertyName] = value;
+                //             var tl = [lon, lat + deltaLat],
+                //                 tr = [lon + deltaLon, lat + deltaLat],
+                //                 bl = [lon, lat],
+                //                 br = [lon + deltaLon, lat];
+                //
+                //             var pg = csComp.Helpers.GeoExtensions.createPolygonFeature([[tl, tr, br, bl, tl]], result);
+                //             features.push(pg);
+                //         }
+                //         lon += deltaLon;
+                //         if (lon > 180) lon -= 360;
+                //     });
+                //     lat += deltaLat;
+                // });
+                var desc = "# Number of features above the threshold: " + features.length + ".\r\n";
+                return {
+                    fc: csComp.Helpers.GeoExtensions.createFeatureCollection(features),
+                    desc: desc
+                };
+            }; // convertDataToGeoJSON
+            return GridDataSource;
+        }(csComp.Services.GeoJsonSource));
+        Services.GridDataSource = GridDataSource;
+    })(Services = csComp.Services || (csComp.Services = {}));
+})(csComp || (csComp = {}));
+//# sourceMappingURL=GridDataSource.js.map
+var csComp;
+(function (csComp) {
+    var Services;
+    (function (Services) {
+        'use strict';
+        var HeatmapSource = /** @class */ (function () {
+            function HeatmapSource(service) {
+                this.service = service;
+                this.title = 'heatmap';
+                this.requiresLayer = true;
+                //service: LayerService;
+                this.heatmapModel = new Heatmap.HeatmapModel('ProjectHeatmap');
+            }
+            //public init(service: LayerService) {
+            //    this.service = service;
+            //}
+            HeatmapSource.prototype.refreshLayer = function (layer) {
+                this.generateHeatmap(layer);
+            };
+            HeatmapSource.prototype.layerMenuOptions = function (layer) {
+                return null;
+            };
+            HeatmapSource.prototype.addLayer = function (layer, callback, data) {
+                var _this = this;
+                if (data === void 0) { data = null; }
+                async.series([
+                    function (cb) {
+                        layer.renderType = 'heatmap';
+                        layer.isLoading = true;
+                        if (layer.quickRefresh && layer.quickRefresh === true) {
+                            // In case the map has not moved, the heatmap cells do not need to be calculated again, only the style of the markers need to be updated.
+                            _this.heatmapModel.deserialize(layer);
+                            _this.heatmapModel.id = layer.id;
+                            _this.heatmapModel.updateWeights();
+                            if (layer.heatmapItems) {
+                                var hiWeights = {};
+                                _this.heatmapModel.heatmapItems.forEach(function (hi) {
+                                    hiWeights[hi.toString()] = hi.weight;
+                                });
+                                var weightedIntensityScale = ((_this.heatmapModel.heatmapSettings.intensityScale / 3) * (_this.heatmapModel.heatmapSettings.intensityScale / 3)); // Convert intensityscale from [1,...,5] to ~[0.1, 0.5, 1, 2, 3]
+                                _this.service.project.features.forEach(function (f) {
+                                    if (f.properties.hasOwnProperty('intensities') && f.properties.hasOwnProperty('contributors')) {
+                                        var intensities = JSON.parse(f.properties['intensities']);
+                                        var totalIntensity = 0;
+                                        for (var key in intensities) {
+                                            if (intensities.hasOwnProperty(key)) {
+                                                totalIntensity += intensities[key] * hiWeights[key] * weightedIntensityScale;
+                                            }
+                                        }
+                                        f.properties['totalIntensity'] = totalIntensity;
+                                        _this.service.calculateFeatureStyle(f);
+                                        _this.service.activeMapRenderer.updateFeature(f);
+                                    }
+                                });
+                            }
+                        }
+                        else {
+                            // In all other occasions, (re)calculate the complete heatmap
+                            _this.generateHeatmap(layer);
+                            layer.enabled = true;
+                            _this.enableProjectLayer(layer);
+                        }
+                        layer.isLoading = false;
+                        cb(null, null);
+                    },
+                    // Callback
+                    function () {
+                        callback(layer);
+                    }
+                ]);
+            };
+            HeatmapSource.prototype.removeLayer = function (layer) {
+                delete (this.heatmapModel);
+                this.heatmapModel = new Heatmap.HeatmapModel('ProjectHeatmap');
+                layer.enabled = false;
+                layer.data = JSON;
+                this.enableProjectLayer(layer); // Set project layer to disabled
+                //this.updateLayer(layer);
+            };
+            /* Enables the project layer if the 'layer' parameter has the same id as a project layer */
+            HeatmapSource.prototype.enableProjectLayer = function (layer) {
+                if (!layer.id)
+                    return;
+                this.service.project.groups.forEach(function (group) {
+                    group.layers.forEach(function (l) {
+                        if (l.id === layer.id) {
+                            l.enabled = layer.enabled;
+                            if (l.enabled === false) {
+                                layer.data = JSON;
+                            }
+                        }
+                    });
+                });
+            };
+            HeatmapSource.prototype.getRequiredLayers = function (layer) {
+                var _this = this;
+                var requiredLayers = [];
+                if (layer.heatmapSettings && layer.heatmapSettings.referenceList) {
+                    layer.heatmapSettings.referenceList.forEach(function (ref) {
+                        _this.service.project.groups.forEach(function (group) {
+                            group.layers.forEach(function (l) {
+                                if (l.reference === ref) {
+                                    requiredLayers.push(l);
+                                }
+                            });
+                        });
+                    });
+                }
+                return requiredLayers;
+            };
+            HeatmapSource.prototype.getFeatureTypes = function (layer) {
+                var featureTypes = [];
+                layer.heatmapItems.forEach(function (hi) {
+                    featureTypes.push(hi.featureType.name);
+                });
+                return featureTypes;
+            };
+            HeatmapSource.prototype.generateHeatmap = function (layer) {
+                var _this = this;
+                console.log('Generating heatmap');
+                var geoLayer = L.geoJson([]);
+                this.heatmapModel.deserialize(layer);
+                this.heatmapModel.id = layer.id;
+                var currentZoom = this.service.$mapService.getMap().getZoom();
+                if (currentZoom < this.heatmapModel.heatmapSettings.minZoom || currentZoom > this.heatmapModel.heatmapSettings.maxZoom) {
+                    return;
+                }
+                else {
+                    this.heatmapModel.updateWeights();
+                    this.heatmapModel.calculate(this.service, this.service.$mapService, geoLayer);
+                    var time = new Date().getTime();
+                    layer.data = geoLayer.toGeoJSON();
+                }
+                if ((layer.data) && (layer.data).features) {
+                    (layer.data).features.forEach(function (f) {
+                        _this.service.initFeature(f, layer, false, false);
+                        _this.service.activeMapRenderer.addFeature(f);
+                    });
+                    // Set default style for the heatmap:
+                    if ((layer.data).features[0]) {
+                        var calloutProp = new FeatureProps.CallOutProperty("totalIntensity", "0", "totalIntensity", true, true, true, (layer.data).features[0], false, false);
+                        var propinfo = {};
+                        // Tweak the group style info to keep constant min/max color values on panning and zooming.
+                        propinfo.count = (layer.data).features.length;
+                        propinfo.max = 1;
+                        propinfo.min = -1;
+                        propinfo.userMax = propinfo.max;
+                        propinfo.userMin = propinfo.min;
+                        propinfo.mean = 0;
+                        propinfo.varience = 0.67;
+                        propinfo.sd = Math.sqrt(propinfo.varience);
+                        this.service.setStyle(calloutProp, false, propinfo); // Set the style
+                    }
+                }
+                var time2 = new Date().getTime();
+                console.log('Init and style features in ' + (time2 - time).toFixed(1) + ' ms');
+            };
+            return HeatmapSource;
+        }());
+        Services.HeatmapSource = HeatmapSource;
+    })(Services = csComp.Services || (csComp.Services = {}));
+})(csComp || (csComp = {}));
+//# sourceMappingURL=HeatmapSource.js.map
+var csComp;
+(function (csComp) {
+    var Services;
+    (function (Services) {
+        'use strict';
+        var HierarchySource = /** @class */ (function () {
+            function HierarchySource(service, $http) {
+                this.service = service;
+                this.title = "hierarchy";
+                this.requiresLayer = true;
+                this.$http = $http;
+            }
+            HierarchySource.prototype.refreshLayer = function (layer) {
+                this.service.removeLayer(layer);
+                this.service.addLayer(layer);
+            };
+            HierarchySource.prototype.addLayer = function (layer, callback, data) {
+                if (data === void 0) { data = null; }
+                this.baseAddLayer(layer, callback);
+            };
+            HierarchySource.prototype.fitMap = function (layer) {
+                var b = csComp.Helpers.GeoExtensions.getBoundingBox(this.layer.data);
+                this.service.$messageBusService.publish("map", "setextent", b);
+            };
+            HierarchySource.prototype.layerMenuOptions = function (layer) {
+                var _this = this;
+                return [
+                    ["Fit map", (function ($itemScope) { return _this.fitMap(layer); })],
+                    ['Refresh', (function ($itemScope) { return _this.refreshLayer(layer); })]
+                ];
+            };
+            HierarchySource.prototype.getRequiredLayers = function (layer) {
+                var _this = this;
+                var requiredLayers = [];
+                if (layer.hierarchySettings && layer.hierarchySettings.referenceList) {
+                    layer.hierarchySettings.referenceList.forEach(function (ref) {
+                        _this.service.project.groups.forEach(function (group) {
+                            group.layers.forEach(function (l) {
+                                if (l.reference == ref) {
+                                    requiredLayers.push(l);
+                                }
+                            });
+                        });
+                    });
+                }
+                return requiredLayers;
+            };
+            HierarchySource.prototype.baseAddLayer = function (layer, callback) {
+                var _this = this;
+                this.layer = layer;
+                async.series([
+                    function (cb) {
+                        layer.renderType = "geojson";
+                        // Open a layer URL
+                        layer.isLoading = true;
+                        // get data
+                        _this.$http.get(layer.url)
+                            .then(function (res) {
+                            var data = res.data;
+                            layer.count = 0;
+                            layer.isLoading = false;
+                            // if this is a topojson layer, convert to geojson first
+                            if (layer.type.toLowerCase() === 'topojson') {
+                                data = csComp.Helpers.GeoExtensions.convertTopoToGeoJson(data);
+                            }
+                            // add featuretypes to global featuretype list
+                            if (data.featureTypes)
+                                for (var featureTypeName in data.featureTypes) {
+                                    if (!data.featureTypes.hasOwnProperty(featureTypeName))
+                                        continue;
+                                    var featureType = data.featureTypes[featureTypeName];
+                                    // give it a unique name
+                                    featureTypeName = layer.id + '_' + featureTypeName;
+                                    _this.service._featureTypes[featureTypeName] = featureType;
+                                }
+                            if (data.timestamps)
+                                layer.timestamps = data.timestamps;
+                            // store raw result in layer
+                            layer.data = data;
+                            if (layer.data.geometries && !layer.data.features) {
+                                layer.data.features = layer.data.geometries;
+                            }
+                            layer.data.features.forEach(function (f) {
+                                _this.service.initFeature(f, layer, false, false);
+                            });
+                            _this.service.$messageBusService.publish("timeline", "updateFeatures");
+                            cb(null, null);
+                        })
+                            .catch(function () {
+                            layer.count = 0;
+                            layer.isLoading = false;
+                            _this.service.$messageBusService.notifyErrorWithTranslation('ERROR_LOADING_LAYER', layer.title + " \nurl: " + layer.url);
+                            _this.service.$messageBusService.publish('layer', 'error', layer);
+                            cb(null, null);
+                        });
+                    },
+                    // Callback
+                    function () {
+                        callback(layer);
+                    }
+                ]);
+            };
+            HierarchySource.prototype.removeLayer = function (layer) {
+                //alert('remove layer');
+            };
+            return HierarchySource;
+        }());
+        Services.HierarchySource = HierarchySource;
+    })(Services = csComp.Services || (csComp.Services = {}));
+})(csComp || (csComp = {}));
+//# sourceMappingURL=HierarchySource.js.map
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var csComp;
+(function (csComp) {
+    var Services;
+    (function (Services) {
+        var KmlDataSource = /** @class */ (function (_super) {
+            __extends(KmlDataSource, _super);
+            function KmlDataSource(service, $http, $storage) {
+                var _this = _super.call(this, service, $http, $storage) || this;
+                _this.service = service;
+                _this.title = "kml";
+                return _this;
+            }
+            KmlDataSource.prototype.get = function (x, y) { return x.getElementsByTagName(y); };
+            KmlDataSource.prototype.attr = function (x, y) { return x.getAttribute(y); };
+            KmlDataSource.prototype.addLayer = function (layer, callback) {
+                var _this = this;
+                this.layer = layer;
+                layer.renderType = "geojson";
+                // Open a layer URL
+                layer.isLoading = true;
+                // get data
+                $.ajax(layer.url)
+                    .done(function (xml) {
+                    layer.count = 0;
+                    layer.isLoading = false;
+                    switch (layer.type.toLowerCase()) {
+                        case "kml":
+                            _this.convertKmlToGeoJSON(layer, xml);
+                            break;
+                        case "gpx":
+                            _this.convertGpxToGeoJSON(layer, xml);
+                            break;
+                    }
+                    callback(layer);
+                })
+                    .fail(function (error) {
+                    layer.isLoading = false;
+                    _this.service.$messageBusService.notifyErrorWithTranslation('ERROR_LOADING_LAYER', layer.title + " \n" + layer.url);
+                    _this.service.$messageBusService.publish('layer', 'error', layer);
+                    console.log("Failed loading layer " + layer.title + " due to " + JSON.stringify(error) + ".");
+                    callback(layer);
+                });
+            };
+            KmlDataSource.prototype.convertGpxToGeoJSON = function (layer, gpx) {
+                var data = toGeoJSON.gpx(gpx);
+                this.initLayer(data, layer);
+            };
+            KmlDataSource.prototype.convertKmlToGeoJSON = function (layer, kml) {
+                var _this = this;
+                // Convert kml to geojson
+                var data = toGeoJSON.kml(kml);
+                // Extract style information: first, get all styles
+                var styleIndex = {}, styles = this.get(kml, 'Style'), styleMaps = this.get(kml, 'StyleMap');
+                for (var k = 0; k < styles.length; k++) {
+                    styleIndex['#' + this.attr(styles[k], 'id')] = styles[k];
+                }
+                // Next, get all stylemaps (and link the normal version to its style)
+                for (var k = 0; k < styleMaps.length; k++) {
+                    var styleMap = styleMaps[k];
+                    var pairs = this.get(styleMap, 'Pair');
+                    if (!pairs)
+                        continue;
+                    for (var i = 0; i < pairs.length; i++) {
+                        var p = pairs[i];
+                        var key = this.get(p, 'key');
+                        if (!key || key.length === 0 || key[0].childNodes[0].nodeValue !== 'normal')
+                            continue;
+                        var styleNames = this.get(p, 'styleUrl');
+                        if (styleNames && styleNames.length > 0) {
+                            var styleMapName = '#' + this.attr(styleMap, 'id');
+                            var styleName = styleNames[0].childNodes[0].nodeValue;
+                            styleIndex[styleMapName] = styleIndex[styleName];
+                        }
+                        break;
+                    }
+                }
+                // Create the style and add it to the service._featureTypes.
+                data.features.forEach(function (f) {
+                    if (!f.properties.hasOwnProperty('styleUrl'))
+                        return;
+                    var styleUrl = f.properties['styleUrl'], styleName = layer.typeUrl + styleUrl;
+                    // Strip the # from the style name and copy it to the featureTypeId
+                    f.properties['featureTypeId'] = styleUrl.substring(1);
+                    // Remove the styleUrl and styleHash
+                    delete f.properties['styleUrl'];
+                    delete f.properties['styleHash'];
+                    if (_this.service._featureTypes.hasOwnProperty(styleName))
+                        return;
+                    var style = styleIndex[styleUrl];
+                    _this.service._featureTypes[styleName] = {
+                        name: styleName,
+                        showAllProperties: false,
+                        style: {
+                            fillColor: _this.getFillColor(style),
+                            strokeColor: _this.getLineColor(style),
+                            strokeWidth: _this.getLineWidth(style),
+                            stroke: true,
+                            iconUri: _this.getIcon(layer, style)
+                        }
+                    };
+                    //console.log(toGeoJSON.xml2str(styleIndex[f.properties['featureTypeId']]));
+                });
+                this.initLayer(data, layer);
+            };
+            KmlDataSource.prototype.getIcon = function (layer, style) {
+                try {
+                    var url = style.getElementsByTagName('href')[0].childNodes[0].nodeValue;
+                    return (url.match(/^http/i))
+                        ? url
+                        : layer.url.substr(0, layer.url.lastIndexOf('/') + 1) + url;
+                }
+                catch (error) {
+                    return '';
+                }
+            };
+            KmlDataSource.prototype.getLineColor = function (style) {
+                try {
+                    return '#' + style
+                        .getElementsByTagName('LineStyle')[0]
+                        .getElementsByTagName('color')[0]
+                        .childNodes[0].nodeValue;
+                }
+                catch (error) {
+                    return '#000000';
+                }
+            };
+            KmlDataSource.prototype.getLineWidth = function (style) {
+                try {
+                    return +style
+                        .getElementsByTagName('LineStyle')[0]
+                        .getElementsByTagName('width')[0]
+                        .childNodes[0].nodeValue;
+                }
+                catch (error) {
+                    return 1;
+                }
+            };
+            KmlDataSource.prototype.getFillColor = function (style) {
+                try {
+                    return '#' + style
+                        .getElementsByTagName('PolyStyle')[0]
+                        .getElementsByTagName('color')[0]
+                        .childNodes[0].nodeValue;
+                }
+                catch (error) {
+                    return '#ff0000';
+                }
+            };
+            return KmlDataSource;
+        }(csComp.Services.GeoJsonSource));
+        Services.KmlDataSource = KmlDataSource;
+    })(Services = csComp.Services || (csComp.Services = {}));
+})(csComp || (csComp = {}));
+//# sourceMappingURL=KmlDataSource.js.map
+/* Terminator.js -- Overlay day/night region on a Leaflet map
+ * Source: https://github.com/joergdietrich/Leaflet.Terminator/blob/master/L.Terminator.js
+ * See also: http://joergdietrich.github.io/Leaflet.Terminator/
+ http://www.lizard-tail.com/isana/lab/astro_calc/terminator.html,
+ http://stackoverflow.com/questions/7100718/calculating-an-overlay-of-day-night-for-google-maps,
+ https://github.com/rossengeorgiev/nite-overlay,
+ http://mathematica.stackexchange.com/questions/3326/composition-how-to-make-a-day-and-night-world-map
+*/
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+L.Terminator = L.Polygon.extend({
+    options: {
+        color: '#00',
+        opacity: 0.5,
+        fillColor: '#00',
+        fillOpacity: 0.5,
+        resolution: 2,
+        showNight: true
+    },
+    initialize: function (options) {
+        this.version = '0.1.0';
+        this._R2D = 180 / Math.PI;
+        this._D2R = Math.PI / 180;
+        L.Util.setOptions(this, options);
+        var latLng = this._compute(this.options.showNight, this.options.time || null);
+        this.setLatLngs(latLng);
+    },
+    setTime: function (date) {
+        this.options.time = date;
+        var latLng = this._compute(this.options.showNight, date || null);
+        this.setLatLngs(latLng);
+    },
+    _sunEclipticPosition: function (julianDay) {
+        /* Compute the position of the Sun in ecliptic coordinates at
+           julianDay.  Following
+           http://en.wikipedia.org/wiki/Position_of_the_Sun */
+        // Days since start of J2000.0
+        var n = julianDay - 2451545.0;
+        // mean longitude of the Sun
+        var L = 280.460 + 0.9856474 * n;
+        L %= 360;
+        // mean anomaly of the Sun
+        var g = 357.528 + 0.9856003 * n;
+        g %= 360;
+        // ecliptic longitude of Sun
+        var lambda = L + 1.915 * Math.sin(g * this._D2R) +
+            0.02 * Math.sin(2 * g * this._D2R);
+        // distance from Sun in AU
+        var R = 1.00014 - 0.01671 * Math.cos(g * this._D2R) -
+            0.0014 * Math.cos(2 * g * this._D2R);
+        return { "lambda": lambda, "R": R };
+    },
+    _eclipticObliquity: function (julianDay) {
+        // Following the short term expression in
+        // http://en.wikipedia.org/wiki/Axial_tilt#Obliquity_of_the_ecliptic_.28Earth.27s_axial_tilt.29
+        var n = julianDay - 2451545.0;
+        // Julian centuries since J2000.0
+        var T = n / 36525;
+        var epsilon = 23.43929111 -
+            T * (46.836769 / 3600
+                - T * (0.0001831 / 3600
+                    + T * (0.00200340 / 3600
+                        - T * (0.576e-6 / 3600
+                            - T * 4.34e-8 / 3600))));
+        return epsilon;
+    },
+    _sunEquatorialPosition: function (sunEclLng, eclObliq) {
+        /* Compute the Sun's equatorial position from its ecliptic
+         * position. Inputs are expected in degrees. Outputs are in
+         * degrees as well. */
+        var alpha = Math.atan(Math.cos(eclObliq * this._D2R)
+            * Math.tan(sunEclLng * this._D2R)) * this._R2D;
+        var delta = Math.asin(Math.sin(eclObliq * this._D2R)
+            * Math.sin(sunEclLng * this._D2R)) * this._R2D;
+        var lQuadrant = Math.floor(sunEclLng / 90) * 90;
+        var raQuadrant = Math.floor(alpha / 90) * 90;
+        alpha = alpha + (lQuadrant - raQuadrant);
+        return { "alpha": alpha, "delta": delta };
+    },
+    _hourAngle: function (lng, sunPos, gst) {
+        /* Compute the hour angle of the sun for a longitude on
+         * Earth. Return the hour angle in degrees. */
+        var lst = gst + lng / 15;
+        return lst * 15 - sunPos.alpha;
+    },
+    _latitude: function (ha, sunPos) {
+        /* For a given hour angle and sun position, compute the
+         * latitude of the terminator in degrees. */
+        var lat = Math.atan(-Math.cos(ha * this._D2R) /
+            Math.tan(sunPos.delta * this._D2R)) * this._R2D;
+        return lat;
+    },
+    _compute: function (showNight, time) {
+        if (time == null)
+            var today = new Date();
+        else
+            var today = new Date(time);
+        var julianDay = today.getJulian();
+        var gst = today.getGMST();
+        var latLng = [];
+        var ha, lat;
+        var sunEclPos = this._sunEclipticPosition(julianDay);
+        var eclObliq = this._eclipticObliquity(julianDay);
+        var sunEqPos = this._sunEquatorialPosition(sunEclPos.lambda, eclObliq);
+        for (var i = 0; i <= 720 * this.options.resolution; i++) {
+            var lng = -360 + i / this.options.resolution;
+            ha = this._hourAngle(lng, sunEqPos, gst);
+            lat = this._latitude(ha, sunEqPos);
+            latLng[i + 1] = [lat, lng];
+        }
+        if (showNight) {
+            if (sunEqPos.delta < 0) {
+                latLng[0] = [90, -360];
+                latLng[latLng.length] = [90, 360];
+            }
+            else {
+                latLng[0] = [-90, -360];
+                latLng[latLng.length] = [-90, 360];
+            }
+        }
+        else {
+            if (sunEqPos.delta < 0) {
+                latLng[0] = [-90, -360];
+                latLng[latLng.length] = [-90, 360];
+            }
+            else {
+                latLng[0] = [90, -360];
+                latLng[latLng.length] = [90, 360];
+            }
+        }
+        return latLng;
+    }
+});
+var csComp;
+(function (csComp) {
+    var Services;
+    (function (Services) {
+        'use strict';
+        var NightDayDataSource = /** @class */ (function (_super) {
+            __extends(NightDayDataSource, _super);
+            function NightDayDataSource(service, $http, $storage) {
+                var _this = _super.call(this, service, $http, $storage) || this;
+                _this.service = service;
+                _this.title = "Day Night regions on the Earth";
+                return _this;
+            }
+            NightDayDataSource.prototype.addLayer = function (layer, callback) {
+                var _this = this;
+                this.layer = layer;
+                layer.isLoading = true;
+                layer.count = 0;
+                var defaultValue = 0;
+                // Check if an url to a file containing the intensity value is specified. If so, set it as defaultValue.
+                if (layer.url) {
+                    this.$http.get(layer.url)
+                        .then(function (res) {
+                        var data = res.data;
+                        defaultValue = parseFloat(data.toString());
+                        _this.continueInit(defaultValue, layer, callback);
+                    })
+                        .catch(function () {
+                        console.log('Error reading day/night intensity file');
+                        _this.continueInit(defaultValue, layer, callback);
+                    });
+                }
+                else {
+                    this.continueInit(defaultValue, layer, callback);
+                }
+            };
+            NightDayDataSource.prototype.continueInit = function (defaultValue, layer, callback) {
+                var _this = this;
+                var showNight = true;
+                var nightName = 'Night';
+                var dayName = 'Day';
+                if (typeof layer.dataSourceParameters !== 'undefined') {
+                    var gridParams = layer.dataSourceParameters;
+                    if (typeof gridParams.showNight !== 'undefined')
+                        showNight = gridParams.showNight;
+                    if (typeof gridParams.nightName !== 'undefined')
+                        nightName = gridParams.nightName;
+                    if (typeof gridParams.dayName !== 'undefined')
+                        dayName = gridParams.dayName;
+                    if (typeof gridParams.value !== 'undefined')
+                        defaultValue = gridParams.value;
+                }
+                var terminator = new L.Terminator({ "showNight": showNight });
+                var geojson = terminator.toGeoJSON();
+                if (showNight) {
+                    geojson.properties["Name"] = nightName;
+                    geojson.properties["night_intensity"] = defaultValue;
+                }
+                else {
+                    geojson.properties["Name"] = dayName;
+                    geojson.properties["day_intensity"] = defaultValue;
+                }
+                var features = [];
+                features.push({
+                    type: "Feature",
+                    geometry: geojson.geometry,
+                    properties: geojson.properties
+                });
+                layer.data = csComp.Helpers.GeoExtensions.createFeatureCollection(features);
+                if (layer.data.geometries && !layer.data.features) {
+                    layer.data.features = layer.data.geometries;
+                }
+                layer.data.features.forEach(function (f) {
+                    _this.service.initFeature(f, layer, false, false);
+                });
+                layer.isLoading = false;
+                callback(layer);
+            };
+            return NightDayDataSource;
+        }(csComp.Services.GeoJsonSource));
+        Services.NightDayDataSource = NightDayDataSource;
+    })(Services = csComp.Services || (csComp.Services = {}));
+})(csComp || (csComp = {}));
+//# sourceMappingURL=NightDayDataSource.js.map
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var csComp;
+(function (csComp) {
+    var Services;
+    (function (Services) {
+        var RssDataSource = /** @class */ (function (_super) {
+            __extends(RssDataSource, _super);
+            function RssDataSource(service, $http, $storage) {
+                var _this = _super.call(this, service, $http, $storage) || this;
+                _this.service = service;
+                _this.title = "RSS datasource";
+                return _this;
+            }
+            RssDataSource.prototype.addLayer = function (layer, callback) {
+                var _this = this;
+                this.layer = layer;
+                layer.type = 'geojson';
+                // Open a layer URL
+                layer.isLoading = true;
+                layer.count = 0;
+                this.$http({
+                    url: '/api/rss',
+                    method: "GET",
+                    params: { url: layer.url }
+                }).then(function (res) {
+                    var data = res.data;
+                    layer.data = data; //csComp.Helpers.GeoExtensions.createFeatureCollection(features);
+                    if (layer.data.geometries && !layer.data.features) {
+                        layer.data.features = layer.data.geometries;
+                    }
+                    layer.data.features.forEach(function (f) {
+                        _this.service.initFeature(f, layer, false, false);
+                    });
+                    _this.service.$messageBusService.publish("timeline", "updateFeatures");
+                    layer.isLoading = false;
+                    callback(layer);
+                })
+                    .catch(function () {
+                    console.log('RssDataSource called $HTTP with errors...');
+                });
+            };
+            return RssDataSource;
+        }(csComp.Services.GeoJsonSource));
+        Services.RssDataSource = RssDataSource;
+    })(Services = csComp.Services || (csComp.Services = {}));
+})(csComp || (csComp = {}));
+//# sourceMappingURL=RssDataSource.js.map
+var csComp;
+(function (csComp) {
+    var Services;
+    (function (Services) {
+        var TileLayerSource = /** @class */ (function () {
+            function TileLayerSource(service) {
+                this.service = service;
+                this.title = 'tilelayer';
+                //service : LayerService;
+                this.requiresLayer = false;
+                this.prevDateTimes = {};
+            }
+            TileLayerSource.prototype.refreshLayer = function (layer) {
+                //console.log('refreshing');
+                if (layer.mapLayer.getLayers().length > 0) {
+                    var l = layer.mapLayer.getLayers()[0];
+                    //console.log('layer ID: ' + layer.id);
+                    var u = layer.url;
+                    if (layer.timeDependent) {
+                        // convert epoch to time string parameter
+                        var ft = this.service.project.timeLine.focus;
+                        if (layer.timeResolution) {
+                            var tr = layer.timeResolution;
+                            ft = Math.floor(ft / tr) * tr;
+                            //console.log(ft.toString())
+                        }
+                        ;
+                        var d = new Date(0);
+                        d.setUTCSeconds(ft / 1000);
+                        //d.setFullYear(2011); // so the current year becomes 2011. For easier testing.
+                        // this is for the Env4U project
+                        var sDate = d.yyyymmdd();
+                        var hrs = d.getHours();
+                        var mins = d.getMinutes();
+                        var secs = d.getSeconds();
+                        var sDateTime = sDate + csComp.Utils.twoDigitStr(hrs) +
+                            csComp.Utils.twoDigitStr(mins) + csComp.Utils.twoDigitStr(secs);
+                        //console.log('DateTime: ' + sDateTime);
+                        if (sDateTime === this.prevDateTimes[layer.id]) {
+                            //console.log('Same time stamp. No refresh');
+                            return;
+                        }
+                        this.prevDateTimes[layer.id] = sDateTime;
+                        u += '&time=' + sDateTime;
+                        //console.log(u);
+                    }
+                    else if (layer.disableCache) {
+                        // check if we need to create a unique url to force a refresh
+                        layer.cacheKey = new Date().getTime().toString();
+                        u += '&cache=' + layer.cacheKey;
+                    }
+                    l.setUrl(u);
+                }
+            };
+            TileLayerSource.prototype.layerMenuOptions = function (layer) {
+                var _this = this;
+                return [
+                    ['Refresh', (function ($itemScope) { return _this.refreshLayer(layer); })]
+                ];
+            };
+            TileLayerSource.prototype.addLayer = function (layer, callback, data) {
+                if (data === void 0) { data = null; }
+                layer.renderType = 'tilelayer';
+                callback(layer);
+                //this.$rootScope.$apply();
+            };
+            TileLayerSource.prototype.removeLayer = function (layer) {
+            };
+            return TileLayerSource;
+        }());
+        Services.TileLayerSource = TileLayerSource;
+    })(Services = csComp.Services || (csComp.Services = {}));
+})(csComp || (csComp = {}));
+//# sourceMappingURL=TileLayerSource.js.map
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var csComp;
+(function (csComp) {
+    var Services;
+    (function (Services) {
+        var VectorTileSource = /** @class */ (function (_super) {
+            __extends(VectorTileSource, _super);
+            function VectorTileSource(service, $http, $storage) {
+                var _this = _super.call(this, service, $http, $storage) || this;
+                _this.service = service;
+                _this.title = 'vectortile';
+                _this.requiresLayer = false;
+                _this.tileCount = -1;
+                /** Store obtained results in the cache, */
+                _this.cache = {};
+                /** The urls that are cached (in order to keep the cache from only growing). */
+                _this.cachedUrls = [];
+                return _this;
+            }
+            VectorTileSource.prototype.addLayer = function (layer, callback) {
+                var _this = this;
+                layer.renderType = 'geojson';
+                // Open a layer URL
+                layer.isLoading = true;
+                layer.data = {};
+                layer.data.features = [];
+                var zoom = this.service.$mapService.map.getZoom();
+                var slippyTiles = csComp.Helpers.GeoExtensions.slippyMapTiles(zoom, this.service.$mapService.map.getBounds());
+                this.tileCount = slippyTiles.width * slippyTiles.height;
+                for (var x = slippyTiles.left; x <= slippyTiles.right; x++) {
+                    for (var y = slippyTiles.top; y <= slippyTiles.bottom; y++) {
+                        var url = layer.url.replace('{z}/{x}/{y}', zoom + "/" + x + "/" + y);
+                        if (this.cache.hasOwnProperty(url)) {
+                            this.addFeatures(layer, this.cache[url], true);
+                            this.checkIfFinished(layer, callback);
+                            continue;
+                        }
+                        this.$http.get(url)
+                            .then(function (result) {
+                            var data;
+                            if (result.data.hasOwnProperty('objects')) {
+                                if (!result.data.objects.hasOwnProperty('vectile')) {
+                                    // Multiple groups are returned: set the group name as featureTypeId
+                                    for (var group in result.data.objects) {
+                                        result.data.objects[group].geometries.forEach(function (f) {
+                                            f.properties.featureTypeId = group;
+                                        });
+                                    }
+                                }
+                                data = csComp.Helpers.GeoExtensions.convertTopoToGeoJson(result.data);
+                            }
+                            else {
+                                data = result.data;
+                            }
+                            _this.addToCache(result.config.url, data);
+                            _this.addFeatures(layer, data);
+                            _this.checkIfFinished(layer, callback);
+                        }, function (e) {
+                            console.log('VectorTileSource error: ' + e);
+                            _this.checkIfFinished(layer, callback);
+                        });
+                    }
+                }
+            };
+            /**
+             * Add a received object to the cache, and, if full, delete an old entry.
+             */
+            VectorTileSource.prototype.addToCache = function (url, data) {
+                this.cache[url] = data;
+                this.cachedUrls.push(url);
+                if (this.cachedUrls.length < VectorTileSource.CACHE_SIZE)
+                    return;
+                var oldUrl = this.cachedUrls.pop();
+                delete this.cache[oldUrl];
+            };
+            VectorTileSource.prototype.checkIfFinished = function (layer, callback) {
+                this.tileCount--;
+                if (this.tileCount <= 0) {
+                    layer.isLoading = false;
+                    callback(layer);
+                }
+            };
+            VectorTileSource.prototype.addFeatures = function (layer, data, fromCache) {
+                var _this = this;
+                if (fromCache === void 0) { fromCache = false; }
+                if (data.hasOwnProperty('features')) {
+                    var geojson = data;
+                    geojson.features.forEach(function (f) {
+                        if (fromCache)
+                            f._isInitialized = false;
+                        layer.data.features.push(f);
+                        _this.service.initFeature(f, layer, false, false);
+                    });
+                }
+                else {
+                    var col = data;
+                    for (var key in col) {
+                        if (!col.hasOwnProperty(key))
+                            continue;
+                        col[key].features.forEach(function (f) {
+                            if (fromCache)
+                                f._isInitialized = false;
+                            f.properties['featureTypeId'] = key;
+                            layer.data.features.push(f);
+                            _this.service.initFeature(f, layer, false, false);
+                        });
+                    }
+                }
+            };
+            VectorTileSource.prototype.removeLayer = function (layer) {
+                var projLayer = this.service.findLayer(layer.id);
+                if (projLayer)
+                    projLayer.enabled = false;
+                layer.data.features = {};
+                //alert('remove layer');
+            };
+            VectorTileSource.CACHE_SIZE = 99;
+            return VectorTileSource;
+        }(Services.GeoJsonSource));
+        Services.VectorTileSource = VectorTileSource;
+    })(Services = csComp.Services || (csComp.Services = {}));
+})(csComp || (csComp = {}));
+//# sourceMappingURL=VectorTileSource.js.map
+var csComp;
+(function (csComp) {
+    var Services;
+    (function (Services) {
+        var WmsSource = /** @class */ (function () {
+            //service : LayerService;
+            function WmsSource(service) {
+                this.service = service;
+                this.title = 'wms';
+                this.requiresLayer = false;
+            }
+            WmsSource.prototype.refreshLayer = function (layer) {
+            };
+            WmsSource.prototype.layerMenuOptions = function (layer) {
+                return null;
+            };
+            WmsSource.prototype.getUrl = function (layer, date) {
+                var url = layer.url;
+                if (layer.timeDependent) {
+                    date.setMinutes(Math.floor(date.getMinutes() / 5) * 5);
+                    url = layer.url.replace(/time=?([^&]*)/g, 'time=' + moment(date).utc().format('YYYY-MM-DDTHH:mm:SS') + 'Z');
+                    //layer.url += '&time=' +
+                }
+                ;
+                layer._gui['wmsurl'] = url;
+                return url;
+            };
+            WmsSource.prototype.addLayer = function (layer, callback, data) {
+                var _this = this;
+                if (data === void 0) { data = null; }
+                var url = this.getUrl(layer, this.service.project.timeLine.focusDate());
+                if (layer.timeDependent) {
+                    this.delay = _.debounce(this.updateTime, 250, false);
+                    this.service.$messageBusService.subscribe('timeline', function (a, date) {
+                        if (a === 'focusChange')
+                            _this.delay(layer, date);
+                    });
+                }
+                var wms = L.tileLayer.wms(layer.url, {
+                    layers: layer.wmsLayers,
+                    styles: 'default',
+                    opacity: layer.opacity / 100,
+                    format: 'image/png',
+                    transparent: true,
+                    attribution: layer.description,
+                    srs: 'EPSG:4326'
+                });
+                layer.renderType = 'wms';
+                layer._gui['wms'] = wms;
+                callback(layer);
+            };
+            WmsSource.prototype.updateTime = function (layer, date) {
+                if (layer._gui.hasOwnProperty('wms')) {
+                    var wms = layer._gui['wms'];
+                    var url = this.getUrl(layer, date);
+                    // if (url !== layer._gui['wmsurl']) {
+                    // }
+                    //this.refreshLayer(layer);
+                    //layer._gui['wmsleaflet'].redraw();
+                    layer._gui['wmsleaflet'].setUrl(url);
+                    // (<any>wms).update();
+                    console.log(url);
+                }
+            };
+            WmsSource.prototype.removeLayer = function (layer) {
+            };
+            return WmsSource;
+        }());
+        Services.WmsSource = WmsSource;
+    })(Services = csComp.Services || (csComp.Services = {}));
+})(csComp || (csComp = {}));
+//# sourceMappingURL=WmsSource.js.map
