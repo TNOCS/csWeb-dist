@@ -31,9 +31,9 @@ export interface IRule {
      * (Set of) condition(s) that need to be fulfilled in order to process the actions.
      * In case the condition is empty, the rule is always fired, on every process.
      */
-    conditions?: [[string | number | boolean]];
+    conditions?: [[string | number | boolean, string | number | boolean, string | number | boolean | undefined]];
     /** Set of actions that will be executed when */
-    actions?: [[string | number | boolean]];
+    actions?: [[string | number | boolean, string | number | boolean, string | number | boolean | undefined]];
     /** Evaluate the rule and execute all actions, is applicable. */
     process?: (worldState: WorldState.WorldState, service: RuleEngine.IRuleEngineService) => void;
 }
@@ -59,9 +59,9 @@ export declare class Rule implements IRule {
      * (Set of) condition(s) that need to be fulfilled in order to process the actions.
      * In case the condition is empty, the rule is always fired, on every process.
      */
-    conditions: [[string | number | boolean]];
+    conditions: [[string | number | boolean, string | number | boolean, string | number | boolean | undefined]];
     /** Set of actions that will be executed when */
-    actions: [[string | number | boolean]];
+    actions: [[string | number | boolean, string | number | boolean, string | number | boolean | undefined]];
     /** Create a new rule. */
     constructor(rule: IRule, activationTime?: Date);
     /** Evaluate the rule and execute all actions, is applicable. */

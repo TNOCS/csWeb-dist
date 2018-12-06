@@ -42,6 +42,10 @@ export declare class BagDatabase implements IAddressSource.IAddressSource {
      * Lookup the address from the BAG.
      */
     lookupBagAddress(zip: string, houseNumber: string, bagOptions: IBagOptions, callback: (addresses: Location[]) => void): void;
+    /**
+     * Lookup the address from the BAG.
+     */
+    lookupBagCity(city: string, callback: (addresses: Location[]) => void): void;
     private indexes;
     /**
      * Lookup the address from the BAG.
