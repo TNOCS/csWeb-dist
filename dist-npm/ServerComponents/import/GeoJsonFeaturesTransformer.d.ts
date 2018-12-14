@@ -1,5 +1,5 @@
 /// <reference types="node" />
-import transform = require('./ITransform');
+import transform = require("./ITransform");
 declare class GeoJsonFeaturesTransformer implements transform.ITransform {
     title: string;
     id: string;

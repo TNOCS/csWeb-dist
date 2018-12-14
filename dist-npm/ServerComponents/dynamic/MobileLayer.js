@@ -1,7 +1,7 @@
 "use strict";
 var MobileLayer;
 (function (MobileLayer_1) {
-    var MobileLayer = /** @class */ (function () {
+    var MobileLayer = (function () {
         function MobileLayer(manager, layerId, typeUrl, server, messageBus, connection) {
             var _this = this;
             this.manager = manager;

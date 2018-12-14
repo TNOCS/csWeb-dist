@@ -1,11 +1,11 @@
 "use strict";
 var Utils = require("../helpers/Utils");
 var stream = require("stream");
-var CollateStreamTransformer = /** @class */ (function () {
+var CollateStreamTransformer = (function () {
     //create?(opt?: ITransformFactoryOptions[]): stream.Readable | stream.Writable | stream.Transform;
     function CollateStreamTransformer(title) {
         this.title = title;
-        this.type = 'CollateStreamTransformer';
+        this.type = "CollateStreamTransformer";
         this.headers = null;
         this.id = Utils.newGuid();
         //this.description = description;
@@ -17,11 +17,11 @@ var CollateStreamTransformer = /** @class */ (function () {
         var t = new stream.Transform();
         /*stream.Transform.call(t);*/
         var split = -1;
-        var buffer = '';
-        t.setEncoding('utf8');
+        var buffer = "";
+        t.setEncoding("utf8");
         t._transform = function (chunk, encoding, done) {
             // console.log("##### CST #####");
-            var strChunk = chunk.toString('utf8');
+            var strChunk = chunk.toString("utf8");
             buffer += strChunk;
             done();
         };

@@ -9,7 +9,7 @@ var Utils = require("../helpers/Utils");
 /** CIS datasource
  *  Provides an endpoint for obtaining and sending CIS messages
  */
-var CISDataSource = /** @class */ (function () {
+var CISDataSource = (function () {
     function CISDataSource(server, apiManager, capLayerId, url) {
         if (url === void 0) { url = '/cis'; }
         this.server = server;

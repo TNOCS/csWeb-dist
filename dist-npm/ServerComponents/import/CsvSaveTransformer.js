@@ -3,7 +3,7 @@ var Utils = require("../helpers/Utils");
 var stream = require("stream");
 var fs = require("fs");
 var turf = require('turf');
-var CsvSaveTransformer = /** @class */ (function () {
+var CsvSaveTransformer = (function () {
     function CsvSaveTransformer(title) {
         this.title = title;
         this.type = 'CsvSaveTransformer';

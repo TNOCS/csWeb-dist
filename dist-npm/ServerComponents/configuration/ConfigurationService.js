@@ -5,7 +5,7 @@ var fs = require("fs");
  * Service that contains default configuration options.
  * Is based on csComp.Helpers.Dictionary.
  */
-var ConfigurationService = /** @class */ (function () {
+var ConfigurationService = (function () {
     /**
      * Create a configuration service based on a configuration file.
      */
@@ -13,14 +13,8 @@ var ConfigurationService = /** @class */ (function () {
         this.configurationFile = configurationFile;
         if (!configurationFile)
             return;
-        var content;
-        if (typeof configurationFile === 'string') {
-            var data = fs.readFileSync(configurationFile, 'utf8');
-            content = JSON.parse(data);
-        }
-        else {
-            content = configurationFile;
-        }
+        var data = fs.readFileSync(configurationFile, 'utf8');
+        var content = JSON.parse(data);
         for (var key in content) {
             if (content.hasOwnProperty(key)) {
                 var value = content[key];
@@ -77,9 +71,9 @@ var ConfigurationService = /** @class */ (function () {
     ConfigurationService.prototype.toLookup = function () {
         return this;
     };
-    ConfigurationService.theKeys = [];
-    ConfigurationService.theValues = [];
     return ConfigurationService;
 }());
+ConfigurationService.theKeys = [];
+ConfigurationService.theValues = [];
 exports.ConfigurationService = ConfigurationService;
 //# sourceMappingURL=ConfigurationService.js.map

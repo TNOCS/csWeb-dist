@@ -3,7 +3,7 @@ var Utils = require("../helpers/Utils");
 var stream = require("stream");
 var fs = require("fs");
 var turf = require('turf');
-var GeoJsonSaveTransformer = /** @class */ (function () {
+var GeoJsonSaveTransformer = (function () {
     function GeoJsonSaveTransformer(title) {
         this.title = title;
         this.type = 'GeoJsonSaveTransformer';

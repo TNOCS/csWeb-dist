@@ -50,7 +50,7 @@ export declare class KeyUpdate {
  */
 export declare enum ProjectUpdateAction {
     updateProject = 0,
-    deleteProject = 1
+    deleteProject = 1,
 }
 /**
  * List of available action for sending/receiving layer actions over socket.io channel
@@ -62,14 +62,13 @@ export declare enum LayerUpdateAction {
     updateLayer = 3,
     deleteLayer = 4,
     addUpdateFeatureBatch = 5,
-    deleteFeatureBatch = 6
 }
 /**
  * List of available action for sending/receiving key actions over socket.io channel
  */
 export declare enum KeyUpdateAction {
     updateKey = 0,
-    deleteKey = 1
+    deleteKey = 1,
 }
 export declare class ClientMessage {
     action: string;

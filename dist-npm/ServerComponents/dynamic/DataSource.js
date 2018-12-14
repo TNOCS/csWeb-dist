@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var DataSource;
 (function (DataSource_1) {
-    var SensorSet = /** @class */ (function () {
+    var SensorSet = (function () {
         function SensorSet(id) {
             this.id = id;
             this.timestamps = [];
@@ -11,7 +11,7 @@ var DataSource;
         return SensorSet;
     }());
     DataSource_1.SensorSet = SensorSet;
-    var DataSource = /** @class */ (function () {
+    var DataSource = (function () {
         function DataSource() {
             this.sensors = {};
         }
@@ -31,7 +31,7 @@ var DataSource;
         return DataSource;
     }());
     DataSource_1.DataSource = DataSource;
-    var DataSourceService = /** @class */ (function () {
+    var DataSourceService = (function () {
         function DataSourceService(Connection, layerId) {
             this.Connection = Connection;
             this.layerId = layerId;

@@ -4,9 +4,8 @@ var sqlite3 = require("sqlite3");
 /**
  * Export a connection to the BAG database.
  */
-var LocalBag = /** @class */ (function () {
+var LocalBag = (function () {
     function LocalBag(path) {
-        this.name = 'LocalBag';
         this.connectionString = path; //process.env.DATABASE_URL || config["bagConnectionString"];
         console.log('Opening db ' + this.connectionString);
         this.db = new sqlite3.Database(this.connectionString, sqlite3.OPEN_READONLY, function (err) {

@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var fs = require("fs");
 var path = require("path");
 /* Multiple storage engine supported, e.g. file system, mongo  */
-var ProjectRepositoryService = /** @class */ (function () {
+var ProjectRepositoryService = (function () {
     function ProjectRepositoryService(store) {
         this.store = store;
     }
@@ -26,7 +26,7 @@ var ProjectRepositoryService = /** @class */ (function () {
             var project = req.body;
             console.log('Saving posted project file (project.json): ' + id);
             var filename = path.join(path.dirname(require.main.filename), 'public/data/projects', id, 'project.json');
-            if (fs.existsSync(filename)) {
+            if (fs.exists(filename)) {
                 var backupFilename = path.join(path.dirname(require.main.filename), 'public/data/projects', id, _this.yyyymmdd() + 'project.json');
                 var date = Date();
                 fs.rename(filename, backupFilename, function (err) {

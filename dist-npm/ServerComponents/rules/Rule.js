@@ -4,7 +4,7 @@ var Utils = require("../helpers/Utils");
 /**
  * Simple rule, consisting of a condition and an action.
  */
-var Rule = /** @class */ (function () {
+var Rule = (function () {
     /** Create a new rule. */
     function Rule(rule, activationTime) {
         /** How many times can the rule be fired: -1 is indefinetely, default is once */

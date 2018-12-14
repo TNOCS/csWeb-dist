@@ -1,19 +1,19 @@
 "use strict";
 var Utils = require("../helpers/Utils");
 var stream = require("stream");
-var SplitAdresTransformer = /** @class */ (function () {
+var SplitAdresTransformer = (function () {
     function SplitAdresTransformer(title) {
         this.title = title;
-        this.type = 'SplitAdresTransformer';
+        this.type = "SplitAdresTransformer";
         this.id = Utils.newGuid();
         //this.description = description;
     }
     SplitAdresTransformer.prototype.initialize = function (opt, callback) {
-        var zipcodeCityPropertyParameter = opt.parameters.filter(function (p) { return p.type.title === 'zipcodeCityProperty'; })[0];
+        var zipcodeCityPropertyParameter = opt.parameters.filter(function (p) { return p.type.title == "zipcodeCityProperty"; })[0];
         if (zipcodeCityPropertyParameter) {
             this.zipcodeCityProperty = zipcodeCityPropertyParameter.value;
         }
-        var streetHouseNumberPropertyParameter = opt.parameters.filter(function (p) { return p.type.title === 'streetHouseNumberProperty'; })[0];
+        var streetHouseNumberPropertyParameter = opt.parameters.filter(function (p) { return p.type.title == "streetHouseNumberProperty"; })[0];
         if (streetHouseNumberPropertyParameter) {
             this.streetHouseNumberProperty = streetHouseNumberPropertyParameter.value;
         }
@@ -23,7 +23,7 @@ var SplitAdresTransformer = /** @class */ (function () {
         var _this = this;
         var t = new stream.Transform();
         /*stream.Transform.call(t);*/
-        t.setEncoding('utf8');
+        t.setEncoding("utf8");
         t._transform = function (chunk, encoding, done) {
             var feature = JSON.parse(chunk);
             // console.log("##### SAT #####");
@@ -35,11 +35,11 @@ var SplitAdresTransformer = /** @class */ (function () {
                 var street = adres.slice(0, adres.search(/\d/)).trim();
                 var addressNumberWithAddition = adres.slice(adres.search(/\d/)).trim();
                 var nonDigitIndex = addressNumberWithAddition.search(/\D/);
-                if (nonDigitIndex === -1) {
+                if (nonDigitIndex == -1) {
                     nonDigitIndex = addressNumberWithAddition.length;
                 }
                 var strAddressNumber = addressNumberWithAddition.slice(0, nonDigitIndex).trim();
-                var addressNumber = parseInt(strAddressNumber, 10);
+                var addressNumber = parseInt(strAddressNumber);
                 feature.properties.straat = street;
                 feature.properties.huisnummer = addressNumber;
                 /*console.log(adres);

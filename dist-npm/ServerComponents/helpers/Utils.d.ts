@@ -1,11 +1,3 @@
-/**
- * Delete a folder synchronously.
- * Source: http://stackoverflow.com/a/32197381/319711
- *
- * @export
- * @param {string} folder
- */
-export declare function deleteFolderRecursively(folder: string): void;
 /** Create a new GUID */
 export declare function newGuid(): string;
 export declare function S4(): string;

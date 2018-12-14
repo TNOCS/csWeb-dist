@@ -9,6 +9,6 @@ declare class ProxyService implements IApiService {
     id: string;
     init(apiServiceManager: IApiServiceManager, server: express.Express, config: ConfigurationService.ConfigurationService): void;
     shutdown(): void;
-    private getUrl;
+    private getUrl(feedUrl, res);
 }
 export = ProxyService;

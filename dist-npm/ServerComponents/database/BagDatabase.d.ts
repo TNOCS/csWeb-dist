@@ -10,43 +10,44 @@ export declare class BagDatabase implements IAddressSource.IAddressSource {
     private connectionString;
     private isInitialized;
     private pg;
-    private pgPool;
-    name: string;
     constructor(config: ConfigurationService.ConfigurationService);
     init(): void;
     /**
      * Format the zip code so spaces are removed and the letters are all capitals.
      */
-    private formatZipCode;
+    private formatZipCode(zipCode);
     /**
      * Expect the house number format in NUMBER-LETTER-ADDITION
      */
-    private splitAdressNumber;
+    private splitAdressNumber(input);
     /**
      * Format the house number such that we keep an actual number, e.g. 1a -> 1.
      */
-    private formatHouseNumber;
+    private formatHouseNumber(input);
     /**
      * Format the house letter, max 1 character and in uppercase.
      */
-    private formatHouseLetter;
+    private formatHouseLetter(input);
     /**
      * Format the housenumber addition and in uppercase.
      */
-    private formatHouseNumberAddition;
-    searchAddress(query: string, limit: number, callback: (searchResults: any) => void): void;
-    searchGemeente(query: string, limit: number, callback: (searchResults: any) => void): void;
+    private formatHouseNumberAddition(input);
+    searchAddress(query: string, limit: number, callback: (searchResults) => void): void;
+    searchGemeente(query: string, limit: number, callback: (searchResults) => void): void;
+    searchGemeenteAtLocation(query: string, limit: number, callback: (searchResults) => void): void;
+    searchGemeenteWithBuCode(query: string, limit: number, callback: (searchResults) => void): void;
+    searchBuurtAtLocation(query: string, limit: number, callback: (searchResults) => void): void;
+    searchPandAtLocation(coords: string, limit: number, callback: (searchResults) => void): void;
     lookupBagArea(bounds: string, isArea: boolean, callback: (areas: Location[]) => void): void;
     lookupBagBuurt(bounds: string, isArea: boolean, callback: (areas: Location[]) => void): void;
     /**
      * Lookup the address from the BAG.
      */
     lookupBagAddress(zip: string, houseNumber: string, bagOptions: IBagOptions, callback: (addresses: Location[]) => void): void;
-    /**
-     * Lookup the address from the BAG.
-     */
-    lookupBagCity(city: string, callback: (addresses: Location[]) => void): void;
-    private indexes;
+    exportBuurten(req: express.Request, res: express.Response): void;
+    exportGemeenten(req: express.Request, res: express.Response): void;
+    exportWijken(req: express.Request, res: express.Response): void;
+    private indexes(source, find);
     /**
      * Lookup the address from the BAG.
      */

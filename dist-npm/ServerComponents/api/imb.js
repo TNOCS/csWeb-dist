@@ -266,14 +266,14 @@ exports.TIMBConnection = function () {
         var rxEventID;
         var txEventID;
         switch (aCommand) {
-            case icEndSession: // end session
+            case icEndSession:
                 handleEndSession();
                 break;
-            case icUniqueClientID: // unique client id
+            case icUniqueClientID:
                 fUniqueClientID = aPayload.readUInt32LE(0);
                 fClientID = aPayload.readUInt32LE(4);
                 break;
-            case icEvent: // event
+            case icEvent:
                 txEventID = aPayload.readInt32LE(0);
                 if (txEventID < fEventTranslations.length) {
                     rxEventID = fEventTranslations[txEventID];
@@ -311,8 +311,7 @@ exports.TIMBConnection = function () {
     function onReadCommand(aNewData) {
         fBuffer = Buffer.concat([fBuffer, aNewData], fBuffer.length + aNewData.length);
         var offset = 0;
-        while (offset <= fBuffer.length - 16) // 16 is minimum packet size (fixed header size)
-         {
+        while (offset <= fBuffer.length - 16) {
             var ml = fBuffer.readUInt32LE(offset);
             var mh = fBuffer.readUInt32LE(offset + 4);
             if (ml === MAGIC_LO && mh === MAGIC_HI) {
@@ -375,14 +374,14 @@ exports.TIMBConnection = function () {
         this.onStreamCreate = null;
         this.onStreamEnd = null;
         //this.onBuffer = null;
-        this. /*prototype.*/changeObject = function (aAction, aObjectID, aAttribute) {
+        this.changeObject = function (aAction, aObjectID, aAttribute) {
             if (!this.published) {
                 signalPublish(fSocket, this.id, 0, this.name);
                 this.published = true;
             }
             signalChangeObject(fSocket, this.id, aAction, aObjectID, aAttribute);
         };
-        this. /*prototype.*/normalEvent = function (aEventKind, aEventPayload) {
+        this.normalEvent = function (aEventKind, aEventPayload) {
             if (!this.published) {
                 signalPublish(fSocket, this.id, 0, this.name);
                 this.published = true;

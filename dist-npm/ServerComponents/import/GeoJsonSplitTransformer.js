@@ -2,31 +2,31 @@
 var Utils = require("../helpers/Utils");
 var stream = require("stream");
 var request = require("request");
-var turf = require('turf');
-var GeoJsonSplitTransformer = /** @class */ (function () {
+var turf = require("turf");
+var GeoJsonSplitTransformer = (function () {
     function GeoJsonSplitTransformer(title) {
         this.title = title;
-        this.type = 'GeoJsonSplitTransformer';
+        this.type = "GeoJsonSplitTransformer";
         this.id = Utils.newGuid();
         //this.description = description;
     }
     GeoJsonSplitTransformer.prototype.initialize = function (opt, callback) {
         /*console.log(JSON.stringify(opt,null,4));*/
         var _this = this;
-        var splitShapeUrlParameter = opt.parameters.filter(function (p) { return p.type.title === 'splitShapeUrl'; })[0];
+        var splitShapeUrlParameter = opt.parameters.filter(function (p) { return p.type.title == "splitShapeUrl"; })[0];
         if (!splitShapeUrlParameter) {
-            callback('splitShapeUrl missing');
+            callback("splitShapeUrl missing");
             return;
         }
-        var keyPropertyParameter = opt.parameters.filter(function (p) { return p.type.title === 'splitShapeKeyProperty'; })[0];
+        var keyPropertyParameter = opt.parameters.filter(function (p) { return p.type.title == "splitShapeKeyProperty"; })[0];
         if (!keyPropertyParameter) {
-            callback('splitShapeKeyProperty missing');
+            callback("splitShapeKeyProperty missing");
             return;
         }
         this.keyProperty = keyPropertyParameter.value;
-        var identifierPropertyParameter = opt.parameters.filter(function (p) { return p.type.title === 'splitShapeIdentifierProperty'; })[0];
+        var identifierPropertyParameter = opt.parameters.filter(function (p) { return p.type.title == "splitShapeIdentifierProperty"; })[0];
         if (!identifierPropertyParameter) {
-            callback('splitShapeIdentifierProperty missing');
+            callback("splitShapeIdentifierProperty missing");
             return;
         }
         this.identifierProperty = identifierPropertyParameter.value;
@@ -36,7 +36,7 @@ var GeoJsonSplitTransformer = /** @class */ (function () {
                 return;
             }
             _this.geometry = JSON.parse(body);
-            console.log('Split shape geojson loaded');
+            console.log("Split shape geojson loaded");
             callback(null);
         });
     };
@@ -46,7 +46,7 @@ var GeoJsonSplitTransformer = /** @class */ (function () {
         /*stream.Transform.call(t);*/
         var baseGeo;
         var accumulator = {};
-        t.setEncoding('utf8');
+        t.setEncoding("utf8");
         var index = 0;
         t._transform = function (chunk, encoding, done) {
             /*var startTs = new Date();*/
@@ -54,7 +54,7 @@ var GeoJsonSplitTransformer = /** @class */ (function () {
             /*console.log(index++);*/
             var feature = JSON.parse(chunk);
             if (!feature.geometry) {
-                console.log('No geometry');
+                console.log("No geometry");
                 done();
                 return;
             }
@@ -100,7 +100,7 @@ var GeoJsonSplitTransformer = /** @class */ (function () {
                     // console.log ("#### push wijk: " + wijkCode + " - " + wijkFeatures.length + " features");
                     // console.log(wijkAcc);
                     var groupGeoJson = {
-                        type: 'FeatureCollection',
+                        type: "FeatureCollection",
                         features: group
                     };
                     t.push(JSON.stringify(groupGeoJson));

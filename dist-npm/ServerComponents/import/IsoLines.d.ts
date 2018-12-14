@@ -121,7 +121,7 @@ export declare class IsoLines {
      */
     static convertEsriHeaderToGridParams(input: string | Object, gridParams: IGridDataSourceParameters): void;
     /** Extract the grid data from the input */
-    private static getData;
+    private static getData(input);
     /**
      * Convert the incoming data to a matrix grid.
      * The incoming data can be in two formats: either it is a string, representing the ASCII grid data,

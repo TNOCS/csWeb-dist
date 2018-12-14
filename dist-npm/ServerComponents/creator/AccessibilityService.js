@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var request = require("request");
-var AccessibilityService = /** @class */ (function () {
+var AccessibilityService = (function () {
     function AccessibilityService() {
     }
     AccessibilityService.prototype.init = function (apiServiceManager, server, config) {

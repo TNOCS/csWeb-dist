@@ -17,7 +17,6 @@ input[type="search"]::-webkit-search-cancel-button {
 
 ::-webkit-scrollbar {
     width: 5px;
-    height: 5px;
 }
  ::-webkit-scrollbar-track {
     background-color: rgba(0,0,0,.1);
@@ -856,6 +855,72 @@ body,
 .popover-content {
     margin-left: 10px;
 }
+.datatable-select-all {
+    white-space: nowrap; 
+    text-overflow: ellipsis; 
+    margin-top: 6px!important;
+    margin-bottom: 10px!important;
+}
+
+.datatable-download {
+    display: inline-block;
+    width: 100%;
+}
+
+.datatable-download-text {
+    line-height: 50px;
+    vertical-align: middle;
+    font-style: italic;
+    font-size: 16px;
+}
+
+.datatable-download-text i{
+    line-height: 50px;
+    vertical-align: middle;
+    padding: 0px 8px;
+}
+
+.datatable-download-text span{
+    text-decoration: underline;
+    vertical-align: middle;
+    padding-right: 8px;
+    font-style: normal;
+    cursor: pointer;
+}
+
+.datatable-filter {
+    display: inline-block;
+    vertical-align: middle;
+    width: 100%;
+}
+
+.datatable-top-row-height {
+    height: 50px;
+}
+
+.datatable-padding-left {
+    padding-left: 15px;
+}
+
+@media (min-width: 768px ) {
+    .datatable-download-large {
+        display: inline-block!important;
+    }
+    .datatable-download-small {
+        display: none!important;
+    }
+}
+
+@media (max-width: 768px ) {
+    .datatable-download-large {
+        display: none!important;
+    }
+    .datatable-download-small {
+        display: inline-block!important;
+    }
+}
+
+
 .legend {
     display: table;
 }
@@ -887,37 +952,10 @@ body,
 .datatable-propertytype-admin {
     color: #777;
 }
-.datatable-download {
-    background: white;
-    float: right;
-    text-align: right;
-}
-.datatable-download-text > span {
-    cursor: pointer;
-    padding: 4px;
-}
-.datatable-download-text {
-    font-size: 18px;
-}
-#cs-data-table>tbody>tr>td ul {
-    max-height: 21px!important;
-    overflow: auto;
-}
-@media (min-width: 992px ) {
-    .datatable-download-large {
-        display: inline-block!important;
-    }
-    .datatable-download-small {
-        display: none!important;
-    }
-}
-@media (max-width: 992px ) {
-    .datatable-download-large {
-        display: none!important;
-    }
-    .datatable-download-small {
-        display: inline-block!important;
-    }
+.table-return {
+    width: 100%;
+    height: 30px;
+    padding: 0px 20px;
 }
 .legendTable {
    display: table;
@@ -1302,75 +1340,6 @@ body,
     text-align: right;
     font-weight: bold;
 }
-
-@mixin css3-prefix($property, $value) {
-  -webkit-#{$property}: #{$value};
-   -khtml-#{$property}: #{$value};
-     -moz-#{$property}: #{$value};
-      -ms-#{$property}: #{$value};
-       -o-#{$property}: #{$value};
-          #{$property}: #{$value};
-}
-
-@mixin box-shadow($x: 2px, $y: 2px, $blur: 5px, $color: rgba(0,0,0,.4), $inset: "") {
-  @if ($inset != "") {
-    @include css3-prefix('box-shadow', $inset $x $y $blur $color);
-  } @else {
-    @include css3-prefix('box-shadow', $x $y $blur $color);
-  }
-}
-
-.fullbox-shadow {
-    @include box-shadow(0px, 0px, 12px, rgba(0, 0, 0, .3));
-    background-color: white;
-}
-
-.featureTooltip td {
-    background-color: white;
-}
-
-.featureTooltip tr:first-child td {
-   background: inherit;
-   background-color: white;
-}
-
-.tooltip-holder {
-    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
-    font-style: normal;
-    padding: 15px;
-    width: 260px;
-    background-color: white;
-    font-size: 18px;
-    @include box-shadow(0px, 0px, 12px, rgba(0, 0, 0, .3));
-}
-
-.tooltip-holder div.title {
-    text-align: left;
-    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
-    font-weight: bold;
-    font-size: 18px;
-    line-height: 18px;
-    width: 100%;
-    word-wrap: break-word;
-}
-
-.tooltip-holder div.content {
-    border-top: solid 1px #ccc;
-    margin-top: 5px;
-}
-
-.csweb-tooltip-value {
-    display: inline-block;
-    font-size: 14px;
-    text-align: right;
-    width: 100px;
-}
-
-.csweb-tooltip-label-entry {
-    display: inline-block;
-    font-size: 14px;
-    width: 130px;
-}
 .style-icon {
     border-radius: 25%;
     border: red;
@@ -1649,7 +1618,14 @@ body,
         width: 100%;
     }
 
+a.black .fa-sort-asc,
+a.black .fa-sort-desc {
+    color: black;
+}
 
+a.black .fa-sort {
+    color: #555;
+}
 
 
 /* leftpanel */
@@ -2287,6 +2263,7 @@ input[type="radio"],
 input[type="checkbox"] {
     margin: 0;
 }
+
 #loading {
     height: 19px;
     left: 50%;
@@ -2543,7 +2520,6 @@ input[type="checkbox"] {
     border-bottom: 1px;
     border-bottom-style: groove;
     border-top-style: none;
-    white-space: nowrap;
 }
 .rightpanel-header {
     color: black;
@@ -3090,6 +3066,84 @@ input[type="checkbox"] {
     color: #000;
 }
 
+
+.csweb-tooltip {
+    background: white;
+    background-color: white;
+    text-align: left;
+    font-family: "RO Sans";
+    font-style: normal;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.csweb-tooltip-label {
+    background: white;
+    background-color: white;
+    text-align: left;
+    font-family: "RO Sans";
+    font-style: normal;
+    font-weight: normal;
+    font-size: 14px;
+    padding: 8px 8px 0px 14px;
+    line-height: 1em;
+}
+
+.csweb-tooltip-value {
+    background: white;
+    background-color: white;
+    text-align: left;
+    font-family: "RO Sans";
+    font-style: normal;
+    font-weight: bold;
+    font-size: 18px;
+    padding: 4px 8px 8px 14px;
+    line-height: 1em;
+}
+
+.csweb-tooltip-label-entry {
+    background: white;
+    background-color: white;
+    text-align: left;
+    font-family: "RO Sans";
+    font-style: normal;
+    font-weight: normal;
+    font-size: 14px;
+    padding: 8px 8px 0px 14px;
+    line-height: 1em;
+    border-top: solid 1px #ccc;
+}
+
+.csweb-tooltip-padding {
+    padding: 8px;
+    background: white;
+    box-shadow: 0px 0px 8px 0px rgba(16, 16, 16, 0.5);
+}
+
+.no-padding {
+    padding: 0;
+}
+
+.no-border {
+    border: none;
+}
+
+.table-condensed > tbody > tr > th {
+    padding: 8px 5px 16px;
+    border: none;
+    white-space: nowrap;
+}
+
+.table-condensed > tbody > tr > td {
+    border-bottom: 1px solid #ccc;
+}
+
+.table-horiz-scroll {
+    overflow-x: auto;
+    display: block;
+    width: 100%;
+}
+
 /* Overrule icons in menu */
 .mapIcon {
     background:url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAG7AAABuwBHnU4NQAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAGJSURBVFiF7ddPqA1hGMfxz3McFF2kS8qflWwU1ux0d7JQFmThT+rKio2U1NnfnRUbCys73aW1smSl3CRRFkKWSngszD3NPc3MmXOdOql56q2ZeZ/n9/su3rd+E5lpltWbqft/AxAR+yJiKSJuRsSmiDixHrOI6EXEuYh4ERFnQWbWLhzBI/xAYoBjxfMyDjfNl3T6uISVYjYxyMxqACzgaak5SwCXS+8/8RD7a3Q24xreVWmtASgoL+BlRXMZ4F7F9+9Yws5Cawtu4GOT1hAAe/G+obkM8Kxh/xvu41MbrczUL87HFRwwvgJHG/Z3YLGFzrBWb8GGlv0HMTeJQVuAtnVymubrAdgza4CpVwfQAXQAHUAHMCnA7yl6v54E4AOuYxdu4fM/GL/BYmY+xjARDVSnlre4io0jWW8rbuNLzVzVeo4z6K3RqgFYwUX0x6TdOdzB1xrTX3iC47UaIwCvcH6UskXs3oa7/mbC1ZD6AIfGzhYC8ziNmMS4AmQ7TmF325nofk5nDfAHT/azUWnxRlsAAAAASUVORK5CYII=')/*../images/1005 kaart.png*/
@@ -3488,11 +3542,3 @@ margin-left: -10px;
 
 /* dc-charts */
 .dc-chart g.row text {fill: black;}
-
-.profile-tab-form {
-    margin: 5px 5px 0px 25px;
-}
-
-.profile-tab-label {
-    width: 72px;
-}

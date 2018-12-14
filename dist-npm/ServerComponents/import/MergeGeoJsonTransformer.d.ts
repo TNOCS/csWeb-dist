@@ -1,5 +1,5 @@
 /// <reference types="node" />
-import transform = require('./ITransform');
+import transform = require("./ITransform");
 declare class MergeGeoJsonTransformer implements transform.ITransform {
     title: string;
     id: string;
@@ -16,7 +16,7 @@ declare class MergeGeoJsonTransformer implements transform.ITransform {
     geometry: any;
     keyProperty: string;
     constructor(title: string);
-    initialize(opt: transform.ITransformFactoryOptions, callback: (error: any) => void): void;
+    initialize(opt: transform.ITransformFactoryOptions, callback: (error) => void): void;
     create(config: any, opt?: transform.ITransformFactoryOptions[]): NodeJS.ReadWriteStream;
 }
 export = MergeGeoJsonTransformer;

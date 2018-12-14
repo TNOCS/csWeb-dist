@@ -2,24 +2,24 @@
 var Utils = require("../helpers/Utils");
 var stream = require("stream");
 var request = require("request");
-var turf = require('turf');
-var MergeGeoJsonTransformer = /** @class */ (function () {
+var turf = require("turf");
+var MergeGeoJsonTransformer = (function () {
     function MergeGeoJsonTransformer(title) {
         this.title = title;
-        this.type = 'MergeGeoJsonTransformer';
+        this.type = "MergeGeoJsonTransformer";
         this.id = Utils.newGuid();
         //this.description = description;
     }
     MergeGeoJsonTransformer.prototype.initialize = function (opt, callback) {
         var _this = this;
-        var featuresToMergeUrlProperty = opt.parameters.filter(function (p) { return p.type.title === 'featuresToMergeUrl'; })[0];
+        var featuresToMergeUrlProperty = opt.parameters.filter(function (p) { return p.type.title == "featuresToMergeUrl"; })[0];
         if (!featuresToMergeUrlProperty) {
-            callback('feature url missing');
+            callback("feature url missing");
             return;
         }
-        var keyPropertyParameter = opt.parameters.filter(function (p) { return p.type.title === 'keyProperty'; })[0];
+        var keyPropertyParameter = opt.parameters.filter(function (p) { return p.type.title == "keyProperty"; })[0];
         if (!keyPropertyParameter) {
-            callback('key property missing');
+            callback("key property missing");
             return;
         }
         this.keyProperty = keyPropertyParameter.value;
@@ -29,7 +29,7 @@ var MergeGeoJsonTransformer = /** @class */ (function () {
                 return;
             }
             _this.geometry = JSON.parse(body);
-            console.log('Merge geojson loaded');
+            console.log("Merge geojson loaded");
             callback(null);
         });
     };
@@ -38,16 +38,16 @@ var MergeGeoJsonTransformer = /** @class */ (function () {
         var t = new stream.Transform();
         /*stream.Transform.call(t);*/
         var baseGeo;
-        t.setEncoding('utf8');
+        t.setEncoding("utf8");
         t._transform = function (chunk, encoding, done) {
             // var startTs = new Date();
             // console.log((new Date().getTime() - startTs.getTime()) + ": start");
             var feature = JSON.parse(chunk);
             // console.log(this.filterProperty + "  - " + this.filterValue);
             var featureKeyValue = feature.properties[_this.keyProperty];
-            var mergeFeature = _this.geometry.features.filter(function (f) { return f.properties[_this.keyProperty] === featureKeyValue; })[0];
+            var mergeFeature = _this.geometry.features.filter(function (f) { return f.properties[_this.keyProperty] == featureKeyValue; })[0];
             if (!mergeFeature) {
-                console.log('No merge feature found based on ' + _this.keyProperty + '=' + featureKeyValue);
+                console.log("No merge feature found based on " + _this.keyProperty + "=" + featureKeyValue);
                 done();
                 return;
             }

@@ -71,7 +71,7 @@ export declare class RuleEngine {
     /**
      * Internal method to actually load a rule file.
      */
-    private loadRuleFile;
+    private loadRuleFile(filename, activationTime);
     /**
      * Add a rule to the engine.
      */

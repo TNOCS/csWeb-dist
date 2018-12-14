@@ -1,11 +1,11 @@
 "use strict";
 var Utils = require("../helpers/Utils");
 var stream = require("stream");
-var turf = require('turf');
-var GeoJsonOutputTransformer = /** @class */ (function () {
+var turf = require("turf");
+var GeoJsonOutputTransformer = (function () {
     function GeoJsonOutputTransformer(title) {
         this.title = title;
-        this.type = 'GeoJsonOutputTransformer';
+        this.type = "GeoJsonOutputTransformer";
         this.geoJson = [];
         this.id = Utils.newGuid();
         //this.description = description;
@@ -18,7 +18,7 @@ var GeoJsonOutputTransformer = /** @class */ (function () {
         var t = new stream.Transform();
         /*stream.Transform.call(t);*/
         this.geoJson = [];
-        t.setEncoding('utf8');
+        t.setEncoding("utf8");
         t._transform = function (chunk, encoding, done) {
             // var startTs = new Date();
             // console.log((new Date().getTime() - startTs.getTime()) + ": start");
@@ -34,12 +34,12 @@ var GeoJsonOutputTransformer = /** @class */ (function () {
         };
         t._flush = function (done) {
             try {
-                console.log('#### start GJOT flush');
+                console.log("#### start GJOT flush");
                 var result = {
-                    type: 'FeatureCollection',
+                    type: "FeatureCollection",
                     features: _this.geoJson
                 };
-                console.log('nFeatures: ' + result.features.length);
+                console.log("nFeatures: " + result.features.length);
                 var strResult = JSON.stringify(result);
                 // console.log(result);
                 t.push(strResult);
@@ -47,7 +47,7 @@ var GeoJsonOutputTransformer = /** @class */ (function () {
                 done();
             }
             catch (error) {
-                console.log('#### GJOT flush error: ' + error);
+                console.log("#### GJOT flush error: " + error);
                 done();
             }
         };

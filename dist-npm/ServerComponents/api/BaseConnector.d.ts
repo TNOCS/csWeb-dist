@@ -24,7 +24,6 @@ export declare class BaseConnector implements ApiManager.IConnector {
     addFeature(layerId: string, feature: any, meta: ApiMeta, callback: Function): void;
     getFeature(layerId: string, i: string, meta: ApiMeta, callback: Function): void;
     updateFeature(layerId: string, feature: any, useLog: boolean, meta: ApiMeta, callback: Function): void;
-    deleteFeatureBatch(layerId: string, featureIds: string[], useLog: boolean, meta: ApiMeta, callback: Function): void;
     addUpdateFeatureBatch(layerId: string, feature: ApiManager.IChangeEvent[], useLog: boolean, meta: ApiMeta, callback: Function): void;
     deleteFeature(layerId: string, featureId: string, meta: ApiMeta, callback: Function): void;
     updateProperty(layerId: string, featureId: string, property: string, value: any, useLog: boolean, meta: ApiMeta, callback: Function): void;
@@ -42,11 +41,8 @@ export declare class BaseConnector implements ApiManager.IConnector {
     getProject(projectId: any, meta: ApiMeta, callback: Function): void;
     updateProject(project: Project, meta: ApiMeta, callback: Function): void;
     deleteProject(projectId: any, meta: ApiMeta, callback: Function): void;
-    cloneProject(projectId: any, clonedProjectId: string, meta: ApiMeta, callback: Function): void;
     addFile(base64: string, folder: string, file: string, meta: ApiMeta, callback: Function): void;
-    getFile(file: string, meta: ApiMeta, callback: Function): void;
     addResource(resource: ApiManager.ResourceFile, meta: ApiMeta, callback: Function): void;
-    addPropertyTypes(resourceId: string, data: IPropertyType[], meta: ApiMeta, callback: Function): void;
     /** Get a resource file  */
     getResource(resourceId: string, meta: ApiMeta, callback: Function): void;
     /** Get a specific key */

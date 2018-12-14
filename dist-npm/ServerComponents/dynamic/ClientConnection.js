@@ -3,25 +3,25 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var io = require("socket.io");
 var Winston = require("winston");
 //GetDataSource: Function;
-var MsgSubscription = /** @class */ (function () {
+var MsgSubscription = (function () {
     function MsgSubscription() {
     }
     return MsgSubscription;
 }());
 exports.MsgSubscription = MsgSubscription;
-var ProjectSubscription = /** @class */ (function () {
+var ProjectSubscription = (function () {
     function ProjectSubscription() {
     }
     return ProjectSubscription;
 }());
 exports.ProjectSubscription = ProjectSubscription;
-var LayerSubscription = /** @class */ (function () {
+var LayerSubscription = (function () {
     function LayerSubscription() {
     }
     return LayerSubscription;
 }());
 exports.LayerSubscription = LayerSubscription;
-var KeySubscription = /** @class */ (function () {
+var KeySubscription = (function () {
     function KeySubscription() {
     }
     return KeySubscription;
@@ -30,7 +30,7 @@ exports.KeySubscription = KeySubscription;
 /**
  * object for sending project messages over socket.io channel
  */
-var ProjectUpdate = /** @class */ (function () {
+var ProjectUpdate = (function () {
     function ProjectUpdate() {
     }
     return ProjectUpdate;
@@ -39,7 +39,7 @@ exports.ProjectUpdate = ProjectUpdate;
 /**
  * object for sending layer messages over socket.io channel
  */
-var LayerUpdate = /** @class */ (function () {
+var LayerUpdate = (function () {
     function LayerUpdate() {
     }
     return LayerUpdate;
@@ -48,7 +48,7 @@ exports.LayerUpdate = LayerUpdate;
 /**
  * object for sending layer messages over socket.io channel
  */
-var KeyUpdate = /** @class */ (function () {
+var KeyUpdate = (function () {
     function KeyUpdate() {
     }
     return KeyUpdate;
@@ -73,7 +73,6 @@ var LayerUpdateAction;
     LayerUpdateAction[LayerUpdateAction["updateLayer"] = 3] = "updateLayer";
     LayerUpdateAction[LayerUpdateAction["deleteLayer"] = 4] = "deleteLayer";
     LayerUpdateAction[LayerUpdateAction["addUpdateFeatureBatch"] = 5] = "addUpdateFeatureBatch";
-    LayerUpdateAction[LayerUpdateAction["deleteFeatureBatch"] = 6] = "deleteFeatureBatch";
 })(LayerUpdateAction = exports.LayerUpdateAction || (exports.LayerUpdateAction = {}));
 /**
  * List of available action for sending/receiving key actions over socket.io channel
@@ -83,7 +82,7 @@ var KeyUpdateAction;
     KeyUpdateAction[KeyUpdateAction["updateKey"] = 0] = "updateKey";
     KeyUpdateAction[KeyUpdateAction["deleteKey"] = 1] = "deleteKey"; // onlyused in imb api for now..
 })(KeyUpdateAction = exports.KeyUpdateAction || (exports.KeyUpdateAction = {}));
-var ClientMessage = /** @class */ (function () {
+var ClientMessage = (function () {
     function ClientMessage(action, data) {
         this.action = action;
         this.data = data;
@@ -91,7 +90,7 @@ var ClientMessage = /** @class */ (function () {
     return ClientMessage;
 }());
 exports.ClientMessage = ClientMessage;
-var WebClient = /** @class */ (function () {
+var WebClient = (function () {
     function WebClient(Client) {
         this.Client = Client;
         this.Subscriptions = {};
@@ -122,7 +121,7 @@ var WebClient = /** @class */ (function () {
     return WebClient;
 }());
 exports.WebClient = WebClient;
-var ConnectionManager = /** @class */ (function () {
+var ConnectionManager = (function () {
     function ConnectionManager(httpServer) {
         var _this = this;
         this.users = {};

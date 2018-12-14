@@ -1,34 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var fs = require("fs");
-var path = require("path");
-/**
- * Delete a folder synchronously.
- * Source: http://stackoverflow.com/a/32197381/319711
- *
- * @export
- * @param {string} folder
- */
-function deleteFolderRecursively(folder) {
-    if (!fs.existsSync(folder)) {
-        return;
-    }
-    fs.readdirSync(folder).forEach(function (file, index) {
-        var curPath = folder + '/' + file;
-        if (fs.lstatSync(curPath).isDirectory()) { // recurse
-            deleteFolderRecursively(curPath);
-        }
-        else { // delete file
-            fs.unlinkSync(curPath);
-        }
-    });
-    fs.rmdirSync(folder);
-}
-exports.deleteFolderRecursively = deleteFolderRecursively;
-;
+var fs = require('fs'), path = require('path');
 /** Create a new GUID */
 function newGuid() {
-    var guid = (this.S4() + this.S4() + '-' + this.S4() + '-4' + this.S4().substr(0, 3) + '-' + this.S4() + '-' + this.S4() + this.S4() + this.S4()).toLowerCase();
+    var guid = (this.S4() + this.S4() + "-" + this.S4() + "-4" + this.S4().substr(0, 3) + "-" + this.S4() + "-" + this.S4() + this.S4() + this.S4()).toLowerCase();
     return guid;
 }
 exports.newGuid = newGuid;

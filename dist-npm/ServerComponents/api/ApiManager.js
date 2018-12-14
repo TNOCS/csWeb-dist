@@ -1,11 +1,8 @@
 "use strict";
 var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
     return function (d, b) {
         extendStatics(d, b);
         function __() { this.constructor = d; }
@@ -43,7 +40,7 @@ var ApiResult;
 /**
  * Default result object for api calls
  */
-var CallbackResult = /** @class */ (function () {
+var CallbackResult = (function () {
     function CallbackResult() {
     }
     return CallbackResult;
@@ -66,7 +63,7 @@ var ChangeType;
     ChangeType[ChangeType["Update"] = 1] = "Update";
     ChangeType[ChangeType["Delete"] = 2] = "Delete";
 })(ChangeType = exports.ChangeType || (exports.ChangeType = {}));
-var Key = /** @class */ (function () {
+var Key = (function () {
     function Key() {
     }
     return Key;
@@ -75,19 +72,19 @@ exports.Key = Key;
 /**
  * Project definition
  */
-var Project = /** @class */ (function () {
+var Project = (function () {
     function Project() {
     }
     return Project;
 }());
 exports.Project = Project;
-var Group = /** @class */ (function () {
+var Group = (function () {
     function Group() {
     }
     return Group;
 }());
 exports.Group = Group;
-var ApiKeySubscription = /** @class */ (function () {
+var ApiKeySubscription = (function () {
     function ApiKeySubscription() {
     }
     return ApiKeySubscription;
@@ -96,7 +93,7 @@ exports.ApiKeySubscription = ApiKeySubscription;
 /**
  * Geojson Layer definition
  */
-var Layer = /** @class */ (function () {
+var Layer = (function () {
     function Layer() {
         this.features = [];
     }
@@ -106,7 +103,7 @@ exports.Layer = Layer;
 /**
  * Geojson ProjectId definition
  */
-var ProjectId = /** @class */ (function () {
+var ProjectId = (function () {
     function ProjectId() {
     }
     return ProjectId;
@@ -115,7 +112,7 @@ exports.ProjectId = ProjectId;
 /**
  * Geojson geometry definition
  */
-var Geometry = /** @class */ (function () {
+var Geometry = (function () {
     function Geometry() {
     }
     return Geometry;
@@ -124,7 +121,7 @@ exports.Geometry = Geometry;
 /**
  * Geojson feature definition
  */
-var Feature = /** @class */ (function () {
+var Feature = (function () {
     function Feature() {
         this.type = 'Feature';
     }
@@ -134,31 +131,31 @@ exports.Feature = Feature;
 /**
  * Geojson property definition
  */
-var Property = /** @class */ (function () {
+var Property = (function () {
     function Property() {
     }
     return Property;
 }());
 exports.Property = Property;
-var Log = /** @class */ (function () {
+var Log = (function () {
     function Log() {
     }
     return Log;
 }());
 exports.Log = Log;
-var FeatureType = /** @class */ (function () {
+var FeatureType = (function () {
     function FeatureType() {
     }
     return FeatureType;
 }());
 exports.FeatureType = FeatureType;
-var PropertyType = /** @class */ (function () {
+var PropertyType = (function () {
     function PropertyType() {
     }
     return PropertyType;
 }());
 exports.PropertyType = PropertyType;
-var ResourceFile = /** @class */ (function () {
+var ResourceFile = (function () {
     function ResourceFile() {
     }
     return ResourceFile;
@@ -176,7 +173,7 @@ exports.ResourceFile = ResourceFile;
  * ProjectChanged event when a project is changed (CRUD).
  * FeaturesChanged event when an array of features is changed (CRUD).
  */
-var ApiManager = /** @class */ (function (_super) {
+var ApiManager = (function (_super) {
     __extends(ApiManager, _super);
     /** Create a new client, optionally specifying whether it should act as client. */
     function ApiManager(namespace, name, isClient, options) {
@@ -228,7 +225,6 @@ var ApiManager = /** @class */ (function (_super) {
         _this.saveLayersDelay = _.debounce(function (layer) {
             _this.saveLayerConfig();
         }, 1000);
-        console.log("Construction ApiManager with options: " + JSON.stringify(_this.options, null, 2));
         _this.setMaxListeners(25);
         _this.namespace = namespace;
         _this.name = name;
@@ -301,7 +297,7 @@ var ApiManager = /** @class */ (function (_super) {
         Winston.debug('manager: loading project config');
         this.projectsFile = path.join(this.rootPath, 'projects.json');
         fs.stat(this.projectsFile, function (err, stats) {
-            // Create file if it doesn't exist
+            // Create file if it doesn't exist            
             if (err && err.code === 'ENOENT') {
                 fs.writeFileSync(_this.projectsFile, '{}');
                 Winston.info("Create projects.json file " + _this.projectsFile);
@@ -324,7 +320,7 @@ var ApiManager = /** @class */ (function (_super) {
         });
     };
     /**
-     * Store project config file
+     * Store layer config file
      */
     ApiManager.prototype.saveProjectConfig = function () {
         fs.writeFile(this.projectsFile, JSON.stringify(this.projects), function (error) {
@@ -396,18 +392,6 @@ var ApiManager = /** @class */ (function (_super) {
             callback({ result: ApiResult.Error, error: 'Failed to add resource.' });
         }
     };
-    /** Add a file to the store, e.g. an icon or other media. */
-    ApiManager.prototype.getFile = function (file, meta, callback) {
-        var s = this.connectors.hasOwnProperty('file') ? this.connectors['file'] : null;
-        if (s) {
-            s.getFile(file, meta, function (result) {
-                callback(result);
-            });
-        }
-        else {
-            callback({ result: ApiResult.Error, error: 'Failed to get file.' });
-        }
-    };
     /**
      * Update/add a resource and save it to file
      */
@@ -423,7 +407,7 @@ var ApiManager = /** @class */ (function (_super) {
             // create new resource definition (without actual content)
             this.resources[resource.id] = { _localFile: resource._localFile, id: resource.id, title: resource.title, storage: resource.storage };
             // don't actually save it, if this method is called from the storage connector it self
-            if (resource.storage !== meta.source) {
+            if (resource.storage != meta.source) {
                 var s = this.findStorage(resource);
                 this.getInterfaces(meta).forEach(function (i) {
                     i.addResource(resource, meta, function () { });
@@ -438,51 +422,6 @@ var ApiManager = /** @class */ (function (_super) {
                     callback({ result: ApiResult.OK });
                 }
             }
-        }
-    };
-    ApiManager.prototype.cloneResource = function (resourceId, newResourceId, meta, callback) {
-        var _this = this;
-        if (!this.resources.hasOwnProperty(resourceId)) {
-            callback({ result: ApiResult.ResourceNotFound, error: 'Resource not found' });
-            return;
-        }
-        if (this.resources.hasOwnProperty(newResourceId)) {
-            callback({ result: ApiResult.ResourceAlreadyExists, error: 'Resource already exists' });
-            return;
-        }
-        this.getResource(resourceId, {}, function (result) {
-            var resource = result.resource;
-            var resourceClone = JSON.parse(JSON.stringify(resource));
-            resourceClone.id = newResourceId;
-            resourceClone.url = resourceClone.url.replace(resourceId, newResourceId);
-            if (resourceClone._localFile) {
-                resourceClone._localFile = resourceClone._localFile.replace(resourceId, newResourceId);
-            }
-            if (resourceClone.featureTypes && resourceClone.featureTypes[resourceId]) {
-                resourceClone.featureTypes[newResourceId] = JSON.parse(JSON.stringify(resourceClone.featureTypes[resourceId]));
-                delete resourceClone.featureTypes[resourceId];
-            }
-            _this.addResource(resourceClone, true, { source: 'apimanager' }, callback);
-        });
-    };
-    ApiManager.prototype.addPropertyTypes = function (resourceId, data, meta, callback) {
-        if (!this.resources.hasOwnProperty(resourceId)) {
-            callback({ result: ApiResult.ResourceAlreadyExists, error: 'Resource already exists' });
-            return;
-        }
-        var resource = this.resources[resourceId];
-        var s = this.findStorage(resource);
-        this.getInterfaces(meta).forEach(function (i) {
-            i.addPropertyTypes(resourceId, data, meta, function () { });
-        });
-        // store resource
-        if (s) {
-            s.addPropertyTypes(resourceId, data, meta, function (r) {
-                callback({ result: ApiResult.OK, error: 'Resource updated' });
-            });
-        }
-        else {
-            callback({ result: ApiResult.OK });
         }
     };
     ApiManager.prototype.getResource = function (id, meta, callback) {
@@ -630,10 +569,11 @@ var ApiManager = /** @class */ (function (_super) {
             });
             this.updateProject(p, meta, function () { });
             callback({ result: ApiResult.OK });
+            return;
         }
         else {
-            // callback(<CallbackResult>{ result: ApiResult.GroupNotFound, error: 'Group Not Found' }); return;
-            this.addGroup(newGroup, projectId, meta, callback);
+            callback({ result: ApiResult.GroupNotFound, error: 'Group Not Found' });
+            return;
         }
     };
     ApiManager.prototype.removeGroup = function (groupId, projectId, meta, callback) {
@@ -672,7 +612,6 @@ var ApiManager = /** @class */ (function (_super) {
             this.projects[project.id] = this.getProjectDefinition(project);
             // store project
             var meta = { source: 'rest' };
-            this.setUpdateProject(project, meta);
             this.getInterfaces(meta).forEach(function (i) {
                 i.initProject(_this.projects[project.id]);
                 i.addProject(_this.projects[project.id], meta, function () { });
@@ -731,7 +670,7 @@ var ApiManager = /** @class */ (function (_super) {
         return null;
     };
     /**
-     * Find key for a specific keyId (can return null)
+     * Find layer for a specific layerId (can return null)
      */
     ApiManager.prototype.findKey = function (keyId) {
         return this.keys.hasOwnProperty(keyId)
@@ -798,12 +737,8 @@ var ApiManager = /** @class */ (function (_super) {
             logo: project.logo ? project.logo : 'images/CommonSenseRound.png',
             groups: project.groups ? _.map(project.groups, function (g) { return _this.getGroupDefinition(g); }) : [],
             url: project.url ? project.url : '/api/projects/' + project.id,
-            _localFile: project._localFile,
-            updated: project.updated
+            _localFile: project._localFile
         };
-        if (project.featurePropsDirective) {
-            p.featurePropsDirective = project.featurePropsDirective;
-        }
         return p;
     };
     /**
@@ -842,9 +777,8 @@ var ApiManager = /** @class */ (function (_super) {
             typeUrl: layer.typeUrl,
             quickRefresh: layer.quickRefresh,
             confirmUpdate: layer.confirmUpdate,
-            opacity: layer.opacity ? layer.opacity : 100,
+            opacity: layer.opacity ? layer.opacity : 75,
             type: layer.type,
-            geometryTypeId: layer.geometryTypeId,
             // We are returning a definition, so remove the data
             features: [],
             data: '',
@@ -939,7 +873,7 @@ var ApiManager = /** @class */ (function (_super) {
             //    i.addLayer(layer, meta, () => { });
         });
         // store layer
-        if (s && s.id !== meta.source) {
+        if (s && s.id != meta.source) {
             s.addLayer(layer, meta, function (r) { return callback(r); });
         }
         else {
@@ -969,7 +903,7 @@ var ApiManager = /** @class */ (function (_super) {
                         Winston.debug('updating layer finished');
                     });
                 }
-                callback({ result: ApiResult.OK, layer: layer });
+                callback({ result: ApiResult.OK });
                 _this.emit(Event[Event.LayerChanged], { id: layer.id, type: ChangeType.Update, value: layer });
                 _this.saveLayersDelay(layer);
                 cb();
@@ -988,18 +922,16 @@ var ApiManager = /** @class */ (function (_super) {
             callback(result);
         });
     };
-    ApiManager.prototype.updateProjectProperties = function (props, projectId, meta, callback) {
+    ApiManager.prototype.updateProjectTitle = function (projectTitle, projectId, meta, callback) {
         // Does not send update to connections and storages, should be done separately!
         var p = this.findProject(projectId);
         if (!p) {
             callback({ result: ApiResult.ProjectNotFound, error: 'Project not found' });
             return;
         }
-        p.title = props.title || p.title;
-        p.logo = props.logo || p.logo;
-        p.description = props.description || p.description;
+        p.title = projectTitle;
         this.projects[projectId] = p;
-        callback({ result: ApiResult.OK, error: 'Changed project properties' });
+        callback({ result: ApiResult.OK, error: 'Changed title' });
     };
     ApiManager.prototype.updateProject = function (project, meta, callback) {
         var _this = this;
@@ -1020,7 +952,6 @@ var ApiManager = /** @class */ (function (_super) {
                 var file = _this.projects[project.id]._localFile;
                 if (file && !project._localFile)
                     project._localFile = file;
-                _this.setUpdateProject(project, meta);
                 var p = _this.getProjectDefinition(project);
                 _this.projects[p.id] = p;
                 _this.getInterfaces(meta).forEach(function (i) {
@@ -1037,67 +968,6 @@ var ApiManager = /** @class */ (function (_super) {
                 _this.saveProjectDelay(project);
             }
         ]);
-    };
-    ApiManager.prototype.cloneProject = function (projectId, clonedProjectId, meta, callback) {
-        var _this = this;
-        var p = this.findProject(projectId);
-        var pClone = this.findProject(clonedProjectId);
-        if (!p) {
-            callback({ result: ApiResult.ProjectNotFound, error: 'Project not found' });
-            return;
-        }
-        if (!p.groups)
-            p.groups = [];
-        pClone = JSON.parse(JSON.stringify(p)); // Clone project
-        var groupsClone = JSON.parse(JSON.stringify(p.groups)); // Clone groups
-        pClone.groups.length = 0; // Remove groups from project
-        pClone.id = clonedProjectId;
-        async.eachSeries(groupsClone, function (g, groupCB) {
-            var layersClone = JSON.parse(JSON.stringify(g.layers));
-            g.layers.length = 0; // Remove layers from group
-            g.id = helpers.newGuid();
-            _this.addGroup(g, clonedProjectId, meta, function (result) {
-                if (result.result !== ApiResult.OK) {
-                    groupCB(result);
-                    return;
-                }
-                async.eachSeries(layersClone, function (layer, layerCB) {
-                    _this.getLayer(layer.id, {}, function (result) {
-                        var l = result.layer;
-                        var newLayerGuid = helpers.newGuid();
-                        l.url = l.url.replace(l.id, newLayerGuid);
-                        l.id = newLayerGuid;
-                        _this.addUpdateLayer(l, meta, function (result) {
-                            if (result.result !== ApiResult.OK) {
-                                layerCB(result);
-                                return;
-                            }
-                            var oldResId = l.typeUrl.split('/').pop();
-                            var newResId = helpers.newGuid();
-                            l.defaultFeatureType = l.defaultFeatureType.replace(oldResId, newResId);
-                            l.defaultLegendProperty = l.defaultLegendProperty.replace(oldResId, newResId);
-                            l.typeUrl = l.typeUrl.replace(oldResId, newResId);
-                            _this.cloneResource(oldResId, newResId, {}, function (result) {
-                                _this.addLayerToProject(clonedProjectId, g.id, l.id, {}, function (result) {
-                                    if (result.result !== ApiResult.OK) {
-                                        layerCB(result);
-                                        return;
-                                    }
-                                    layerCB();
-                                });
-                            });
-                        });
-                    });
-                }, function (err) {
-                    groupCB();
-                });
-            });
-        }, function (err) {
-            var res = new CallbackResult();
-            res.result = (err) ? ApiResult.Error : ApiResult.OK;
-            res.error = err;
-            callback(res);
-        });
     };
     ApiManager.prototype.deleteLayer = function (layerId, meta, callback) {
         var _this = this;
@@ -1136,14 +1006,7 @@ var ApiManager = /** @class */ (function (_super) {
         }
         return res;
     };
-    ApiManager.prototype.setUpdateProject = function (project, meta) {
-        if (meta && meta.source === 'file')
-            return;
-        project.updated = new Date().getTime();
-    };
     ApiManager.prototype.setUpdateLayer = function (layer, meta) {
-        if (meta && meta.source === 'file')
-            return;
         layer.updated = new Date().getTime();
     };
     // Feature methods start here, in CRUD order.
@@ -1220,18 +1083,6 @@ var ApiManager = /** @class */ (function (_super) {
         });
         this.emit(Event[Event.FeaturesChanged], { id: layerId, type: ChangeType.Update, value: features });
     };
-    /** Similar to deleteFeature, but with an array of updated features instead of one feature.
-     *
-     */
-    ApiManager.prototype.deleteFeatureBatch = function (layerId, featureIds, useLog, meta, callback) {
-        var s = this.findStorageForLayerId(layerId);
-        if (s)
-            s.deleteFeatureBatch(layerId, featureIds, true, meta, function (result) { return callback(result); });
-        this.getInterfaces(meta).forEach(function (i) {
-            i.deleteFeatureBatch(layerId, featureIds, false, meta, function () { });
-        });
-        this.emit(Event[Event.FeaturesChanged], { id: layerId, type: ChangeType.Delete, value: featureIds });
-    };
     ApiManager.prototype.deleteFeature = function (layerId, featureId, meta, callback) {
         var _this = this;
         var s = this.findStorageForLayerId(layerId);
@@ -1299,11 +1150,10 @@ var ApiManager = /** @class */ (function (_super) {
     };
     ApiManager.prototype.getKey = function (id, meta, callback) {
         var s = this.findStorageForKeyId(id);
-        if (s) {
+        if (s)
             s.getKey(id, meta, function (r) {
                 callback(r);
             });
-        }
         else {
             callback({ result: ApiResult.KeyNotFound });
         }
@@ -1351,10 +1201,10 @@ var ApiManager = /** @class */ (function (_super) {
         // if no callback, it will still exit gracefully on Ctrl-C
         if (!callback)
             callback = function () { };
-        process.on('beforeExit', callback);
+        process.on('cleanup', callback);
         // do app specific cleaning before exiting
         process.on('exit', function () {
-            process.emit('beforeExit', 0);
+            process.emit('cleanup');
         });
         // catch ctrl+c event and exit normally
         process.on('SIGINT', function () {

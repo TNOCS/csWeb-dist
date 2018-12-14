@@ -18,7 +18,7 @@ export declare enum ApiResult {
     GroupAlreadyExists = 413,
     ResourceNotFound = 428,
     ResourceAlreadyExists = 429,
-    SearchNotImplemented = 440
+    SearchNotImplemented = 440,
 }
 export interface IApiManagerOptions {
     /** Host:port name */
@@ -57,13 +57,13 @@ export declare enum Event {
     FeatureChanged = 2,
     LayerChanged = 3,
     ProjectChanged = 4,
-    FeaturesChanged = 5
+    FeaturesChanged = 5,
 }
 /** Type of change in an ApiEvent */
 export declare enum ChangeType {
     Create = 0,
     Update = 1,
-    Delete = 2
+    Delete = 2,
 }
 /** When a key|layer|project is changed, the ChangeEvent is emitted with the following data. */
 export interface IChangeEvent {
@@ -89,7 +89,6 @@ export interface IConnector {
     getFeature(layerId: string, featureId: string, meta: ApiMeta, callback: Function): any;
     updateFeature(layerId: string, feature: any, useLog: boolean, meta: ApiMeta, callback: Function): any;
     deleteFeature(layerId: string, featureId: string, meta: ApiMeta, callback: Function): any;
-    deleteFeatureBatch(layerId: string, featureIds: string[], useLog: boolean, meta: ApiMeta, callback: Function): any;
     addUpdateFeatureBatch(layerId: string, features: any[], useLog: boolean, meta: ApiMeta, callback: Function): any;
     addLog(layerId: string, featureId: string, property: string, log: Log, meta: ApiMeta, callback: Function): any;
     getLog(layerId: string, featureId: string, meta: ApiMeta, callback: Function): any;
@@ -106,16 +105,12 @@ export interface IConnector {
     updateProject(project: Project, meta: ApiMeta, callback: Function): any;
     deleteProject(projectId: string, meta: ApiMeta, callback: Function): any;
     allGroups(projectId: string, meta: ApiMeta, callback: Function): any;
-    cloneProject(projectId: string, clonedProjectId: string, meta: ApiMeta, callback: Function): any;
     /** Add a resource type file to the store. */
-    addResource(resource: ResourceFile, meta: ApiMeta, callback: Function): any;
-    /** Update a resource type file to the store. */
-    addPropertyTypes(resourceId: string, data: IPropertyType[], meta: ApiMeta, callback: Function): any;
+    addResource(reource: ResourceFile, meta: ApiMeta, callback: Function): any;
     /** Get a resource file  */
     getResource(resourceId: string, meta: ApiMeta, callback: Function): any;
     /** Add a file to the store, e.g. an icon or other media. */
     addFile(base64: string, folder: string, file: string, meta: ApiMeta, callback: Function): any;
-    getFile(file: string, meta: ApiMeta, callback: Function): any;
     /** Get a specific key */
     getKey(keyId: string, meta: ApiMeta, callback: Function): any;
     /** Get a list of available keys */
@@ -157,8 +152,6 @@ export declare class Project implements StorageObject {
     storage: string;
     groups: Group[];
     isDynamic: boolean;
-    featurePropsDirective?: string;
-    updated?: number;
 }
 export declare class Group {
     id: string;
@@ -209,7 +202,6 @@ export interface ILayer extends StorageObject {
     hasSensorData?: boolean;
     quickRefresh?: boolean;
     confirmUpdate?: boolean;
-    geometryTypeId?: string;
 }
 /**
  * Geojson Layer definition
@@ -224,7 +216,6 @@ export declare class Layer implements StorageObject, ILayer {
     useLog: boolean;
     updated: number;
     enabled: boolean;
-    fitToMap: boolean;
     opacity: number;
     id: string;
     type: string;
@@ -292,7 +283,6 @@ export declare class Log {
     value: any;
 }
 export declare class FeatureType {
-    propertyTypeKeys?: string;
 }
 export declare class PropertyType {
 }
@@ -386,7 +376,7 @@ export declare class ApiManager extends events.EventEmitter {
      */
     saveLayersDelay: ((layer: ILayer) => void) & _.Cancelable;
     /**
-     * Store project config file
+     * Store layer config file
      */
     saveProjectConfig(): void;
     /**
@@ -399,14 +389,10 @@ export declare class ApiManager extends events.EventEmitter {
     initResources(resourcesPath: string): void;
     /** Add a file to the store, e.g. an icon or other media. */
     addFile(base64: string, folder: string, file: string, meta: ApiMeta, callback: Function): void;
-    /** Add a file to the store, e.g. an icon or other media. */
-    getFile(file: string, meta: ApiMeta, callback: Function): void;
     /**
      * Update/add a resource and save it to file
      */
     addResource(resource: ResourceFile, replace: boolean, meta: ApiMeta, callback: Function): void;
-    private cloneResource;
-    addPropertyTypes(resourceId: string, data: IPropertyType[], meta: ApiMeta, callback: Function): void;
     getResource(id: string, meta: ApiMeta, callback: Function): void;
     addLayerToProject(projectId: string, groupId: string, layerId: string, meta: ApiMeta, callback: Function): void;
     removeLayerFromProject(projectId: string, groupId: string, layerId: string, meta: ApiMeta, callback: Function): void;
@@ -433,7 +419,7 @@ export declare class ApiManager extends events.EventEmitter {
      */
     findProject(projectId: string): Project;
     /**
-     * Find key for a specific keyId (can return null)
+     * Find layer for a specific layerId (can return null)
      */
     findKey(keyId: string): Key;
     /**
@@ -479,18 +465,12 @@ export declare class ApiManager extends events.EventEmitter {
     createLayer(layer: ILayer, meta: ApiMeta, callback: (result: CallbackResult) => void): void;
     addUpdateLayer(layer: ILayer, meta: ApiMeta, callback: Function): void;
     clearProject(projectId: string, meta: ApiMeta, callback: Function): void;
-    updateProjectProperties(props: {
-        title: string;
-        logo: string;
-        description: string;
-    }, projectId: string, meta: ApiMeta, callback: Function): void;
+    updateProjectTitle(projectTitle: string, projectId: string, meta: ApiMeta, callback: Function): void;
     updateProject(project: Project, meta: ApiMeta, callback: Function): void;
-    cloneProject(projectId: string, clonedProjectId: string, meta: ApiMeta, callback: Function): void;
     deleteLayer(layerId: string, meta: ApiMeta, callback: Function): void;
     deleteProject(projectId: string, meta: ApiMeta, callback: Function): void;
     getInterfaces(meta: ApiMeta): IConnector[];
-    private setUpdateProject;
-    private setUpdateLayer;
+    private setUpdateLayer(layer, meta);
     addFeature(layerId: string, feature: Feature, meta: ApiMeta, callback: Function): void;
     updateProperty(layerId: string, featureId: string, property: string, value: any, useLog: boolean, meta: ApiMeta, callback: Function): void;
     updateLogs(layerId: string, featureId: string, logs: {
@@ -502,10 +482,6 @@ export declare class ApiManager extends events.EventEmitter {
      *
      */
     addUpdateFeatureBatch(layerId: string, features: IChangeEvent[], meta: ApiMeta, callback: Function): void;
-    /** Similar to deleteFeature, but with an array of updated features instead of one feature.
-     *
-     */
-    deleteFeatureBatch(layerId: string, featureIds: string[], useLog: boolean, meta: ApiMeta, callback: Function): void;
     deleteFeature(layerId: string, featureId: string, meta: ApiMeta, callback: Function): void;
     addLog(layerId: string, featureId: string, property: string, log: Log, meta: ApiMeta, callback: Function): void;
     initLayer(layer: Layer): void;
@@ -526,5 +502,5 @@ export declare class ApiManager extends events.EventEmitter {
      * @param  {Function} callback Callback function that performs the cleanup
      * See also: http://stackoverflow.com/questions/14031763/doing-a-cleanup-action-just-before-node-js-exits
      */
-    cleanup(callback?: (code: number) => void): void;
+    cleanup(callback?: Function): void;
 }

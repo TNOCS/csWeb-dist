@@ -5,7 +5,7 @@ var HyperTimer = require("hypertimer");
 var WorldState = require("./WorldState");
 var Rule = require("./Rule");
 var Api = require("../api/ApiManager");
-var RuleEngine = /** @class */ (function () {
+var RuleEngine = (function () {
     function RuleEngine(manager, layerId) {
         var _this = this;
         this.loadedScripts = []; // needed to restart
@@ -162,8 +162,8 @@ var RuleEngine = /** @class */ (function () {
      * Add a rule to the engine.
      */
     RuleEngine.prototype.addRule = function (rule, feature, activationTime) {
-        if (typeof rule.actions === 'undefined' || rule.actions.length === 0 || rule.actions[0].length === 0)
-            return;
+        if (typeof rule.actions === 'undefined')
+            return; // || rule.actions.length === 0 || rule.actions[0].length === 0) return;
         var newRule = new Rule.Rule(rule, activationTime);
         if (!rule.isGenericRule && feature) {
             newRule.feature = feature;

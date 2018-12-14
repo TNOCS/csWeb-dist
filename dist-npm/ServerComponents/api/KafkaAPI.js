@@ -1,11 +1,8 @@
 "use strict";
 var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
     return function (d, b) {
         extendStatics(d, b);
         function __() { this.constructor = d; }
@@ -27,13 +24,13 @@ var KafkaCompression;
     KafkaCompression[KafkaCompression["GZip"] = 1] = "GZip";
     KafkaCompression[KafkaCompression["snappy"] = 2] = "snappy";
 })(KafkaCompression = exports.KafkaCompression || (exports.KafkaCompression = {}));
-var KafkaOptions = /** @class */ (function () {
+var KafkaOptions = (function () {
     function KafkaOptions() {
     }
     return KafkaOptions;
 }());
 exports.KafkaOptions = KafkaOptions;
-var KafkaAPI = /** @class */ (function (_super) {
+var KafkaAPI = (function (_super) {
     __extends(KafkaAPI, _super);
     function KafkaAPI(server, port, kafkaOptions, layerPrefix, keyPrefix) {
         if (port === void 0) { port = 8082; }

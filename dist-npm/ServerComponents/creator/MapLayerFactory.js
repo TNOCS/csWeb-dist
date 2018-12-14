@@ -5,32 +5,20 @@ var proj4 = require("proj4");
 var IBagOptions = require("../database/IBagOptions");
 var Api = require("../api/ApiManager");
 var Utils = require("../helpers/Utils");
-var StringExt = require('../helpers/StringExt');
 var async = require("async");
 var winston = require("winston");
 var path = require("path");
-var _ = require("underscore");
-var MIN_STRING_EQUALITY_SCORE = 0.60;
 /** A factory class to create new map layers based on input, e.g. from Excel */
-var MapLayerFactory = /** @class */ (function () {
+var MapLayerFactory = (function () {
     // constructor(private bag: LocalBag, private messageBus: MessageBus.MessageBusService) {
-    function MapLayerFactory(addressSources, messageBus, apiManager, workingDir, apiRoute) {
+    function MapLayerFactory(bag, messageBus, apiManager, workingDir) {
         if (workingDir === void 0) { workingDir = ''; }
-        if (apiRoute === void 0) { apiRoute = 'api'; }
-        this.addressSources = addressSources;
+        this.bag = bag;
         this.messageBus = messageBus;
         this.workingDir = workingDir;
-        this.apiRoute = apiRoute;
-        addressSources.slice().reverse().forEach(function (src, ind, arr) {
-            if (src == null) {
-                addressSources.splice(arr.length - 1 - ind, 1);
-                winston.warn('Removed unknown address source');
-            }
-            else {
-                src.init();
-                winston.info('Init address source ' + src.name);
-            }
-        });
+        if (bag != null) {
+            bag.init();
+        }
         var fileList = [];
         var templateFolder = path.join(workingDir, 'public', 'data', 'templates');
         fs.stat(templateFolder, function (err, stats) {
@@ -56,8 +44,8 @@ var MapLayerFactory = /** @class */ (function () {
     }
     MapLayerFactory.prototype.process = function (req, res) {
         var _this = this;
-        // res.writeHead(200, { 'Content-Type': 'text/html' });
-        // res.end('');
+        res.writeHead(200, { 'Content-Type': 'text/html' });
+        res.end('');
         console.log('Received project template. Processing...');
         this.featuresNotFound = {};
         var template = req.body;
@@ -66,32 +54,25 @@ var MapLayerFactory = /** @class */ (function () {
             //if (!fs.existsSync("public/data/projects/DynamicExample")) fs.mkdirSync("public/data/projects/DynamicExample");
             //if (!fs.existsSync("public/data/projects/DynamicExample/" + ld.group)) fs.mkdirSync("public/data/projects/DynamicExample/" + ld.group);
             //fs.writeFileSync("public/data/projects/DynamicExample/" + ld.group + "/" + ld.layerTitle + ".json", JSON.stringify(geojson));
-            if (!template.projectId) {
-                console.warn('Error: No project ID found in the template');
-                return;
-            }
-            if (!ld.reference) {
-                console.warn('Error: No layer reference found in the template');
+            if (!template.projectId || !ld.reference) {
+                console.log('Error: No project or layer ID');
                 return;
             }
             var layerId = template.projectId + ld.reference.toLowerCase();
             var data = {
                 project: ld.projectTitle,
                 projectId: template.projectId,
-                projectLogo: template.projectLogo || 'CommonSenseRound.png',
                 layerTitle: ld.layerTitle,
                 description: ld.description,
                 reference: layerId,
-                featureType: Object.keys(geojson.featureTypes)[0] || 'Default',
+                featureType: layerId,
                 opacity: ld.opacity,
                 clusterLevel: ld.clusterLevel,
                 clustering: ld.useClustering,
                 group: ld.group,
                 geojson: geojson,
                 enabled: ld.isEnabled,
-                fitToMap: ld.fitToMap,
                 iconBase64: template.iconBase64,
-                logoBase64: template.logoBase64,
                 geometryFile: ld.geometryFile,
                 geometryKey: ld.geometryKey
             };
@@ -105,12 +86,10 @@ var MapLayerFactory = /** @class */ (function () {
                 }
                 console.log('-------------------------------------');
             }
-            res.status(200 /* OK */).send(JSON.stringify(_this.featuresNotFound));
             console.log('New map created: publishing...');
             _this.messageBus.publish('dynamic_project_layer', 'created', data);
             var combinedjson = _this.splitJson(data);
-            _this.sendIconThroughApiManager(data.iconBase64, data.projectId, path.basename(ld.iconUri));
-            _this.sendIconThroughApiManager(data.logoBase64, data.projectId, path.basename(data.projectLogo));
+            _this.sendIconThroughApiManager(data.iconBase64, path.basename(ld.iconUri));
             _this.sendResourceThroughApiManager(combinedjson.resourcejson, data.reference); //For now set layerID = resourceID
             _this.sendLayerThroughApiManager(data);
         });
@@ -156,10 +135,8 @@ var MapLayerFactory = /** @class */ (function () {
         // fs.writeFileSync('c:/Users/Erik/Downloads/tkb/' + data.reference + '.json', JSON.stringify(resourcejson));
         return { geojson: geojson, resourcejson: resourcejson };
     };
-    MapLayerFactory.prototype.sendIconThroughApiManager = function (b64, folder, filePath) {
-        if (!b64 || !filePath)
-            return;
-        this.apiManager.addFile(b64, folder, filePath, { source: 'maplayerfactory' }, function (result) {
+    MapLayerFactory.prototype.sendIconThroughApiManager = function (b64, path) {
+        this.apiManager.addFile(b64, '', path, { source: 'maplayerfactory' }, function (result) {
             console.log(result);
         });
     };
@@ -175,14 +152,11 @@ var MapLayerFactory = /** @class */ (function () {
             description: data.description,
             id: data.reference,
             enabled: data.enabled,
-            fitToMap: data.fitToMap,
             defaultFeatureType: data.defaultFeatureType,
             typeUrl: 'data/api/resourceTypes/' + data.reference + '.json',
-            url: this.apiRoute + '/layers/' + data.reference,
             opacity: data.opacity,
             dynamicResource: true
         });
-        layer.url = this.apiRoute + '/layers/' + data.reference;
         layer.features = data.geojson.features;
         layer.timestamps = data.geojson.timestamps;
         var group = this.apiManager.getGroupDefinition({ title: data.group, id: data.group, clusterLevel: data.clusterLevel });
@@ -200,8 +174,7 @@ var MapLayerFactory = /** @class */ (function () {
                 });
             },
             function (cb) {
-                var props = { title: data.project, logo: path.join('data', 'images', data.projectLogo), description: data.description };
-                _this.apiManager.updateProjectProperties(props, data.projectId, { source: 'maplayerfactory' }, function (result) {
+                _this.apiManager.updateProjectTitle(data.project, data.projectId, { source: 'maplayerfactory' }, function (result) {
                     console.log(result);
                     cb();
                 });
@@ -252,52 +225,42 @@ var MapLayerFactory = /** @class */ (function () {
         layer.data = {};
         layer.data.features = [];
         layer.type = 'database';
-        this.addressSources.some(function (src) {
-            if (typeof src.lookupBagArea === 'function') {
-                src.lookupBagArea(bounds || bu_code, layer.refreshBBOX, function (areas) {
-                    if (!areas || !areas.length || areas.length === 0) {
-                        res.status(404).send({});
-                    }
-                    else {
-                        areas.forEach(function (area) {
-                            var props = {};
-                            for (var p in area) {
-                                if (area.hasOwnProperty(p) && area[p] != null) {
-                                    // Save all columns to properties, except the ones used as geometry.
-                                    if ((!getPointFeatures && (p === 'contour' || p === 'latlon')) ||
-                                        (getPointFeatures && p === 'latlon')) {
-                                        // skip
-                                    }
-                                    else {
-                                        if (!isNaN(parseFloat(area[p])) && isFinite(area[p])) {
-                                            props[p] = +area[p];
-                                        }
-                                        else {
-                                            props[p] = area[p];
-                                        }
-                                    }
-                                }
-                            }
-                            var f = {
-                                type: 'Feature',
-                                geometry: (getPointFeatures) ? JSON.parse(area.latlon) : JSON.parse(area.contour),
-                                properties: props,
-                                id: (getPointFeatures) ? 'p_' + props['pandid'] || Utils.newGuid() : 'c_' + props['pandid'] || Utils.newGuid()
-                            };
-                            layer.data.features.push(f);
-                        });
-                        var diff = new Date().getTime() - start;
-                        console.log('Updated bag layer: publishing ' + areas.length + ' features after ' + diff + ' ms.');
-                        res.status(Api.ApiResult.OK).send({
-                            layer: layer
-                        });
-                        // this.messageBus.publish('bagcontouren', 'layer-update', layer);
-                    }
-                });
-                return true;
+        this.bag.lookupBagArea(bounds || bu_code, layer.refreshBBOX, function (areas) {
+            if (!areas || !areas.length || areas.length === 0) {
+                res.status(404).send({});
             }
             else {
-                return false;
+                areas.forEach(function (area) {
+                    var props = {};
+                    for (var p in area) {
+                        if (area.hasOwnProperty(p) && area[p] != null) {
+                            // Save all columns to properties, except the ones used as geometry.
+                            if ((!getPointFeatures && (p === 'contour' || p === 'latlon'))
+                                || (getPointFeatures && p === 'latlon')) {
+                                // skip
+                            }
+                            else {
+                                if (!isNaN(parseFloat(area[p])) && isFinite(area[p])) {
+                                    props[p] = +area[p];
+                                }
+                                else {
+                                    props[p] = area[p];
+                                }
+                            }
+                        }
+                    }
+                    var f = {
+                        type: 'Feature',
+                        geometry: (getPointFeatures) ? JSON.parse(area.latlon) : JSON.parse(area.contour),
+                        properties: props,
+                        id: (getPointFeatures) ? 'p_' + props['pandid'] || Utils.newGuid() : 'c_' + props['pandid'] || Utils.newGuid()
+                    };
+                    layer.data.features.push(f);
+                });
+                var diff = new Date().getTime() - start;
+                console.log('Updated bag layer: publishing ' + areas.length + ' features after ' + diff + ' ms.');
+                res.status(Api.ApiResult.OK).send({ layer: layer });
+                // this.messageBus.publish('bagcontouren', 'layer-update', layer);
             }
         });
     };
@@ -306,34 +269,24 @@ var MapLayerFactory = /** @class */ (function () {
         var template = req.body;
         var query = template.query;
         var nrItems = template.nrItems;
-        this.addressSources.some(function (src) {
-            if (typeof src.searchGemeente === 'function') {
-                src.searchGemeente(query, nrItems, function (results) {
-                    if (!results || !results.length || results.length === 0) {
-                        res.status(200).send({});
-                    }
-                    else {
-                        var searchResults = [];
-                        results.forEach(function (r) {
-                            var sr = {
-                                title: "" + r.title,
-                                description: "" + r.description,
-                                score: 0.99,
-                                location: r.location
-                            };
-                            searchResults.push(sr);
-                        });
-                        var diff = new Date().getTime() - start;
-                        console.log('Updated bag layer: returning ' + results.length + ' search results after ' + diff + ' ms.');
-                        res.status(Api.ApiResult.OK).send({
-                            result: searchResults
-                        });
-                    }
-                });
-                return true;
+        this.bag.searchGemeente(query, nrItems, function (results) {
+            if (!results || !results.length || results.length === 0) {
+                res.status(200).send({});
             }
             else {
-                return false;
+                var searchResults = [];
+                results.forEach(function (r) {
+                    var sr = {
+                        title: "" + r.title,
+                        description: "" + r.description,
+                        score: 0.99,
+                        location: r.location
+                    };
+                    searchResults.push(sr);
+                });
+                var diff = new Date().getTime() - start;
+                console.log('Updated bag layer: returning ' + results.length + ' search results after ' + diff + ' ms.');
+                res.status(Api.ApiResult.OK).send({ result: searchResults });
             }
         });
     };
@@ -347,46 +300,36 @@ var MapLayerFactory = /** @class */ (function () {
         layer.data = {};
         layer.data.features = [];
         layer.type = 'database';
-        this.addressSources.some(function (src) {
-            if (typeof src.lookupBagBuurt === 'function') {
-                src.lookupBagBuurt(bounds || gm_code, layer.refreshBBOX, function (areas) {
-                    if (!areas || !areas.length || areas.length === 0) {
-                        res.status(404).send({});
-                    }
-                    else {
-                        areas.forEach(function (area) {
-                            var props = {};
-                            for (var p in area) {
-                                if (area.hasOwnProperty(p) && area[p] != null && p !== 'contour') {
-                                    // Save all columns to properties, except the ones used as geometry.
-                                    if (!isNaN(parseFloat(area[p])) && isFinite(area[p])) {
-                                        props[p] = +area[p];
-                                    }
-                                    else {
-                                        props[p] = area[p];
-                                    }
-                                }
-                            }
-                            var f = {
-                                type: 'Feature',
-                                geometry: JSON.parse(area.contour),
-                                properties: props,
-                                id: props['bu_code'] || Utils.newGuid()
-                            };
-                            layer.data.features.push(f);
-                        });
-                        var diff = new Date().getTime() - start;
-                        console.log('Updated bag layer: publishing ' + areas.length + ' features after ' + diff + ' ms.');
-                        res.status(Api.ApiResult.OK).send({
-                            layer: layer
-                        });
-                        // this.messageBus.publish('bagcontouren', 'layer-update', layer);
-                    }
-                });
-                return true;
+        this.bag.lookupBagBuurt(bounds || gm_code, layer.refreshBBOX, function (areas) {
+            if (!areas || !areas.length || areas.length === 0) {
+                res.status(404).send({});
             }
             else {
-                return false;
+                areas.forEach(function (area) {
+                    var props = {};
+                    for (var p in area) {
+                        if (area.hasOwnProperty(p) && area[p] != null && p !== 'contour') {
+                            // Save all columns to properties, except the ones used as geometry.
+                            if (!isNaN(parseFloat(area[p])) && isFinite(area[p])) {
+                                props[p] = +area[p];
+                            }
+                            else {
+                                props[p] = area[p];
+                            }
+                        }
+                    }
+                    var f = {
+                        type: 'Feature',
+                        geometry: JSON.parse(area.contour),
+                        properties: props,
+                        id: props['bu_code'] || Utils.newGuid()
+                    };
+                    layer.data.features.push(f);
+                });
+                var diff = new Date().getTime() - start;
+                console.log('Updated bag layer: publishing ' + areas.length + ' features after ' + diff + ' ms.');
+                res.status(Api.ApiResult.OK).send({ layer: layer });
+                // this.messageBus.publish('bagcontouren', 'layer-update', layer);
             }
         });
     };
@@ -433,36 +376,6 @@ var MapLayerFactory = /** @class */ (function () {
         // Convert types (from a readable key to type notation)
         this.convertTypes(template.propertyTypes, template.properties);
         // Add geometry
-        this.addGeometry(ld, template, geojson, callback);
-        //console.log("Drawing mode" + ld.drawingMode);
-        return geojson;
-    };
-    MapLayerFactory.prototype.addGeometryRequest = function (req, res) {
-        var _this = this;
-        console.log('Received layer template. Adding geometry...');
-        var layer = req.body.layer;
-        var features = [];
-        var template = { properties: layer.data.properties, propertyTypes: layer.data.propertyTypes || [] };
-        this.featuresNotFound = {};
-        var emptyLayer = JSON.parse(JSON.stringify(layer));
-        delete emptyLayer.features;
-        delete emptyLayer.data;
-        this.apiManager.addUpdateLayer(emptyLayer, { source: 'maplayerfactory' }, function (result) {
-            console.log('Unconverted layer was saved, waiting to be updated...');
-        });
-        this.addGeometry(layer.data.layerDefinition, template, layer, function () {
-            console.log('Finished adding geometry.');
-            delete layer.data.properties;
-            delete layer.data.features;
-            _this.apiManager.addUpdateLayer(layer, { source: 'maplayerfactory' }, function (result) {
-                res.status(result.result).send(JSON.stringify({ 'notFound': _this.featuresNotFound }));
-            });
-        });
-    };
-    MapLayerFactory.prototype.addGeometry = function (ld, template, geojson, callback) {
-        var _this = this;
-        var features = geojson.features;
-        console.log("Add geometrytype " + ld.geometryType);
         switch (ld.geometryType) {
             case 'Postcode6_en_huisnummer':
                 if (!ld.parameter1) {
@@ -486,13 +399,6 @@ var MapLayerFactory = /** @class */ (function () {
                     this.mergeHouseNumber(ld.parameter1, ld.parameter2, ld.parameter3, ld.parameter4, template.properties);
                     this.createPointFeature(ld.parameter1, '_mergedHouseNumber', IBagOptions.OnlyCoordinates, features, template.properties, template.propertyTypes, template.sensors || [], function () { callback(geojson); });
                 }
-                break;
-            case 'Plaatsnaam':
-                if (!ld.parameter1) {
-                    console.log('Error: Parameter1 should be the name of the column containing the city name!');
-                    return;
-                }
-                this.createCityFeature(ld.parameter1, features, template.properties, template.propertyTypes, template.sensors || [], function () { callback(geojson); });
                 break;
             case 'Postcode6_en_huisnummer_met_bouwjaar':
                 if (!ld.parameter1) {
@@ -585,7 +491,7 @@ var MapLayerFactory = /** @class */ (function () {
                 }
                 this.createRDFeature(ld.parameter1, ld.parameter2, features, template.properties, template.sensors || [], function () { callback(geojson); });
                 break;
-            case 'OpenStreetMap':
+            case 'Internationaal':
                 if (!ld.parameter1) {
                     console.log('Error: Parameter1 should be the name of the column containing the search query!');
                     return;
@@ -597,162 +503,11 @@ var MapLayerFactory = /** @class */ (function () {
                     console.log('Error: At least parameter1 should contain a value!');
                     return;
                 }
-                this.getPolygonType(ld, template.properties);
-                this.createPolygonFeature(ld.geometryFile, ld.geometryKey, ld.parameter1, ld.includeOriginalProperties, features, template.properties, template.propertyTypes, template.sensors || [], function () {
-                    _this.apiManager.addPropertyTypes(ld['featureTypeId'], template.propertyTypes, {}, function () {
-                        console.log('Added propertytypes to resources');
-                    });
-                    geojson.dataSourceParameters = {
-                        geometryTemplate: {
-                            key: ld.geometryKey,
-                            name: ld.geometryFile,
-                            featureProp: ld.parameter1
-                        }
-                    };
-                    callback(geojson);
-                });
+                this.createPolygonFeature(ld.geometryFile, ld.geometryKey, ld.parameter1, ld.includeOriginalProperties, features, template.properties, template.propertyTypes, template.sensors || [], function () { callback(geojson); });
                 break;
         }
-    };
-    MapLayerFactory.prototype.getPolygonType = function (ld, props) {
-        var type = this.determineType(props, ld.parameter1);
-        switch (ld.geometryType) {
-            case 'Zorgkantoorregios':
-                ld.geometryFile = 'Zorgkantoorregio';
-                ld.geometryKey = 'Name';
-                break;
-            case 'Regioplus':
-                ld.geometryFile = 'Regioplus';
-                ld.geometryKey = 'Name';
-                break;
-            case 'GGD_Regios':
-                ld.geometryFile = 'GGD_Regios';
-                ld.geometryKey = 'Name';
-                break;
-            case 'Provincie':
-                if (type === 'both') {
-                    ld.geometryFile = 'CBS_Provincie_op_code';
-                    ld.geometryKey = 'Name';
-                }
-                else {
-                    ld.geometryFile = 'CBS_Provincie_op_naam';
-                    ld.geometryKey = 'Name';
-                }
-                break;
-            case 'CBS_Gemeente':
-            case 'Gemeente':
-            case 'Gemeente(2018)':
-                ld.geometryFile = 'CBS_Gemeente_2018';
-                if (type === 'name') {
-                    ld.geometryKey = 'GM_NAAM';
-                }
-                else {
-                    ld.geometryKey = 'GM_CODE';
-                }
-                break;
-            case 'Gemeente(2017)':
-                ld.geometryFile = 'CBS_Gemeente_2017';
-                if (type === 'name') {
-                    ld.geometryKey = 'GM_NAAM';
-                }
-                else {
-                    ld.geometryKey = 'GM_CODE';
-                }
-                break;
-            case 'Gemeente(2016)':
-                ld.geometryFile = 'CBS_Gemeente_2016';
-                if (type === 'name') {
-                    ld.geometryKey = 'GM_NAAM';
-                }
-                else {
-                    ld.geometryKey = 'GM_CODE';
-                }
-                break;
-            case 'Gemeente(2015)':
-            case 'CBS_Gemeente_2015':
-                ld.geometryFile = 'CBS_Gemeente_2015';
-                if (type === 'both') {
-                    ld.geometryKey = 'CODE';
-                }
-                else if (type === 'name') {
-                    ld.geometryKey = 'NAAM';
-                }
-                else {
-                    //todo: convert to GM_CODE
-                    ld.geometryKey = 'CODE';
-                }
-                break;
-            case 'Gemeente(2014)':
-                ld.geometryFile = 'CBS_Gemeente';
-                if (type === 'both') {
-                    ld.geometryKey = 'GM_CODE';
-                }
-                else {
-                    ld.geometryKey = 'GM_NAAM';
-                }
-                break;
-            case 'Buurt(2018)':
-                ld.geometryFile = 'CBS_Buurt_2018';
-                if (type === 'name') {
-                    ld.geometryKey = 'BU_NAAM';
-                }
-                else {
-                    ld.geometryKey = 'BU_CODE';
-                }
-                break;
-            case 'Buurt':
-            case 'Buurt(2016)':
-                ld.geometryFile = 'CBS_Buurt_2016';
-                if (type === 'name') {
-                    ld.geometryKey = 'BU_NAAM';
-                }
-                else {
-                    ld.geometryKey = 'BU_CODE';
-                }
-                break;
-            case 'Buurt(2014)':
-                ld.geometryFile = 'CBS_Buurt_2014';
-                if (type === 'name') {
-                    ld.geometryKey = 'BU_NAAM';
-                }
-                else {
-                    ld.geometryKey = 'BU_CODE';
-                }
-                break;
-            case 'Wijk':
-            case 'Wijk(2018)':
-                ld.geometryFile = 'CBS_Wijk_2018';
-                ld.geometryKey = 'WK_CODE';
-                break;
-            case 'Wijk(2014)':
-                ld.geometryFile = 'CBS_Wijk';
-                ld.geometryKey = 'WK_CODE';
-                break;
-            default:
-                break;
-        }
-    };
-    MapLayerFactory.prototype.determineType = function (props, label) {
-        var nrNames, nrNumbers, nrBoth;
-        nrNames = nrNumbers = nrBoth = 0;
-        props.slice(0, 10).forEach(function (prop) {
-            if (prop.hasOwnProperty(label)) {
-                var text = (prop[label].toString().match(/[a-zA-Z]+/g));
-                var number = (prop[label].toString().match(/\d/g));
-                if (text && number) {
-                    nrBoth += 1;
-                }
-                else if (text) {
-                    nrNames += 1;
-                }
-                else if (number) {
-                    nrNumbers += 1;
-                }
-            }
-        });
-        var results = [{ key: 'name', val: nrNames }, { key: 'number', val: nrNumbers }, { key: 'both', val: nrBoth }];
-        results = _.sortBy(results, function (obj) { return -1 * obj.val; });
-        return _.first(results).key;
+        //console.log("Drawing mode" + ld.drawingMode);
+        return geojson;
     };
     /**
      * This function extracts the timestamps and sensorvalues from the
@@ -844,65 +599,46 @@ var MapLayerFactory = /** @class */ (function () {
         var templateJson = JSON.parse(templateFile.toString());
         if (inclTemplProps && templateJson.featureTypes && templateJson.featureTypes.hasOwnProperty('Default')) {
             templateJson.featureTypes['Default'].propertyTypeData.forEach(function (ft) {
-                if (!properties[0].hasOwnProperty(ft.label) && ft.label !== templateKey) { //Do not overwrite input data, only add new items
+                if (!properties[0].hasOwnProperty(ft.label) && ft.label !== templateKey) {
                     propertyTypes.push(ft);
                 }
             });
         }
         var fts = templateJson.features;
         properties.forEach(function (p, index) {
-            var featureJson = { type: 'Feature', properties: null };
-            if (sensors.length > 0) {
-                featureJson['sensors'] = sensors[index];
-            }
-            var foundFeature = fts.some(function (f) {
-                if (f.properties[templateKey] == p[par1]) { // Do no type-check (don't use ===)
-                    _this.enrichFeature(featureJson, f, p, inclTemplProps, templateKey);
+            var foundFeature = false;
+            fts.some(function (f) {
+                if (f.properties[templateKey] == p[par1]) {
+                    console.log(p[par1]);
+                    if (inclTemplProps) {
+                        for (var key in f.properties) {
+                            if (!p.hasOwnProperty(key) && key !== templateKey) {
+                                p[key] = f.properties[key];
+                            }
+                        }
+                    }
+                    var featureJson = {
+                        type: 'Feature',
+                        geometry: f.geometry,
+                        properties: p
+                    };
+                    if (sensors.length > 0) {
+                        featureJson['sensors'] = sensors[index];
+                    }
+                    features.push(featureJson);
+                    foundFeature = true;
                     return true;
+                }
+                else {
+                    return false;
                 }
             });
             if (!foundFeature) {
-                console.log("Warning: Could not find property " + par1 + ": " + p[par1] + ". Trying again...");
-                var cleanChars_1 = new RegExp('[^a-zA-Z0-9 -]');
-                var featureScores_1 = [];
-                var cleanMatchProp_1 = p[par1].replace(cleanChars_1, '');
-                fts.forEach(function (f) {
-                    var text1 = decodeURIComponent(f.properties[templateKey]); // Try to convert to utf8
-                    var text2 = f.properties[templateKey].toString();
-                    var score = _.max([cleanMatchProp_1.score(text1.replace(cleanChars_1, ''), 0.8), cleanMatchProp_1.score(text2.replace(cleanChars_1, ''), 0.8)]);
-                    featureScores_1.push({ f: f, score: score });
-                });
-                var maxScore = _.reduce(featureScores_1, function (memo, val) {
-                    return (val.score > memo.score) ? { f: val.f, score: val.score } : memo;
-                }, { score: 0.0, f: null });
-                if (maxScore.score >= MIN_STRING_EQUALITY_SCORE) {
-                    console.log("Did find " + p[par1] + " for " + maxScore.f.properties[templateKey] + " (Score " + maxScore.score + ")");
-                    p[par1] = maxScore.f.properties[templateKey]; // Update the property to the exact same key
-                    _this.enrichFeature(featureJson, maxScore.f, p, inclTemplProps, templateKey);
-                }
-                else {
-                    console.log('Warning: Could not find: ' + p[par1] + '.');
-                    _this.featuresNotFound["" + p[par1]] = { zip: "" + p[par1], number: '' };
-                    featureJson.properties = p; // Also add feature if a geometry was not found
-                }
-            }
-            features.push(featureJson);
-            if (index % 25 === 0) {
-                console.log("Parsed feature " + (index + 1) + ": " + p[par1]);
+                console.log('Warning: Could not find: ' + p[par1]);
+                _this.featuresNotFound["" + p[par1]] = { zip: "" + p[par1], number: '' };
             }
         });
         callback();
-    };
-    MapLayerFactory.prototype.enrichFeature = function (featureJson, f, p, inclTemplProps, templateKey) {
-        if (inclTemplProps) {
-            for (var key in f.properties) {
-                if (!p.hasOwnProperty(key) && key !== templateKey) { //Do not overwrite input data, only add new items
-                    p[key] = f.properties[key];
-                }
-            }
-        }
-        featureJson.properties = p;
-        return featureJson;
     };
     MapLayerFactory.prototype.createInternationalFeature = function (queryString, features, properties, sensors, callback) {
         var _this = this;
@@ -910,32 +646,22 @@ var MapLayerFactory = /** @class */ (function () {
             var index = properties.indexOf(prop);
             if (prop.hasOwnProperty(queryString) && typeof prop[queryString] === 'string') {
                 var q = prop[queryString];
-                var searchPerformed = _this.addressSources.some(function (src) {
-                    if (typeof src.searchAddress === 'function') {
-                        src.searchAddress(q, 4, function (locations) {
-                            if (!locations || locations.length === 0 || typeof locations[0] === 'undefined') {
-                                console.log("Cannot find location: " + q);
-                                _this.featuresNotFound["" + q] = {
-                                    zip: "" + q,
-                                    number: "0"
-                                };
-                                features.push(_this.createFeatureWithoutGeometry(prop, sensors[index] || {}));
-                                innercallback();
-                            }
-                            else {
-                                // console.log(`Found location (international) ${locations[0].lon}, ${locations[0].lat}`);
-                                features.push(_this.createFeature(+locations[0].lon, +locations[0].lat, prop, sensors[index] || {}));
-                                innercallback();
-                            }
-                        });
-                        return true;
+                _this.bag.searchAddress(q, 4, function (locations) {
+                    if (!locations || locations.length === 0 || typeof locations[0] === 'undefined') {
+                        console.log("Cannot find location: " + q);
+                        _this.featuresNotFound["" + q] = {
+                            zip: "" + q,
+                            number: "0"
+                        };
+                        innercallback();
                     }
                     else {
-                        return false;
+                        console.log('Found location (international)');
+                        console.log(locations[0].lon + ", " + locations[0].lat);
+                        features.push(_this.createFeature(+locations[0].lon, +locations[0].lat, prop, sensors[index] || {}));
+                        innercallback();
                     }
                 });
-                if (!searchPerformed)
-                    innercallback();
             }
             else {
                 innercallback();
@@ -976,7 +702,7 @@ var MapLayerFactory = /** @class */ (function () {
             callback();
         }
         //https://github.com/yuletide/node-proj4js-defs/blob/master/epsg.js
-        //Proj4js.defs["EPSG:28992"] = "+proj=sterea +lat_0=52.15616055555555 +lon_0=5.38763888888889 +k=0.9999079 +x_0=155000 +y_0=463000
+        //Proj4js.defs["EPSG:28992"] = "+proj=sterea +lat_0=52.15616055555555 +lon_0=5.38763888888889 +k=0.9999079 +x_0=155000 +y_0=463000 
         //+ellps=bessel + towgs84=565.417, 50.3319, 465.552, -0.398957, 0.343988, -1.8774, 4.0725 + units=m + no_defs";
         proj4.defs('RD', '+proj=sterea +lat_0=52.15616055555555 +lon_0=5.38763888888889 +k=0.9999079 +x_0=155000 +y_0=463000 ' +
             ' +ellps=bessel +towgs84=565.417,50.3319,465.552,-0.398957,0.343988,-1.8774,4.0725 +units=m +no_defs');
@@ -1016,49 +742,36 @@ var MapLayerFactory = /** @class */ (function () {
             callback();
         }
         var todo = properties.length;
+        var bg = this.bag;
         var asyncthis = this;
         async.eachSeries(properties, function (prop, innercallback) {
             var index = properties.indexOf(prop);
             if (prop.hasOwnProperty(zipCode) && typeof prop[zipCode] === 'string') {
                 var zip = prop[zipCode].replace(/ /g, '');
                 var nmb = prop[houseNumber];
-                var searchPerformed = asyncthis.addressSources.some(function (src) {
-                    if (typeof src.lookupBagAddress === 'function') {
-                        src.lookupBagAddress(zip, nmb, bagOptions, function (locations) {
-                            //console.log(todo);
-                            if (!locations || locations.length === 0 || typeof locations[0] === 'undefined') {
-                                console.log("Cannot find location with zip: " + zip + ", houseNumber: " + nmb);
-                                asyncthis.featuresNotFound["" + zip + nmb] = {
-                                    zip: "" + zip,
-                                    number: "" + nmb
-                                };
-                                features.push(asyncthis.createFeatureWithoutGeometry(prop, sensors[index] || {}));
-                            }
-                            else {
-                                for (var key in locations[0]) {
-                                    if (key !== 'lon' && key !== 'lat') {
-                                        if (locations[0][key]) {
-                                            prop[(key.charAt(0).toUpperCase() + key.slice(1))] = locations[0][key];
-                                            asyncthis.createPropertyType(propertyTypes, (key.charAt(0).toUpperCase() + key.slice(1)), 'BAG');
-                                        }
-                                    }
-                                }
-                                if (prop.hasOwnProperty('_mergedHouseNumber')) {
-                                    delete prop['_mergedHouseNumber'];
-                                }
-                                //console.log('locations[0] ' + locations[0]);
-                                features.push(asyncthis.createFeature(locations[0].lon, locations[0].lat, prop, sensors[index] || {}));
-                            }
-                            innercallback();
-                        });
-                        return true;
+                bg.lookupBagAddress(zip, nmb, bagOptions, function (locations) {
+                    //console.log(todo);
+                    if (!locations || locations.length === 0 || typeof locations[0] === 'undefined') {
+                        console.log("Cannot find location with zip: " + zip + ", houseNumber: " + nmb);
+                        asyncthis.featuresNotFound["" + zip + nmb] = { zip: "" + zip, number: "" + nmb };
                     }
                     else {
-                        return false;
+                        for (var key in locations[0]) {
+                            if (key !== 'lon' && key !== 'lat') {
+                                if (locations[0][key]) {
+                                    prop[(key.charAt(0).toUpperCase() + key.slice(1))] = locations[0][key];
+                                    asyncthis.createPropertyType(propertyTypes, (key.charAt(0).toUpperCase() + key.slice(1)), 'BAG');
+                                }
+                            }
+                        }
+                        if (prop.hasOwnProperty('_mergedHouseNumber')) {
+                            delete prop['_mergedHouseNumber'];
+                        }
+                        //console.log('locations[0] ' + locations[0]);
+                        features.push(asyncthis.createFeature(locations[0].lon, locations[0].lat, prop, sensors[index] || {}));
                     }
-                });
-                if (!searchPerformed)
                     innercallback();
+                });
             }
             else {
                 //console.log('No valid zipcode found: ' + prop[zipCode]);
@@ -1067,67 +780,37 @@ var MapLayerFactory = /** @class */ (function () {
         }, function (err) {
             callback();
         });
-    };
-    MapLayerFactory.prototype.createCityFeature = function (cityName, features, properties, propertyTypes, sensors, callback) {
-        if (!properties) {
-            callback();
-        }
-        var todo = properties.length;
-        var asyncthis = this;
-        async.eachSeries(properties, function (prop, innercallback) {
-            var index = properties.indexOf(prop);
-            if (prop.hasOwnProperty(cityName) && typeof prop[cityName] === 'string') {
-                var city = prop[cityName].replace(/ /g, '');
-                var searchPerformed = asyncthis.addressSources.some(function (src) {
-                    if (typeof src.lookupBagCity === 'function') {
-                        src.lookupBagCity(city, function (locations) {
-                            //console.log(todo);
-                            if (!locations || locations.length === 0 || typeof locations[0] === 'undefined') {
-                                console.log("Cannot find location with city: " + city);
-                                asyncthis.featuresNotFound["" + city] = {
-                                    city: "" + city,
-                                    number: "0"
-                                };
-                                features.push(asyncthis.createFeatureWithoutGeometry(prop, sensors[index] || {}));
-                            }
-                            else {
-                                for (var key in locations[0]) {
-                                    if (key !== 'lon' && key !== 'lat') {
-                                        if (locations[0][key]) {
-                                            prop[(key.charAt(0).toUpperCase() + key.slice(1))] = locations[0][key];
-                                            asyncthis.createPropertyType(propertyTypes, (key.charAt(0).toUpperCase() + key.slice(1)), 'BAG');
-                                        }
-                                    }
-                                }
-                                if (prop.hasOwnProperty('_mergedHouseNumber')) {
-                                    delete prop['_mergedHouseNumber'];
-                                }
-                                //console.log('locations[0] ' + locations[0]);
-                                features.push(asyncthis.createFeature(locations[0].lon, locations[0].lat, prop, sensors[index] || {}));
-                            }
-                            innercallback();
-                        });
-                        return true;
-                    }
-                    else {
-                        return false;
-                    }
-                });
-                if (!searchPerformed)
-                    innercallback();
-            }
-            else {
-                //console.log('No valid zipcode found: ' + prop[zipCode]);
-                innercallback();
-            }
-        }, function (err) {
-            callback();
-        });
-    };
-    MapLayerFactory.prototype.createFeatureWithoutGeometry = function (properties, sensors) {
-        var geom = this.createFeature(0, 0, properties, sensors);
-        delete geom.geometry;
-        return geom;
+        // properties.forEach((prop, index) => {
+        //     if (prop.hasOwnProperty(zipCode) && typeof prop[zipCode] === 'string') {
+        //         var zip = prop[zipCode].replace(/ /g, '');
+        //         var nmb = prop[houseNumber];
+        //         this.bag.lookupBagAddress(zip, nmb, bagOptions, (locations: Location[]) => {
+        //             //console.log(todo);
+        //             if (!locations || locations.length === 0 || typeof locations[0] == 'undefined') {
+        //                 console.log(`Cannot find location with zip: ${zip}, houseNumber: ${nmb}`);
+        //                 this.featuresNotFound[`${zip}${nmb}`] = { zip: `${zip}`, number: `${nmb}` };
+        //             } else {
+        //                 for (var key in locations[0]) {
+        //                     if (key !== "lon" && key !== "lat") {
+        //                         if (locations[0][key]) {
+        //                             prop[(key.charAt(0).toUpperCase() + key.slice(1))] = locations[0][key];
+        //                             this.createPropertyType(propertyTypes, (key.charAt(0).toUpperCase() + key.slice(1)), "BAG");
+        //                         }
+        //                     }
+        //                 }
+        //                 if (prop.hasOwnProperty('_mergedHouseNumber')) delete prop['_mergedHouseNumber'];
+        //                 //console.log('locations[0] ' + locations[0]);
+        //                 features.push(this.createFeature(locations[0].lon, locations[0].lat, prop, sensors[index] || {}));
+        //             }
+        //         });
+        //         todo--;
+        //         if (todo <= 0)
+        //           callback();
+        //     } else {
+        //         console.log('No valid zipcode found: ' + prop[zipCode]);
+        //         todo--;
+        //     }
+        // });
     };
     MapLayerFactory.prototype.createFeature = function (lon, lat, properties, sensors) {
         var gjson = {

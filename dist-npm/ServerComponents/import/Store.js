@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var fs = require("fs");
 var path = require("path");
 var Utils = require("../helpers/Utils");
-var FileStore = /** @class */ (function () {
+var FileStore = (function () {
     function FileStore(opt) {
         this.resources = {};
         this.store = opt["storageFile"] || "importers.json";
@@ -87,7 +87,7 @@ var FileStore = /** @class */ (function () {
     return FileStore;
 }());
 exports.FileStore = FileStore;
-var FolderStore = /** @class */ (function () {
+var FolderStore = (function () {
     function FolderStore(opt) {
         this.resources = {};
         this.folder = path.join(path.dirname(require.main.filename), opt["storageFolder"] || "public/data/resourceTypes");

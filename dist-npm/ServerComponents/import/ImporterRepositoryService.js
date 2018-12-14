@@ -4,7 +4,7 @@ var async = require("async");
 var split = require("split");
 var es = require('event-stream');
 /* Multiple storage engine supported, e.g. file system, mongo  */
-var ImporterRepositoryService = /** @class */ (function () {
+var ImporterRepositoryService = (function () {
     function ImporterRepositoryService(store) {
         this.store = store;
         this.transformers = [];

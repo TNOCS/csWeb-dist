@@ -1,5 +1,5 @@
 /// <reference types="node" />
-import transform = require('./ITransform');
+import transform = require("./ITransform");
 declare class BushalteAggregateTransformer implements transform.ITransform {
     title: string;
     id: string;
@@ -17,7 +17,7 @@ declare class BushalteAggregateTransformer implements transform.ITransform {
     aggregateShapeUrl: string;
     aggregateShapeKeyProperty: string;
     constructor(title: string);
-    initialize(opt: transform.ITransformFactoryOptions, callback: (error: any) => void): void;
+    initialize(opt: transform.ITransformFactoryOptions, callback: (error) => void): void;
     create(config: any, opt?: transform.ITransformFactoryOptions): NodeJS.ReadWriteStream;
 }
 export = BushalteAggregateTransformer;

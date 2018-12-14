@@ -2,10 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var request = require("request");
 var _ = require("underscore");
-var NominatimSource = /** @class */ (function () {
+var NominatimSource = (function () {
     function NominatimSource(config) {
         this.connectionString = 'http://nominatim.openstreetmap.org/search?';
-        this.name = 'nominatim (openstreetmap)';
         if (config['osmUrl'])
             this.connectionString = config['osmUrl'];
     }
@@ -25,8 +24,8 @@ var NominatimSource = /** @class */ (function () {
         }, '');
         console.log("Find nominatim: " + url);
         request.get(url, function (error, response, body) {
-            if (error || !response || response.statusCode !== 200) {
-                console.log("Error in nominatim search: code " + (response ? response.statusCode : 'null') + "; " + error);
+            if (error) {
+                console.log("Error in nominatim search: " + error);
                 callback(null);
                 return;
             }
@@ -40,6 +39,18 @@ var NominatimSource = /** @class */ (function () {
         console.log('Not implemented');
         callback(null);
         return;
+    };
+    NominatimSource.prototype.lookupBagArea = function (bounds, isArea, callback) {
+        console.log('Function not implemented');
+        callback(null);
+    };
+    NominatimSource.prototype.lookupBagBuurt = function (bounds, isArea, callback) {
+        console.log('Function not implemented');
+        callback(null);
+    };
+    NominatimSource.prototype.lookupBagAddress = function (zip, houseNumber, bagOptions, callback) {
+        console.log('Not implemented');
+        callback(null);
     };
     return NominatimSource;
 }());

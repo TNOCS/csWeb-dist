@@ -1,11 +1,8 @@
 "use strict";
 var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
     return function (d, b) {
         extendStatics(d, b);
         function __() { this.constructor = d; }
@@ -30,7 +27,7 @@ var dateExt = require('../helpers/DateUtils');
 /**
  * Authentication API based on Satellizer, which uses a JSON Web Token for access control.
  */
-var AuthAPI = /** @class */ (function () {
+var AuthAPI = (function () {
     function AuthAPI(manager, server, baseUrl) {
         if (baseUrl === void 0) { baseUrl = "/api"; }
         this.manager = manager;
@@ -82,9 +79,9 @@ var AuthAPI = /** @class */ (function () {
     }
     /** Read user details */
     AuthAPI.prototype.getUser = function (req, res) {
-        User.findById(req.params.teamId, req['user'], function (err, user) {
+        User.findById(req.params.teamId, req.user, function (err, user) {
             if (err) {
-                Winston.error('Error: couldn\'t find user: team ' + req.params.teamId, ', user ' + req['user']);
+                Winston.error('Error: couldn\'t find user: team ' + req.params.teamId, ', user ' + req.user);
                 return res.status(401).send({ message: 'Couldn\'t find user.' });
             }
             else {
@@ -94,9 +91,9 @@ var AuthAPI = /** @class */ (function () {
     };
     /** Update user details */
     AuthAPI.prototype.updateUser = function (req, res) {
-        User.findById(req.params.teamId, req['user'], function (err, user) {
+        User.findById(req.params.teamId, req.user, function (err, user) {
             if (!user) {
-                Winston.warn('Updating user not possible. User not found: Team ' + req.params.teamId, ', user ' + req['user']);
+                Winston.warn('Updating user not possible. User not found: Team ' + req.params.teamId, ', user ' + req.user);
                 return res.status(400).send({ message: 'User not found' });
             }
             user.displayName = req.body.displayName || user.displayName;
@@ -146,14 +143,7 @@ var AuthAPI = /** @class */ (function () {
         if (!req.headers['authorization']) {
             return res.status(401).send({ message: 'Please make sure your request has an Authorization header' });
         }
-        var auths = req.headers['authorization'];
-        var token;
-        if (_.isArray(auths)) {
-            token = auths[0].split(' ')[1];
-        }
-        else {
-            token = auths.split(' ')[1];
-        }
+        var token = req.headers['authorization'].split(' ')[1];
         //Winston.error(`Token received: ${token}`);
         //var user: IUser = { displayName: 'Erik', email: 'erik.vullings@gmail.com', password: '1234' };
         //var testPayload = AuthAPI.createJWT(user);
@@ -169,7 +159,7 @@ var AuthAPI = /** @class */ (function () {
         if (payload.exp <= Date.now()) {
             return res.status(401).send({ message: 'Token has expired' });
         }
-        req['user'] = payload.sub;
+        req.user = payload.sub;
         //Winston.error('Passed ensureAuthenticated...')
         next();
     };
@@ -190,7 +180,7 @@ var AuthAPI = /** @class */ (function () {
         if (providers.indexOf(provider) === -1) {
             return res.status(400).send({ message: 'Unknown OAuth Provider' });
         }
-        User.findById(req.params.teamId, req['user'], function (err, user) {
+        User.findById(req.params.teamId, req.user, function (err, user) {
             if (!user) {
                 return res.status(400).send({ message: 'User Not Found' });
             }
@@ -771,7 +761,7 @@ var AuthAPI = /** @class */ (function () {
     return AuthAPI;
 }());
 exports.AuthAPI = AuthAPI;
-var User = /** @class */ (function (_super) {
+var User = (function (_super) {
     __extends(User, _super);
     function User(user) {
         var _this = _super.call(this) || this;

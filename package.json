@@ -1,6 +1,6 @@
 {
   "name": "csweb",
-  "version": "0.3.28",
+  "version": "0.3.0-wodk.0",
   "description": "CommonSense web application",
   "main": "dist-npm/index.js",
   "typings": "dist-npm/index",

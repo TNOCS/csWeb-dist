@@ -16,7 +16,7 @@ var Api = require("../api/ApiManager");
  *  been updated in the interval period will be pushed to the client. Next to the polling interval, a prune period
  *  can be configured. When features have not been updated within the prune period, they will be deleted.
  */
-var RestDataSource = /** @class */ (function () {
+var RestDataSource = (function () {
     function RestDataSource(server, apiManager, layerId, url) {
         if (url === void 0) { url = '/restdatasource'; }
         this.server = server;
@@ -108,7 +108,7 @@ var RestDataSource = /** @class */ (function () {
             if (_this.enableLogging) {
                 var toWrite = 'Time: ' + (new Date()).toISOString() + '\n';
                 toWrite += JSON.stringify(result, null, 2) + '\n';
-                fs.appendFile(_this.restDataSourceOpts.logFile, toWrite, { encoding: 'utf8' }, function (err) {
+                fs.appendFile(_this.restDataSourceOpts.logFile, toWrite, 'utf8', function (err) {
                     if (!err) {
                         Winston.debug('Logged REST datasource result');
                     }

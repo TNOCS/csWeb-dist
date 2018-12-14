@@ -1,11 +1,8 @@
 "use strict";
 var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
     return function (d, b) {
         extendStatics(d, b);
         function __() { this.constructor = d; }
@@ -21,7 +18,7 @@ var KeyUpdateAction = ClientConnection.KeyUpdateAction;
 var ApiResult = ApiManager.ApiResult;
 var BaseConnector = require("./BaseConnector");
 var Winston = require("winston");
-var SocketIOAPI = /** @class */ (function (_super) {
+var SocketIOAPI = (function (_super) {
     __extends(SocketIOAPI, _super);
     function SocketIOAPI(connection) {
         var _this = _super.call(this) || this;
@@ -54,9 +51,6 @@ var SocketIOAPI = /** @class */ (function (_super) {
                         break;
                     case ClientConnection.LayerUpdateAction.addUpdateFeatureBatch:
                         _this.manager.addUpdateFeatureBatch(lu.layerId, lu.item, { source: _this.id, user: clientId }, function (r) { });
-                        break;
-                    case ClientConnection.LayerUpdateAction.deleteFeatureBatch:
-                        _this.manager.deleteFeatureBatch(lu.layerId, lu.item, false, { source: _this.id, user: clientId }, function (r) { });
                         break;
                 }
             }
@@ -162,14 +156,6 @@ var SocketIOAPI = /** @class */ (function (_super) {
         Winston.info('socketio: update logs ' + JSON.stringify(logs));
         var lu = { layerId: layerId, action: LayerUpdateAction.updateLog, item: logs, featureId: featureId };
         this.connection.updateFeature(layerId, lu, meta);
-        callback({ result: ApiResult.OK });
-    };
-    SocketIOAPI.prototype.deleteFeatureBatch = function (layerId, featureIds, useLog, meta, callback) {
-        var _this = this;
-        featureIds.forEach(function (fid) {
-            var lu = { layerId: layerId, action: LayerUpdateAction.deleteFeature, featureId: fid };
-            _this.connection.updateFeature(layerId, lu, meta);
-        });
         callback({ result: ApiResult.OK });
     };
     SocketIOAPI.prototype.deleteFeature = function (layerId, featureId, meta, callback) {

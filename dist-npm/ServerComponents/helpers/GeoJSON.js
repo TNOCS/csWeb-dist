@@ -4,7 +4,7 @@ var Utils = require("./Utils");
 /**
  * Simple helper class to easily create a GeoJSON file.
  */
-var GeoJSONFactory = /** @class */ (function () {
+var GeoJSONFactory = (function () {
     function GeoJSONFactory() {
     }
     /**
@@ -24,7 +24,7 @@ exports.GeoJSONFactory = GeoJSONFactory;
 * A set of static geo tools
 * Source: http://www.csgnetwork.com/degreelenllavcalc.html
 */
-var GeoExtensions = /** @class */ (function () {
+var GeoExtensions = (function () {
     function GeoExtensions() {
     }
     GeoExtensions.deg2rad = function (degree) {

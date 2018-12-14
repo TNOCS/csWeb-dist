@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var GeoJSON = require("../helpers/GeoJSON");
 var Conrec = require("../helpers/conrec");
-var IsoLines = /** @class */ (function () {
+var IsoLines = (function () {
     function IsoLines() {
     }
     // convertRDToWGS84
@@ -119,7 +119,6 @@ var IsoLines = /** @class */ (function () {
                 break;
             default:
                 throw new Error('Current projection is not supported!');
-            // break;
         }
     };
     /** Extract the grid data from the input */

@@ -9,7 +9,7 @@ export declare class FileStore implements IStore {
     /**
      * Load the file from disk.
      */
-    private load;
+    private load();
     /**
      * Save the list of importers to disk.
      */
@@ -44,7 +44,7 @@ export declare class FolderStore implements IStore {
     /**
      * Load the file from disk.
      */
-    private load;
+    private load(callback?);
     save(id: string, resource: any): void;
     /**
      * Get all importers as an array.

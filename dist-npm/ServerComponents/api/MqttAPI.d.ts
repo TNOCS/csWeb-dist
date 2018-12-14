@@ -14,7 +14,7 @@ export declare class MqttAPI extends BaseConnector.BaseConnector {
     router: mqttrouter.MqttRouter;
     constructor(server: string, port?: number, layerPrefix?: string, keyPrefix?: string);
     init(layerManager: ApiManager.ApiManager, options: any, callback: Function): void;
-    private extractLayer;
+    private extractLayer(message);
     /**
      * Subscribe to certain keys using the internal MQTT router.
      * See also https://github.com/wolfeidau/mqtt-router.
@@ -30,12 +30,12 @@ export declare class MqttAPI extends BaseConnector.BaseConnector {
     updateLayer(layer: Layer, meta: ApiMeta, callback: Function): void;
     updateFeature(layerId: string, feature: any, useLog: boolean, meta: ApiMeta, callback: Function): void;
     addUpdateFeatureBatch(layerId: string, features: ApiManager.IChangeEvent[], useLog: boolean, meta: ApiMeta, callback: Function): void;
-    private sendFeature;
+    private sendFeature(layerId, featureId);
     updateProperty(layerId: string, featureId: string, property: string, value: any, useLog: boolean, meta: ApiMeta, callback: Function): void;
     updateLogs(layerId: string, featureId: string, logs: {
         [key: string]: Log[];
     }, meta: ApiMeta, callback: Function): void;
     initLayer(layer: Layer): void;
-    private getKeyChannel;
+    private getKeyChannel(keyId);
     updateKey(keyId: string, value: Object, meta: ApiMeta, callback: Function): void;
 }

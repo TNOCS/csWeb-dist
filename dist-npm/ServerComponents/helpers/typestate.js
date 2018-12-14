@@ -1,11 +1,8 @@
 "use strict";
 var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
     return function (d, b) {
         extendStatics(d, b);
         function __() { this.constructor = d; }
@@ -17,7 +14,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * Transition grouping to faciliate fluent api
  * @class Transitions<T>
  */
-var Transitions = /** @class */ (function () {
+var Transitions = (function () {
     function Transitions(fsm) {
         this.fsm = fsm;
     }
@@ -51,7 +48,7 @@ exports.Transitions = Transitions;
  * Internal representation of a transition function
  * @class TransitionFunction<T>
  */
-var TransitionFunction = /** @class */ (function () {
+var TransitionFunction = (function () {
     // public events: {
     //     [trigger: number]: {
     //         callback: Function,
@@ -66,7 +63,7 @@ var TransitionFunction = /** @class */ (function () {
     return TransitionFunction;
 }());
 exports.TransitionFunction = TransitionFunction;
-var TransitionFunctions = /** @class */ (function (_super) {
+var TransitionFunctions = (function (_super) {
     __extends(TransitionFunctions, _super);
     function TransitionFunctions(fsm) {
         var _this = _super.call(this) || this;
@@ -89,7 +86,7 @@ exports.TransitionFunctions = TransitionFunctions;
  * with an enumeration.
  * @class FiniteStateMachine<T>
  */
-var FiniteStateMachine = /** @class */ (function () {
+var FiniteStateMachine = (function () {
     /**
      * @constructor
      * @param startState {T} Intial starting state

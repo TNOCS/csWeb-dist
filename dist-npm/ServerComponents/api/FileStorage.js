@@ -1,11 +1,8 @@
 "use strict";
 var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
     return function (d, b) {
         extendStatics(d, b);
         function __() { this.constructor = d; }
@@ -24,24 +21,22 @@ var StringExt = require('../helpers/StringExt'); // to remove the BOM.
 var Winston = require("winston");
 var helpers = require("../helpers/Utils");
 var sift = require('sift');
-var FileStorage = /** @class */ (function (_super) {
+var FileStorage = (function (_super) {
     __extends(FileStorage, _super);
-    function FileStorage(rootpath, watch, ignoreInitial, layerBaseUrl) {
+    function FileStorage(rootpath, watch, ignoreInitial) {
         if (watch === void 0) { watch = true; }
         if (ignoreInitial === void 0) { ignoreInitial = false; }
-        if (layerBaseUrl === void 0) { layerBaseUrl = '/api/layers'; }
         var _this = _super.call(this) || this;
         _this.rootpath = rootpath;
         _this.ignoreInitial = ignoreInitial;
-        _this.layerBaseUrl = layerBaseUrl;
-        _this.layers = [];
+        _this.layers = {};
         _this.projects = {};
         _this.keys = {};
         _this.resources = {};
         _this.layerDebounceFunctions = {};
         _this.saveProjectDelay = _.debounce(function (project) {
             _this.saveProjectFile(project);
-        }, 2000);
+        }, 5000);
         _this.saveResourcesDelay = _.debounce(function (res) {
             _this.saveResourceFile(res);
         }, 25);
@@ -76,9 +71,6 @@ var FileStorage = /** @class */ (function (_super) {
             _this.watchProjectsFolder();
             _this.watchResourcesFolder();
         }
-        setTimeout(function () {
-            _this.printOverview();
-        }, 10000);
         return _this;
     }
     FileStorage.prototype.watchLayersFolder = function () {
@@ -93,19 +85,19 @@ var FileStorage = /** @class */ (function (_super) {
         setTimeout(function () {
             var watcher = chokidar.watch(_this.layersPath, { ignoreInitial: _this.ignoreInitial, ignored: /[\/\\]\./, persistent: true });
             watcher.on('all', (function (action, path) {
-                if (action === 'add') {
+                if (action == "add") {
                     Winston.debug('filestore: new file found : ' + path);
                     _this.openLayerFile(path);
                 }
-                if (action === 'unlink') {
+                if (action == "unlink") {
                     _this.closeLayerFile(path);
                     //this.removeLayer(path);
                 }
-                if (action === 'change') {
+                if (action == "change") {
                     //this.addLayer(path);
                 }
             }));
-        }, 1500);
+        }, 1000);
     };
     FileStorage.prototype.getDirectories = function (srcpath) {
         return fs.readdirSync(srcpath).filter(function (file) {
@@ -121,15 +113,15 @@ var FileStorage = /** @class */ (function (_super) {
         setTimeout(function () {
             var watcher = chokidar.watch(_this.projectsPath, { ignoreInitial: _this.ignoreInitial, depth: 0, ignored: /[\/\\]\./, persistent: true });
             watcher.on('all', (function (action, path) {
-                if (action === 'add') {
+                if (action == "add") {
                     Winston.info('filestore: new project found : ' + path);
                     _this.openProjectFile(path);
                 }
-                if (action === 'unlink') {
+                if (action == "unlink") {
                     _this.closeLayerFile(path);
                     //this.removeLayer(path);
                 }
-                if (action === 'change') {
+                if (action == "change") {
                     //this.addLayer(path);
                 }
             }));
@@ -139,19 +131,14 @@ var FileStorage = /** @class */ (function (_super) {
             });
         }, 1000);
     };
-    FileStorage.prototype.printOverview = function () {
-        Winston.info("Filestorage contains " + Object.keys(this.projects).length + " projects");
-        Winston.info("and " + Object.keys(this.layers).length + " layers");
-        Winston.info("and " + Object.keys(this.resources).length + " resources.");
-    };
     FileStorage.prototype.openStaticFolder = function (folder) {
         var _this = this;
         // check if project file exists
         var f = path.join(this.projectsPath, folder);
-        var projectFile = path.join(f, 'project.json');
+        var projectFile = path.join(f, "project.json");
         if (fs.existsSync(projectFile)) {
             this.openProjectFile(projectFile, folder, true);
-            var rf = path.join(f, 'resources');
+            var rf = path.join(f, "resources");
             if (fs.existsSync(rf)) {
                 fs.readdir(rf, function (error, files) {
                     if (!error) {
@@ -177,18 +164,18 @@ var FileStorage = /** @class */ (function (_super) {
             var watcher = chokidar.watch(_this.keysPath, { ignoreInitial: _this.ignoreInitial, ignored: /[\/\\]\./, persistent: true });
             watcher.on('all', (function (action, path) {
                 if (!fs.statSync(path).isDirectory()) {
-                    if (action === 'add') {
+                    if (action == "add") {
                         Winston.info('filestore: new file found : ' + path);
                         _this.openKeyFile(path);
                     }
-                    if (action === 'unlink') {
+                    if (action == "unlink") {
                         _this.closeKeyFile(path);
                     }
-                    if (action === 'change') {
+                    if (action == "change") {
                     }
                 }
             }));
-        }, 2500);
+        }, 1000);
     };
     FileStorage.prototype.watchResourcesFolder = function () {
         var _this = this;
@@ -199,17 +186,17 @@ var FileStorage = /** @class */ (function (_super) {
         setTimeout(function () {
             var watcher = chokidar.watch(_this.resourcesPath, { ignoreInitial: _this.ignoreInitial, ignored: /[\/\\]\./, persistent: true });
             watcher.on('all', (function (action, path) {
-                if (action === 'add') {
+                if (action == "add") {
                     Winston.info('filestore: new file found : ' + path);
                     _this.openResourceFile(path);
                 }
-                if (action === 'unlink') {
+                if (action == "unlink") {
                     _this.closeResourceFile(path);
                 }
-                if (action === 'change') {
+                if (action == "change") {
                 }
             }));
-        }, 2000);
+        }, 1000);
     };
     // Create a debounce function for each layer
     FileStorage.prototype.saveLayerDelay = function (layer) {
@@ -262,7 +249,7 @@ var FileStorage = /** @class */ (function (_super) {
         if (res && !_.isEmpty(res)) {
             fs.outputFile(fn, JSON.stringify(res, null, 2), function (error) {
                 if (error) {
-                    Winston.error("filestore: error writing resourcefile : " + fn + " " + error.message);
+                    Winston.error('filestore: error writing resourcefile : ' + fn);
                 }
                 else {
                     Winston.info('filestore: file saved : ' + fn);
@@ -276,10 +263,10 @@ var FileStorage = /** @class */ (function (_super) {
         if (!fn) {
             fn = this.getProjectFilename(project.id);
         }
-        Winston.info("writing project to file: " + fn);
-        fs.writeFile(fn, JSON.stringify(project, null, 2), function (error) {
+        Winston.info('writing project file : ' + fn);
+        fs.writeFile(fn, JSON.stringify(project, null, 4), function (error) {
             if (error) {
-                Winston.info("filestore: error writing project : " + fn + " " + error.message);
+                Winston.info('error writing project file : ' + fn);
             }
             else {
                 Winston.info('filestore: file saved : ' + fn);
@@ -289,7 +276,7 @@ var FileStorage = /** @class */ (function (_super) {
     /** save media file */
     FileStorage.prototype.saveBase64 = function (media) {
         var binaryData = new Buffer(media.base64, 'base64');
-        fs.writeFile(media.fileUri, binaryData, { encoding: 'base64' }, function (error) {
+        fs.writeFile(media.fileUri, binaryData, function (error) {
             if (error) {
                 Winston.error('filestore: error writing base64-file : ' + media.fileUri + ' (err: ' + error + ')');
             }
@@ -298,30 +285,10 @@ var FileStorage = /** @class */ (function (_super) {
             }
         });
     };
-    /** read media file */
-    FileStorage.prototype.readFile = function (file, cb) {
-        fs.stat(file, function (err, stats) {
-            if (err) {
-                cb();
-                return console.error("file \"" + file + "\" not found");
-            }
-            if (!stats.isFile()) {
-                cb();
-                return Winston.info("file \"" + file + "\" is not a valid file");
-            }
-            fs.readFile(file, function (err, data) {
-                if (err) {
-                    cb();
-                    return Winston.info('Error while reading file ' + file);
-                }
-                cb(data);
-            });
-        });
-    };
     FileStorage.prototype.saveLayerFile = function (layer) {
         try {
             var fn = this.getLayerFilename(layer.id);
-            fs.writeFile(fn, JSON.stringify(layer), function (error) {
+            fs.writeFile(fn, JSON.stringify(layer, null, 2), function (error) {
                 if (error) {
                     Winston.info('error writing file : ' + fn);
                 }
@@ -329,7 +296,7 @@ var FileStorage = /** @class */ (function (_super) {
                     Winston.info('filestore: file saved : ' + fn);
                 }
             });
-            if (layer.type === 'dynamicgeojson') {
+            if (layer.type === "dynamicgeojson") {
                 var backup = this.getLayerBackupFilename(layer.id);
                 fs.writeFile(backup, JSON.stringify(layer, null, 2), function (error) {
                     if (error) {
@@ -369,56 +336,35 @@ var FileStorage = /** @class */ (function (_super) {
         var id = this.getProjectId(fileName);
         this.manager.deleteProject(id, {}, function () { });
     };
-    FileStorage.prototype.fetchLayer = function (layerId) {
-        var fileName = this.getLayerFilename(layerId);
-        var data = fs.readFileSync(fileName, 'utf8');
-        if (!data) {
-            Winston.warn("Error reading file " + fileName);
-            return null;
-        }
-        var layer;
-        try {
-            layer = JSON.parse(data);
-        }
-        catch (e) {
-            Winston.warn("Error parsing file: " + fileName + ". Skipped. (Data length: " + ((data) ? data.length : 0) + ")");
-            return null;
-        }
-        layer.storage = this.id;
-        layer.id = layerId;
-        return layer;
-    };
     FileStorage.prototype.openLayerFile = function (fileName) {
         var _this = this;
         if ((fileName.indexOf('.backup')) > 0)
             return;
         var id = this.getLayerId(fileName);
         Winston.info('filestore: openfile ' + id);
-        fs.readFile(fileName, 'utf8', function (err, data) {
-            if (!err) {
-                var layer;
-                try {
-                    layer = JSON.parse(data);
-                }
-                catch (e) {
-                    Winston.warn("Error parsing file: " + fileName + ". Skipped. (Data length: " + ((data) ? data.length : 0) + ")");
-                    return;
-                }
-                layer.storage = _this.id;
-                layer.id = id;
-                // this.layers[id] = layer;
-                //layer.title = id;
-                layer.storage = _this.id;
-                //layer.type = "geojson";
-                layer.url = _this.layerBaseUrl + '/' + id;
-                (layer.storage) ? Winston.debug('storage ' + layer.storage) : Winston.warn("No storage found for " + layer);
-                _this.manager && _this.manager.addUpdateLayer(layer, { source: _this.id }, function (result) {
-                    if (result && result.layer) {
-                        _this.addLayer(result.layer, { source: _this.id }, function () { });
+        if (!this.layers.hasOwnProperty(id)) {
+            fs.readFile(fileName, "utf8", function (err, data) {
+                if (!err) {
+                    var layer;
+                    try {
+                        layer = JSON.parse(data);
                     }
-                });
-            }
-        });
+                    catch (e) {
+                        Winston.warn("Error parsing file: " + fileName + ". Skipped. (Data length: " + ((data) ? data.length : 0) + ")");
+                        return;
+                    }
+                    layer.storage = _this.id;
+                    layer.id = id;
+                    _this.layers[id] = layer;
+                    //layer.title = id;
+                    layer.storage = _this.id;
+                    //layer.type = "geojson";
+                    layer.url = "/api/layers/" + id;
+                    (layer.storage) ? Winston.debug('storage ' + layer.storage) : Winston.warn("No storage found for " + layer);
+                    _this.manager && _this.manager.addUpdateLayer(layer, {}, function () { });
+                }
+            });
+        }
         if (path.basename(fileName) === 'project.json')
             return;
     };
@@ -427,7 +373,7 @@ var FileStorage = /** @class */ (function (_super) {
         var id = this.getKeyId(fileName);
         Winston.info('filestore: openfile ' + id);
         if (!this.keys.hasOwnProperty(id)) {
-            fs.readFile(fileName, 'utf8', function (err, data) {
+            fs.readFile(fileName, "utf8", function (err, data) {
                 if (!err && data && data.indexOf('{') >= 0) {
                     var key = JSON.parse(data);
                     key.storage = _this.id;
@@ -441,7 +387,7 @@ var FileStorage = /** @class */ (function (_super) {
     FileStorage.prototype.openResourceFile = function (fileName) {
         var _this = this;
         var id = this.getResourceId(fileName);
-        // console.log('!! open resource file : ' + fileName + ' (' + id + ')');
+        console.log('!! open resource file : ' + fileName + " (" + id + ")");
         Winston.info('filestore: openfile ' + id);
         if (!this.resources.hasOwnProperty(id)) {
             fs.readFile(fileName, 'utf8', function (err, data) {
@@ -482,8 +428,8 @@ var FileStorage = /** @class */ (function (_super) {
                     // project.logo = "";
                     if (typeof isDynamic !== 'undefined')
                         project.isDynamic = isDynamic;
-                    project.url = '/api/projects/' + id;
-                    _this.manager && _this.manager.updateProject(project, { source: _this.id }, function () { });
+                    project.url = "/api/projects/" + id;
+                    _this.manager && _this.manager.updateProject(project, {}, function () { });
                 }
             }
             else if (err) {
@@ -496,8 +442,8 @@ var FileStorage = /** @class */ (function (_super) {
      * Find layer for a specific layerId (can return null)
      */
     FileStorage.prototype.findLayer = function (layerId) {
-        if (this.layers.indexOf(layerId) >= 0) {
-            return this.fetchLayer(layerId);
+        if (this.layers.hasOwnProperty(layerId)) {
+            return this.layers[layerId];
         }
         else {
             return null;
@@ -515,24 +461,11 @@ var FileStorage = /** @class */ (function (_super) {
         }
     };
     FileStorage.prototype.getProject = function (projectId, meta, callback) {
-        var _this = this;
         if (this.projects.hasOwnProperty(projectId)) {
             callback({ result: ApiResult.OK, project: this.projects[projectId] });
         }
         else {
-            var filename_1 = path.join(this.projectsPath, projectId + '.json');
-            fs.exists(filename_1, function (exists) {
-                if (!exists) {
-                    return callback({ result: ApiResult.ProjectNotFound });
-                }
-                fs.readFile(filename_1, 'utf8', function (err, data) {
-                    if (err) {
-                        return callback({ result: ApiResult.ProjectNotFound });
-                    }
-                    _this.projects[projectId] = JSON.parse(data);
-                    callback({ result: ApiResult.OK, project: _this.projects[projectId] });
-                });
-            });
+            callback({ result: ApiResult.ProjectNotFound });
         }
     };
     FileStorage.prototype.updateProject = function (project, meta, callback) {
@@ -546,30 +479,10 @@ var FileStorage = /** @class */ (function (_super) {
             callback({ result: ApiResult.Error });
         }
     };
-    FileStorage.prototype.deleteProject = function (projectId, meta, callback) {
-        if (this.projects.hasOwnProperty(projectId)) {
-            delete this.projects[projectId];
-            var fn = this.getProjectFilename(projectId);
-            fs.unlink(fn, function (err) {
-                if (err) {
-                    Winston.error('File: Error deleting ' + fn + ' (' + err.message + ')');
-                }
-                else {
-                    Winston.info('File: deleted: ' + fn);
-                }
-            });
-            callback({ result: ApiResult.OK, layer: null });
-        }
-        else {
-            callback({ result: ApiResult.Error });
-        }
-    };
     // layer methods first, in crud order.
     FileStorage.prototype.addLayer = function (layer, meta, callback) {
         try {
-            if (this.layers.indexOf(layer.id) < 0) {
-                this.layers.push(layer.id);
-            }
+            this.layers[layer.id] = layer;
             this.saveLayerDelay(layer);
             callback({ result: ApiResult.OK });
         }
@@ -578,22 +491,18 @@ var FileStorage = /** @class */ (function (_super) {
         }
     };
     FileStorage.prototype.getLayer = function (layerId, meta, callback) {
-        if (this.layers.indexOf(layerId) >= 0) {
-            var l = this.fetchLayer(layerId);
-            if (l) {
-                callback({ result: ApiResult.OK, layer: l });
-                return;
-            }
-            else {
-                Winston.warn("Layer " + layerId + " is empty");
-            }
+        if (this.layers.hasOwnProperty(layerId)) {
+            callback({ result: ApiResult.OK, layer: this.layers[layerId] });
         }
-        callback({ result: ApiResult.LayerNotFound });
+        else {
+            callback({ result: ApiResult.LayerNotFound });
+        }
     };
     FileStorage.prototype.updateLayer = function (layer, meta, callback) {
-        if (this.layers.indexOf(layer.id) >= 0) {
+        if (this.layers.hasOwnProperty(layer.id)) {
+            this.layers[layer.id] = layer;
             this.saveLayerDelay(layer);
-            Winston.info('FileStorage: updated layer ' + layer.id);
+            Winston.info("FileStorage: updated layer " + layer.id);
             callback({ result: ApiResult.OK, layer: null });
         }
         else {
@@ -602,11 +511,11 @@ var FileStorage = /** @class */ (function (_super) {
     };
     FileStorage.prototype.deleteLayer = function (layerId, meta, callback) {
         if (this.layers.hasOwnProperty(layerId)) {
-            this.layers = this.layers.filter(function (l) { return l !== layerId; });
+            delete this.layers[layerId];
             var fn = this.getLayerFilename(layerId);
             fs.unlink(fn, function (err) {
                 if (err) {
-                    Winston.error('File: Error deleting ' + fn + ' (' + err.message + ')');
+                    Winston.error('File: Error deleting ' + fn + " (" + err.message + ")");
                 }
                 else {
                     Winston.info('File: deleted: ' + fn);
@@ -619,7 +528,7 @@ var FileStorage = /** @class */ (function (_super) {
         }
     };
     FileStorage.prototype.searchLayer = function (layerId, keyWord, meta, callback) {
-        Winston.error('search request:' + layerId + ' (' + keyWord + ')');
+        Winston.error('search request:' + layerId + " (" + keyWord + ")");
         var result = [];
         callback({ result: ApiResult.OK, features: result });
     };
@@ -635,14 +544,15 @@ var FileStorage = /** @class */ (function (_super) {
             }
             else {
                 Winston.error('filestorage: add feature: feature id already exists');
-                callback({ result: ApiResult.Error, error: 'Feature ID already exists' });
+                callback({ result: ApiResult.Error, error: "Feature ID already exists" });
             }
         }
         else {
             callback({ result: ApiResult.Error });
         }
     };
-    FileStorage.prototype.updateProperty = function (layerId, featureId, property, value, useLog, meta, callback) { };
+    FileStorage.prototype.updateProperty = function (layerId, featureId, property, value, useLog, meta, callback) {
+    };
     FileStorage.prototype.updateLogs = function (layerId, featureId, logs, meta, callback) {
         var f;
         var layer = this.findLayer(layerId);
@@ -668,7 +578,7 @@ var FileStorage = /** @class */ (function (_super) {
             logs[key].forEach(function (l) {
                 delete l.prop;
                 f.logs[key].push(l);
-                if (key !== '~geometry')
+                if (key != "~geometry")
                     f.properties[key] = l.value;
             });
             // send them to other clients
@@ -678,17 +588,14 @@ var FileStorage = /** @class */ (function (_super) {
         callback({ result: ApiResult.OK, layer: null });
     };
     FileStorage.prototype.getFeature = function (layerId, featureId, meta, callback) {
+        var l = this.layers[layerId];
         var found = false;
-        var l = this.findLayer(layerId);
-        if (l) {
-            l.features.some(function (f) {
-                if (f.id === featureId) {
-                    found = true;
-                    callback({ result: ApiResult.OK, feature: f });
-                    return true;
-                }
-            });
-        }
+        l.features.forEach(function (f) {
+            if (f.id === featureId) {
+                found = true;
+                callback({ result: ApiResult.OK, feature: f });
+            }
+        });
         if (!found)
             callback({ result: ApiResult.Error });
     };
@@ -712,7 +619,7 @@ var FileStorage = /** @class */ (function (_super) {
             layer.features.push(feature);
         }
         this.saveLayerDelay(layer);
-        Winston.info('filestore: update feature');
+        Winston.info("filestore: update feature");
         callback({ result: ApiResult.OK, layer: null });
     };
     //TODO: test further. Result is the # of deleted docs.
@@ -724,19 +631,6 @@ var FileStorage = /** @class */ (function (_super) {
         }
         callback({ result: ApiResult.OK });
     };
-    FileStorage.prototype.deleteFeatureBatch = function (layerId, featureIds, useLog, meta, callback) {
-        if (!featureIds || !Array.isArray(featureIds)) {
-            callback({ result: ApiResult.Error });
-            return;
-        }
-        var layer = this.findLayer(layerId);
-        if (layer && layer.features) {
-            layer.features = layer.features.filter(function (k) { return k.id && featureIds.indexOf(k.id) < 0; });
-            this.saveLayerDelay(layer);
-        }
-        callback({ result: ApiResult.OK });
-    };
-    ;
     /** Add a file: images go to the iconPath folder, others to the blob folder */
     FileStorage.prototype.addFile = function (base64, folder, file, meta, callback) {
         var ext = path.extname(file).toLowerCase();
@@ -758,28 +652,6 @@ var FileStorage = /** @class */ (function (_super) {
         this.saveBase64(media);
         callback({ result: ApiResult.OK });
     };
-    /** Get a file: images get from the iconPath folder, others to the blob folder */
-    FileStorage.prototype.getFile = function (file, meta, callback) {
-        var ext = path.extname(file).toLowerCase();
-        var fileUri = file.split('/').pop(); // retreive the file name
-        switch (ext) {
-            case '.png':
-            case '.jpg':
-            case '.gif':
-            case '.jpeg':
-            case '.tif':
-            case '.tiff':
-                fileUri = path.join(this.iconPath, fileUri);
-                break;
-            default:
-                fileUri = path.join(this.blobPath, fileUri);
-                break;
-        }
-        this.readFile(fileUri, function (base64) {
-            var media = { base64: base64, fileUri: path.basename(fileUri) };
-            callback(media);
-        });
-    };
     FileStorage.prototype.addResource = function (res, meta, callback) {
         if (!res.id)
             res.id = helpers.newGuid();
@@ -789,26 +661,6 @@ var FileStorage = /** @class */ (function (_super) {
             res.featureTypes = {};
         this.resources[res.id] = res;
         this.saveResourcesDelay(res);
-        callback({ result: ApiResult.OK });
-    };
-    FileStorage.prototype.addPropertyTypes = function (resourceId, data, meta, callback) {
-        if (!this.resources.hasOwnProperty(resourceId) || !data || !_.isArray(data)) {
-            callback({ result: ApiResult.ResourceNotFound });
-            return;
-        }
-        var resource = this.resources[resourceId];
-        var ptKeys = '';
-        data.forEach(function (pt) {
-            if (resource.propertyTypeData.hasOwnProperty(pt.label))
-                return;
-            resource.propertyTypeData[pt.label] = pt;
-            ptKeys += ";" + pt.label;
-        });
-        _.each(resource.featureTypes, function (ft) {
-            if (ft.propertyTypeKeys)
-                ft.propertyTypeKeys += ptKeys;
-        });
-        this.saveResourcesDelay(resource);
         callback({ result: ApiResult.OK });
     };
     /** Get a resource file  */

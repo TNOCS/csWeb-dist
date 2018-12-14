@@ -2,24 +2,24 @@
 var Utils = require("../helpers/Utils");
 var stream = require("stream");
 var request = require("request");
-var turf = require('turf');
-var AggregateOpportunitiesToGeoJsonTransformer = /** @class */ (function () {
+var turf = require("turf");
+var AggregateOpportunitiesToGeoJsonTransformer = (function () {
     function AggregateOpportunitiesToGeoJsonTransformer(title) {
         this.title = title;
-        this.type = 'AggregateOpportunitiesToGeoJsonTransformer';
+        this.type = "AggregateOpportunitiesToGeoJsonTransformer";
         this.id = Utils.newGuid();
         //this.description = description;
     }
     AggregateOpportunitiesToGeoJsonTransformer.prototype.initialize = function (opt, callback) {
         var _this = this;
-        var urlParameter = opt.parameters.filter(function (p) { return p.type.title === 'aggregateShapeUrl'; })[0];
+        var urlParameter = opt.parameters.filter(function (p) { return p.type.title == "aggregateShapeUrl"; })[0];
         if (!urlParameter) {
-            callback('opportunitiesUrl missing');
+            callback("opportunitiesUrl missing");
             return;
         }
-        var parameter = opt.parameters.filter(function (p) { return p.type.title === 'keyProperty'; })[0];
+        var parameter = opt.parameters.filter(function (p) { return p.type.title == "keyProperty"; })[0];
         if (!parameter) {
-            callback('keyProperty missing');
+            callback("keyProperty missing");
             return;
         }
         this.keyProperty = parameter.value;
@@ -29,7 +29,7 @@ var AggregateOpportunitiesToGeoJsonTransformer = /** @class */ (function () {
                 return;
             }
             _this.geometry = JSON.parse(body);
-            console.log('Geojson loaded: ' + _this.geometry.features.length + ' features');
+            console.log("Geojson loaded: " + _this.geometry.features.length + " features");
             callback(null);
         });
     };
@@ -39,13 +39,13 @@ var AggregateOpportunitiesToGeoJsonTransformer = /** @class */ (function () {
         /*stream.Transform.call(t);*/
         var accumulator = {};
         var index = 0;
-        t.setEncoding('utf8');
+        t.setEncoding("utf8");
         t._transform = function (chunk, encoding, done) {
             var startTs = new Date();
             /*console.log((new Date().getTime() - startTs.getTime()) + ": start");*/
             /*console.log("##### GJAT #####");*/
             if (!_this.geometry) {
-                console.log('No target geometry found');
+                console.log("No target geometry found");
                 done();
                 return;
             }
@@ -88,7 +88,7 @@ var AggregateOpportunitiesToGeoJsonTransformer = /** @class */ (function () {
                 }
             });
             if (!found) {
-                console.log('feature ' + feature.properties.name + ' could not be aggregated, town: ' + feature.properties.town + '. ' + feature.geometry.coordinates);
+                console.log("feature " + feature.properties.name + " could not be aggregated, town: " + feature.properties.town + ". " + feature.geometry.coordinates);
             }
             /*console.log("Aggregation finished");*/
             // console.log("=== After:");
@@ -99,7 +99,7 @@ var AggregateOpportunitiesToGeoJsonTransformer = /** @class */ (function () {
         };
         t._flush = function (done) {
             try {
-                console.log('#### start AOTGJT flush');
+                console.log("#### start AOTGJT flush");
                 /*console.log(accumulator);*/
                 for (var key in accumulator) {
                     console.log(key);
@@ -129,7 +129,7 @@ var AggregateOpportunitiesToGeoJsonTransformer = /** @class */ (function () {
                 done();
             }
             catch (error) {
-                console.log('Agg error: ' + error);
+                console.log("Agg error: " + error);
                 done();
             }
         };

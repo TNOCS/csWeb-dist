@@ -15,9 +15,10 @@ export interface Media {
 export declare class FileStorage extends BaseConnector.BaseConnector {
     rootpath: string;
     private ignoreInitial;
-    private layerBaseUrl;
     manager: ApiManager.ApiManager;
-    layers: string[];
+    layers: {
+        [key: string]: Layer;
+    };
     projects: {
         [key: string]: Project;
     };
@@ -37,45 +38,41 @@ export declare class FileStorage extends BaseConnector.BaseConnector {
     staticProjectsPath: string;
     resourcesPath: string;
     private layerDebounceFunctions;
-    constructor(rootpath: string, watch?: boolean, ignoreInitial?: boolean, layerBaseUrl?: string);
+    constructor(rootpath: string, watch?: boolean, ignoreInitial?: boolean);
     watchLayersFolder(): void;
-    private getDirectories;
+    private getDirectories(srcpath);
     watchProjectsFolder(): void;
-    private printOverview;
     openStaticFolder(folder: string): void;
     watchKeysFolder(): void;
     watchResourcesFolder(): void;
     saveProjectDelay: ((project: ApiManager.Project) => void) & _.Cancelable;
     saveResourcesDelay: ((res: ApiManager.ResourceFile) => void) & _.Cancelable;
     saveKeyDelay: ((key: ApiManager.Key) => void) & _.Cancelable;
-    private saveLayerDelay;
-    private getProjectFilename;
-    private getLayerFilename;
-    private getLayerBackupFilename;
-    private getKeyFilename;
-    private getResourceFilename;
-    private saveKeyFile;
-    private saveResourceFile;
+    private saveLayerDelay(layer);
+    private getProjectFilename(projectId);
+    private getLayerFilename(layerId);
+    private getLayerBackupFilename(layerId);
+    private getKeyFilename(keyId);
+    private getResourceFilename(re);
+    private saveKeyFile(key);
+    private saveResourceFile(res);
     /** Save project file to disk */
-    private saveProjectFile;
+    private saveProjectFile(project);
     /** save media file */
-    private saveBase64;
-    /** read media file */
-    private readFile;
-    private saveLayerFile;
-    private getProjectId;
-    private getKeyId;
-    private getResourceId;
-    private getLayerId;
-    private closeLayerFile;
-    private closeKeyFile;
-    private closeResourceFile;
-    private closeProjectFile;
-    private fetchLayer;
-    private openLayerFile;
-    private openKeyFile;
-    private openResourceFile;
-    private openProjectFile;
+    private saveBase64(media);
+    private saveLayerFile(layer);
+    private getProjectId(fileName);
+    private getKeyId(fileName);
+    private getResourceId(fileName);
+    private getLayerId(fileName);
+    private closeLayerFile(fileName);
+    private closeKeyFile(fileName);
+    private closeResourceFile(fileName);
+    private closeProjectFile(fileName);
+    private openLayerFile(fileName);
+    private openKeyFile(fileName);
+    private openResourceFile(fileName);
+    private openProjectFile(fileName, id?, isDynamic?);
     /**
      * Find layer for a specific layerId (can return null)
      */
@@ -83,7 +80,6 @@ export declare class FileStorage extends BaseConnector.BaseConnector {
     addProject(project: Project, meta: ApiMeta, callback: Function): void;
     getProject(projectId: string, meta: ApiMeta, callback: Function): void;
     updateProject(project: Project, meta: ApiMeta, callback: Function): void;
-    deleteProject(projectId: string, meta: ApiMeta, callback: Function): void;
     addLayer(layer: Layer, meta: ApiMeta, callback: Function): void;
     getLayer(layerId: string, meta: ApiMeta, callback: Function): void;
     updateLayer(layer: Layer, meta: ApiMeta, callback: Function): void;
@@ -97,13 +93,9 @@ export declare class FileStorage extends BaseConnector.BaseConnector {
     getFeature(layerId: string, featureId: string, meta: ApiMeta, callback: Function): void;
     updateFeature(layerId: string, feature: any, useLog: boolean, meta: ApiMeta, callback: Function): void;
     deleteFeature(layerId: string, featureId: string, meta: ApiMeta, callback: Function): void;
-    deleteFeatureBatch(layerId: string, featureIds: string[], useLog: boolean, meta: ApiMeta, callback: Function): void;
     /** Add a file: images go to the iconPath folder, others to the blob folder */
     addFile(base64: string, folder: string, file: string, meta: ApiMeta, callback: Function): void;
-    /** Get a file: images get from the iconPath folder, others to the blob folder */
-    getFile(file: string, meta: ApiMeta, callback: Function): void;
     addResource(res: ResourceFile, meta: ApiMeta, callback: Function): void;
-    addPropertyTypes(resourceId: string, data: IPropertyType[], meta: ApiMeta, callback: Function): void;
     /** Get a resource file  */
     getResource(resourceId: string, meta: ApiMeta, callback: Function): void;
     addKey(key: Key, meta: ApiMeta, callback: Function): void;

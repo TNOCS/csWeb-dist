@@ -1,28 +1,28 @@
 "use strict";
 var Utils = require("../helpers/Utils");
 var stream = require("stream");
-var turf = require('turf');
-var FieldFilterTransformer = /** @class */ (function () {
+var turf = require("turf");
+var FieldFilterTransformer = (function () {
     function FieldFilterTransformer(title) {
         this.title = title;
-        this.type = 'FieldFilterTransformer';
+        this.type = "FieldFilterTransformer";
         this.id = Utils.newGuid();
         //this.description = description;
     }
     FieldFilterTransformer.prototype.initialize = function (opt, callback) {
-        var filterPropertyParameter = opt.parameters.filter(function (p) { return p.type.title === 'property'; })[0];
+        var filterPropertyParameter = opt.parameters.filter(function (p) { return p.type.title == "property"; })[0];
         if (!filterPropertyParameter) {
-            callback('property missing');
+            callback("property missing");
             return;
         }
         this.filterProperty = filterPropertyParameter.value;
-        var filterValueParameter = opt.parameters.filter(function (p) { return p.type.title === 'value'; })[0];
+        var filterValueParameter = opt.parameters.filter(function (p) { return p.type.title == "value"; })[0];
         if (!filterValueParameter) {
             /*console.log("value missing");*/
-            callback('value missing');
+            callback("value missing");
             return;
         }
-        if (typeof filterValueParameter.value === 'string') {
+        if (typeof filterValueParameter.value === "string") {
             var strValue = filterValueParameter.value;
             try {
                 var regExp = new RegExp(strValue);
@@ -30,13 +30,13 @@ var FieldFilterTransformer = /** @class */ (function () {
                 /*console.log(strValue + ": regex");*/
             }
             catch (error) {
-                callback('Error parsing regex: ' + strValue);
+                callback("Error parsing regex: " + strValue);
                 return;
             }
         }
-        else if (typeof filterValueParameter.value === 'number') {
+        else if (typeof filterValueParameter.value === "number") {
             this.filterValue = filterValueParameter.value;
-            console.log(strValue + ': number');
+            console.log(strValue + ": number");
         }
         callback(null);
     };
@@ -45,7 +45,7 @@ var FieldFilterTransformer = /** @class */ (function () {
         var t = new stream.Transform();
         /*stream.Transform.call(t);*/
         var baseGeo;
-        t.setEncoding('utf8');
+        t.setEncoding("utf8");
         t._transform = function (chunk, encoding, done) {
             // var startTs = new Date();
             // console.log((new Date().getTime() - startTs.getTime()) + ": start");
@@ -61,7 +61,7 @@ var FieldFilterTransformer = /** @class */ (function () {
                 }
             }
             else if (_this.filterValue instanceof Number) {
-                if (feature.properties[_this.filterProperty] === _this.filterValue) {
+                if (feature.properties[_this.filterProperty] == _this.filterValue) {
                     // console.log(feature.properties[this.filterProperty] + " matches " + this.filterValue + " numerical.")
                     t.push(JSON.stringify(feature));
                 }

@@ -1,6 +1,6 @@
 "use strict";
 var Utils = require("../helpers/Utils");
-var BaseTransformer = /** @class */ (function () {
+var BaseTransformer = (function () {
     function BaseTransformer(title) {
         this.title = title;
         this.type = null;

@@ -1,5 +1,5 @@
 /// <reference types="node" />
-import transform = require('./ITransform');
+import transform = require("./ITransform");
 declare class FieldSplitTransformer implements transform.ITransform {
     title: string;
     id: string;
@@ -15,7 +15,7 @@ declare class FieldSplitTransformer implements transform.ITransform {
     outputDataTypes: transform.OutputDataType[];
     keyProperty: string;
     constructor(title: string);
-    initialize(opt: transform.ITransformFactoryOptions, callback: (error: any) => void): void;
+    initialize(opt: transform.ITransformFactoryOptions, callback: (error) => void): void;
     create(config: any, opt?: transform.ITransformFactoryOptions): NodeJS.ReadWriteStream;
 }
 export = FieldSplitTransformer;

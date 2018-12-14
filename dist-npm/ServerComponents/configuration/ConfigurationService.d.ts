@@ -4,13 +4,13 @@ import IConfiguration = require('./IConfiguration');
  * Is based on csComp.Helpers.Dictionary.
  */
 export declare class ConfigurationService implements IConfiguration {
-    private configurationFile?;
+    private configurationFile;
     private static theKeys;
     private static theValues;
     /**
      * Create a configuration service based on a configuration file.
      */
-    constructor(configurationFile?: string | Object);
+    constructor(configurationFile?: string);
     initialize(init: {
         key: string;
         value: string;
