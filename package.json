@@ -18,7 +18,7 @@
     "bcryptjs": "^2.3.0",
     "body-parser": "^1.15.0",
     "cors": "^2.7.1",
-	"compression": "^1.6.2",
+    "compression": "^1.6.2",
     "express": "^4.13.4",
     "fs-extra": "^0.26.7",
     "jasmine": "^2.4.1",
@@ -37,7 +37,7 @@
     "which": "^1.2.4",
     "winston": "^2.2.0",
     "xml2js": "^0.4.16",
-    "snyk": "^1.25.0"
+    "snyk": "^1.231.0"
   },
   "bugs": {
     "url": "https://github.com/TNOCS/csWeb/issues"
